@@ -8,15 +8,39 @@ material = {group = "com.google.android.material", name = "material", version.re
 androidx-constraintlayout = {group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout"}
 androidx-navigation-fragment-ktx = {group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx"}
 androidx-navigation-ui-ktx = {group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx"}
+# Task 1.2: Compose dependencies
+androidx-compose-bom = {group = "androidx.compose", name = "compose-bom", version.ref = "composeBom"}
+androidx-compose-ui = {group = "androidx.compose.ui", name = "ui"}
+androidx-compose-ui-graphics = {group = "androidx.compose.ui", name = "ui-graphics"}
+androidx-compose-ui-tooling-preview = {group = "androidx.compose.ui", name = "ui-tooling-preview"}
+androidx-compose-material3 = {group = "androidx.compose.material3", name = "material3"}
+androidx-compose-ui-tooling = {group = "androidx.compose.ui", name = "ui-tooling"}
+androidx-compose-ui-test-manifest = {group = "androidx.compose.ui", name = "ui-test-manifest"}
+androidx-compose-ui-test-junit4 = {group = "androidx.compose.ui", name = "ui-test-junit4"}
+# Task 1.2: Lifecycle dependencies
+androidx-lifecycle-runtime-ktx = {group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle"}
+androidx-lifecycle-viewmodel-ktx = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle"}
+androidx-lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle"}
+# Task 1.2: Nostr library
+quartz = {group = "com.vitorpamplona.quartz", name = "quartz", version.ref = "quartz"}
+# Task 1.2: Security
+androidx-security-crypto = {group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto"}
+# Task 1.2: Dependency injection
+hilt-android = {group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
+hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
+# Task 1.2: Testing
+mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
 
 [plugins]
 android-application = {id = "com.android.application", version.ref = "agp"}
 kotlin-android = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 kotlin-compose = {id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin"}
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 
 [versions]
 agp = "8.13.2"
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -26,3 +50,11 @@ material = "1.10.0"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
+# Task 1.2 dependencies
+composeBom = "2025.12.00"
+lifecycle = "2.8.7"
+quartz = "1.03.0"
+securityCrypto = "1.1.0-alpha06"
+hilt = "2.52"
+ksp = "2.1.0-1.0.29"
+mockk = "1.13.13"

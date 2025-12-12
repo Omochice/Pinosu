@@ -1,13 +1,14 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
-  // TODO: Enable in task 1.2 after adding Compose dependencies
-  // alias(libs.plugins.kotlin.compose)
+  alias(libs.plugins.kotlin.compose)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.hilt)
 }
 
 android {
   namespace = "io.github.omochice.pinosu"
-  compileSdk = 34
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "io.github.omochice.pinosu"
@@ -31,8 +32,7 @@ android {
   }
   kotlinOptions { jvmTarget = "11" }
   buildFeatures {
-    // TODO: Enable in task 1.2 together with Compose dependencies (required by Kotlin 2.0+)
-    // compose = true
+    compose = true
     viewBinding = true
   }
 }
@@ -44,7 +44,37 @@ dependencies {
   implementation(libs.androidx.constraintlayout)
   implementation(libs.androidx.navigation.fragment.ktx)
   implementation(libs.androidx.navigation.ui.ktx)
+
+  // Task 1.2: Compose dependencies
+  val composeBom = platform(libs.androidx.compose.bom)
+  implementation(composeBom)
+  androidTestImplementation(composeBom)
+  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.ui.graphics)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.compose.material3)
+  debugImplementation(libs.androidx.compose.ui.tooling)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
+  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+  // Task 1.2: Lifecycle dependencies
+  implementation(libs.androidx.lifecycle.runtime.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel.ktx)
+  implementation(libs.androidx.lifecycle.runtime.compose)
+
+  // Task 1.2: Nostr library
+  implementation(libs.quartz)
+
+  // Task 1.2: Security
+  implementation(libs.androidx.security.crypto)
+
+  // Task 1.2: Dependency injection
+  implementation(libs.hilt.android)
+  ksp(libs.hilt.compiler)
+
+  // Task 1.2: Testing
   testImplementation(libs.junit)
+  testImplementation(libs.mockk)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -10,7 +10,7 @@
   - ビルド設定でJetpack Composeを有効化
   - _Requirements: 4.3_
 
-- [ ] 1.2 (P) 必要な依存関係の追加
+- [x] 1.2 (P) 必要な依存関係の追加
   - Jetpack Compose BOM（最新安定版）とUI依存関係
   - Android ViewModel (Lifecycle 2.6+) とlifecycle-runtime-compose
   - Amethyst Quartz (com.vitorpamplona:quartz-android) の追加
