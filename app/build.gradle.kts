@@ -1,7 +1,8 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.compose)
+  // TODO: Enable in task 1.2 after adding Compose dependencies
+  // alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -29,7 +30,11 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
   kotlinOptions { jvmTarget = "11" }
-  buildFeatures { compose = true }
+  buildFeatures {
+    // TODO: Enable in task 1.2 together with Compose dependencies (required by Kotlin 2.0+)
+    // compose = true
+    viewBinding = true
+  }
 }
 
 dependencies {
