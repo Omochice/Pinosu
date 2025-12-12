@@ -4,7 +4,7 @@
 
 ### 1. プロジェクトセットアップと依存関係の設定
 
-- [ ] 1.1 (P) Androidプロジェクトの初期化とGradle設定
+- [x] 1.1 (P) Androidプロジェクトの初期化とGradle設定
   - Android SDK 26 (minSdk)、targetSdk 34の設定
   - Kotlin 1.9+の設定とCoroutinesサポート有効化
   - ビルド設定でJetpack Composeを有効化

@@ -1,16 +1,17 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.compose)
 }
 
 android {
   namespace = "io.github.omochice.pinosu"
-  compileSdk { version = release(36) }
+  compileSdk = 34
 
   defaultConfig {
     applicationId = "io.github.omochice.pinosu"
-    minSdk = 31
-    targetSdk = 36
+    minSdk = 26
+    targetSdk = 34
     versionCode = 1
     versionName = "1.0"
 
@@ -28,7 +29,7 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
   kotlinOptions { jvmTarget = "11" }
-  buildFeatures { viewBinding = true }
+  buildFeatures { compose = true }
 }
 
 dependencies {
