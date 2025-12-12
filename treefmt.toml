@@ -14,7 +14,7 @@ options = ["--replace", "--indent", "2"]
 command = "ktfmt"
 includes = ["*.kt", "*.kts"]
 
-[formatter.rumdk]
+[formatter.rumdl]
 command = "rumdl"
 options = ["fmt"]
 includes = ["*.md"]
