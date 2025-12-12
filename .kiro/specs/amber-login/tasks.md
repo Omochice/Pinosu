@@ -19,7 +19,7 @@
   - JUnit 5、Mockk、Compose Testing Libraryの追加
   - _Requirements: 4.3, 6.2, 6.5_
 
-- [ ] 1.3 (P) Androidマニフェストの基本設定
+- [x] 1.3 (P) Androidマニフェストの基本設定
   - アプリケーション名とアイコンの設定
   - `<queries>` 要素の追加（Amber Intent検出用）
   - `android:scheme="nostrsigner"` のIntent Filter設定
