@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "ktlint@1.7.1",
+    "ktfmt@0.51",
+    "tombi@latest",
+    "mado@0.3.0",
+    "treefmt@2.4.0",
+    "renovate@42.24.0",
+    "mdformat@latest",
+    "yamlfmt@0.17.2",
+    "typos@1.40.0",
+    "toml-sort@0.24.3",
+    "formatjson5@0.2.6",
+    "rumdl@0.0.185",
+    "biome@2.3.8"
+  ],
+  "shell": {
+    "scripts": {
+      "fmt": ["treefmt"]
+    }
+  }
+}
