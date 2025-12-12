@@ -18,7 +18,8 @@
   ],
   "shell": {
     "scripts": {
-      "fmt": ["treefmt"]
+      "fmt": ["treefmt"],
+      "check": ["./gradlew lint"]
     }
   }
 }
