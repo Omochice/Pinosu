@@ -55,20 +55,20 @@ sealed class LogoutError {
  *
  * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
-sealed class StorageError {
+sealed class StorageError : Exception() {
   /**
    * ストレージへの書き込みに失敗した
    *
    * @property message エラーメッセージ
    */
-  data class WriteError(val message: String) : StorageError()
+  data class WriteError(override val message: String) : StorageError()
 
   /**
    * ストレージからの読み込みに失敗した
    *
    * @property message エラーメッセージ
    */
-  data class ReadError(val message: String) : StorageError()
+  data class ReadError(override val message: String) : StorageError()
 }
 
 /**
