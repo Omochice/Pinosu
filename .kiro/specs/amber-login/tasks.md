@@ -49,7 +49,7 @@
   - AES256-SIVキー暗号化、AES256-GCM値暗号化の設定
   - _Requirements: 6.2, 6.5_
 
-- [ ] 3.2 ユーザーデータの保存・取得・削除機能
+- [x] 3.2 ユーザーデータの保存・取得・削除機能
   - saveUser(user: User): Result<Unit, StorageError> の実装
   - getUser(): User? の実装（nullチェック、検証ロジック）
   - clearLoginState(): Result<Unit, StorageError> の実装
