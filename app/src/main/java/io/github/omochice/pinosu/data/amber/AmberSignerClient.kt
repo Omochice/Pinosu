@@ -32,6 +32,27 @@ class AmberSignerClient(private val context: Context) {
     }
   }
 
+  /**
+   * NIP-55公開鍵取得リクエスト用のIntentを作成する
+   *
+   * NIP-55プロトコルに準拠したIntentを構築する。 nostrsigner:スキームを使用し、Amberアプリにget_public_keyリクエストを送信する。
+   *
+   * Task 4.2: createPublicKeyIntent()実装 Requirements: 1.3, 4.1, 4.2
+   *
+   * @return 構築されたIntent
+   */
+  fun createPublicKeyIntent(): android.content.Intent {
+    val intent =
+        android.content.Intent(
+            android.content.Intent.ACTION_VIEW, android.net.Uri.parse("$NOSTRSIGNER_SCHEME:"))
+    intent.`package` = AMBER_PACKAGE_NAME
+    intent.putExtra("type", TYPE_GET_PUBLIC_KEY)
+    intent.addFlags(
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    return intent
+  }
+
   companion object {
     /** Amberアプリのパッケージ名 */
     const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"

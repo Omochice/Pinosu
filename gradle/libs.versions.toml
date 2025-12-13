@@ -30,6 +30,7 @@ hilt-android = {group = "com.google.dagger", name = "hilt-android", version.ref 
 hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
 # Task 1.2: Testing
 mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
+robolectric = {group = "org.robolectric", name = "robolectric", version.ref = "robolectric"}
 
 [plugins]
 android-application = {id = "com.android.application", version.ref = "agp"}
@@ -58,3 +59,4 @@ securityCrypto = "1.1.0-alpha06"
 hilt = "2.52"
 ksp = "2.1.0-1.0.29"
 mockk = "1.13.13"
+robolectric = "4.14.1"

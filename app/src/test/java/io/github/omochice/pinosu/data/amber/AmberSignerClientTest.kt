@@ -7,6 +7,9 @@ import io.mockk.mockk
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * AmberSignerClientの単体テスト
@@ -17,6 +20,8 @@ import org.junit.Test
  *
  * Requirements: 1.2, 5.1
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28])
 class AmberSignerClientTest {
 
   private lateinit var context: Context
@@ -30,6 +35,7 @@ class AmberSignerClientTest {
     context = mockk(relaxed = true)
     packageManager = mockk(relaxed = true)
     every { context.packageManager } returns packageManager
+    amberSignerClient = AmberSignerClient(context)
   }
 
   // ========== checkAmberInstalled() Tests ==========
@@ -46,8 +52,6 @@ class AmberSignerClientTest {
       packageManager.getPackageInfo(
           AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } returns android.content.pm.PackageInfo()
-
-    amberSignerClient = AmberSignerClient(context)
 
     // When: checkAmberInstalled()を呼び出す
     val result = amberSignerClient.checkAmberInstalled()
@@ -69,8 +73,6 @@ class AmberSignerClientTest {
           AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws PackageManager.NameNotFoundException()
 
-    amberSignerClient = AmberSignerClient(context)
-
     // When: checkAmberInstalled()を呼び出す
     val result = amberSignerClient.checkAmberInstalled()
 
@@ -90,8 +92,6 @@ class AmberSignerClientTest {
       packageManager.getPackageInfo(
           AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws RuntimeException("Unexpected error")
-
-    amberSignerClient = AmberSignerClient(context)
 
     // When: checkAmberInstalled()を呼び出す
     val result = amberSignerClient.checkAmberInstalled()
@@ -215,5 +215,95 @@ class AmberSignerClientTest {
     assertTrue("Should be IntentResolutionError type", error is AmberError.IntentResolutionError)
     assertEquals(
         "Message should match", message, (error as AmberError.IntentResolutionError).message)
+  }
+
+  // ========== createPublicKeyIntent() Tests ==========
+
+  /**
+   * createPublicKeyIntent()が正しいスキームのIntentを作成することをテスト
+   *
+   * Task 4.2: Intent構築（nostrsigner: スキーム） Requirement 4.1: NIP-55プロトコル
+   */
+  @Test
+  fun testCreatePublicKeyIntent_HasCorrectScheme() {
+    // When: createPublicKeyIntent()を呼び出す
+    val intent = amberSignerClient.createPublicKeyIntent()
+
+    // Then: nostrsignerスキームのURIを持つ
+    assertNotNull("Intent should have data URI", intent.data)
+    assertEquals(
+        "URI scheme should be nostrsigner",
+        AmberSignerClient.NOSTRSIGNER_SCHEME,
+        intent.data?.scheme)
+  }
+
+  /**
+   * createPublicKeyIntent()が正しいパッケージ名を設定することをテスト
+   *
+   * Task 4.2: パッケージ名明示 Requirement 1.3: Amber統合
+   */
+  @Test
+  fun testCreatePublicKeyIntent_HasCorrectPackage() {
+    // When: createPublicKeyIntent()を呼び出す
+    val intent = amberSignerClient.createPublicKeyIntent()
+
+    // Then: Amberのパッケージ名が設定されている
+    assertEquals(
+        "Package should be Amber package name",
+        AmberSignerClient.AMBER_PACKAGE_NAME,
+        intent.`package`)
+  }
+
+  /**
+   * createPublicKeyIntent()がget_public_keyタイプを設定することをテスト
+   *
+   * Task 4.2: type: get_public_key設定 Requirement 4.1: NIP-55プロトコル
+   */
+  @Test
+  fun testCreatePublicKeyIntent_HasCorrectType() {
+    // When: createPublicKeyIntent()を呼び出す
+    val intent = amberSignerClient.createPublicKeyIntent()
+
+    // Then: type extraにget_public_keyが設定されている
+    assertEquals(
+        "Type extra should be get_public_key",
+        AmberSignerClient.TYPE_GET_PUBLIC_KEY,
+        intent.getStringExtra("type"))
+  }
+
+  /**
+   * createPublicKeyIntent()が正しいフラグを設定することをテスト
+   *
+   * Task 4.2: FLAG_ACTIVITY_SINGLE_TOPとFLAG_ACTIVITY_CLEAR_TOPの設定 Requirement 4.2: Intent設定
+   */
+  @Test
+  fun testCreatePublicKeyIntent_HasCorrectFlags() {
+    // When: createPublicKeyIntent()を呼び出す
+    val intent = amberSignerClient.createPublicKeyIntent()
+
+    // Then: SINGLE_TOPとCLEAR_TOPフラグが設定されている
+    val expectedFlags =
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+    // フラグがOR演算で含まれているか確認
+    assertTrue(
+        "Intent should have SINGLE_TOP and CLEAR_TOP flags",
+        (intent.flags and expectedFlags) == expectedFlags)
+  }
+
+  /**
+   * createPublicKeyIntent()がACTION_VIEWアクションを設定することをテスト
+   *
+   * Task 4.2: Intent構築
+   */
+  @Test
+  fun testCreatePublicKeyIntent_HasCorrectAction() {
+    // When: createPublicKeyIntent()を呼び出す
+    val intent = amberSignerClient.createPublicKeyIntent()
+
+    // Then: ACTION_VIEWアクションが設定されている
+    assertEquals(
+        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
 }

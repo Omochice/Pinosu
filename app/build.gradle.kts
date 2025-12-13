@@ -35,6 +35,7 @@ android {
     compose = true
     viewBinding = true
   }
+  testOptions { unitTests.isReturnDefaultValues = true }
 }
 
 dependencies {
@@ -75,6 +76,7 @@ dependencies {
   // Task 1.2: Testing
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
+  testImplementation(libs.robolectric)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
 }
