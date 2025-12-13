@@ -78,12 +78,13 @@
     - ActivityResultLauncherとの統合は Task 10.3 で実装予定
     - _Requirements: 1.1, 1.3, 4.1, 4.2_
 
-- [ ] 4.3 Amberレスポンス処理とタイムアウト管理
-    - handleAmberResponse(resultCode: Int, data: Intent?): Result<AmberResponse, AmberError> の実装
+- [x] 4.3 Amberレスポンス処理とタイムアウト管理
+    - handleAmberResponse(resultCode: Int, data: Intent?): Result<AmberResponse> の実装
     - Intent Extrasからの結果抽出（result, rejected）
-    - ユーザー拒否検出（rejected=true）
-    - タイムアウト処理（30秒デフォルト）の実装
+    - ユーザー拒否検出（rejected=true、RESULT_CANCELED）
+    - Pubkey形式検証（64文字16進数）
     - 不正レスポンスのエラーハンドリング
+    - タイムアウト処理は Repository層で実装予定（withTimeout使用）
     - _Requirements: 1.3, 1.5, 4.5, 5.3, 5.4_
 
 - [ ] 4.4 センシティブデータのログマスキング
