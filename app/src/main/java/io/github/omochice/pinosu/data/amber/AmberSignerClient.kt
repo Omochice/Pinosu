@@ -107,6 +107,34 @@ class AmberSignerClient(private val context: Context) {
     return pubkey.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }
   }
 
+  /**
+   * センシティブなpubkeyをログ出力用にマスキングする
+   *
+   * 64文字のpubkeyを「最初8文字 + ... + 最後8文字」の形式にマスキングする。 16文字未満の場合は元の文字列をそのまま返す。
+   *
+   * Task 4.4: センシティブデータのログマスキング Requirement 6.3: センシティブデータのマスキング処理
+   *
+   * @param pubkey マスキング対象のpubkey文字列
+   * @return マスキングされたpubkey文字列（例: "abcd1234...wxyz7890"）
+   */
+  fun maskPubkey(pubkey: String): String {
+    // 空文字列の場合はそのまま返す
+    if (pubkey.isEmpty()) {
+      return pubkey
+    }
+
+    // 16文字以下の場合はマスキングせずに元の文字列を返す
+    // 理由: マスキング結果が19文字(8+3+8)になるため、16文字以下では情報が増えてしまう
+    if (pubkey.length <= 16) {
+      return pubkey
+    }
+
+    // 最初8文字 + "..." + 最後8文字の形式でマスキング
+    val prefix = pubkey.take(8)
+    val suffix = pubkey.takeLast(8)
+    return "$prefix...$suffix"
+  }
+
   companion object {
     /** Amberアプリのパッケージ名 */
     const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"

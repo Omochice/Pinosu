@@ -462,4 +462,91 @@ class AmberSignerClientTest {
         "Error should be InvalidResponse",
         error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
+
+  // ========== maskPubkey() Tests ==========
+
+  /**
+   * 64文字のpubkeyを正しくマスキングするテスト
+   *
+   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
+   */
+  @Test
+  fun testMaskPubkey_ValidPubkey_ReturnsMaskedString() {
+    // Given: 64文字のpubkey
+    val pubkey = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+
+    // When: maskPubkey()を呼び出す
+    val masked = amberSignerClient.maskPubkey(pubkey)
+
+    // Then: 最初8文字 + "..." + 最後8文字の形式でマスキングされる
+    assertEquals("Should mask pubkey as first8...last8", "abcdef01...23456789", masked)
+  }
+
+  /**
+   * 異なるpubkeyでもマスキング形式が一貫していることをテスト
+   *
+   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
+   */
+  @Test
+  fun testMaskPubkey_DifferentPubkey_ReturnsMaskedString() {
+    // Given: 別の64文字のpubkey
+    val pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+
+    // When: maskPubkey()を呼び出す
+    val masked = amberSignerClient.maskPubkey(pubkey)
+
+    // Then: 最初8文字 + "..." + 最後8文字の形式でマスキングされる
+    assertEquals("Should mask pubkey as first8...last8", "12345678...90abcdef", masked)
+  }
+
+  /**
+   * 短いpubkey（64文字未満）に対するマスキングのテスト
+   *
+   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
+   */
+  @Test
+  fun testMaskPubkey_ShortPubkey_ReturnsOriginalString() {
+    // Given: 16文字以下の短いpubkey
+    val pubkey = "abcdef0123456789"
+
+    // When: maskPubkey()を呼び出す
+    val masked = amberSignerClient.maskPubkey(pubkey)
+
+    // Then: マスキングせずに元の文字列を返す
+    assertEquals("Should return original string when pubkey is too short", pubkey, masked)
+  }
+
+  /**
+   * 空文字列に対するマスキングのテスト
+   *
+   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
+   */
+  @Test
+  fun testMaskPubkey_EmptyString_ReturnsEmptyString() {
+    // Given: 空文字列
+    val pubkey = ""
+
+    // When: maskPubkey()を呼び出す
+    val masked = amberSignerClient.maskPubkey(pubkey)
+
+    // Then: 空文字列を返す
+    assertEquals("Should return empty string when input is empty", "", masked)
+  }
+
+  /**
+   * マスキング結果の長さが正しいことをテスト
+   *
+   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
+   */
+  @Test
+  fun testMaskPubkey_ResultLength_IsCorrect() {
+    // Given: 64文字のpubkey
+    val pubkey = "a".repeat(64)
+
+    // When: maskPubkey()を呼び出す
+    val masked = amberSignerClient.maskPubkey(pubkey)
+
+    // Then: 結果は19文字（8 + 3 + 8）である
+    assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
+  }
 }
