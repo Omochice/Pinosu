@@ -306,4 +306,160 @@ class AmberSignerClientTest {
     assertEquals(
         "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
+
+  // ========== handleAmberResponse() Tests ==========
+
+  /**
+   * 正常なレスポンス（RESULT_OK + pubkey）を正しく処理するテスト
+   *
+   * Task 4.3: handleAmberResponse実装 Requirement 1.3: Amberレスポンス処理
+   */
+  @Test
+  fun testHandleAmberResponse_Success_ReturnsAmberResponse() {
+    // Given: RESULT_OKと有効なpubkeyを含むIntent
+    val pubkey = "a".repeat(64)
+    val intent = android.content.Intent()
+    intent.putExtra("result", pubkey)
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: Successが返され、pubkeyとpackageNameが正しい
+    assertTrue("Should return success", result.isSuccess)
+    val response = result.getOrNull()
+    assertNotNull("Response should not be null", response)
+    assertEquals("Pubkey should match", pubkey, response?.pubkey)
+    assertEquals(
+        "PackageName should be Amber package",
+        AmberSignerClient.AMBER_PACKAGE_NAME,
+        response?.packageName)
+  }
+
+  /**
+   * ユーザー拒否（rejected=true）を検出するテスト
+   *
+   * Task 4.3: ユーザー拒否検出 Requirement 1.5: エラーハンドリング
+   */
+  @Test
+  fun testHandleAmberResponse_UserRejected_ReturnsError() {
+    // Given: rejected=trueを含むIntent
+    val intent = android.content.Intent()
+    intent.putExtra("rejected", true)
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: UserRejectedエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be UserRejected",
+        error is AmberError.UserRejected || error.toString().contains("UserRejected"))
+  }
+
+  /**
+   * RESULT_CANCELEDの場合にUserRejectedエラーを返すテスト
+   *
+   * Task 4.3: ユーザー拒否検出 Requirement 1.5: エラーハンドリング
+   */
+  @Test
+  fun testHandleAmberResponse_ResultCanceled_ReturnsUserRejected() {
+    // Given: RESULT_CANCELED
+    val intent = android.content.Intent()
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_CANCELED, intent)
+
+    // Then: UserRejectedエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be UserRejected",
+        error is AmberError.UserRejected || error.toString().contains("UserRejected"))
+  }
+
+  /**
+   * Intentがnullの場合にInvalidResponseエラーを返すテスト
+   *
+   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
+   */
+  @Test
+  fun testHandleAmberResponse_NullIntent_ReturnsInvalidResponse() {
+    // Given: null Intent
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, null)
+
+    // Then: InvalidResponseエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
+
+  /**
+   * resultが空文字列の場合にInvalidResponseエラーを返すテスト
+   *
+   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
+   */
+  @Test
+  fun testHandleAmberResponse_EmptyResult_ReturnsInvalidResponse() {
+    // Given: 空のresult
+    val intent = android.content.Intent()
+    intent.putExtra("result", "")
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: InvalidResponseエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
+
+  /**
+   * resultが不正な形式（64文字でない）の場合にInvalidResponseエラーを返すテスト
+   *
+   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
+   */
+  @Test
+  fun testHandleAmberResponse_InvalidPubkeyLength_ReturnsInvalidResponse() {
+    // Given: 不正な長さのpubkey（63文字）
+    val intent = android.content.Intent()
+    intent.putExtra("result", "a".repeat(63))
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: InvalidResponseエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
+
+  /**
+   * resultが不正な形式（16進数でない）の場合にInvalidResponseエラーを返すテスト
+   *
+   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
+   */
+  @Test
+  fun testHandleAmberResponse_InvalidPubkeyFormat_ReturnsInvalidResponse() {
+    // Given: 16進数でないpubkey（'g'を含む）
+    val intent = android.content.Intent()
+    intent.putExtra("result", "g" + "a".repeat(63))
+
+    // When: handleAmberResponse()を呼び出す
+    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: InvalidResponseエラーが返される
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
 }
