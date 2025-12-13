@@ -56,7 +56,7 @@
   - created_atとlast_accessed タイムスタンプの管理
   - _Requirements: 1.4, 2.1, 2.2, 2.5_
 
-- [ ]* 3.3 LocalAuthDataSourceの単体テスト
+- [x]* 3.3 LocalAuthDataSourceの単体テスト
   - 保存・取得・削除の正常系テスト
   - 不正データ読み込み時のエラーハンドリングテスト
   - 暗号化・復号化の正常動作確認（モック使用）
