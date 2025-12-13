@@ -53,6 +53,60 @@ class AmberSignerClient(private val context: Context) {
     return intent
   }
 
+  /**
+   * AmberからのActivityResult応答を処理する
+   *
+   * NIP-55プロトコルに基づくAmberレスポンスを解析し、成功/失敗を判定する。
+   *
+   * Task 4.3: handleAmberResponse実装 Requirements: 1.3, 1.5, 4.5, 5.3, 5.4
+   *
+   * @param resultCode ActivityResultのresultCode（RESULT_OK or RESULT_CANCELED）
+   * @param data Intentデータ（resultとrejectedを含む）
+   * @return Success(AmberResponse) or Failure(AmberError)
+   */
+  fun handleAmberResponse(resultCode: Int, data: android.content.Intent?): Result<AmberResponse> {
+    // RESULT_CANCELEDはユーザー拒否
+    if (resultCode == android.app.Activity.RESULT_CANCELED) {
+      return Result.failure(AmberError.UserRejected)
+    }
+
+    // Intentがnullの場合は不正なレスポンス
+    if (data == null) {
+      return Result.failure(AmberError.InvalidResponse("Intent data is null"))
+    }
+
+    // rejectedフラグをチェック
+    val rejected = data.getBooleanExtra("rejected", false)
+    if (rejected) {
+      return Result.failure(AmberError.UserRejected)
+    }
+
+    // resultからpubkeyを取得
+    val pubkey = data.getStringExtra("result")
+    if (pubkey.isNullOrEmpty()) {
+      return Result.failure(AmberError.InvalidResponse("Result is null or empty"))
+    }
+
+    // pubkeyの形式を検証（64文字の16進数）
+    if (!isValidPubkey(pubkey)) {
+      return Result.failure(
+          AmberError.InvalidResponse("Invalid pubkey format: must be 64 hex characters"))
+    }
+
+    return Result.success(AmberResponse(pubkey, AMBER_PACKAGE_NAME))
+  }
+
+  /**
+   * pubkeyの形式を検証する
+   *
+   * @param pubkey 検証するpubkey文字列
+   * @return 64文字の16進数文字列の場合true、それ以外はfalse
+   */
+  private fun isValidPubkey(pubkey: String): Boolean {
+    if (pubkey.length != 64) return false
+    return pubkey.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }
+  }
+
   companion object {
     /** Amberアプリのパッケージ名 */
     const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
@@ -81,7 +135,7 @@ data class AmberResponse(val pubkey: String, val packageName: String)
  * AmberアプリとのNIP-55 Intent通信で発生しうるエラーを表現する。 Task 4.1: AmberErrorの定義 Requirements: 1.5, 4.5, 5.1,
  * 5.3, 5.4
  */
-sealed class AmberError {
+sealed class AmberError : Exception() {
   /** Amberアプリがインストールされていない */
   data object NotInstalled : AmberError()
 
@@ -96,12 +150,12 @@ sealed class AmberError {
    *
    * @property message エラーメッセージ
    */
-  data class InvalidResponse(val message: String) : AmberError()
+  data class InvalidResponse(override val message: String) : AmberError()
 
   /**
    * Intent解決に失敗した
    *
    * @property message エラーメッセージ
    */
-  data class IntentResolutionError(val message: String) : AmberError()
+  data class IntentResolutionError(override val message: String) : AmberError()
 }
