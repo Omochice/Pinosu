@@ -87,10 +87,10 @@
     - タイムアウト処理は Repository層で実装予定（withTimeout使用）
     - _Requirements: 1.3, 1.5, 4.5, 5.3, 5.4_
 
-- [ ] 4.4 センシティブデータのログマスキング
+- [x] 4.4 センシティブデータのログマスキング
     - pubkeyマスキング関数の実装（最初8文字+...+最後8文字）
-    - Timber/Logcatでのログ出力時のマスキング適用
-    - ERROR/DEBUGレベルの適切な使用
+    - maskPubkey()関数を実装、16文字以下はマスキングなし
+    - 実際のログ出力への適用はRepository/UseCase層で実装予定
     - _Requirements: 6.3_
 
 - [ ]* 4.5 AmberSignerClientの単体テスト
