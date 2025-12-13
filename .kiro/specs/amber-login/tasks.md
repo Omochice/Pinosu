@@ -34,7 +34,7 @@
   - 将来拡張用のAuthEvent sealed classの定義
   - _Requirements: 1.4, 6.1_
 
-- [ ] 2.2 (P) エラー型の定義
+- [x] 2.2 (P) エラー型の定義
   - LoginError sealed class（AmberNotInstalled, UserRejected, Timeout, NetworkError, UnknownError）
   - LogoutError sealed class（StorageError）
   - StorageError sealed class（WriteError, ReadError）
