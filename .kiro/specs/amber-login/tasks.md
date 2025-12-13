@@ -43,7 +43,7 @@
 
 ### 3. ローカルストレージ実装（Data層）
 
-- [ ] 3.1 LocalAuthDataSourceの実装
+- [x] 3.1 LocalAuthDataSourceの実装
   - EncryptedSharedPreferencesの初期化処理
   - Android Keystore経由のMasterKey生成（AES256_GCM）
   - AES256-SIVキー暗号化、AES256-GCM値暗号化の設定
