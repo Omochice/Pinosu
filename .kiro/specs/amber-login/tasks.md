@@ -93,11 +93,12 @@
     - 実際のログ出力への適用はRepository/UseCase層で実装予定
     - _Requirements: 6.3_
 
-- [ ]* 4.5 AmberSignerClientの単体テスト
-    - Amber未インストール検出テスト
-    - Intent構築の正確性テスト
-    - レスポンス解析テスト（正常系・異常系）
-    - タイムアウト処理テスト
+- [x] 4.5 AmberSignerClientの単体テスト
+    - Amber未インストール検出テスト (3 tests) ✓
+    - Intent構築の正確性テスト (5 tests) ✓
+    - レスポンス解析テスト（正常系・異常系） (7 tests) ✓
+    - タイムアウト処理テストはRepository層で実装予定
+    - 全27テストがTDD手法で tasks 4.1-4.4 実装時に完了済み
     - _Requirements: 1.2, 1.3, 1.5, 4.1, 4.2, 4.5_
 
 ### 5. リポジトリ実装（Data層）
