@@ -70,12 +70,12 @@
     - AmberResponse、AmberError データクラスの定義
     - _Requirements: 1.2, 5.1_
 
-- [ ] 4.2 NIP-55 Intent構築とリクエスト送信
-    - requestPublicKey(): Result<AmberResponse, AmberError> の実装
+- [x] 4.2 NIP-55 Intent構築とリクエスト送信
+    - createPublicKeyIntent(): Intent の実装
     - Intent構築（nostrsigner: スキーム、type: get_public_key）
     - パッケージ名明示（com.greenart7c3.nostrsigner）
     - FLAG_ACTIVITY_SINGLE_TOPとFLAG_ACTIVITY_CLEAR_TOPの設定
-    - ActivityResultLauncherとの統合
+    - ActivityResultLauncherとの統合は Task 10.3 で実装予定
     - _Requirements: 1.1, 1.3, 4.1, 4.2_
 
 - [ ] 4.3 Amberレスポンス処理とタイムアウト管理
