@@ -202,11 +202,14 @@
 
 ### 8. ログイン画面UI実装（Presentation層）
 
-- [ ] 8.1 LoginScreenの基本実装
-    - Jetpack Composable関数の作成
-    - LoginViewModel.uiState の collectAsState() 観察
-    - 「Amberでログイン」ボタンの配置
-    - ローディングインジケーターの表示ロジック
+- [x] 8.1 LoginScreenの基本実装
+    - Jetpack Composable関数の作成 ✓
+    - LoginViewModel.uiState の collectAsState() 観察 ✓
+    - 「Amberでログイン」ボタンの配置 ✓
+    - ローディングインジケーターの表示ロジック ✓
+    - LoginScreen Composable実装（uiState観察、ボタン配置、ローディング表示）
+    - ローディング中のボタン無効化処理
+    - 5つのCompose UIテスト実装済み（ボタン表示、クリック、ローディング表示、ボタン無効化）
     - _Requirements: 3.1, 3.2_
 
 - [ ] 8.2 エラーダイアログの実装
