@@ -186,10 +186,18 @@
     - AndroidManifest.xml更新（android:name=".PinosuApplication"）
     - _Requirements: 該当なし（技術実装）_
 
-- [ ]* 7.4 LoginViewModelの単体テスト
-    - ログインボタンタップ → UseCases呼び出し → UI状態更新のテスト
-    - エラーハンドリングフロー（AmberNotInstalled → showAmberInstallDialog更新）のテスト
-    - ログアウトフローのテスト
+- [x]* 7.4 LoginViewModelの単体テスト
+    - ログインボタンタップ → UseCases呼び出し → UI状態更新のテスト ✓
+    - エラーハンドリングフロー（AmberNotInstalled → showAmberInstallDialog更新）のテスト ✓
+    - ログアウトフローのテスト ✓
+    - 全15テストがTDD手法で tasks 7.1-7.2 実装時に完了済み:
+        - 初期状態テスト (2)
+        - checkLoginState (2)
+        - onLoginButtonClicked (2)
+        - onLogoutButtonClicked (2)
+        - dismissError (1)
+        - onRetryLogin (1)
+        - processAmberResponse (5)
     - _Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3_
 
 ### 8. ログイン画面UI実装（Presentation層）
