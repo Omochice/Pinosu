@@ -93,7 +93,7 @@
     - 実際のログ出力への適用はRepository/UseCase層で実装予定
     - _Requirements: 6.3_
 
-- [x] 4.5 AmberSignerClientの単体テスト
+- [x]* 4.5 AmberSignerClientの単体テスト
     - Amber未インストール検出テスト (3 tests) ✓
     - Intent構築の正確性テスト (5 tests) ✓
     - レスポンス解析テスト（正常系・異常系） (7 tests) ✓

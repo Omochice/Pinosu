@@ -7,7 +7,7 @@ package io.github.omochice.pinosu.domain.model.error
  *
  * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
-sealed class LoginError {
+sealed class LoginError : Exception() {
   /** Amberアプリがインストールされていない */
   data object AmberNotInstalled : LoginError()
 
@@ -22,14 +22,17 @@ sealed class LoginError {
    *
    * @property message エラーメッセージ
    */
-  data class NetworkError(val message: String) : LoginError()
+  data class NetworkError(override val message: String) : LoginError()
 
   /**
    * 不明なエラーが発生した
    *
    * @property throwable 発生した例外
    */
-  data class UnknownError(val throwable: Throwable) : LoginError()
+  data class UnknownError(val throwable: Throwable) : LoginError() {
+    override val message: String
+      get() = throwable.message ?: "Unknown error occurred"
+  }
 }
 
 /**
@@ -39,13 +42,13 @@ sealed class LoginError {
  *
  * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
-sealed class LogoutError {
+sealed class LogoutError : Exception() {
   /**
    * ストレージ操作でエラーが発生した
    *
    * @property message エラーメッセージ
    */
-  data class StorageError(val message: String) : LogoutError()
+  data class StorageError(override val message: String) : LogoutError()
 }
 
 /**
