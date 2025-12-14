@@ -136,10 +136,11 @@
     - Note: ログインフローはActivityResultAPI経由でViewModelから実行
     - _Requirements: 1.1, 1.3, 1.4, 1.5, 4.5_
 
-- [ ] 6.2 (P) LogoutUseCaseの実装
-    - suspend operator fun invoke(): Result<Unit, LogoutError> の実装
-    - AuthRepository.logout() の呼び出し
-    - 冪等性の保証
+- [x] 6.2 (P) LogoutUseCaseの実装
+    - suspend operator fun invoke(): Result<Unit> の実装 ✓
+    - AuthRepository.logout() の呼び出し ✓
+    - 冪等性の保証 ✓
+    - 3テスト実装済み (全テストパス)
     - _Requirements: 2.4, 2.5_
 
 - [ ] 6.3 (P) GetLoginStateUseCaseの実装
