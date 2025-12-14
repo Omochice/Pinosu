@@ -149,10 +149,11 @@
     - 読み取り専用操作の保証
     - _Requirements: 2.2, 2.3_
 
-- [ ]* 6.4 UseCasesの単体テスト
-    - LoginUseCase正常系・異常系テスト
-    - LogoutUseCase正常系・異常系テスト
-    - GetLoginStateUseCase正常系・異常系テスト
+- [x]* 6.4 UseCasesの単体テスト
+    - LoginUseCase正常系・異常系テスト (2 tests) ✓
+    - LogoutUseCase正常系・異常系テスト (3 tests) ✓
+    - GetLoginStateUseCase正常系・異常系テスト (3 tests) ✓
+    - 全8テストがTDD手法で tasks 6.1-6.3 実装時に完了済み
     - _Requirements: 1.1, 1.3, 1.4, 1.5, 2.2, 2.3, 2.4, 2.5_
 
 ### 7. ViewModelとUI状態管理（Presentation層）
