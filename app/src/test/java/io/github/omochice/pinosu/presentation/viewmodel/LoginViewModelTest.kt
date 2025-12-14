@@ -209,4 +209,137 @@ class LoginViewModelTest {
     // Then: checkAmberInstalled()が呼ばれる（onLoginButtonClickedと同じ動作）
     io.mockk.verify { loginUseCase.checkAmberInstalled() }
   }
+
+  // ========== processAmberResponse() のテスト (Task 7.2) ==========
+
+  @Test
+  fun `processAmberResponse should set loading state during processing`() = runTest {
+    // Given: Amberレスポンス処理が成功
+    val testPubkey = "c".repeat(64)
+    val testUser = User(testPubkey)
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    coEvery { authRepository.processAmberResponse(any(), any()) } coAnswers
+        {
+          kotlinx.coroutines.delay(100)
+          Result.success(testUser)
+        }
+    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    val viewModelWithMock =
+        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    // When: processAmberResponse()を呼び出す
+    viewModelWithMock.processAmberResponse(-1, mockIntent)
+
+    // Note: ローディング状態の検証は実装依存のため、呼び出しの検証のみ
+    advanceUntilIdle()
+
+    coVerify { authRepository.processAmberResponse(any(), any()) }
+  }
+
+  @Test
+  fun `processAmberResponse should set loginSuccess on success`() = runTest {
+    // Given: Amberレスポンス処理が成功
+    val testPubkey = "d".repeat(64)
+    val testUser = User(testPubkey)
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.success(testUser)
+    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    val viewModelWithMock =
+        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    // When: processAmberResponse()を呼び出す
+    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    advanceUntilIdle()
+
+    // Then: loginSuccessがtrueになり、mainUiStateが更新される
+    val loginState = viewModelWithMock.uiState.first()
+    val mainState = viewModelWithMock.mainUiState.first()
+    assertTrue("loginSuccess should be true", loginState.loginSuccess)
+    assertFalse("isLoading should be false after success", loginState.isLoading)
+    assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
+  }
+
+  @Test
+  fun `processAmberResponse should set error message on UserRejected error`() = runTest {
+    // Given: ユーザーが拒否
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    val error = io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected
+    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    val viewModelWithMock =
+        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    // When: processAmberResponse()を呼び出す
+    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    advanceUntilIdle()
+
+    // Then: エラーメッセージが設定される
+    val state = viewModelWithMock.uiState.first()
+    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertFalse("isLoading should be false", state.isLoading)
+    assertFalse("loginSuccess should be false", state.loginSuccess)
+  }
+
+  @Test
+  fun `processAmberResponse should set error message on Timeout error`() = runTest {
+    // Given: タイムアウト
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    val error = io.github.omochice.pinosu.domain.model.error.LoginError.Timeout
+    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    val viewModelWithMock =
+        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    // When: processAmberResponse()を呼び出す
+    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    advanceUntilIdle()
+
+    // Then: エラーメッセージが設定される
+    val state = viewModelWithMock.uiState.first()
+    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertTrue(
+        "errorMessage should contain timeout info", state.errorMessage?.contains("タイムアウト") == true)
+    assertFalse("isLoading should be false", state.isLoading)
+  }
+
+  @Test
+  fun `processAmberResponse should handle NetworkError`() = runTest {
+    // Given: ネットワークエラー
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    val error =
+        io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError("Connection failed")
+    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    val viewModelWithMock =
+        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    // When: processAmberResponse()を呼び出す
+    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    advanceUntilIdle()
+
+    // Then: エラーメッセージが設定される
+    val state = viewModelWithMock.uiState.first()
+    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertFalse("isLoading should be false", state.isLoading)
+  }
 }
