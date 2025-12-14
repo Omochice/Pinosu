@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.domain.usecase
 
 import io.github.omochice.pinosu.data.repository.AuthRepository
+import javax.inject.Inject
 
 /**
  * LogoutUseCaseの実装
@@ -11,7 +12,8 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
  *
  * @property authRepository 認証リポジトリ
  */
-class LogoutUseCaseImpl(private val authRepository: AuthRepository) : LogoutUseCase {
+class LogoutUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+    LogoutUseCase {
 
   /**
    * ログアウト処理を実行する
