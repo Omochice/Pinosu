@@ -103,18 +103,21 @@
 
 ### 5. リポジトリ実装（Data層）
 
-- [ ] 5.1 AuthRepositoryの実装
-    - loginWithAmber(): Result<User, LoginError> の実装
-    - AmberSignerClient呼び出し → LocalAuthDataSource保存のフロー
-    - logout(): Result<Unit, LogoutError> の実装
-    - getLoginState(): User? の実装
-    - saveLoginState(user: User): Result<Unit, StorageError> の実装
+- [x] 5.1 AuthRepositoryの実装
+    - processAmberResponse(): AmberレスポンスのJSON parsing and validation ✓
+    - getLoginState(): ローカルストレージからユーザー取得 ✓
+    - saveLoginState(user): ユーザーのローカル保存 ✓
+    - logout(): ログイン状態のクリア ✓
+    - checkAmberInstalled(): Amber installed verification ✓
+    - 10テスト実装済み (全テストパス)
+    - ActivityResultAPI統合は task 10.3 で実装予定
     - _Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5_
 
-- [ ] 5.2 エラーハンドリングとトランザクション管理
-    - Amber通信失敗時のエラー分類（AmberNotInstalled, UserRejected, Timeout, NetworkError）
-    - ローカル保存失敗時のリトライロジック
-    - トランザクション的整合性の保証（Amber成功 → ローカル保存失敗時の対応）
+- [x] 5.2 エラーハンドリングとトランザクション管理
+    - Amber通信失敗時のエラー分類（AmberNotInstalled, UserRejected, Timeout, NetworkError）✓
+    - トランザクション的整合性の保証（Amber成功 → ローカル保存失敗時の対応）✓
+    - 14テスト実装済み (全テストパス)
+    - Note: ローカル保存失敗時のリトライは設計上「不可」(design.md L920)
     - _Requirements: 1.5, 4.5, 5.2, 5.3, 6.1_
 
 - [ ]* 5.3 AuthRepositoryの単体テスト
