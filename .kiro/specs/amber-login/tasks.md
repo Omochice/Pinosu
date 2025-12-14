@@ -143,7 +143,7 @@
     - 3テスト実装済み (全テストパス)
     - _Requirements: 2.4, 2.5_
 
-- [ ] 6.3 (P) GetLoginStateUseCaseの実装
+- [x] 6.3 (P) GetLoginStateUseCaseの実装
     - suspend operator fun invoke(): User? の実装
     - AuthRepository.getLoginState() の呼び出し
     - 読み取り専用操作の保証
