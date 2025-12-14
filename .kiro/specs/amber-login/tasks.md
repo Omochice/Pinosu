@@ -130,10 +130,10 @@
 
 ### 6. ドメイン層UseCasesの実装
 
-- [ ] 6.1 (P) LoginUseCaseの実装
-    - suspend operator fun invoke(): Result<User, LoginError> の実装
-    - AuthRepository.loginWithAmber() の呼び出し
-    - エラーハンドリングとエラー分類
+- [x] 6.1 (P) LoginUseCaseの実装
+    - checkAmberInstalled(): AuthRepositoryへの委譲 ✓
+    - 2テスト実装済み (全テストパス)
+    - Note: ログインフローはActivityResultAPI経由でViewModelから実行
     - _Requirements: 1.1, 1.3, 1.4, 1.5, 4.5_
 
 - [ ] 6.2 (P) LogoutUseCaseの実装
