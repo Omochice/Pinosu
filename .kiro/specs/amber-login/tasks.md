@@ -158,11 +158,12 @@
 
 ### 7. ViewModelとUI状態管理（Presentation層）
 
-- [ ] 7.1 LoginViewModelの実装
-    - LoginUiState、MainUiState データクラスの定義
-    - StateFlow<LoginUiState>、StateFlow<MainUiState> の実装
-    - onLoginButtonClicked()、onLogoutButtonClicked() の実装
-    - onRetryLogin()、dismissError()、checkLoginState() の実装
+- [x] 7.1 LoginViewModelの実装
+    - LoginUiState、MainUiState データクラスの定義 ✓
+    - StateFlow<LoginUiState>、StateFlow<MainUiState> の実装 ✓
+    - onLoginButtonClicked()、onLogoutButtonClicked() の実装 ✓
+    - onRetryLogin()、dismissError()、checkLoginState() の実装 ✓
+    - 10テスト実装済み (全テストパス)
     - _Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5_
 
 - [ ] 7.2 ViewModelScopeでのCoroutine実行とエラーハンドリング
