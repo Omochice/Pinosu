@@ -214,6 +214,103 @@ class AuthRepositoryImplTest {
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
   }
 
+  // ========== Task 5.2: Additional Error Handling Tests ==========
+
+  /**
+   * Amber未インストールエラーの分類テスト
+   *
+   * Task 5.2: エラー分類 Requirement 1.5: AmberNotInstalled
+   */
+  @Test
+  fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runTest {
+    // Given: AmberがNotInstalledエラーを返す
+    val intent = Intent()
+    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
+        Result.failure(io.github.omochice.pinosu.data.amber.AmberError.NotInstalled)
+
+    // When: processAmberResponse()を呼び出す
+    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: LoginError.AmberNotInstalledが返される
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue(
+        "Exception should be LoginError.AmberNotInstalled",
+        exception is LoginError.AmberNotInstalled)
+  }
+
+  /**
+   * Amberタイムアウトエラーの分類テスト
+   *
+   * Task 5.2: エラー分類 Requirement 1.5: Timeout
+   */
+  @Test
+  fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runTest {
+    // Given: AmberがTimeoutエラーを返す
+    val intent = Intent()
+    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
+        Result.failure(io.github.omochice.pinosu.data.amber.AmberError.Timeout)
+
+    // When: processAmberResponse()を呼び出す
+    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: LoginError.Timeoutが返される
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
+  }
+
+  /**
+   * Amber InvalidResponseエラーの分類テスト（NetworkErrorとして扱う）
+   *
+   * Task 5.2: エラー分類 Requirement 5.2: NetworkError
+   */
+  @Test
+  fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runTest {
+    // Given: AmberがInvalidResponseエラーを返す
+    val intent = Intent()
+    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
+        Result.failure(
+            io.github.omochice.pinosu.data.amber.AmberError.InvalidResponse("Invalid data"))
+
+    // When: processAmberResponse()を呼び出す
+    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: LoginError.NetworkErrorが返される
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
+  }
+
+  /**
+   * トランザクション整合性テスト: Amber成功 → ローカル保存失敗
+   *
+   * Task 5.2: トランザクション整合性 Requirement 5.2: ローカル保存失敗時の対応
+   */
+  @Test
+  fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
+    // Given: Amberは成功するがローカル保存が失敗
+    val pubkey = "a".repeat(64)
+    val intent = Intent().apply { putExtra("result", pubkey) }
+    val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
+
+    every { amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent) } returns
+        Result.success(amberResponse)
+    coEvery { localAuthDataSource.saveUser(any()) } throws StorageError.WriteError("Storage full")
+
+    // When: processAmberResponse()を呼び出す
+    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+
+    // Then: LoginError.UnknownErrorが返される（StorageErrorをラップ）
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue("Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
+
+    // StorageErrorが原因として含まれていることを確認
+    val unknownError = exception as LoginError.UnknownError
+    assertTrue("Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
+  }
+
   // ========== checkAmberInstalled() Tests ==========
 
   /**
