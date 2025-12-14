@@ -166,11 +166,14 @@
     - 10テスト実装済み (全テストパス)
     - _Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5_
 
-- [ ] 7.2 ViewModelScopeでのCoroutine実行とエラーハンドリング
-    - UseCases呼び出しの非同期処理
-    - エラー時のStateFlow更新ロジック
-    - ローディング状態管理（isLoading フラグ）
-    - ログイン成功時のナビゲーション制御
+- [x] 7.2 ViewModelScopeでのCoroutine実行とエラーハンドリング
+    - UseCases呼び出しの非同期処理 ✓
+    - エラー時のStateFlow更新ロジック ✓
+    - ローディング状態管理（isLoading フラグ）✓
+    - ログイン成功時のナビゲーション制御 ✓
+    - processAmberResponse() メソッド実装 (viewModelScope.launch使用)
+    - LoginError型別エラーメッセージ処理 (UserRejected, Timeout, NetworkError, UnknownError)
+    - 5テスト実装済み (processAmberResponse動作検証)
     - _Requirements: 1.5, 3.2, 3.3, 5.2, 5.4_
 
 - [ ] 7.3 依存性注入の設定
