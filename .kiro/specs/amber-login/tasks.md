@@ -176,9 +176,14 @@
     - 5テスト実装済み (processAmberResponse動作検証)
     - _Requirements: 1.5, 3.2, 3.3, 5.2, 5.4_
 
-- [ ] 7.3 依存性注入の設定
-    - Hilt/KoinによるViewModel注入設定
-    - UseCasesの注入設定
+- [x] 7.3 依存性注入の設定
+    - Hilt/KoinによるViewModel注入設定 ✓
+    - UseCasesの注入設定 ✓
+    - @HiltViewModelアノテーション（LoginViewModelに既存）
+    - @Injectアノテーション（UseCaseImpl全クラスに追加）
+    - UseCaseModuleの作成（@Bindsでインターフェースバインディング）
+    - PinosuApplicationクラス作成（@HiltAndroidApp）
+    - AndroidManifest.xml更新（android:name=".PinosuApplication"）
     - _Requirements: 該当なし（技術実装）_
 
 - [ ]* 7.4 LoginViewModelの単体テスト
