@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -20,11 +21,17 @@ import kotlinx.coroutines.launch
  * - ユーザー操作ハンドリング
  * - UseCasesへの委譲
  *
- * Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5
+ * Task 7.2: Coroutine実行とエラーハンドリング
+ * - Amberレスポンス処理
+ * - ローディング状態管理
+ * - エラー時のStateFlow更新
+ *
+ * Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5, 5.2, 5.4
  *
  * @property loginUseCase ログイン処理のUseCase
  * @property logoutUseCase ログアウト処理のUseCase
  * @property getLoginStateUseCase ログイン状態取得のUseCase
+ * @property authRepository 認証リポジトリ（Amberレスポンス処理用）
  */
 @HiltViewModel
 class LoginViewModel
@@ -33,6 +40,7 @@ constructor(
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
   // ========== ログイン画面のUI状態 ==========
@@ -121,6 +129,54 @@ constructor(
   fun onRetryLogin() {
     dismissError()
     onLoginButtonClicked()
+  }
+
+  // ========== Amberレスポンス処理 (Task 7.2) ==========
+
+  /**
+   * AmberからのActivityResult受信後にレスポンスを処理する
+   *
+   * Task 7.2: processAmberResponse()実装 Requirement 1.3, 1.4, 1.5: Amber認証レスポンス処理、ログイン状態保存、エラーハンドリング
+   * Requirement 3.2, 3.3: ローディング状態管理、ログイン成功表示
+   *
+   * @param resultCode ActivityResultのresultCode
+   * @param data Intentデータ
+   */
+  fun processAmberResponse(resultCode: Int, data: android.content.Intent?) {
+    viewModelScope.launch {
+      // ローディング開始
+      _uiState.value =
+          _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
+
+      // Amberレスポンスを処理
+      val result = authRepository.processAmberResponse(resultCode, data)
+
+      if (result.isSuccess) {
+        // ログイン成功
+        val user = result.getOrNull()
+        _uiState.value =
+            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
+        _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
+      } else {
+        // ログイン失敗 - エラーメッセージを設定
+        val error = result.exceptionOrNull()
+        val errorMessage =
+            when (error) {
+              is io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected ->
+                  "ログインがキャンセルされました。再度お試しください。"
+              is io.github.omochice.pinosu.domain.model.error.LoginError.Timeout ->
+                  "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。"
+              is io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError ->
+                  "ネットワークエラーが発生しました。接続を確認してください。"
+              is io.github.omochice.pinosu.domain.model.error.LoginError.UnknownError ->
+                  "エラーが発生しました。しばらくしてから再試行してください。"
+              else -> "エラーが発生しました。しばらくしてから再試行してください。"
+            }
+        _uiState.value =
+            _uiState.value.copy(
+                isLoading = false, errorMessage = errorMessage, loginSuccess = false)
+      }
+    }
   }
 }
 
