@@ -25,7 +25,13 @@ import org.junit.Test
  * - loginWithAmber()のテスト（Amber未インストール検出）
  * - AmberResponse処理とローカル保存のフローテスト
  *
- * Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5
+ * Task 5.3: AuthRepositoryの単体テスト（オプション）
+ * - Amber成功 → ローカル保存成功の正常系テスト ✓
+ * - Amber失敗時のエラー分類テスト ✓
+ * - ログアウト処理テスト ✓
+ * - トランザクション整合性テスト ✓
+ *
+ * Requirements: 1.3, 1.4, 1.5, 2.1, 2.2, 2.4, 2.5
  */
 class AuthRepositoryImplTest {
 
