@@ -195,4 +195,66 @@ class LoginScreenTest {
     // Then: retryコールバックが呼ばれる
     assert(retryCalled) { "Retry button should trigger callback" }
   }
+
+  // ========== ログイン成功時の表示とナビゲーションのテスト (Task 8.3) ==========
+
+  @Test
+  fun loginScreen_displaysSuccessMessageWhenLoginSucceeds() {
+    // Given: loginSuccess = true のLoginUiState
+    val successState = LoginUiState(loginSuccess = true)
+
+    // When: LoginScreenを表示
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = successState,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onNavigateToMain = {})
+    }
+
+    // Then: ログイン成功メッセージが表示される
+    composeTestRule.onNodeWithText("ログインに成功しました").assertIsDisplayed()
+  }
+
+  @Test
+  fun loginScreen_triggersNavigationWhenLoginSucceeds() {
+    // Given: loginSuccess = true のLoginUiState
+    val successState = LoginUiState(loginSuccess = true)
+    var navigationTriggered = false
+
+    // When: LoginScreenを表示
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = successState,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onNavigateToMain = { navigationTriggered = true })
+    }
+
+    // Then: ナビゲーションコールバックが呼ばれる（LaunchedEffectによる自動遷移）
+    composeTestRule.waitUntil(timeoutMillis = 1000) { navigationTriggered }
+    assert(navigationTriggered) { "Navigation should be triggered when login succeeds" }
+  }
+
+  @Test
+  fun loginScreen_doesNotTriggerNavigationWhenLoginNotSuccessful() {
+    // Given: loginSuccess = false のLoginUiState
+    val notSuccessState = LoginUiState(loginSuccess = false)
+    var navigationTriggered = false
+
+    // When: LoginScreenを表示
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = notSuccessState,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onNavigateToMain = { navigationTriggered = true })
+    }
+
+    // Then: ナビゲーションコールバックは呼ばれない
+    composeTestRule.waitForIdle()
+    assert(!navigationTriggered) {
+      "Navigation should not be triggered when login is not successful"
+    }
+  }
 }

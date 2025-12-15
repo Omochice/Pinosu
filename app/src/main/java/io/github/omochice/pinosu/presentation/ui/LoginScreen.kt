@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,13 +35,18 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
  * - タイムアウトダイアログ（再試行ボタン付き）
  * - 汎用エラーダイアログ
  *
- * Requirements: 3.1, 3.2, 1.2, 1.5, 5.1, 5.4
+ * Task 8.3: ログイン成功時のナビゲーション
+ * - ログイン成功メッセージの表示
+ * - メイン画面への画面遷移
+ *
+ * Requirements: 3.1, 3.2, 3.3, 1.2, 1.5, 5.1, 5.4
  *
  * @param uiState ログイン画面のUI状態
  * @param onLoginButtonClick ログインボタンクリック時のコールバック
  * @param onDismissDialog ダイアログを閉じる時のコールバック
  * @param onInstallAmber Amberインストールボタンクリック時のコールバック
  * @param onRetry 再試行ボタンクリック時のコールバック
+ * @param onNavigateToMain メイン画面への遷移コールバック
  */
 @Composable
 fun LoginScreen(
@@ -48,14 +54,32 @@ fun LoginScreen(
     onLoginButtonClick: () -> Unit,
     onDismissDialog: () -> Unit = {},
     onInstallAmber: () -> Unit = {},
-    onRetry: () -> Unit = {}
+    onRetry: () -> Unit = {},
+    onNavigateToMain: () -> Unit = {}
 ) {
+  // ========== ログイン成功時のナビゲーション (Task 8.3) ==========
+  // loginSuccessがtrueになったら自動的にメイン画面に遷移する
+  LaunchedEffect(uiState.loginSuccess) {
+    if (uiState.loginSuccess) {
+      onNavigateToMain()
+    }
+  }
+
   Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       Column(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center,
           modifier = Modifier.padding(16.dp)) {
+            // ログイン成功メッセージ (Task 8.3)
+            if (uiState.loginSuccess) {
+              Text(
+                  text = "ログインに成功しました",
+                  style = MaterialTheme.typography.headlineSmall,
+                  color = MaterialTheme.colorScheme.primary)
+              Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // ローディングインジケーター（isLoadingがtrueの時のみ表示）
             if (uiState.isLoading) {
               CircularProgressIndicator()
@@ -155,5 +179,14 @@ fun LoginScreenTimeoutDialogPreview() {
     LoginScreen(
         uiState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。"),
         onLoginButtonClick = {})
+  }
+}
+
+/** LoginScreenのプレビュー - ログイン成功 (Task 8.3) */
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenSuccessPreview() {
+  MaterialTheme {
+    LoginScreen(uiState = LoginUiState(loginSuccess = true), onLoginButtonClick = {})
   }
 }
