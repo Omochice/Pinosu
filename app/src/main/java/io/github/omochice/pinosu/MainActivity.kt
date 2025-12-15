@@ -1,59 +1,80 @@
 package io.github.omochice.pinosu
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.snackbar.Snackbar
-import io.github.omochice.pinosu.databinding.ActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.omochice.pinosu.presentation.ui.LoginScreen
+import io.github.omochice.pinosu.presentation.ui.MainScreen
+import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.ui.theme.PinosuTheme
 
-class MainActivity : AppCompatActivity() {
+/**
+ * MainActivityクラス
+ *
+ * Task 10.1: アプリ起動時のログイン状態確認
+ * - onCreate()でGetLoginStateUseCaseを呼び出し
+ * - ログイン済み → メイン画面表示
+ * - 未ログイン → ログイン画面表示
+ * - 不正データ検出時のログイン状態クリア（UseCaseでnull返却として実装済み）
+ *
+ * Requirements: 2.2, 2.3
+ */
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
 
-  private lateinit var appBarConfiguration: AppBarConfiguration
-  private lateinit var binding: ActivityMainBinding
+  private val loginViewModel: LoginViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    binding = ActivityMainBinding.inflate(layoutInflater)
-    setContentView(binding.root)
+    // Task 10.1: ログイン状態を確認してUI状態を更新
+    loginViewModel.checkLoginState()
 
-    setSupportActionBar(binding.toolbar)
-
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    appBarConfiguration = AppBarConfiguration(navController.graph)
-    setupActionBarWithNavController(navController, appBarConfiguration)
-
-    binding.fab.setOnClickListener { view ->
-      Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-          .setAction("Action", null)
-          .setAnchorView(R.id.fab)
-          .show()
-    }
+    setContent { PinosuTheme { PinosuApp(viewModel = loginViewModel) } }
   }
+}
 
-  override fun onCreateOptionsMenu(menu: Menu): Boolean {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    menuInflater.inflate(R.menu.menu_main, menu)
-    return true
-  }
+/**
+ * Pinosuアプリのメインコンポーザブル
+ *
+ * ログイン状態に応じてLoginScreenまたはMainScreenを表示する
+ *
+ * Task 10.1: アプリ起動時のログイン状態確認 Requirements: 2.2, 2.3
+ */
+@Composable
+fun PinosuApp(viewModel: LoginViewModel) {
+  // MainUiStateを観察してログイン状態を判定
+  val mainUiState by viewModel.mainUiState.collectAsState()
+  val loginUiState by viewModel.uiState.collectAsState()
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    return when (item.itemId) {
-      R.id.action_settings -> true
-      else -> super.onOptionsItemSelected(item)
-    }
-  }
-
-  override fun onSupportNavigateUp(): Boolean {
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+  // Task 10.1: ログイン状態に基づいて表示画面を決定
+  // Requirement 2.2: アプリ起動時に保存されたログイン状態確認
+  // Requirement 2.3: ログイン済み状態でメイン画面表示
+  if (mainUiState.userPubkey != null) {
+    // ログイン済み → メイン画面表示
+    MainScreen(
+        uiState = mainUiState,
+        onLogout = { viewModel.onLogoutButtonClicked() },
+        onNavigateToLogin = {
+          // ログアウト後は自動的にログイン画面に戻る（MainScreenのLaunchedEffectで制御）
+        })
+  } else {
+    // 未ログイン → ログイン画面表示
+    LoginScreen(
+        uiState = loginUiState,
+        onLoginButtonClick = { viewModel.onLoginButtonClicked() },
+        onDismissDialog = { viewModel.dismissError() },
+        onInstallAmber = {
+          // TODO: Task 10.3でPlay Storeへのリンク実装予定
+        },
+        onRetry = { viewModel.onRetryLogin() },
+        onNavigateToMain = {
+          // ログイン成功時は自動的にメイン画面に遷移（LoginScreenのLaunchedEffectで制御）
+        })
   }
 }
