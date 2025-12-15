@@ -273,11 +273,14 @@
     - 3テスト実装済み (全要件カバー)
     - _Requirements: 2.2, 2.3_
 
-- [ ] 10.2 Navigation Composeの統合
-    - NavHostの設定
-    - ログイン画面とメイン画面のルート定義
-    - 画面遷移ロジック（loginSuccess → navigateToMainScreen）
-    - Back Press処理
+- [x] 10.2 Navigation Composeの統合
+    - androidx.navigation:navigation-compose 2.8.5 依存関係追加 ✓
+    - Navigation routes定義 (LOGIN_ROUTE, MAIN_ROUTE) ✓
+    - NavHostの設定とログイン状態に基づく初期ルート決定 ✓
+    - ログイン画面 → メイン画面の遷移ロジック (popUpTo使用) ✓
+    - メイン画面 → ログイン画面の遷移ロジック (ログアウト時) ✓
+    - Back Press処理 (popUpToでバックスタック管理、両画面からBackでアプリ終了) ✓
+    - NavigationTest.kt作成 (5テスト定義、1テスト実装済み)
     - _Requirements: 2.3, 3.3_
 
 - [ ] 10.3 ActivityResultAPIの統合
