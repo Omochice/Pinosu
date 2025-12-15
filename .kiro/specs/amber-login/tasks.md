@@ -264,11 +264,13 @@
 
 ### 10. ナビゲーションとアプリ統合
 
-- [ ] 10.1 アプリ起動時のログイン状態確認
-    - MainActivity onCreate() での GetLoginStateUseCase 呼び出し
-    - ログイン済み → メイン画面表示
-    - 未ログイン → ログイン画面表示
-    - 不正データ検出時のログイン状態クリア
+- [x] 10.1 アプリ起動時のログイン状態確認
+    - MainActivity onCreate() での LoginViewModel.checkLoginState() 呼び出し ✓
+    - ログイン済み(mainUiState.userPubkey != null) → MainScreen表示 ✓
+    - 未ログイン(mainUiState.userPubkey == null) → LoginScreen表示 ✓
+    - 不正データ検出時のログイン状態クリア（UseCaseでnull返却として実装済み）✓
+    - 旧Navigation Fragmentパターンから完全移行してCompose UIに統一 ✓
+    - 3テスト実装済み (全要件カバー)
     - _Requirements: 2.2, 2.3_
 
 - [ ] 10.2 Navigation Composeの統合
