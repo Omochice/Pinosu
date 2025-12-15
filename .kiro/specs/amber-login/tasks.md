@@ -246,9 +246,13 @@
     - ユーザーpubkeyの表示（部分マスキング推奨）
     - _Requirements: 2.3, 3.4, 3.5_
 
-- [ ] 9.2 ログアウト処理とナビゲーション
-    - ログアウトボタンタップハンドリング
-    - ログイン画面への画面遷移
+- [x] 9.2 ログアウト処理とナビゲーション
+    - ログアウトボタンタップハンドリング ✓
+    - ログイン画面への画面遷移 ✓
+    - onNavigateToLoginコールバック追加 ✓
+    - LaunchedEffectによるログアウト検出実装 ✓
+    - 1テスト実装済み (mainScreen_afterLogout_callsNavigateToLogin)
+    - Note: 実際のNavigation統合はTask 10.2で実装予定
     - _Requirements: 2.4_
 
 - [ ]* 9.3 MainScreenの単体テスト
