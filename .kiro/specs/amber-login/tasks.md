@@ -229,10 +229,12 @@
     - メイン画面への画面遷移
     - _Requirements: 3.3_
 
-- [ ]* 8.4 LoginScreenの単体テスト
-    - ボタン表示テスト
-    - ローディング状態表示テスト
-    - エラーダイアログ表示テスト
+- [x]* 8.4 LoginScreenの単体テスト
+    - ボタン表示テスト (2 tests) ✓
+    - ローディング状態表示テスト (3 tests) ✓
+    - エラーダイアログ表示テスト (5 tests) ✓
+    - ログイン成功テスト (3 tests - bonus coverage from Task 8.3) ✓
+    - 全13テストが tasks 8.1-8.3 実装時に TDD 手法で完了済み
     - _Requirements: 3.1, 3.2, 3.3_
 
 ### 9. メイン画面UI実装（Presentation層）
