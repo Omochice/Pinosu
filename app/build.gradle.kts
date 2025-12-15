@@ -66,6 +66,9 @@ dependencies {
   // Task 10.1: Activity Compose
   implementation(libs.androidx.activity.compose)
 
+  // Task 10.2: Navigation Compose
+  implementation(libs.androidx.navigation.compose)
+
   // Task 1.2: Nostr library
   implementation(libs.quartz)
 

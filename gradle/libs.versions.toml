@@ -8,6 +8,8 @@ material = {group = "com.google.android.material", name = "material", version.re
 androidx-constraintlayout = {group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout"}
 androidx-navigation-fragment-ktx = {group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx"}
 androidx-navigation-ui-ktx = {group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx"}
+# Task 10.2: Navigation Compose
+androidx-navigation-compose = {group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
 # Task 1.2: Compose dependencies
 androidx-compose-bom = {group = "androidx.compose", name = "compose-bom", version.ref = "composeBom"}
 androidx-compose-ui = {group = "androidx.compose.ui", name = "ui"}
@@ -54,6 +56,7 @@ material = "1.10.0"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
+navigationCompose = "2.8.5"
 # Task 1.2 dependencies
 composeBom = "2025.12.00"
 lifecycle = "2.8.7"
