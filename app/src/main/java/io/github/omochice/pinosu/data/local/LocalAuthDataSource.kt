@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.StorageError
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * ローカル認証データのデータソース
@@ -16,7 +19,8 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
  * Task 3.1: EncryptedSharedPreferencesの初期化処理 Task 3.2: ユーザーデータの保存・取得・削除機能 Requirements: 1.4, 2.1,
  * 2.2, 2.5, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3
  */
-class LocalAuthDataSource(context: Context) {
+@Singleton
+class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Context) {
 
   private val sharedPreferences: SharedPreferences
 

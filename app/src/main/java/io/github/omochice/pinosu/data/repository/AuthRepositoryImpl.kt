@@ -8,6 +8,7 @@ import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
 import io.github.omochice.pinosu.domain.model.error.StorageError
+import javax.inject.Inject
 
 /**
  * AuthRepositoryの実装
@@ -19,7 +20,9 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
  * @property amberSignerClient Amber通信クライアント
  * @property localAuthDataSource ローカルストレージデータソース
  */
-class AuthRepositoryImpl(
+class AuthRepositoryImpl
+@Inject
+constructor(
     private val amberSignerClient: AmberSignerClient,
     private val localAuthDataSource: LocalAuthDataSource
 ) : AuthRepository {

@@ -2,13 +2,17 @@ package io.github.omochice.pinosu.data.amber
 
 import android.content.Context
 import android.content.pm.PackageManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Amber NIP-55 Intent通信のカプセル化
  *
  * AmberアプリとのNIP-55プロトコルに基づく通信を処理する。 Task 4.1: AmberSignerClientの基本実装 Requirements: 1.2, 5.1
  */
-class AmberSignerClient(private val context: Context) {
+@Singleton
+class AmberSignerClient @Inject constructor(@ApplicationContext private val context: Context) {
 
   /**
    * Amberアプリがインストールされているかチェックする
