@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
@@ -37,6 +38,7 @@ class LoginViewModelTest {
   private lateinit var loginUseCase: LoginUseCase
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var authRepository: AuthRepository
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -47,7 +49,8 @@ class LoginViewModelTest {
     loginUseCase = mockk(relaxed = true)
     logoutUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
-    viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase)
+    authRepository = mockk(relaxed = true)
+    viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
   }
 
   @After
