@@ -10,6 +10,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -25,16 +30,33 @@ import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
  * - ユーザーpubkeyの表示（部分マスキング）
  * - ログアウト処理中のローディング表示
  *
- * Requirements: 2.3, 3.4, 3.5
+ * Task 9.2: ログアウト処理とナビゲーション
+ * - ログアウト完了後のログイン画面への遷移
+ *
+ * Requirements: 2.3, 2.4, 3.4, 3.5
  *
  * @param uiState メイン画面のUI状態
  * @param onLogout ログアウトボタンがタップされた時のコールバック
+ * @param onNavigateToLogin ログアウト完了後にログイン画面へ遷移するためのコールバック（Task 9.2）
  */
 @Composable
 fun MainScreen(
     uiState: MainUiState,
     onLogout: () -> Unit,
+    onNavigateToLogin: () -> Unit = {},
 ) {
+  // Task 9.2: ログアウト完了検出 - pubkeyがnullになったらログイン画面へ遷移
+  // 前回のpubkey状態を記憶し、ログイン中→ログアウト（null）への変化を検出
+  var previousPubkey by remember { mutableStateOf(uiState.userPubkey) }
+
+  LaunchedEffect(uiState.userPubkey) {
+    // ログイン中（previousPubkey != null）からログアウト（userPubkey == null）に変化した場合
+    if (previousPubkey != null && uiState.userPubkey == null && !uiState.isLoggingOut) {
+      onNavigateToLogin()
+    }
+    previousPubkey = uiState.userPubkey
+  }
+
   Column(
       modifier = Modifier.fillMaxSize().padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
