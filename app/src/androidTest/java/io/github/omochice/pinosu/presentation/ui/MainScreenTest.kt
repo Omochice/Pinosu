@@ -139,4 +139,35 @@ class MainScreenTest {
     // ログアウトボタンがクリックできないことを確認（存在しないため）
     assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
   }
+
+  /**
+   * Test 7 (Task 9.2): ログアウト完了後、ログイン画面へナビゲーションするためのコールバックが呼ばれる
+   *
+   * Requirement 2.4: ログアウト時にログイン画面へ遷移
+   *
+   * Note: この時点ではNavigation Composeは未実装（Task 10.2）のため、 ナビゲーションコールバックの存在と呼び出しのみをテストする
+   */
+  @Test
+  fun mainScreen_afterLogout_callsNavigateToLogin() {
+    // Arrange
+    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    val loggedInState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+    val loggedOutState = MainUiState(userPubkey = null, isLoggingOut = false)
+    var navigateToLoginCalled = false
+    val onNavigateToLogin = { navigateToLoginCalled = true }
+
+    // Act - まずログイン状態でMainScreenを表示
+    composeTestRule.setContent {
+      MainScreen(uiState = loggedInState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
+    }
+
+    // Act - ログアウト状態に変更（pubkey = null）
+    composeTestRule.setContent {
+      MainScreen(uiState = loggedOutState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
+    }
+
+    // Assert
+    // ログアウト完了後（pubkey = null）、ログイン画面へナビゲーションするコールバックが呼ばれる
+    assert(navigateToLoginCalled) { "ログアウト完了後、onNavigateToLoginコールバックが呼ばれるべき" }
+  }
 }
