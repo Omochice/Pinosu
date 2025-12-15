@@ -21,6 +21,8 @@ androidx-compose-ui-test-junit4 = {group = "androidx.compose.ui", name = "ui-tes
 androidx-lifecycle-runtime-ktx = {group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle"}
 androidx-lifecycle-viewmodel-ktx = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle"}
 androidx-lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle"}
+# Task 10.1: Activity Compose
+androidx-activity-compose = {group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose"}
 # Task 1.2: Nostr library
 quartz = {group = "com.vitorpamplona.quartz", name = "quartz", version.ref = "quartz"}
 # Task 1.2: Security
@@ -55,6 +57,7 @@ navigationUiKtx = "2.6.0"
 # Task 1.2 dependencies
 composeBom = "2025.12.00"
 lifecycle = "2.8.7"
+activityCompose = "1.9.3"
 quartz = "1.03.0"
 securityCrypto = "1.1.0-alpha06"
 hilt = "2.53"

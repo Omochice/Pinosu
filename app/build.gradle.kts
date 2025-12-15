@@ -63,6 +63,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.runtime.compose)
 
+  // Task 10.1: Activity Compose
+  implementation(libs.androidx.activity.compose)
+
   // Task 1.2: Nostr library
   implementation(libs.quartz)
 
