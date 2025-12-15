@@ -239,7 +239,7 @@
 
 ### 9. メイン画面UI実装（Presentation層）
 
-- [ ] 9.1 MainScreenの基本実装
+- [x] 9.1 MainScreenの基本実装
     - Jetpack Composable関数の作成
     - LoginViewModel.mainUiState の collectAsState() 観察
     - ログアウトボタンの配置
