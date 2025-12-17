@@ -317,9 +317,19 @@
         - 再試行フロー (1 test): エラー後の再試行
     - _Requirements: 1.1, 1.5, 2.4_
 
-- [ ]* 12.2 Data層の統合テスト
-    - AuthRepository + AmberSignerClient + LocalAuthDataSource 統合テスト
-    - EncryptedSharedPreferences実動作テスト（保存 → 取得 → 削除）
+- [x]* 12.2 Data層の統合テスト
+    - AuthRepository + AmberSignerClient + LocalAuthDataSource 統合テスト ✓
+    - EncryptedSharedPreferences実動作テスト（保存 → 取得 → 削除）✓
+    - DataLayerIntegrationTest.kt作成 (7テスト実装済み)
+    - 統合テスト方針: 実際のAuthRepositoryImpl + 実際のLocalAuthDataSource + 実際のAmberSignerClient
+    - Storage: 実際のEncryptedSharedPreferences (Android Instrumentation Test)
+    - テストカバレッジ:
+        - AuthRepository統合 (1 test): Amberインストール確認
+        - EncryptedSharedPreferences動作 (3 tests): 保存→取得、保存→削除、複数サイクル
+        - ログアウトフロー (1 test): EncryptedSharedPreferencesからのデータ削除
+        - アプリ再起動 (1 test): ログイン状態の復元
+        - バリデーション (1 test): 不正データの拒否
+    - Note: Android Instrumentation Testのため、デバイス/エミュレーター上で実行
     - _Requirements: 1.3, 1.4, 2.1, 2.5_
 
 ### 13. UIテスト実装（End-to-End）
