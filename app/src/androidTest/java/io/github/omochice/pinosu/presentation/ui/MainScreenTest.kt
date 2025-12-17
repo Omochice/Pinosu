@@ -271,6 +271,6 @@ class MainScreenTest {
     composeTestRule.setContent { MainScreen(uiState = notLoggedInState, onLogout = {}) }
 
     // Assert
-    composeTestRule.onNodeWithText("ログアウト").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
 }

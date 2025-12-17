@@ -86,4 +86,8 @@ dependencies {
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+  // Task 13.1: UI Testing dependencies
+  androidTestImplementation(libs.mockk)
+  androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
+  kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
 }
