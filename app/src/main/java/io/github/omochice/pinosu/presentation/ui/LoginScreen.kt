@@ -23,30 +23,30 @@ import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
 
 /**
- * ログイン画面のComposable関数
+ * Composable function for the login screen
  *
- * Task 8.1: LoginScreenの基本実装
- * - LoginViewModel.uiStateのcollectAsState()観察
- * - 「Amberでログイン」ボタンの配置
- * - ローディングインジケーターの表示ロジック
+ * Task 8.1: Basic implementation of LoginScreen
+ * - Observe LoginViewModel.uiState with collectAsState()
+ * - Place "Login with Amber" button
+ * - Loading indicator display logic
  *
- * Task 8.2: エラーダイアログの実装
- * - Amber未インストールダイアログ（Play Storeリンク付き）
- * - タイムアウトダイアログ（再試行ボタン付き）
- * - 汎用エラーダイアログ
+ * Task 8.2: Error dialog implementation
+ * - Amber not installed dialog (with Play Store link)
+ * - Timeout dialog (with retry button)
+ * - Generic error dialog
  *
- * Task 8.3: ログイン成功時のナビゲーション
- * - ログイン成功メッセージの表示
- * - メイン画面への画面遷移
+ * Task 8.3: Navigation on login success
+ * - Display login success message
+ * - Navigate to main screen
  *
  * Requirements: 3.1, 3.2, 3.3, 1.2, 1.5, 5.1, 5.4
  *
- * @param uiState ログイン画面のUI状態
- * @param onLoginButtonClick ログインボタンクリック時のコールバック
- * @param onDismissDialog ダイアログを閉じる時のコールバック
- * @param onInstallAmber Amberインストールボタンクリック時のコールバック
- * @param onRetry 再試行ボタンクリック時のコールバック
- * @param onNavigateToMain メイン画面への遷移コールバック
+ * @param uiState Login screen UI state
+ * @param onLoginButtonClick Callback when login button is clicked
+ * @param onDismissDialog Callback to dismiss dialog
+ * @param onInstallAmber Callback when Amber install button is clicked
+ * @param onRetry Callback when retry button is clicked
+ * @param onNavigateToMain Callback to navigate to main screen
  */
 @Composable
 fun LoginScreen(
@@ -57,8 +57,8 @@ fun LoginScreen(
     onRetry: () -> Unit = {},
     onNavigateToMain: () -> Unit = {}
 ) {
-  // ========== ログイン成功時のナビゲーション (Task 8.3) ==========
-  // loginSuccessがtrueになったら自動的にメイン画面に遷移する
+  // ========== Navigation on login success (Task 8.3) ==========
+  // Automatically navigate to main screen when loginSuccess becomes true
   LaunchedEffect(uiState.loginSuccess) {
     if (uiState.loginSuccess) {
       onNavigateToMain()
@@ -71,64 +71,64 @@ fun LoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center,
           modifier = Modifier.padding(16.dp)) {
-            // ログイン成功メッセージ (Task 8.3)
+            // Login success message (Task 8.3)
             if (uiState.loginSuccess) {
               Text(
-                  text = "ログインに成功しました",
+                  text = "Login successful",
                   style = MaterialTheme.typography.headlineSmall,
                   color = MaterialTheme.colorScheme.primary)
               Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // ローディングインジケーター（isLoadingがtrueの時のみ表示）
+            // Loading indicator (displayed only when isLoading is true)
             if (uiState.isLoading) {
               CircularProgressIndicator()
               Spacer(modifier = Modifier.height(16.dp))
-              Text(text = "読み込み中...", style = MaterialTheme.typography.bodyMedium)
+              Text(text = "Loading...", style = MaterialTheme.typography.bodyMedium)
               Spacer(modifier = Modifier.height(32.dp))
             }
 
-            // ログインボタン
+            // Login button
             Button(
-                onClick = onLoginButtonClick, enabled = !uiState.isLoading // ローディング中は無効化
+                onClick = onLoginButtonClick, enabled = !uiState.isLoading // Disabled while loading
                 ) {
-                  Text("Amberでログイン")
+                  Text("Login with Amber")
                 }
           }
     }
 
-    // ========== エラーダイアログ (Task 8.2) ==========
+    // ========== Error dialogs (Task 8.2) ==========
 
-    // Amber未インストールダイアログ
+    // Amber not installed dialog
     if (uiState.showAmberInstallDialog) {
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text("Amberアプリが必要です") },
-          text = { Text("このアプリを使用するにはAmberアプリのインストールが必要です。") },
-          confirmButton = { Button(onClick = onInstallAmber) { Text("インストール") } },
-          dismissButton = { TextButton(onClick = onDismissDialog) { Text("閉じる") } })
+          title = { Text("Amber app required") },
+          text = { Text("You need to install the Amber app to use this application.") },
+          confirmButton = { Button(onClick = onInstallAmber) { Text("Install") } },
+          dismissButton = { TextButton(onClick = onDismissDialog) { Text("Close") } })
     }
 
-    // 汎用エラーダイアログ（タイムアウト、ユーザー拒否、その他エラー）
+    // Generic error dialog (timeout, user rejection, other errors)
     if (uiState.errorMessage != null) {
-      val isTimeoutError = uiState.errorMessage.contains("タイムアウト")
+      val isTimeoutError = uiState.errorMessage.contains("timeout", ignoreCase = true)
 
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text("エラー") },
+          title = { Text("Error") },
           text = { Text(uiState.errorMessage) },
           confirmButton = {
             if (isTimeoutError) {
-              // タイムアウトエラーの場合は再試行ボタンを表示
-              Button(onClick = onRetry) { Text("再試行") }
+              // Show retry button for timeout errors
+              Button(onClick = onRetry) { Text("Retry") }
             } else {
-              // その他のエラーの場合は閉じるボタンのみ
+              // Show only close button for other errors
               TextButton(onClick = onDismissDialog) { Text("OK") }
             }
           },
           dismissButton = {
             if (isTimeoutError) {
-              TextButton(onClick = onDismissDialog) { Text("キャンセル") }
+              TextButton(onClick = onDismissDialog) { Text("Cancel") }
             } else {
               null
             }
@@ -137,21 +137,21 @@ fun LoginScreen(
   }
 }
 
-/** LoginScreenのプレビュー - 初期状態 */
+/** LoginScreen preview - initial state */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
   MaterialTheme { LoginScreen(uiState = LoginUiState(), onLoginButtonClick = {}) }
 }
 
-/** LoginScreenのプレビュー - ローディング中 */
+/** LoginScreen preview - loading state */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenLoadingPreview() {
   MaterialTheme { LoginScreen(uiState = LoginUiState(isLoading = true), onLoginButtonClick = {}) }
 }
 
-/** LoginScreenのプレビュー - Amber未インストールダイアログ */
+/** LoginScreen preview - Amber not installed dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenAmberInstallDialogPreview() {
@@ -160,29 +160,31 @@ fun LoginScreenAmberInstallDialogPreview() {
   }
 }
 
-/** LoginScreenのプレビュー - エラーダイアログ */
+/** LoginScreen preview - error dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenErrorDialogPreview() {
   MaterialTheme {
     LoginScreen(
-        uiState = LoginUiState(errorMessage = "ログインがキャンセルされました。再度お試しください。"),
+        uiState = LoginUiState(errorMessage = "Login was cancelled. Please try again."),
         onLoginButtonClick = {})
   }
 }
 
-/** LoginScreenのプレビュー - タイムアウトダイアログ */
+/** LoginScreen preview - timeout dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenTimeoutDialogPreview() {
   MaterialTheme {
     LoginScreen(
-        uiState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。"),
+        uiState =
+            LoginUiState(
+                errorMessage = "Login process timed out. Please check the Amber app and retry."),
         onLoginButtonClick = {})
   }
 }
 
-/** LoginScreenのプレビュー - ログイン成功 (Task 8.3) */
+/** LoginScreen preview - login success (Task 8.3) */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenSuccessPreview() {

@@ -11,13 +11,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * ローカル認証データのデータソース
+ * Local authentication data data source
  *
- * EncryptedSharedPreferencesを使用して、ユーザーの公開鍵を安全に保存・取得する。 Android
- * Keystoreを使用したハードウェア支援の暗号化により、TEE/SEレベルのセキュリティを提供。
+ * Uses EncryptedSharedPreferences to securely store and retrieve user's public keys. Provides
+ * TEE/SE level security through hardware-assisted encryption using Android Keystore.
  *
- * Task 3.1: EncryptedSharedPreferencesの初期化処理 Task 3.2: ユーザーデータの保存・取得・削除機能 Requirements: 1.4, 2.1,
- * 2.2, 2.5, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3
+ * Task 3.1: EncryptedSharedPreferences initialization Task 3.2: User data save/get/delete
+ * functionality Requirements: 1.4, 2.1, 2.2, 2.5, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3
  */
 @Singleton
 class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Context) {
@@ -25,12 +25,12 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
   private val sharedPreferences: SharedPreferences
 
   init {
-    // Task 3.1: Android Keystore経由のMasterKey生成（AES256_GCM）
-    // Requirement 3.2: Android Keystoreを使用したハードウェア支援の暗号化
+    // Task 3.1: MasterKey generation via Android Keystore (AES256_GCM)
+    // Requirement 3.2: Hardware-assisted encryption using Android Keystore
     val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
 
-    // Task 3.1: AES256-SIVキー暗号化、AES256-GCM値暗号化の設定
-    // Requirement 3.3: キーと値の両方を暗号化（AES256-SIV/AES256-GCM）
+    // Task 3.1: Configure AES256-SIV key encryption and AES256-GCM value encryption
+    // Requirement 3.3: Encrypt both keys and values (AES256-SIV/AES256-GCM)
     sharedPreferences =
         EncryptedSharedPreferences.create(
             context,
@@ -41,12 +41,12 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
   }
 
   /**
-   * ユーザー情報を保存する
+   * Save user information
    *
-   * Task 3.2: saveUser実装 Requirement 1.4: ログイン状態の永続化
+   * Task 3.2: saveUser implementation Requirement 1.4: Login state persistence
    *
-   * @param user 保存するユーザー
-   * @throws StorageError.WriteError 保存に失敗した場合
+   * @param user User to save
+   * @throws StorageError.WriteError when save fails
    */
   suspend fun saveUser(user: User) {
     try {
@@ -63,37 +63,37 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
   }
 
   /**
-   * 保存されたユーザー情報を取得する
+   * Retrieve saved user information
    *
-   * Task 3.2: getUser実装 Requirement 2.1: ローカルストレージからの状態復元
+   * Task 3.2: getUser implementation Requirement 2.1: State restoration from local storage
    *
-   * @return 保存されたユーザー、存在しないまたは無効な場合はnull
+   * @return Saved user, null if not exists or invalid
    */
   suspend fun getUser(): User? {
     return try {
       val pubkey = sharedPreferences.getString(KEY_USER_PUBKEY, null) ?: return null
 
-      // Task 3.2: 検証ロジック - pubkeyのフォーマット検証
+      // Task 3.2: Validation logic - pubkey format validation
       if (!pubkey.matches(Regex("^[0-9a-f]{64}$"))) {
         return null
       }
 
-      // Task 3.2: last_accessedタイムスタンプの更新
+      // Task 3.2: Update last_accessed timestamp
       sharedPreferences.edit().putLong(KEY_LAST_ACCESSED, System.currentTimeMillis()).apply()
 
       User(pubkey)
     } catch (e: Exception) {
-      // 不正なデータや復号化エラーの場合はnullを返す
+      // Return null for invalid data or decryption errors
       null
     }
   }
 
   /**
-   * ログイン状態をクリアする
+   * Clear login state
    *
-   * Task 3.2: clearLoginState実装 Requirement 2.2: ログアウト機能
+   * Task 3.2: clearLoginState implementation Requirement 2.2: Logout functionality
    *
-   * @throws StorageError.WriteError クリアに失敗した場合
+   * @throws StorageError.WriteError when clear fails
    */
   suspend fun clearLoginState() {
     try {

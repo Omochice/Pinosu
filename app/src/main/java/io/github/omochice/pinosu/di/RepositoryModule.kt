@@ -8,20 +8,22 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.AuthRepositoryImpl
 
 /**
- * リポジトリDIモジュール
+ * Repository DI module
  *
- * Task 7.3: 依存性注入の設定 - Repository層のDI設定
+ * Task 7.3: Dependency injection configuration - Repository layer DI setup
  *
- * AuthRepositoryインターフェースの実装を提供する。 @Bindsアノテーションにより、Hiltはコンパイル時にバインディングコードを生成する。
+ * Provides implementation of AuthRepository interface. The @Binds annotation causes Hilt to
+ * generate binding code at compile time.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
   /**
-   * AuthRepositoryの実装をバインド
+   * Binds AuthRepository implementation
    *
-   * AuthRepositoryImplは@Injectコンストラクタを持つため、 @Bindsで自動的にインターフェースにバインドできる。
+   * AuthRepositoryImpl has an @Inject constructor, so it can be automatically bound to the
+   * interface with @Binds.
    */
   @Binds abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 }

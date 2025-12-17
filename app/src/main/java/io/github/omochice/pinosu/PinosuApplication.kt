@@ -4,11 +4,12 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 /**
- * Pinosuアプリケーションクラス
+ * Pinosu application class
  *
- * Task 7.3: 依存性注入の設定
- * - Hilt DIコンテナの初期化
+ * Task 7.3: Dependency injection configuration
+ * - Hilt DI container initialization
  *
- * @HiltAndroidAppアノテーションによりHiltのコード生成がトリガーされ、 アプリケーション全体でDIが利用可能になる。
+ * The @HiltAndroidApp annotation triggers Hilt's code generation, making DI available throughout
+ * the application.
  */
 @HiltAndroidApp class PinosuApplication : Application()

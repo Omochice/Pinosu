@@ -10,9 +10,9 @@ private val LightColorScheme = lightColorScheme()
 private val DarkColorScheme = darkColorScheme()
 
 /**
- * Pinosuアプリのテーマ
+ * Pinosu app theme
  *
- * Material3のデフォルトカラースキームを使用
+ * Uses Material3's default color scheme
  */
 @Composable
 fun PinosuTheme(darkTheme: Boolean = false, content: @Composable () -> Unit) {

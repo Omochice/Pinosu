@@ -4,69 +4,71 @@ import android.content.Intent
 import io.github.omochice.pinosu.domain.model.User
 
 /**
- * 認証リポジトリのインターフェース
+ * Authentication repository interface
  *
- * AmberSignerClientとLocalAuthDataSourceを統合し、 認証フローとローカル状態管理を提供する。
+ * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
+ * state management.
  *
- * Task 5.1: AuthRepositoryの実装 Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5
+ * Task 5.1: AuthRepository implementation Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5
  */
 interface AuthRepository {
 
   /**
-   * ログイン状態を取得する
+   * Get login state
    *
-   * LocalAuthDataSourceから保存されたユーザー情報を取得する。
+   * Retrieves saved user information from LocalAuthDataSource.
    *
-   * Task 5.1: getLoginState()実装 Requirement 2.2: ログイン状態確認
+   * Task 5.1: getLoginState() implementation Requirement 2.2: Login state verification
    *
-   * @return ログイン済みの場合はUser、未ログインの場合はnull
+   * @return User if logged in, null if not logged in
    */
   suspend fun getLoginState(): User?
 
   /**
-   * ログイン状態を保存する
+   * Save login state
    *
-   * ユーザー情報をLocalAuthDataSourceに保存する。
+   * Saves user information to LocalAuthDataSource.
    *
-   * Task 5.1: saveLoginState()実装 Requirement 1.4: ログイン状態保存
+   * Task 5.1: saveLoginState() implementation Requirement 1.4: Login state persistence
    *
-   * @param user 保存するユーザー
-   * @return 成功時はSuccess、失敗時はFailure(StorageError)
+   * @param user User to save
+   * @return Success on success, Failure(StorageError) on failure
    */
   suspend fun saveLoginState(user: User): Result<Unit>
 
   /**
-   * ログアウトする
+   * Logout
    *
-   * LocalAuthDataSourceのログイン状態をクリアする。
+   * Clears login state in LocalAuthDataSource.
    *
-   * Task 5.1: logout()実装 Requirement 2.4: ログアウト機能
+   * Task 5.1: logout() implementation Requirement 2.4: Logout functionality
    *
-   * @return 成功時はSuccess、失敗時はFailure(LogoutError)
+   * @return Success on success, Failure(LogoutError) on failure
    */
   suspend fun logout(): Result<Unit>
 
   /**
-   * Amberレスポンスを処理してユーザーをログイン状態にする
+   * Process Amber response and set user to logged-in state
    *
-   * AmberSignerClientでレスポンスを解析し、成功時にLocalAuthDataSourceに保存する。
+   * Parses response with AmberSignerClient and saves to LocalAuthDataSource on success.
    *
-   * Task 5.1: processAmberResponse実装 Requirement 1.3, 1.4: Amber認証とローカル保存
+   * Task 5.1: processAmberResponse implementation Requirement 1.3, 1.4: Amber authentication and
+   * local storage
    *
-   * @param resultCode ActivityResultのresultCode
-   * @param data Intentデータ
-   * @return 成功時はSuccess(User)、失敗時はFailure(LoginError)
+   * @param resultCode ActivityResult's resultCode
+   * @param data Intent data
+   * @return Success(User) on success, Failure(LoginError) on failure
    */
   suspend fun processAmberResponse(resultCode: Int, data: Intent?): Result<User>
 
   /**
-   * Amberアプリがインストールされているか確認する
+   * Check if Amber app is installed
    *
-   * AmberSignerClientに委譲してAmberのインストール状態を確認する。
+   * Delegates to AmberSignerClient to verify Amber installation status.
    *
-   * Task 5.1: checkAmberInstalled()実装 Requirement 1.2: Amber未インストール検出
+   * Task 5.1: checkAmberInstalled() implementation Requirement 1.2: Amber uninstalled detection
    *
-   * @return Amberがインストールされている場合true
+   * @return true if Amber is installed
    */
   fun checkAmberInstalled(): Boolean
 }

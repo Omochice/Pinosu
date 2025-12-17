@@ -3,24 +3,26 @@ package io.github.omochice.pinosu.domain.usecase
 import io.github.omochice.pinosu.domain.model.User
 
 /**
- * ログイン状態取得のUseCaseインターフェース
+ * Login state retrieval UseCase interface
  *
- * Task 6.3: GetLoginStateUseCaseの実装
- * - AuthRepositoryへの委譲
- * - 読み取り専用操作の保証
+ * Task 6.3: GetLoginStateUseCase implementation
+ * - Delegation to AuthRepository
+ * - Guarantee of read-only operation
  *
  * Requirements: 2.2, 2.3
  */
 interface GetLoginStateUseCase {
 
   /**
-   * ログイン状態を取得する
+   * Get the login state
    *
-   * AuthRepositoryに委譲してローカルストレージからユーザー情報を取得する。 読み取り専用操作であり、ログイン状態を変更しない。
+   * Delegates to AuthRepository to retrieve user information from local storage. This is a
+   * read-only operation and does not change the login state.
    *
-   * Task 6.3: invoke()実装 Requirement 2.2, 2.3: ログイン状態確認とメイン画面表示
+   * Task 6.3: invoke() implementation Requirement 2.2, 2.3: Login state verification and main
+   * screen display
    *
-   * @return ログイン済みの場合はUser、未ログインの場合はnull
+   * @return User if logged in, null if not logged in
    */
   suspend operator fun invoke(): User?
 }

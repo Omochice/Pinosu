@@ -14,24 +14,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * ログイン/ログアウト画面のViewModel
+ * ViewModel for login/logout screen
  *
- * Task 7.1: LoginViewModelの実装
- * - UI状態管理（LoginUiState, MainUiState）
- * - ユーザー操作ハンドリング
- * - UseCasesへの委譲
+ * Task 7.1: LoginViewModel implementation
+ * - UI state management (LoginUiState, MainUiState)
+ * - User interaction handling
+ * - Delegation to UseCases
  *
- * Task 7.2: Coroutine実行とエラーハンドリング
- * - Amberレスポンス処理
- * - ローディング状態管理
- * - エラー時のStateFlow更新
+ * Task 7.2: Coroutine execution and error handling
+ * - Amber response processing
+ * - Loading state management
+ * - StateFlow updates on error
  *
  * Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5, 5.2, 5.4
  *
- * @property loginUseCase ログイン処理のUseCase
- * @property logoutUseCase ログアウト処理のUseCase
- * @property getLoginStateUseCase ログイン状態取得のUseCase
- * @property authRepository 認証リポジトリ（Amberレスポンス処理用）
+ * @property loginUseCase UseCase for login processing
+ * @property logoutUseCase UseCase for logout processing
+ * @property getLoginStateUseCase UseCase for retrieving login state
+ * @property authRepository Authentication repository (for Amber response processing)
  */
 @HiltViewModel
 class LoginViewModel
@@ -43,22 +43,23 @@ constructor(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-  // ========== ログイン画面のUI状態 ==========
+  // ========== Login screen UI state ==========
 
   private val _uiState = MutableStateFlow(LoginUiState())
   val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-  // ========== メイン画面のUI状態 ==========
+  // ========== Main screen UI state ==========
 
   private val _mainUiState = MutableStateFlow(MainUiState())
   val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
-  // ========== ログイン状態確認 ==========
+  // ========== Check login state ==========
 
   /**
-   * ログイン状態を確認してMainUiStateを更新する
+   * Check login state and update MainUiState
    *
-   * Task 7.1: checkLoginState()実装 Requirement 2.2, 2.3: アプリ起動時のログイン状態確認
+   * Task 7.1: checkLoginState() implementation Requirement 2.2, 2.3: Check login state on app
+   * startup
    */
   fun checkLoginState() {
     viewModelScope.launch {
@@ -67,14 +68,15 @@ constructor(
     }
   }
 
-  // ========== ログインボタンクリック ==========
+  // ========== Login button click ==========
 
   /**
-   * ログインボタンがクリックされた時の処理
+   * Handle login button click
    *
-   * Amberのインストール状態を確認し、未インストールの場合はダイアログを表示する。
+   * Check Amber installation status and display dialog if not installed.
    *
-   * Task 7.1: onLoginButtonClicked()実装 Requirement 1.1, 1.2: Amberでログイン、未インストール検出
+   * Task 7.1: onLoginButtonClicked() implementation Requirement 1.1, 1.2: Login with Amber, detect
+   * not installed
    */
   fun onLoginButtonClicked() {
     val isAmberInstalled = loginUseCase.checkAmberInstalled()
@@ -82,16 +84,16 @@ constructor(
       _uiState.value =
           _uiState.value.copy(showAmberInstallDialog = true, errorMessage = null, isLoading = false)
     }
-    // Note: Amberインストール済みの場合のIntent起動はActivityResultAPIを使用するため、
-    // ViewModel内では処理せず、UI層（Activity/Fragment）で処理する
+    // Note: Intent launch for installed Amber uses ActivityResultAPI,
+    // so it's handled in UI layer (Activity/Fragment) rather than ViewModel
   }
 
-  // ========== ログアウトボタンクリック ==========
+  // ========== Logout button click ==========
 
   /**
-   * ログアウトボタンがクリックされた時の処理
+   * Handle logout button click
    *
-   * Task 7.1: onLogoutButtonClicked()実装 Requirement 2.4: ログアウト機能
+   * Task 7.1: onLogoutButtonClicked() implementation Requirement 2.4: Logout functionality
    */
   fun onLogoutButtonClicked() {
     viewModelScope.launch {
@@ -100,18 +102,18 @@ constructor(
       if (result.isSuccess) {
         _mainUiState.value = MainUiState(userPubkey = null, isLoggingOut = false)
       } else {
-        // ログアウト失敗時の処理（現時点では状態をリセットのみ）
+        // Handle logout failure (currently only reset state)
         _mainUiState.value = _mainUiState.value.copy(isLoggingOut = false)
       }
     }
   }
 
-  // ========== エラー解除 ==========
+  // ========== Dismiss error ==========
 
   /**
-   * エラーメッセージやダイアログを解除する
+   * Dismiss error message or dialog
    *
-   * Task 7.1: dismissError()実装 Requirement 1.5: エラー時のユーザーフィードバック
+   * Task 7.1: dismissError() implementation Requirement 1.5: User feedback on error
    */
   fun dismissError() {
     _uiState.value =
@@ -119,58 +121,59 @@ constructor(
             errorMessage = null, showAmberInstallDialog = false, loginSuccess = false)
   }
 
-  // ========== ログイン再試行 ==========
+  // ========== Retry login ==========
 
   /**
-   * ログインを再試行する
+   * Retry login
    *
-   * Task 7.1: onRetryLogin()実装 Requirement 5.4: タイムアウト時の再試行オプション
+   * Task 7.1: onRetryLogin() implementation Requirement 5.4: Retry option on timeout
    */
   fun onRetryLogin() {
     dismissError()
     onLoginButtonClicked()
   }
 
-  // ========== Amberレスポンス処理 (Task 7.2) ==========
+  // ========== Amber response processing (Task 7.2) ==========
 
   /**
-   * AmberからのActivityResult受信後にレスポンスを処理する
+   * Process response after receiving ActivityResult from Amber
    *
-   * Task 7.2: processAmberResponse()実装 Requirement 1.3, 1.4, 1.5: Amber認証レスポンス処理、ログイン状態保存、エラーハンドリング
-   * Requirement 3.2, 3.3: ローディング状態管理、ログイン成功表示
+   * Task 7.2: processAmberResponse() implementation Requirement 1.3, 1.4, 1.5: Amber auth response
+   * processing, save login state, error handling Requirement 3.2, 3.3: Loading state management,
+   * display login success
    *
-   * @param resultCode ActivityResultのresultCode
-   * @param data Intentデータ
+   * @param resultCode ActivityResult resultCode
+   * @param data Intent data
    */
   fun processAmberResponse(resultCode: Int, data: android.content.Intent?) {
     viewModelScope.launch {
-      // ローディング開始
+      // Start loading
       _uiState.value =
           _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
 
-      // Amberレスポンスを処理
+      // Process Amber response
       val result = authRepository.processAmberResponse(resultCode, data)
 
       if (result.isSuccess) {
-        // ログイン成功
+        // Login successful
         val user = result.getOrNull()
         _uiState.value =
             _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
       } else {
-        // ログイン失敗 - エラーメッセージを設定
+        // Login failed - set error message
         val error = result.exceptionOrNull()
         val errorMessage =
             when (error) {
               is io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected ->
-                  "ログインがキャンセルされました。再度お試しください。"
+                  "Login was cancelled. Please try again."
               is io.github.omochice.pinosu.domain.model.error.LoginError.Timeout ->
-                  "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。"
+                  "Login process timed out. Please check the Amber app and retry."
               is io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError ->
-                  "ネットワークエラーが発生しました。接続を確認してください。"
+                  "A network error occurred. Please check your connection."
               is io.github.omochice.pinosu.domain.model.error.LoginError.UnknownError ->
-                  "エラーが発生しました。しばらくしてから再試行してください。"
-              else -> "エラーが発生しました。しばらくしてから再試行してください。"
+                  "An error occurred. Please try again later."
+              else -> "An error occurred. Please try again later."
             }
         _uiState.value =
             _uiState.value.copy(
@@ -180,17 +183,17 @@ constructor(
   }
 }
 
-// ========== UI状態データクラス ==========
+// ========== UI state data classes ==========
 
 /**
- * ログイン画面のUI状態
+ * Login screen UI state
  *
- * Task 7.1: LoginUiState定義 Requirement 3.2, 3.3: ローディング、エラー、成功表示
+ * Task 7.1: LoginUiState definition Requirement 3.2, 3.3: Loading, error, success display
  *
- * @property isLoading ローディング中かどうか
- * @property errorMessage エラーメッセージ
- * @property showAmberInstallDialog Amber未インストールダイアログを表示するか
- * @property loginSuccess ログインに成功したかどうか
+ * @property isLoading Whether currently loading
+ * @property errorMessage Error message
+ * @property showAmberInstallDialog Whether to show Amber not installed dialog
+ * @property loginSuccess Whether login was successful
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
@@ -200,12 +203,12 @@ data class LoginUiState(
 )
 
 /**
- * メイン画面のUI状態
+ * Main screen UI state
  *
- * Task 7.1: MainUiState定義 Requirement 3.5: ログイン中のpubkey表示
+ * Task 7.1: MainUiState definition Requirement 3.5: Display logged-in pubkey
  *
- * @property userPubkey ログイン中のユーザー公開鍵
- * @property isLoggingOut ログアウト処理中かどうか
+ * @property userPubkey Logged-in user's public key
+ * @property isLoggingOut Whether logout process is in progress
  */
 data class MainUiState(
     val userPubkey: String? = null,

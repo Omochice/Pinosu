@@ -11,14 +11,15 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
- * AuthRepositoryの実装
+ * AuthRepository implementation
  *
- * AmberSignerClientとLocalAuthDataSourceを統合し、 認証フローとローカル状態管理を提供する。
+ * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
+ * state management.
  *
- * Task 5.1: AuthRepositoryの実装 Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5
+ * Task 5.1: AuthRepository implementation Requirements: 1.3, 1.4, 2.1, 2.2, 2.4, 2.5
  *
- * @property amberSignerClient Amber通信クライアント
- * @property localAuthDataSource ローカルストレージデータソース
+ * @property amberSignerClient Amber communication client
+ * @property localAuthDataSource Local storage data source
  */
 class AuthRepositoryImpl
 @Inject
@@ -28,27 +29,27 @@ constructor(
 ) : AuthRepository {
 
   /**
-   * ログイン状態を取得する
+   * Get login state
    *
-   * LocalAuthDataSourceから保存されたユーザー情報を取得する。
+   * Retrieves saved user information from LocalAuthDataSource.
    *
-   * Task 5.1: getLoginState()実装 Requirement 2.2: ログイン状態確認
+   * Task 5.1: getLoginState() implementation Requirement 2.2: Login state verification
    *
-   * @return ログイン済みの場合はUser、未ログインの場合はnull
+   * @return User if logged in, null if not logged in
    */
   override suspend fun getLoginState(): User? {
     return localAuthDataSource.getUser()
   }
 
   /**
-   * ログイン状態を保存する
+   * Save login state
    *
-   * ユーザー情報をLocalAuthDataSourceに保存する。
+   * Saves user information to LocalAuthDataSource.
    *
-   * Task 5.1: saveLoginState()実装 Requirement 1.4: ログイン状態保存
+   * Task 5.1: saveLoginState() implementation Requirement 1.4: Login state persistence
    *
-   * @param user 保存するユーザー
-   * @return 成功時はSuccess、失敗時はFailure(StorageError)
+   * @param user User to save
+   * @return Success on success, Failure(StorageError) on failure
    */
   override suspend fun saveLoginState(user: User): Result<Unit> {
     return try {
@@ -60,54 +61,55 @@ constructor(
   }
 
   /**
-   * ログアウトする
+   * Logout
    *
-   * LocalAuthDataSourceのログイン状態をクリアする。
+   * Clears login state in LocalAuthDataSource.
    *
-   * Task 5.1: logout()実装 Requirement 2.4: ログアウト機能
+   * Task 5.1: logout() implementation Requirement 2.4: Logout functionality
    *
-   * @return 成功時はSuccess、失敗時はFailure(LogoutError)
+   * @return Success on success, Failure(LogoutError) on failure
    */
   override suspend fun logout(): Result<Unit> {
     return try {
       localAuthDataSource.clearLoginState()
       Result.success(Unit)
     } catch (e: StorageError) {
-      // StorageErrorをLogoutError.StorageErrorに変換
+      // Convert StorageError to LogoutError.StorageError
       Result.failure(LogoutError.StorageError(e.message ?: "Failed to clear login state"))
     }
   }
 
   /**
-   * Amberレスポンスを処理してユーザーをログイン状態にする
+   * Process Amber response and set user to logged-in state
    *
-   * AmberSignerClientでレスポンスを解析し、成功時にLocalAuthDataSourceに保存する。
+   * Parses response with AmberSignerClient and saves to LocalAuthDataSource on success.
    *
-   * Task 5.1: processAmberResponse実装 Requirement 1.3, 1.4: Amber認証とローカル保存
+   * Task 5.1: processAmberResponse implementation Requirement 1.3, 1.4: Amber authentication and
+   * local storage
    *
-   * @param resultCode ActivityResultのresultCode
-   * @param data Intentデータ
-   * @return 成功時はSuccess(User)、失敗時はFailure(LoginError)
+   * @param resultCode ActivityResult's resultCode
+   * @param data Intent data
+   * @return Success(User) on success, Failure(LoginError) on failure
    */
   override suspend fun processAmberResponse(resultCode: Int, data: Intent?): Result<User> {
-    // AmberSignerClientでレスポンスを処理
+    // Process response with AmberSignerClient
     val amberResult = amberSignerClient.handleAmberResponse(resultCode, data)
 
     return if (amberResult.isSuccess) {
-      // Amber成功時: pubkeyを取得してUserを作成
+      // On Amber success: get pubkey and create User
       val amberResponse = amberResult.getOrNull()!!
       val user = User(amberResponse.pubkey)
 
-      // LocalAuthDataSourceに保存
+      // Save to LocalAuthDataSource
       try {
         localAuthDataSource.saveUser(user)
         Result.success(user)
       } catch (e: StorageError) {
-        // ローカル保存失敗時はUnknownErrorとして返す
+        // Return as UnknownError on local storage failure
         Result.failure(LoginError.UnknownError(e))
       }
     } else {
-      // Amber失敗時: AmberErrorをLoginErrorに変換
+      // On Amber failure: convert AmberError to LoginError
       val amberError = amberResult.exceptionOrNull() as? AmberError
       val loginError =
           when (amberError) {
@@ -124,13 +126,13 @@ constructor(
   }
 
   /**
-   * Amberアプリがインストールされているか確認する
+   * Check if Amber app is installed
    *
-   * AmberSignerClientに委譲してAmberのインストール状態を確認する。
+   * Delegates to AmberSignerClient to verify Amber installation status.
    *
-   * Task 5.1: checkAmberInstalled()実装 Requirement 1.2: Amber未インストール検出
+   * Task 5.1: checkAmberInstalled() implementation Requirement 1.2: Amber uninstalled detection
    *
-   * @return Amberがインストールされている場合true
+   * @return true if Amber is installed
    */
   override fun checkAmberInstalled(): Boolean {
     return amberSignerClient.checkAmberInstalled()

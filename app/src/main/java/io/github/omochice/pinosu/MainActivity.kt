@@ -24,18 +24,18 @@ import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 
 /**
- * MainActivityクラス
+ * MainActivity class
  *
- * Task 10.1: アプリ起動時のログイン状態確認
- * - onCreate()でGetLoginStateUseCaseを呼び出し
- * - ログイン済み → メイン画面表示
- * - 未ログイン → ログイン画面表示
- * - 不正データ検出時のログイン状態クリア(UseCaseでnull返却として実装済み)
+ * Task 10.1: Check login state on app launch
+ * - Call GetLoginStateUseCase in onCreate()
+ * - Logged in → Show main screen
+ * - Not logged in → Show login screen
+ * - Clear login state when invalid data detected (implemented as null return in UseCase)
  *
- * Task 10.3: ActivityResultAPIの統合
- * - registerForActivityResultの設定
- * - AmberSignerClientとの統合
- * - Amber Intent結果のハンドリング
+ * Task 10.3: ActivityResultAPI integration
+ * - Configure registerForActivityResult
+ * - Integrate with AmberSignerClient
+ * - Handle Amber Intent results
  *
  * Requirements: 1.1, 1.3, 2.2, 2.3
  */
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    // Task 10.1: ログイン状態を確認してUI状態を更新
+    // Task 10.1: Check login state and update UI state
     loginViewModel.checkLoginState()
 
     setContent {
@@ -59,50 +59,50 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Pinosuアプリのメインコンポーザブル
+ * Main composable for Pinosu app
  *
- * Task 10.2: Navigation Compose統合
- * - NavHostを使用した画面遷移管理
- * - ログイン状態に応じた初期ルート設定
- * - 画面遷移ロジックの実装
+ * Task 10.2: Navigation Compose integration
+ * - Manage screen navigation using NavHost
+ * - Set initial route based on login state
+ * - Implement navigation logic
  *
- * Task 10.3: ActivityResultAPIの統合
- * - AmberSignerClientとの統合
- * - Amber Intent起動と結果ハンドリング
+ * Task 10.3: ActivityResultAPI integration
+ * - Integrate with AmberSignerClient
+ * - Launch Amber Intent and handle results
  *
  * Requirements: 1.1, 1.3, 2.2, 2.3, 3.3
  */
 @Composable
 fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
-  // NavControllerの作成
+  // Create NavController
   val navController = rememberNavController()
 
-  // MainUiStateを観察してログイン状態を判定
+  // Observe MainUiState to determine login state
   val mainUiState by viewModel.mainUiState.collectAsState()
   val loginUiState by viewModel.uiState.collectAsState()
 
-  // Task 10.3: ActivityResultLauncher設定
-  // Requirement 1.3: Amberからの認証レスポンスを受信
+  // Task 10.3: Configure ActivityResultLauncher
+  // Requirement 1.3: Receive authentication response from Amber
   val amberLauncher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            // Amberからの結果を処理
+            // Process result from Amber
             viewModel.processAmberResponse(result.resultCode, result.data)
           }
 
-  // Task 10.2: ログイン状態に基づいて初期ルートを決定
-  // Requirement 2.2: アプリ起動時に保存されたログイン状態確認
-  // Requirement 2.3: ログイン済み状態でメイン画面表示
+  // Task 10.2: Determine initial route based on login state
+  // Requirement 2.2: Check saved login state on app launch
+  // Requirement 2.3: Show main screen when logged in
   val startDestination = if (mainUiState.userPubkey != null) MAIN_ROUTE else LOGIN_ROUTE
 
   NavHost(navController = navController, startDestination = startDestination) {
-    // ログイン画面
+    // Login screen
     composable(LOGIN_ROUTE) {
       LoginScreen(
           uiState = loginUiState,
           onLoginButtonClick = {
-            // Task 10.3: Amberインストール確認後にIntent起動
-            // Requirement 1.1: ログインボタンタップでAmber連携開始
+            // Task 10.3: Launch Intent after checking Amber installation
+            // Requirement 1.1: Start Amber integration on login button tap
             viewModel.onLoginButtonClicked()
             if (amberSignerClient.checkAmberInstalled()) {
               val intent = amberSignerClient.createPublicKeyIntent()
@@ -111,7 +111,7 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
           },
           onDismissDialog = { viewModel.dismissError() },
           onInstallAmber = {
-            // TODO: Play Storeへのリンク実装予定
+            // TODO: Implement Play Store link
           },
           onRetry = {
             viewModel.onRetryLogin()
@@ -121,22 +121,22 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
             }
           },
           onNavigateToMain = {
-            // Requirement 3.3: ログイン成功時にメイン画面への画面遷移
+            // Requirement 3.3: Navigate to main screen on login success
             navController.navigate(MAIN_ROUTE) {
-              // ログイン画面をバックスタックから削除
+              // Remove login screen from back stack
               popUpTo(LOGIN_ROUTE) { inclusive = true }
             }
           })
     }
 
-    // メイン画面
+    // Main screen
     composable(MAIN_ROUTE) {
-      // Task 10.2: ログアウト完了検出とログイン画面への遷移
+      // Task 10.2: Detect logout completion and navigate to login screen
       LaunchedEffect(mainUiState.userPubkey) {
         if (mainUiState.userPubkey == null) {
-          // Requirement 2.4: ログアウト後にログイン画面へ遷移
+          // Requirement 2.4: Navigate to login screen after logout
           navController.navigate(LOGIN_ROUTE) {
-            // メイン画面をバックスタックから削除
+            // Remove main screen from back stack
             popUpTo(MAIN_ROUTE) { inclusive = true }
           }
         }
@@ -146,7 +146,7 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
           uiState = mainUiState,
           onLogout = { viewModel.onLogoutButtonClicked() },
           onNavigateToLogin = {
-            // Note: ログアウト後の遷移はLaunchedEffectで自動実行される
+            // Note: Navigation after logout is automatically executed by LaunchedEffect
           })
     }
   }

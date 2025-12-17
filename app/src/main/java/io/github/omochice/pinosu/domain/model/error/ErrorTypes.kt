@@ -1,33 +1,34 @@
 package io.github.omochice.pinosu.domain.model.error
 
 /**
- * ログイン処理のエラー
+ * Login process errors
  *
- * ログイン処理全体で発生しうるエラーを表現するsealed class。 LoginUseCaseとAuthRepositoryで使用される。
+ * Sealed class representing errors that can occur during the login process. Used by LoginUseCase
+ * and AuthRepository.
  *
- * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
+ * Task 2.2: Error type definition Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
 sealed class LoginError : Exception() {
-  /** Amberアプリがインストールされていない */
+  /** Amber app is not installed */
   data object AmberNotInstalled : LoginError()
 
-  /** ユーザーがAmberでログインを拒否した */
+  /** User rejected login in Amber */
   data object UserRejected : LoginError()
 
-  /** Amberからの応答がタイムアウトした */
+  /** Response from Amber timed out */
   data object Timeout : LoginError()
 
   /**
-   * ネットワークエラーが発生した
+   * Network error occurred
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class NetworkError(override val message: String) : LoginError()
 
   /**
-   * 不明なエラーが発生した
+   * Unknown error occurred
    *
-   * @property throwable 発生した例外
+   * @property throwable The exception that occurred
    */
   data class UnknownError(val throwable: Throwable) : LoginError() {
     override val message: String
@@ -36,72 +37,74 @@ sealed class LoginError : Exception() {
 }
 
 /**
- * ログアウト処理のエラー
+ * Logout process errors
  *
- * ログアウト処理で発生しうるエラーを表現するsealed class。 LogoutUseCaseで使用される。
+ * Sealed class representing errors that can occur during the logout process. Used by LogoutUseCase.
  *
- * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
+ * Task 2.2: Error type definition Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
 sealed class LogoutError : Exception() {
   /**
-   * ストレージ操作でエラーが発生した
+   * Error occurred during storage operation
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class StorageError(override val message: String) : LogoutError()
 }
 
 /**
- * ローカルストレージ操作のエラー
+ * Local storage operation errors
  *
- * EncryptedSharedPreferencesなどのローカルストレージ操作で発生しうるエラーを表現する。 LocalAuthDataSourceとAuthRepositoryで使用される。
+ * Represents errors that can occur during local storage operations such as
+ * EncryptedSharedPreferences. Used by LocalAuthDataSource and AuthRepository.
  *
- * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
+ * Task 2.2: Error type definition Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
 sealed class StorageError : Exception() {
   /**
-   * ストレージへの書き込みに失敗した
+   * Failed to write to storage
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class WriteError(override val message: String) : StorageError()
 
   /**
-   * ストレージからの読み込みに失敗した
+   * Failed to read from storage
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class ReadError(override val message: String) : StorageError()
 }
 
 /**
- * Amber通信のエラー
+ * Amber communication errors
  *
- * AmberアプリとのNIP-55 Intent通信で発生しうるエラーを表現する。 AmberSignerClientで使用される。
+ * Represents errors that can occur during NIP-55 Intent communication with the Amber app. Used by
+ * AmberSignerClient.
  *
- * Task 2.2: エラー型の定義 Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
+ * Task 2.2: Error type definition Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
  */
 sealed class AmberError {
-  /** Amberアプリがインストールされていない */
+  /** Amber app is not installed */
   data object NotInstalled : AmberError()
 
-  /** ユーザーがAmberで操作を拒否した */
+  /** User rejected the operation in Amber */
   data object UserRejected : AmberError()
 
-  /** Amberからの応答がタイムアウトした */
+  /** Response from Amber timed out */
   data object Timeout : AmberError()
 
   /**
-   * Amberからの応答が不正な形式だった
+   * Response from Amber was in an invalid format
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class InvalidResponse(val message: String) : AmberError()
 
   /**
-   * Intent解決に失敗した
+   * Failed to resolve Intent
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class IntentResolutionError(val message: String) : AmberError()
 }

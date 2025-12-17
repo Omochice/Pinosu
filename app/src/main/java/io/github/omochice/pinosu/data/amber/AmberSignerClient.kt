@@ -7,43 +7,45 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Amber NIP-55 Intent通信のカプセル化
+ * Encapsulation of Amber NIP-55 Intent communication
  *
- * AmberアプリとのNIP-55プロトコルに基づく通信を処理する。 Task 4.1: AmberSignerClientの基本実装 Requirements: 1.2, 5.1
+ * Handles communication with Amber app based on NIP-55 protocol. Task 4.1: AmberSignerClient basic
+ * implementation Requirements: 1.2, 5.1
  */
 @Singleton
 class AmberSignerClient @Inject constructor(@ApplicationContext private val context: Context) {
 
   /**
-   * Amberアプリがインストールされているかチェックする
+   * Check if Amber app is installed
    *
-   * PackageManagerを使用してAmberパッケージの存在を確認する。
+   * Verifies Amber package existence using PackageManager.
    *
-   * Task 4.1: checkAmberInstalled()実装 Requirement 1.2: Amber未インストール検出
+   * Task 4.1: checkAmberInstalled() implementation Requirement 1.2: Amber uninstalled detection
    *
-   * @return Amberがインストールされている場合true、そうでない場合false
+   * @return true if Amber is installed, false otherwise
    */
   fun checkAmberInstalled(): Boolean {
     return try {
       context.packageManager.getPackageInfo(AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
       true
     } catch (e: PackageManager.NameNotFoundException) {
-      // Amberがインストールされていない
+      // Amber is not installed
       false
     } catch (e: Exception) {
-      // その他の例外（セキュリティ例外など）もfalseとして扱う
+      // Treat other exceptions (security exceptions, etc.) as false
       false
     }
   }
 
   /**
-   * NIP-55公開鍵取得リクエスト用のIntentを作成する
+   * Create Intent for NIP-55 public key retrieval request
    *
-   * NIP-55プロトコルに準拠したIntentを構築する。 nostrsigner:スキームを使用し、Amberアプリにget_public_keyリクエストを送信する。
+   * Constructs Intent compliant with NIP-55 protocol. Uses nostrsigner: scheme to send
+   * get_public_key request to Amber app.
    *
-   * Task 4.2: createPublicKeyIntent()実装 Requirements: 1.3, 4.1, 4.2
+   * Task 4.2: createPublicKeyIntent() implementation Requirements: 1.3, 4.1, 4.2
    *
-   * @return 構築されたIntent
+   * @return Constructed Intent
    */
   fun createPublicKeyIntent(): android.content.Intent {
     val intent =
@@ -58,40 +60,40 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
   }
 
   /**
-   * AmberからのActivityResult応答を処理する
+   * Handle ActivityResult response from Amber
    *
-   * NIP-55プロトコルに基づくAmberレスポンスを解析し、成功/失敗を判定する。
+   * Parses Amber response based on NIP-55 protocol and determines success/failure.
    *
-   * Task 4.3: handleAmberResponse実装 Requirements: 1.3, 1.5, 4.5, 5.3, 5.4
+   * Task 4.3: handleAmberResponse implementation Requirements: 1.3, 1.5, 4.5, 5.3, 5.4
    *
-   * @param resultCode ActivityResultのresultCode（RESULT_OK or RESULT_CANCELED）
-   * @param data Intentデータ（resultとrejectedを含む）
+   * @param resultCode ActivityResult's resultCode (RESULT_OK or RESULT_CANCELED)
+   * @param data Intent data (containing result and rejected)
    * @return Success(AmberResponse) or Failure(AmberError)
    */
   fun handleAmberResponse(resultCode: Int, data: android.content.Intent?): Result<AmberResponse> {
-    // RESULT_CANCELEDはユーザー拒否
+    // RESULT_CANCELED indicates user rejection
     if (resultCode == android.app.Activity.RESULT_CANCELED) {
       return Result.failure(AmberError.UserRejected)
     }
 
-    // Intentがnullの場合は不正なレスポンス
+    // Null Intent indicates invalid response
     if (data == null) {
       return Result.failure(AmberError.InvalidResponse("Intent data is null"))
     }
 
-    // rejectedフラグをチェック
+    // Check rejected flag
     val rejected = data.getBooleanExtra("rejected", false)
     if (rejected) {
       return Result.failure(AmberError.UserRejected)
     }
 
-    // resultからpubkeyを取得
+    // Get pubkey from result
     val pubkey = data.getStringExtra("result")
     if (pubkey.isNullOrEmpty()) {
       return Result.failure(AmberError.InvalidResponse("Result is null or empty"))
     }
 
-    // pubkeyの形式を検証（64文字の16進数）
+    // Validate pubkey format (64 hex characters)
     if (!isValidPubkey(pubkey)) {
       return Result.failure(
           AmberError.InvalidResponse("Invalid pubkey format: must be 64 hex characters"))
@@ -101,10 +103,10 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
   }
 
   /**
-   * pubkeyの形式を検証する
+   * Validate pubkey format
    *
-   * @param pubkey 検証するpubkey文字列
-   * @return 64文字の16進数文字列の場合true、それ以外はfalse
+   * @param pubkey pubkey string to validate
+   * @return true if 64-character hex string, false otherwise
    */
   private fun isValidPubkey(pubkey: String): Boolean {
     if (pubkey.length != 64) return false
@@ -112,82 +114,84 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
   }
 
   /**
-   * センシティブなpubkeyをログ出力用にマスキングする
+   * Mask sensitive pubkey for logging
    *
-   * 64文字のpubkeyを「最初8文字 + ... + 最後8文字」の形式にマスキングする。 16文字未満の場合は元の文字列をそのまま返す。
+   * Masks 64-character pubkey in format "first 8 chars + ... + last 8 chars". Returns original
+   * string if less than 16 characters.
    *
-   * Task 4.4: センシティブデータのログマスキング Requirement 6.3: センシティブデータのマスキング処理
+   * Task 4.4: Sensitive data log masking Requirement 6.3: Sensitive data masking
    *
-   * @param pubkey マスキング対象のpubkey文字列
-   * @return マスキングされたpubkey文字列（例: "abcd1234...wxyz7890"）
+   * @param pubkey pubkey string to mask
+   * @return Masked pubkey string (e.g., "abcd1234...wxyz7890")
    */
   fun maskPubkey(pubkey: String): String {
-    // 空文字列の場合はそのまま返す
+    // Return as-is for empty string
     if (pubkey.isEmpty()) {
       return pubkey
     }
 
-    // 16文字以下の場合はマスキングせずに元の文字列を返す
-    // 理由: マスキング結果が19文字(8+3+8)になるため、16文字以下では情報が増えてしまう
+    // Return original string without masking if 16 characters or less
+    // Reason: masking result would be 19 characters (8+3+8), which increases information for
+    // strings 16 chars or less
     if (pubkey.length <= 16) {
       return pubkey
     }
 
-    // 最初8文字 + "..." + 最後8文字の形式でマスキング
+    // Mask in format: first 8 chars + "..." + last 8 chars
     val prefix = pubkey.take(8)
     val suffix = pubkey.takeLast(8)
     return "$prefix...$suffix"
   }
 
   companion object {
-    /** Amberアプリのパッケージ名 */
+    /** Amber app package name */
     const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
 
-    /** NIP-55 Intentスキーム */
+    /** NIP-55 Intent scheme */
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
 
-    /** get_public_keyリクエストタイプ */
+    /** get_public_key request type */
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
   }
 }
 
 /**
- * Amberからのレスポンス
+ * Response from Amber
  *
- * Task 4.1: AmberResponseデータクラスの定義
+ * Task 4.1: AmberResponse data class definition
  *
- * @property pubkey ユーザーの公開鍵（64文字の16進数文字列）
- * @property packageName Amberアプリのパッケージ名
+ * @property pubkey User's public key (64-character hex string)
+ * @property packageName Amber app package name
  */
 data class AmberResponse(val pubkey: String, val packageName: String)
 
 /**
- * Amber通信のエラー
+ * Amber communication errors
  *
- * AmberアプリとのNIP-55 Intent通信で発生しうるエラーを表現する。 Task 4.1: AmberErrorの定義 Requirements: 1.5, 4.5, 5.1,
- * 5.3, 5.4
+ * Represents errors that can occur during NIP-55 Intent communication with Amber app. Task 4.1:
+ * AmberError definition Requirements: 1.5, 4.5, 5.1, 5.3, 5.4
  */
 sealed class AmberError : Exception() {
-  /** Amberアプリがインストールされていない */
+  /** Amber app is not installed */
   data object NotInstalled : AmberError()
 
-  /** ユーザーがAmberで操作を拒否した */
+  /** User rejected operation in Amber */
   data object UserRejected : AmberError()
 
-  /** Amberからの応答がタイムアウトした */
+  /** Response from Amber timed out */
   data object Timeout : AmberError()
 
   /**
-   * Amberからの応答が不正な形式だった
+   * Response from Amber was in invalid format
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class InvalidResponse(override val message: String) : AmberError()
 
   /**
-   * Intent解決に失敗した
+   * Intent resolution failed
    *
-   * @property message エラーメッセージ
+   * @property message Error message
    */
   data class IntentResolutionError(override val message: String) : AmberError()
 }

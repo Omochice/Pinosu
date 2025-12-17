@@ -1,24 +1,25 @@
 package io.github.omochice.pinosu.domain.usecase
 
 /**
- * ログアウト処理のUseCaseインターフェース
+ * Logout process UseCase interface
  *
- * Task 6.2: LogoutUseCaseの実装
- * - AuthRepositoryへの委譲
- * - 冪等性の保証
+ * Task 6.2: LogoutUseCase implementation
+ * - Delegation to AuthRepository
+ * - Guarantee of idempotency
  *
  * Requirements: 2.4, 2.5
  */
 interface LogoutUseCase {
 
   /**
-   * ログアウト処理を実行する
+   * Execute logout process
    *
-   * AuthRepositoryに委譲してローカルストレージのログイン状態をクリアする。 冪等性を保証し、すでにログアウト済みでも正常に処理される。
+   * Delegates to AuthRepository to clear login state from local storage. Guarantees idempotency and
+   * processes normally even if already logged out.
    *
-   * Task 6.2: invoke()実装 Requirement 2.4, 2.5: ログアウト機能と冪等性
+   * Task 6.2: invoke() implementation Requirement 2.4, 2.5: Logout functionality and idempotency
    *
-   * @return 成功時はSuccess、失敗時はFailure(LogoutError)
+   * @return Success on success, Failure(LogoutError) on failure
    */
   suspend operator fun invoke(): Result<Unit>
 }

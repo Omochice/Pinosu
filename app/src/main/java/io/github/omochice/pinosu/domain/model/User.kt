@@ -1,14 +1,15 @@
 package io.github.omochice.pinosu.domain.model
 
 /**
- * Userエンティティ（集約ルート）
+ * User entity (aggregate root)
  *
- * Nostrユーザーのログイン状態を表現するドメインモデル。 公開鍵（pubkey）のみを保持し、秘密鍵は一切保存しない。
+ * Domain model representing the login state of a Nostr user. Only holds the public key (pubkey) and
+ * never stores the private key.
  *
- * Task 2.1: ドメインモデルの実装 Requirements: 1.4, 6.1
+ * Task 2.1: Domain model implementation Requirements: 1.4, 6.1
  *
- * @property pubkey Nostr公開鍵（64文字の16進数形式）
- * @throws IllegalArgumentException pubkeyが不正な形式の場合
+ * @property pubkey Nostr public key (64 hexadecimal characters)
+ * @throws IllegalArgumentException if pubkey is in an invalid format
  */
 data class User(val pubkey: String) {
   init {
@@ -19,11 +20,11 @@ data class User(val pubkey: String) {
 }
 
 /**
- * Nostr公開鍵の検証用拡張関数
+ * Extension function for validating Nostr public key
  *
- * 公開鍵が64文字の16進数（0-9, a-f）であることを検証する。
+ * Validates that the public key is 64 hexadecimal characters (0-9, a-f).
  *
- * @return 有効な公開鍵形式の場合true、それ以外はfalse
+ * @return true if the public key format is valid, false otherwise
  */
 private fun String.isValidNostrPubkey(): Boolean {
   return this.matches(Regex("^[0-9a-f]{64}$"))

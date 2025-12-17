@@ -1,24 +1,25 @@
 package io.github.omochice.pinosu.domain.model
 
 /**
- * 認証に関するドメインイベント（将来拡張用）
+ * Domain events related to authentication (for future extension)
  *
- * ログイン・ログアウトなどの認証関連イベントを表現するsealed class。 将来的なイベントソーシングやイベント駆動アーキテクチャへの拡張を想定。
+ * Sealed class representing authentication-related events such as login and logout. Designed for
+ * future extension to event sourcing or event-driven architecture.
  *
- * Task 2.1: ドメインモデルの実装
+ * Task 2.1: Domain model implementation
  */
 sealed class AuthEvent {
   /**
-   * ユーザーがログインしたイベント
+   * Event representing user login
    *
-   * @property user ログインしたユーザー
+   * @property user The logged-in user
    */
   data class UserLoggedIn(val user: User) : AuthEvent()
 
   /**
-   * ユーザーがログアウトしたイベント
+   * Event representing user logout
    *
-   * data objectとして定義し、シングルトンとして扱う
+   * Defined as a data object and treated as a singleton
    */
   data object UserLoggedOut : AuthEvent()
 }

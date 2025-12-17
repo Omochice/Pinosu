@@ -12,35 +12,35 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCaseImpl
 
 /**
- * UseCasesの依存性注入モジュール
+ * Use case dependency injection module
  *
- * Task 7.3: 依存性注入の設定
- * - UseCasesのインターフェースと実装のバインディング
+ * Task 7.3: Dependency injection configuration
+ * - Binding use case interfaces to their implementations
  *
- * @Binds を使用してインターフェースを実装にバインドする
+ * Uses @Binds to bind interfaces to implementations
  */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UseCaseModule {
 
   /**
-   * LoginUseCaseのバインディング
+   * LoginUseCase binding
    *
-   * LoginUseCaseImplをLoginUseCaseとしてDIコンテナに登録
+   * Registers LoginUseCaseImpl as LoginUseCase in the DI container
    */
   @Binds abstract fun bindLoginUseCase(impl: LoginUseCaseImpl): LoginUseCase
 
   /**
-   * LogoutUseCaseのバインディング
+   * LogoutUseCase binding
    *
-   * LogoutUseCaseImplをLogoutUseCaseとしてDIコンテナに登録
+   * Registers LogoutUseCaseImpl as LogoutUseCase in the DI container
    */
   @Binds abstract fun bindLogoutUseCase(impl: LogoutUseCaseImpl): LogoutUseCase
 
   /**
-   * GetLoginStateUseCaseのバインディング
+   * GetLoginStateUseCase binding
    *
-   * GetLoginStateUseCaseImplをGetLoginStateUseCaseとしてDIコンテナに登録
+   * Registers GetLoginStateUseCaseImpl as GetLoginStateUseCase in the DI container
    */
   @Binds abstract fun bindGetLoginStateUseCase(impl: GetLoginStateUseCaseImpl): GetLoginStateUseCase
 }

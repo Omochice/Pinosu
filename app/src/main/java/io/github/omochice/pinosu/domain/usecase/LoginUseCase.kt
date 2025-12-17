@@ -1,24 +1,24 @@
 package io.github.omochice.pinosu.domain.usecase
 
 /**
- * ログイン処理のUseCaseインターフェース
+ * Login process UseCase interface
  *
- * Task 6.1: LoginUseCaseの実装
- * - Amberインストール確認
- * - AuthRepositoryへの委譲
+ * Task 6.1: LoginUseCase implementation
+ * - Amber installation verification
+ * - Delegation to AuthRepository
  *
  * Requirements: 1.1, 1.3, 1.4, 1.5, 4.5
  */
 interface LoginUseCase {
 
   /**
-   * Amberアプリがインストールされているか確認する
+   * Check if the Amber app is installed
    *
-   * AuthRepositoryに委譲してAmberのインストール状態を確認する。
+   * Delegates to AuthRepository to verify Amber installation status.
    *
-   * Task 6.1: checkAmberInstalled()実装 Requirement 1.2: Amber未インストール検出
+   * Task 6.1: checkAmberInstalled() implementation Requirement 1.2: Amber not installed detection
    *
-   * @return Amberがインストールされている場合true
+   * @return true if Amber is installed
    */
   fun checkAmberInstalled(): Boolean
 }
