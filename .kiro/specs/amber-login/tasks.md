@@ -292,11 +292,13 @@
 
 ### 11. 日本語リソース文字列とローカライゼーション
 
-- [ ] 11.1 (P) strings.xmlの作成
-    - Amber関連エラーメッセージ（error_amber_not_installed, error_user_rejected, error_timeout, error_invalid_response）
-    - システムエラーメッセージ（error_storage_write, error_storage_read, error_generic）
-    - ビジネスロジックエラーメッセージ（error_invalid_pubkey）
-    - UI文字列（ログインボタン、ログアウトボタン、ログイン成功メッセージ）
+- [x] 11.1 (P) strings.xmlの作成
+    - Amber関連エラーメッセージ（error_amber_not_installed, error_user_rejected, error_timeout, error_invalid_response）✓
+    - システムエラーメッセージ（error_storage_write, error_storage_read, error_generic）✓
+    - ビジネスロジックエラーメッセージ（error_invalid_pubkey）✓
+    - UI文字列（button_login_with_amber, button_logout, message_logging_out, message_login_success）✓
+    - ダイアログ文字列（dialog_title_amber_required, dialog_message_amber_required, button_install, button_close, button_retry, dialog_title_error）✓
+    - Legacy strings保持（既存レイアウトファイルとの互換性維持）
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
 ### 12. 統合テスト実装
