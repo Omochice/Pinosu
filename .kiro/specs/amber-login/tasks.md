@@ -358,9 +358,10 @@
     - Note: Android Instrumentation Testのため、デバイス/エミュレーター上で実行
     - _Requirements: 2.2, 2.3_
 
-- [ ]* 13.3 エラーシナリオのUIテスト
-    - ユーザー拒否エラー（ログイン画面 → ログインボタンタップ → Amber拒否 → エラーメッセージ表示）
-    - タイムアウトエラー（再試行オプションの表示確認）
+- [x]* 13.3 エラーシナリオのUIテスト
+    - ユーザー拒否エラー（ログイン画面 → ログインボタンタップ → Amber拒否 → エラーメッセージ表示）✓
+    - タイムアウトエラー（再試行オプションの表示確認）✓
+    - 2テスト実装済み (LoginScreenTest.kt: loginScreen_displaysUserRejectionErrorMessage, loginScreen_displaysTimeoutErrorWithRetryOption)
     - _Requirements: 1.5, 5.4_
 
 ## タスク実装順序の推奨

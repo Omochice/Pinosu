@@ -257,4 +257,44 @@ class LoginScreenTest {
       "Navigation should not be triggered when login is not successful"
     }
   }
+
+  // ========== エラーシナリオのUIテスト (Task 13.3) ==========
+  // Requirements: 1.5 (認証失敗時にエラーメッセージ表示), 5.4 (タイムアウト時に再試行オプション提供)
+
+  @Test
+  fun loginScreen_displaysUserRejectionErrorMessage() {
+    // Given: ユーザー拒否エラーメッセージのLoginUiState
+    val errorState = LoginUiState(errorMessage = "ログインがキャンセルされました。再度お試しください。")
+
+    // When: LoginScreenを表示
+    composeTestRule.setContent {
+      LoginScreen(uiState = errorState, onLoginButtonClick = {}, onDismissDialog = {})
+    }
+
+    // Then: ユーザー拒否エラーメッセージが表示される
+    composeTestRule.onNodeWithText("ログインがキャンセルされました。再度お試しください。").assertIsDisplayed()
+
+    // Then: OKボタンが表示される（タイムアウトではないため再試行ボタンは表示されない）
+    composeTestRule.onNodeWithText("OK").assertIsDisplayed()
+  }
+
+  @Test
+  fun loginScreen_displaysTimeoutErrorWithRetryOption() {
+    // Given: タイムアウトエラーメッセージのLoginUiState
+    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。")
+
+    // When: LoginScreenを表示
+    composeTestRule.setContent {
+      LoginScreen(uiState = errorState, onLoginButtonClick = {}, onDismissDialog = {})
+    }
+
+    // Then: タイムアウトエラーメッセージが表示される
+    composeTestRule.onNodeWithText("ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。").assertIsDisplayed()
+
+    // Then: 再試行ボタンが表示される
+    composeTestRule.onNodeWithText("再試行").assertIsDisplayed()
+
+    // Then: キャンセルボタンも表示される
+    composeTestRule.onNodeWithText("キャンセル").assertIsDisplayed()
+  }
 }
