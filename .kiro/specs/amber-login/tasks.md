@@ -349,9 +349,13 @@
     - Note: Android Instrumentation Testのため、デバイス/エミュレーター上で実行
     - _Requirements: 1.1, 1.2, 2.4, 3.1, 3.2, 3.3, 3.4_
 
-- [ ]* 13.2 アプリ再起動とログイン状態復元のテスト
-    - ログイン済み状態でアプリ起動 → メイン画面表示
-    - 未ログイン状態でアプリ起動 → ログイン画面表示
+- [x]* 13.2 アプリ再起動とログイン状態復元のテスト
+    - ログイン済み状態でアプリ起動 → メイン画面表示 ✓
+    - 未ログイン状態でアプリ起動 → ログイン画面表示 ✓
+    - Test 7: appRestart_whenLoggedIn_displaysMainScreen ✓
+    - Test 8: appRestart_whenNotLoggedIn_displaysLoginScreen ✓
+    - 2テスト実装済み (全要件カバー)
+    - Note: Android Instrumentation Testのため、デバイス/エミュレーター上で実行
     - _Requirements: 2.2, 2.3_
 
 - [ ]* 13.3 エラーシナリオのUIテスト
