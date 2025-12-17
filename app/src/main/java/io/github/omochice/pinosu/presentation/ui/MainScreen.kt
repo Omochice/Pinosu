@@ -17,9 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
 
 /**
@@ -66,7 +68,7 @@ fun MainScreen(
         if (uiState.userPubkey != null) {
           // Display user public key (Requirement 3.5: Display logged-in pubkey on main screen)
           Text(
-              text = "Logged in",
+              text = stringResource(R.string.text_logged_in),
               style = MaterialTheme.typography.headlineMedium,
               textAlign = TextAlign.Center)
 
@@ -85,17 +87,17 @@ fun MainScreen(
           if (uiState.isLoggingOut) {
             // Display loading message during logout process (Requirement 3.2: Loading indicator)
             Text(
-                text = "Logging out...",
+                text = stringResource(R.string.message_logging_out),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center)
           } else {
             // Logout button
-            Button(onClick = onLogout) { Text("Logout") }
+            Button(onClick = onLogout) { Text(stringResource(R.string.button_logout)) }
           }
         } else {
           // Not logged in state (Requirement 2.3: Check logged-in status)
           Text(
-              text = "Not logged in",
+              text = stringResource(R.string.text_not_logged_in),
               style = MaterialTheme.typography.headlineMedium,
               textAlign = TextAlign.Center)
         }

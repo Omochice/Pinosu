@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
 
 /**
@@ -74,7 +76,7 @@ fun LoginScreen(
             // Login success message (Task 8.3)
             if (uiState.loginSuccess) {
               Text(
-                  text = "Login successful",
+                  text = stringResource(R.string.message_login_success),
                   style = MaterialTheme.typography.headlineSmall,
                   color = MaterialTheme.colorScheme.primary)
               Spacer(modifier = Modifier.height(16.dp))
@@ -84,7 +86,9 @@ fun LoginScreen(
             if (uiState.isLoading) {
               CircularProgressIndicator()
               Spacer(modifier = Modifier.height(16.dp))
-              Text(text = "Loading...", style = MaterialTheme.typography.bodyMedium)
+              Text(
+                  text = stringResource(R.string.message_loading),
+                  style = MaterialTheme.typography.bodyMedium)
               Spacer(modifier = Modifier.height(32.dp))
             }
 
@@ -92,7 +96,7 @@ fun LoginScreen(
             Button(
                 onClick = onLoginButtonClick, enabled = !uiState.isLoading // Disabled while loading
                 ) {
-                  Text("Login with Amber")
+                  Text(stringResource(R.string.button_login_with_amber))
                 }
           }
     }
@@ -103,10 +107,14 @@ fun LoginScreen(
     if (uiState.showAmberInstallDialog) {
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text("Amber app required") },
-          text = { Text("You need to install the Amber app to use this application.") },
-          confirmButton = { Button(onClick = onInstallAmber) { Text("Install") } },
-          dismissButton = { TextButton(onClick = onDismissDialog) { Text("Close") } })
+          title = { Text(stringResource(R.string.dialog_title_amber_required)) },
+          text = { Text(stringResource(R.string.dialog_message_amber_required)) },
+          confirmButton = {
+            Button(onClick = onInstallAmber) { Text(stringResource(R.string.button_install)) }
+          },
+          dismissButton = {
+            TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
+          })
     }
 
     // Generic error dialog (timeout, user rejection, other errors)
@@ -115,20 +123,20 @@ fun LoginScreen(
 
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text("Error") },
+          title = { Text(stringResource(R.string.dialog_title_error)) },
           text = { Text(uiState.errorMessage) },
           confirmButton = {
             if (isTimeoutError) {
               // Show retry button for timeout errors
-              Button(onClick = onRetry) { Text("Retry") }
+              Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
             } else {
               // Show only close button for other errors
-              TextButton(onClick = onDismissDialog) { Text("OK") }
+              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
             }
           },
           dismissButton = {
             if (isTimeoutError) {
-              TextButton(onClick = onDismissDialog) { Text("Cancel") }
+              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_cancel)) }
             } else {
               null
             }
