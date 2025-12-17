@@ -303,10 +303,18 @@
 
 ### 12. 統合テスト実装
 
-- [ ]* 12.1 Presentation層とDomain層の統合テスト
-    - LoginViewModel + UseCases統合テスト
-    - エラーハンドリングフロー統合テスト
-    - ログアウトフロー統合テスト
+- [x]* 12.1 Presentation層とDomain層の統合テスト
+    - LoginViewModel + UseCases統合テスト ✓
+    - エラーハンドリングフロー統合テスト ✓
+    - ログアウトフロー統合テスト ✓
+    - PresentationDomainIntegrationTest.kt作成 (11テスト実装済み)
+    - 統合テスト方針: 実際のLoginViewModel + 実際のUseCases + モックされたAuthRepository
+    - テストカバレッジ:
+        - ログインフロー (2 tests): Amber未インストール検出、ログイン成功
+        - 起動フロー (2 tests): ログイン済み状態復元、未ログイン状態
+        - エラーハンドリング (4 tests): ユーザー拒否、タイムアウト、ネットワークエラー、エラー閉じる
+        - ログアウトフロー (2 tests): ログアウト成功、ログアウト失敗
+        - 再試行フロー (1 test): エラー後の再試行
     - _Requirements: 1.1, 1.5, 2.4_
 
 - [ ]* 12.2 Data層の統合テスト
