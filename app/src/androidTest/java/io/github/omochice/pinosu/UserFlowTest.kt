@@ -226,4 +226,59 @@ class UserFlowTest {
     // Then: ログアウトボタンは表示されていない
     composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
+
+  /**
+   * Test 7 (Task 13.2): アプリ再起動とログイン状態復元 - ログイン済み状態でアプリ起動
+   *
+   * Given: ログイン済み状態が保存されている When: アプリを起動する Then: メイン画面が表示される（ログイン画面をスキップ）
+   *
+   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認 Requirement 2.3: ログイン済み状態でメイン画面表示
+   */
+  @Test
+  fun appRestart_whenLoggedIn_displaysMainScreen() {
+    // Given: ログイン済み状態が保存されている
+    val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+    coEvery { mockLocalAuthDataSource.getUser() } returns testUser
+
+    // When: アプリを再起動
+    composeTestRule.activityRule.scenario.recreate()
+
+    // Then: メイン画面が表示される（「ログアウト」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
+
+    // Then: ユーザーのpubkeyが表示される
+    val maskedPubkey = "1234abcd...5678efgh" // 最初8文字...最後8文字のマスキング形式
+    composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
+
+    // Then: ログイン画面は表示されていない
+    composeTestRule.onNodeWithText("Amberでログイン").assertDoesNotExist()
+  }
+
+  /**
+   * Test 8 (Task 13.2): アプリ再起動とログイン状態復元 - 未ログイン状態でアプリ起動
+   *
+   * Given: ログイン状態が保存されていない When: アプリを起動する Then: ログイン画面が表示される
+   *
+   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認
+   */
+  @Test
+  fun appRestart_whenNotLoggedIn_displaysLoginScreen() {
+    // Given: ログイン状態が保存されていない（デフォルト設定）
+    coEvery { mockLocalAuthDataSource.getUser() } returns null
+
+    // When: アプリを再起動
+    composeTestRule.activityRule.scenario.recreate()
+
+    // Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("Amberでログイン").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+
+    // Then: メイン画面は表示されていない
+    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
+  }
 }
