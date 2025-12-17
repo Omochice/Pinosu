@@ -283,10 +283,11 @@
     - NavigationTest.kt作成 (5テスト定義、1テスト実装済み)
     - _Requirements: 2.3, 3.3_
 
-- [ ] 10.3 ActivityResultAPIの統合
-    - registerForActivityResult の設定
-    - AmberSignerClientへのActivityResultLauncher渡し
-    - Amber Intent結果のハンドリング
+- [x] 10.3 ActivityResultAPIの統合
+    - registerForActivityResult の設定 (MainActivity.kt:84-91)
+    - AmberSignerClientへのActivityResultLauncher渡し (MainActivity.kt:107-110, 118-121)
+    - Amber Intent結果のハンドリング (MainActivity.kt:90, LoginViewModel.kt:145-177)
+    - ActivityResultIntegrationTest.kt更新 (Amber未インストール時のテスト追加)
     - _Requirements: 1.1, 1.3_
 
 ### 11. 日本語リソース文字列とローカライゼーション
