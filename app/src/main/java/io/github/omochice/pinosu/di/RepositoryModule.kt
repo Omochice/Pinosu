@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.data.repository.AuthRepository
-import io.github.omochice.pinosu.data.repository.AuthRepositoryImpl
 
 /**
  * Repository DI module
@@ -22,8 +22,8 @@ abstract class RepositoryModule {
   /**
    * Binds AuthRepository implementation
    *
-   * AuthRepositoryImpl has an @Inject constructor, so it can be automatically bound to the
+   * AmberAuthRepository has an @Inject constructor, so it can be automatically bound to the
    * interface with @Binds.
    */
-  @Binds abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
+  @Binds abstract fun bindAuthRepository(impl: AmberAuthRepository): AuthRepository
 }

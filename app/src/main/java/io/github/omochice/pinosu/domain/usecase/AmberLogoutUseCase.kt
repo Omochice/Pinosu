@@ -4,7 +4,7 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * LogoutUseCase implementation
+ * Amber-based LogoutUseCase implementation
  *
  * Delegates to AuthRepository to execute logout process. Guarantees idempotency and functions
  * normally even when called multiple times.
@@ -13,7 +13,7 @@ import javax.inject.Inject
  *
  * @property authRepository Authentication repository
  */
-class LogoutUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+class AmberLogoutUseCase @Inject constructor(private val authRepository: AuthRepository) :
     LogoutUseCase {
 
   /**

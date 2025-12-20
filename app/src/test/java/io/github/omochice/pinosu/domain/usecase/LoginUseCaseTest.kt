@@ -25,7 +25,7 @@ class LoginUseCaseTest {
   @Before
   fun setup() {
     authRepository = mockk(relaxed = true)
-    loginUseCase = LoginUseCaseImpl(authRepository)
+    loginUseCase = AmberLoginUseCase(authRepository)
   }
 
   // ========== checkAmberInstalled() Tests ==========

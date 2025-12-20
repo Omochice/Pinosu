@@ -5,7 +5,7 @@ import io.github.omochice.pinosu.domain.model.User
 import javax.inject.Inject
 
 /**
- * GetLoginStateUseCase implementation class
+ * Amber-based GetLoginStateUseCase implementation class
  *
  * Task 6.3: GetLoginStateUseCase implementation
  * - Delegate to AuthRepository to retrieve login state
@@ -15,7 +15,7 @@ import javax.inject.Inject
  *
  * @property authRepository Authentication repository
  */
-class GetLoginStateUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+class AmberGetLoginStateUseCase @Inject constructor(private val authRepository: AuthRepository) :
     GetLoginStateUseCase {
 
   /**

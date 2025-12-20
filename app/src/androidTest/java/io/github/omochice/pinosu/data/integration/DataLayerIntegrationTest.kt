@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.repository.AuthRepositoryImpl
+import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
  * - EncryptedSharedPreferences実動作テスト(保存 → 取得 → 削除)
  *
  * テスト方針:
- * - Data層: 実際のAuthRepositoryImpl, 実際のLocalAuthDataSource, 実際のAmberSignerClient
+ * - Data層: 実際のAmberAuthRepository, 実際のLocalAuthDataSource, 実際のAmberSignerClient
  * - Storage: 実際のEncryptedSharedPreferences (Android runtime必要)
  * - Note: Amber通信部分は実際のAmberアプリが必要なため、ストレージ操作のみテスト
  *
@@ -34,7 +34,7 @@ class DataLayerIntegrationTest {
   private lateinit var context: Context
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var amberSignerClient: AmberSignerClient
-  private lateinit var authRepository: AuthRepositoryImpl
+  private lateinit var authRepository: AmberAuthRepository
 
   @Before
   fun setup() {
@@ -47,7 +47,7 @@ class DataLayerIntegrationTest {
     amberSignerClient = AmberSignerClient(context)
 
     // AuthRepositoryは実際の実装を使用
-    authRepository = AuthRepositoryImpl(amberSignerClient, localAuthDataSource)
+    authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
   }
 
   @After
@@ -231,7 +231,7 @@ class DataLayerIntegrationTest {
 
     // When: アプリ再起動をシミュレーション (新しいインスタンスを作成)
     val newLocalAuthDataSource = LocalAuthDataSource(context)
-    val newAuthRepository = AuthRepositoryImpl(amberSignerClient, newLocalAuthDataSource)
+    val newAuthRepository = AmberAuthRepository(amberSignerClient, newLocalAuthDataSource)
 
     // Then: ログイン状態が復元される
     val restoredUser = newAuthRepository.getLoginState()

@@ -28,7 +28,7 @@ class LogoutUseCaseTest {
   @Before
   fun setup() {
     authRepository = mockk(relaxed = true)
-    logoutUseCase = LogoutUseCaseImpl(authRepository)
+    logoutUseCase = AmberLogoutUseCase(authRepository)
   }
 
   // ========== invoke() Tests ==========

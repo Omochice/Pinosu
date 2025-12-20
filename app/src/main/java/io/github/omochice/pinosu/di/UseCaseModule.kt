@@ -4,12 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.domain.usecase.AmberGetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.AmberLoginUseCase
+import io.github.omochice.pinosu.domain.usecase.AmberLogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
-import io.github.omochice.pinosu.domain.usecase.LoginUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
-import io.github.omochice.pinosu.domain.usecase.LogoutUseCaseImpl
 
 /**
  * Use case dependency injection module
@@ -26,21 +26,22 @@ abstract class UseCaseModule {
   /**
    * LoginUseCase binding
    *
-   * Registers LoginUseCaseImpl as LoginUseCase in the DI container
+   * Registers AmberLoginUseCase as LoginUseCase in the DI container
    */
-  @Binds abstract fun bindLoginUseCase(impl: LoginUseCaseImpl): LoginUseCase
+  @Binds abstract fun bindLoginUseCase(impl: AmberLoginUseCase): LoginUseCase
 
   /**
    * LogoutUseCase binding
    *
-   * Registers LogoutUseCaseImpl as LogoutUseCase in the DI container
+   * Registers AmberLogoutUseCase as LogoutUseCase in the DI container
    */
-  @Binds abstract fun bindLogoutUseCase(impl: LogoutUseCaseImpl): LogoutUseCase
+  @Binds abstract fun bindLogoutUseCase(impl: AmberLogoutUseCase): LogoutUseCase
 
   /**
    * GetLoginStateUseCase binding
    *
-   * Registers GetLoginStateUseCaseImpl as GetLoginStateUseCase in the DI container
+   * Registers AmberGetLoginStateUseCase as GetLoginStateUseCase in the DI container
    */
-  @Binds abstract fun bindGetLoginStateUseCase(impl: GetLoginStateUseCaseImpl): GetLoginStateUseCase
+  @Binds
+  abstract fun bindGetLoginStateUseCase(impl: AmberGetLoginStateUseCase): GetLoginStateUseCase
 }

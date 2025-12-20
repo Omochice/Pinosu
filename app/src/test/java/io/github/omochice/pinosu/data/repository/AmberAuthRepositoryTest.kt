@@ -18,7 +18,7 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * AuthRepositoryの単体テスト
+ * AmberAuthRepositoryの単体テスト
  *
  * Task 5.1: AuthRepositoryの実装
  * - getLoginState(), saveLoginState(), logout()のテスト
@@ -33,7 +33,7 @@ import org.junit.Test
  *
  * Requirements: 1.3, 1.4, 1.5, 2.1, 2.2, 2.4, 2.5
  */
-class AuthRepositoryImplTest {
+class AmberAuthRepositoryTest {
 
   private lateinit var amberSignerClient: AmberSignerClient
   private lateinit var localAuthDataSource: LocalAuthDataSource
@@ -43,7 +43,7 @@ class AuthRepositoryImplTest {
   fun setup() {
     amberSignerClient = mockk(relaxed = true)
     localAuthDataSource = mockk(relaxed = true)
-    authRepository = AuthRepositoryImpl(amberSignerClient, localAuthDataSource)
+    authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
   }
 
   // ========== getLoginState() Tests ==========

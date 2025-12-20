@@ -4,7 +4,7 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * LoginUseCase implementation
+ * Amber-based LoginUseCase implementation
  *
  * Delegates to AuthRepository to execute login process.
  *
@@ -12,7 +12,7 @@ import javax.inject.Inject
  *
  * @property authRepository Authentication repository
  */
-class LoginUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+class AmberLoginUseCase @Inject constructor(private val authRepository: AuthRepository) :
     LoginUseCase {
 
   /**

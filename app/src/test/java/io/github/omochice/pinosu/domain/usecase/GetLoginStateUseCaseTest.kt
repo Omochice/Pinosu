@@ -28,7 +28,7 @@ class GetLoginStateUseCaseTest {
   @Before
   fun setup() {
     authRepository = mockk()
-    getLoginStateUseCase = GetLoginStateUseCaseImpl(authRepository)
+    getLoginStateUseCase = AmberGetLoginStateUseCase(authRepository)
   }
 
   @Test

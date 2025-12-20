@@ -11,7 +11,7 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
- * AuthRepository implementation
+ * Amber-based AuthRepository implementation
  *
  * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
  * state management.
@@ -21,7 +21,7 @@ import javax.inject.Inject
  * @property amberSignerClient Amber communication client
  * @property localAuthDataSource Local storage data source
  */
-class AuthRepositoryImpl
+class AmberAuthRepository
 @Inject
 constructor(
     private val amberSignerClient: AmberSignerClient,

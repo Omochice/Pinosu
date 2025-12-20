@@ -4,12 +4,12 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
+import io.github.omochice.pinosu.domain.usecase.AmberGetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.AmberLoginUseCase
+import io.github.omochice.pinosu.domain.usecase.AmberLogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
-import io.github.omochice.pinosu.domain.usecase.LoginUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
-import io.github.omochice.pinosu.domain.usecase.LogoutUseCaseImpl
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -38,8 +38,8 @@ import org.junit.Test
  *
  * テスト方針:
  * - Presentation層: 実際のLoginViewModel
- * - Domain層: 実際のUseCasesImplementations (LoginUseCaseImpl, LogoutUseCaseImpl,
- *   GetLoginStateUseCaseImpl)
+ * - Domain層: 実際のUseCasesImplementations (AmberLoginUseCase, AmberLogoutUseCase,
+ *   AmberGetLoginStateUseCase)
  * - Data層: モックされたAuthRepository
  *
  * Requirements: 1.1, 1.5, 2.4
@@ -63,9 +63,9 @@ class PresentationDomainIntegrationTest {
     authRepository = mockk(relaxed = true)
 
     // Domain層は実際の実装を使用（統合テスト）
-    loginUseCase = LoginUseCaseImpl(authRepository)
-    logoutUseCase = LogoutUseCaseImpl(authRepository)
-    getLoginStateUseCase = GetLoginStateUseCaseImpl(authRepository)
+    loginUseCase = AmberLoginUseCase(authRepository)
+    logoutUseCase = AmberLogoutUseCase(authRepository)
+    getLoginStateUseCase = AmberGetLoginStateUseCase(authRepository)
 
     // Presentation層は実際の実装を使用
     viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
