@@ -317,7 +317,8 @@ class LoginViewModelTest {
     val state = viewModelWithMock.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertTrue(
-        "errorMessage should contain timeout info", state.errorMessage?.contains("タイムアウト") == true)
+        "errorMessage should contain timeout info",
+        state.errorMessage?.contains("timed out") == true)
     assertFalse("isLoading should be false", state.isLoading)
   }
 
