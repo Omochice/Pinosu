@@ -126,6 +126,8 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
               // Remove login screen from back stack
               popUpTo(LOGIN_ROUTE) { inclusive = true }
             }
+            // Reset loginSuccess flag to prevent navigation loop
+            viewModel.dismissError()
           })
     }
 
