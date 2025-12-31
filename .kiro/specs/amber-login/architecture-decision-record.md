@@ -1,214 +1,214 @@
 # Amber Login - Architecture Decision Record
 
-## 機能のGoal
+## Feature Goals
 
-本機能は、NostrブックマークアプリケーションPinosuにおける認証基盤として、次のように実現する。
+This feature is implemented as the authentication foundation for the Nostr bookmark application Pinosu as follows:
 
-- セキュアなログイン: AmberアプリとのNIP-55プロトコル統合により、秘密鍵を一切保持せずにセキュアなログイン機能を提供
-- ログイン状態の永続化: アプリ再起動後もユーザー体験を維持するため、ログイン状態をローカルストレージに安全に保存
-- Amber未インストール時のガイダンス: Amberアプリ未インストール時にユーザーガイダンス（Google Play Storeへの誘導）を提供
-- Android標準のセキュリティ遵守: Android Keystore、EncryptedSharedPreferencesを活用したベストプラクティスに準拠したセキュリティ実装
+- Secure Login: Provides secure login functionality without holding private keys through NIP-55 protocol integration with the Amber app
+- Login State Persistence: Safely stores login state in local storage to maintain user experience after app restarts
+- Guidance for Missing Amber: Provides user guidance (directing to Google Play Store) when the Amber app is not installed
+- Android Standard Security Compliance: Security implementation that leverages Android Keystore and EncryptedSharedPreferences and conforms to best practices
 
-## 機能のNon-Goal
+## Feature Non-Goals
 
-本機能では次の項目を意図的に実装しない。
+The following items are intentionally not implemented in this feature:
 
-- リレーサーバーへの接続: 将来フェーズで実装予定
-- ブックマーク機能（kind 10003）: 本フェーズではログイン機能のみ
-- 複数アカウント管理: 単一ユーザーのみサポート
-- iOS対応: Android限定
-- NIP-46リレー経由通信の直接実装: NIP-55を使用するため不要
-- オフライン認証機能: Amberとの通信が前提
+- Relay Server Connection: Planned for future phases
+- Bookmark Feature (kind 10003): Only login functionality in this phase
+- Multiple Account Management: Supports single user only
+- iOS Support: Android-only
+- Direct NIP-46 Relay Communication Implementation: Not needed due to NIP-55 usage
+- Offline Authentication: Requires communication with Amber
 
 ---
 
-## 選択した技術
+## Selected Technologies
 
-### 1. NIP-55プロトコル（Amber通信）
-
-#### Pros
-
-- 公式サポート: AmberがNIP-55を公式にサポートしており、実績がある
-- Android標準のIntent機構: Android標準のIntent機構を使用するため信頼性が高く、プラットフォームとの親和性が高い
-- ユーザー承認フロー組み込み: ユーザー承認フローが標準化されており、セキュアなUXを提供
-- 広範な採用実績: Amethyst、0xChat、Voyage、Fountainなど他のNostr Androidアプリでも広く採用されている
-- セキュリティ: 秘密鍵がAmber側で管理されるため、Pinosuアプリ側でのセキュリティリスクを最小化
-
-#### Cons
-
-- Android限定: iOSでは別の実装方法が必要（本プロジェクトではAndroid限定のため影響なし）
-- Amberインストール必須: ユーザーがAmberアプリをインストールしていない場合、ログイン不可（ガイダンスで軽減）
-- 外部依存: Amberアプリのメンテナンス状況に依存する
-
-### 2. Amethyst Quartz（Nostrライブラリ）
+### 1. NIP-55 Protocol (Amber Communication)
 
 #### Pros
 
-- Amber統合サポート: `NostrSignerExternal`クラスがAmber統合を直接サポート
-- 実戦投入済み: Amethystで実際に運用されており、信頼性が高い
-- 将来の拡張性: リレー通信やその他のNIP実装が容易に追加可能
-- Maven Central提供: 依存関係管理が簡単で、標準的なビルドプロセスに統合可能
-- 実装時間短縮: プロトコル実装を自前で行う必要がなく、開発効率が向上
+- Official Support: Amber officially supports NIP-55 with proven track record
+- Android Standard Intent Mechanism: High reliability due to using Android standard Intent mechanism with good platform compatibility
+- Built-in User Approval Flow: User approval flow is standardized, providing secure UX
+- Wide Adoption: Widely adopted by other Nostr Android apps including Amethyst, 0xChat, Voyage, and Fountain
+- Security: Private keys are managed by Amber, minimizing security risks on the Pinosu app side
 
 #### Cons
 
-- 外部依存関係: ライブラリのバージョン互換性やメンテナンス状況に依存
-- 学習コスト: ライブラリのAPI仕様を理解する必要がある
-- ライブラリサイズ: アプリサイズが増加する可能性がある
+- Android-only: Alternative implementation methods required for iOS (no impact in this Android-limited project)
+- Amber Installation Required: Login not possible if user doesn't install Amber app (mitigated by guidance)
+- External Dependency: Depends on Amber app maintenance status
+
+### 2. Amethyst Quartz (Nostr Library)
+
+#### Pros
+
+- Amber Integration Support: `NostrSignerExternal` class directly supports Amber integration
+- Battle-tested: Actually operated in Amethyst with high reliability
+- Future Extensibility: Relay communication and other NIP implementations can be easily added
+- Maven Central Availability: Easy dependency management and standard build process integration
+- Implementation Time Reduction: No need to implement protocol from scratch, improving development efficiency
+
+#### Cons
+
+- External Dependency: Depends on library version compatibility and maintenance status
+- Learning Cost: Need to understand library API specifications
+- Library Size: Potential app size increase
 
 ### 3. Clean Architecture + MVVM + Jetpack Compose
 
 #### Pros
 
-- Google公式推奨: Android開発における標準的なアーキテクチャパターン
-- Jetpack Composeとの親和性: モダンなUI開発フレームワークと最も相性が良い
-- テスタビリティ: ViewModel単体テストが容易で、レイヤー分離により依存関係の管理が明確
-- 保守性と拡張性: 関心の分離により将来の機能拡張が容易で、コードの保守性が高い
-- 状態管理の明確化: ログイン状態管理がViewModelで明確化され、UI層とビジネスロジックが分離される
+- Google Official Recommendation: Standard architectural pattern for Android development
+- Jetpack Compose Compatibility: Best compatibility with modern UI development framework
+- Testability: ViewModel unit testing is easy, layer separation clarifies dependency management
+- Maintainability and Extensibility: Separation of concerns enables easy future feature expansion and high code maintainability
+- State Management Clarity: Login state management is clarified in ViewModel, separating UI layer from business logic
 
 #### Cons
 
-- 初期実装の複雑性: レイヤー分離によりボイラープレートコードが増加
-- 学習コスト: Clean Architectureの概念理解が必要
-- 小規模アプリには過剰: 単純なログイン機能だけであれば、より簡素なパターンでも十分な場合がある
+- Initial Implementation Complexity: Layer separation increases boilerplate code
+- Learning Cost: Requires understanding Clean Architecture concepts
+- Overkill for Small Apps: Simple login-only functionality might suffice with simpler patterns
 
 ### 4. Android Keystore + EncryptedSharedPreferences
 
 #### Pros
 
-- Android Jetpack Security標準: Android公式のセキュリティライブラリで信頼性が高い
-- 自動暗号化: データがAES256で自動的に暗号化される
-- ハードウェア保護: マスターキーがAndroid Keystoreで保護され、TEE/SEを活用
-- 実装の簡潔性: 複雑な暗号化処理を意識せずに実装可能
-- セキュリティベストプラクティス: 2024年時点のAndroidセキュリティ標準に準拠
+- Android Jetpack Security Standard: High reliability as official Android security library
+- Automatic Encryption: Data automatically encrypted with AES256
+- Hardware Protection: Master key protected by Android Keystore, utilizing TEE/SE
+- Implementation Simplicity: Possible to implement without conscious effort on complex encryption
+- Security Best Practices: Compliant with Android security standards as of 2024
 
 #### Cons
 
-- Android 6.0+ (API 23+) 必須: 古いデバイスでは使用不可（本プロジェクトはminSdk 26のため影響なし）
-- 鍵マテリアルのバックアップ不可: デバイス移行時にログイン状態が消失（再認証が必要）
-- 暗号化オーバーヘッド: わずかなパフォーマンスオーバーヘッドが発生する可能性
+- Android 6.0+ (API 23+) Required: Not usable on older devices (no impact in this project with minSdk 26)
+- Key Material Backup Not Possible: Login state lost during device migration (re-authentication required)
+- Encryption Overhead: Possible slight performance overhead
 
 ### 5. ActivityResultAPI
 
 #### Pros
 
-- モダンAPI: `startActivityForResult()`の非推奨化に伴う推奨代替手段
-- Android 13+対応: 最新のAndroidバージョンでの動作が保証される
-- タイプセーフ: Contract-based APIによりタイプセーフな実装が可能
-- ライフサイクル管理: Androidのライフサイクルと自動的に統合され、メモリリークを防止
-- Jetpack Compose統合: ComposeとのシームレスなインテグレーションUiがメモリリークを防止
+- Modern API: Recommended alternative to deprecated `startActivityForResult()`
+- Android 13+ Support: Guaranteed operation on latest Android versions
+- Type-Safe: Contract-based API enables type-safe implementation
+- Lifecycle Management: Automatically integrated with Android lifecycle, preventing memory leaks
+- Jetpack Compose Integration: Seamless integration with Compose
 
 #### Cons
 
-- 学習コスト: 新しいAPIパラダイムの理解が必要
-- 古い実装からの移行: レガシーコードからの移行が必要な場合がある
+- Learning Cost: Need to understand new API paradigm
+- Migration from Legacy: May require migration from legacy code
 
 ---
 
-## 比較検討した技術
+## Evaluated Alternative Technologies
 
-### 代替案1: NIP-46直接実装（リレー経由通信）
-
-#### Pros
-
-- プラットフォーム非依存: Android以外のプラットフォームでも同じ実装が使用可能
-- サーバーレス: 完全な分散型アーキテクチャ
-- 外部アプリ不要: Amberアプリのインストールが不要
-
-#### Cons
-
-- 実装複雑性: リレーサーバー通信、NIP-44暗号化、JSON-RPC実装など複雑な実装が必要
-- ネットワーク依存: リレーサーバーへのネットワーク接続が必須
-- レイテンシ: リレー経由の通信のため、レスポンス時間が長くなる
-- セキュリティリスク: 秘密鍵の管理が複雑になる可能性
-
-### 代替案2: nostr-java-library
+### Alternative 1: Direct NIP-46 Implementation (Relay-based Communication)
 
 #### Pros
 
-- JVM標準: Javaベースのライブラリで、標準的なJVM環境で動作
-- 別の選択肢: Quartzに問題が発生した場合の代替手段となる
+- Platform Independence: Same implementation usable on platforms other than Android
+- Serverless: Complete decentralized architecture
+- No External App: Amber app installation not required
 
 #### Cons
 
-- Amber統合サポート不明: `NostrSignerExternal`相当の機能があるか不明
-- 実績不足: Quartz程の実戦投入実績がない
-- ドキュメント: Quartzと比較してドキュメントやコミュニティサポートが限定的
+- Implementation Complexity: Complex implementation needed for relay server communication, NIP-44 encryption, JSON-RPC implementation
+- Network Dependency: Network connection to relay server essential
+- Latency: Response time longer due to relay-based communication
+- Security Risk: Private key management becomes more complex
 
-### 代替案3: 独自Nostrプロトコル実装
+### Alternative 2: nostr-java-library
 
 #### Pros
 
-- 完全なコントロール: プロトコル実装の完全なコントロールが可能
-- 外部依存なし: ライブラリのメンテナンス状況に影響されない
-- 最適化: プロジェクト固有の最適化が可能
+- JVM Standard: Java-based library, works in standard JVM environment
+- Alternative Option: Serves as fallback if Quartz has issues
 
 #### Cons
 
-- 実装時間: プロトコル実装に膨大な時間とリソースが必要
-- テストとデバッグ: プロトコル準拠性の検証が困難
-- 保守コスト: NIP仕様変更への対応が必要
-- バグリスク: 実装バグによるセキュリティリスク
+- Amber Integration Support Unclear: Unclear if `NostrSignerExternal` equivalent functionality exists
+- Insufficient Track Record: Less battle-tested than Quartz
+- Documentation: Limited documentation and community support compared to Quartz
 
-### 代替案4: MVC (Model-View-Controller)
+### Alternative 3: Custom Nostr Protocol Implementation
 
 #### Pros
 
-- シンプル: 実装が単純で理解しやすい
-- 学習コスト低: 従来型のパターンで学習コストが低い
+- Complete Control: Full control of protocol implementation
+- No External Dependency: Not affected by library maintenance
+- Optimization: Project-specific optimization possible
 
 #### Cons
 
-- 状態管理が煩雑: UIの状態管理が複雑になりがち
-- Jetpack Composeとの相性: モダンなAndroid開発との相性が悪い
-- テスタビリティ: ViewとControllerが密結合になりやすく、テストが困難
-- 非推奨: レガシーアプローチとして扱われている
+- Implementation Time: Requires enormous time and resources for protocol implementation
+- Testing and Debugging: Difficult to verify protocol compliance
+- Maintenance Cost: Need to address NIP specification changes
+- Bug Risk: Security risks from implementation bugs
 
-### 代替案5: 平文SharedPreferences
+### Alternative 4: MVC (Model-View-Controller)
 
 #### Pros
 
-- シンプル: 実装が最も単純
-- パフォーマンス: 暗号化オーバーヘッドがない
+- Simple: Simple implementation, easy to understand
+- Low Learning Cost: Low learning curve with traditional pattern
 
 #### Cons
 
-- セキュリティリスク: データが平文で保存されるため、ルート化デバイスやADBアクセスで容易に読み取り可能
-- コンプライアンス: セキュリティベストプラクティスに違反
-- 監査: セキュリティ監査で指摘される可能性が高い
+- Complex State Management: UI state management tends to become complex
+- Jetpack Compose Compatibility: Poor compatibility with modern Android development
+- Testability: View and Controller tend to be tightly coupled, making testing difficult
+- Deprecated: Treated as legacy approach
 
-### 代替案6: Room + SQLCipher
+### Alternative 5: Plaintext SharedPreferences
 
 #### Pros
 
-- 強力な暗号化: データベース全体が暗号化される
-- 将来の拡張性: 複雑なデータモデルに対応可能
+- Simple: Simplest implementation
+- Performance: No encryption overhead
 
 #### Cons
 
-- 過剰実装: 単純なkey-valueストレージには過剰
-- 実装複雑性: データベーススキーマ定義、マイグレーション管理が必要
-- パフォーマンスオーバーヘッド: SQLiteのオーバーヘッドが発生
-- 依存関係増加: 追加のライブラリが必要
+- Security Risk: Data stored in plaintext, easily readable via rooted devices or ADB access
+- Compliance: Violates security best practices
+- Audit: Likely to be pointed out in security audits
 
-### 代替案7: startActivityForResult()
+### Alternative 6: Room + SQLCipher
 
 #### Pros
 
-- レガシー実績: 古いAndroidバージョンで広く使用されてきた
-- シンプル: 従来の実装パターンで理解しやすい
+- Strong Encryption: Entire database encrypted
+- Future Extensibility: Can handle complex data models
 
 #### Cons
 
-- 非推奨（Deprecated）: Android公式により非推奨とされている
-- Android 13+対応: 最新のAndroidバージョンで動作保証されない可能性
-- ライフサイクル管理: メモリリークのリスクがある
-- Jetpack Compose統合: ComposeとのインテグレーションUiがメモリリークのリスクがある
+- Over-engineering: Excessive for simple key-value storage
+- Implementation Complexity: Need for database schema definition, migration management
+- Performance Overhead: SQLite overhead incurred
+- Increased Dependencies: Additional library required
+
+### Alternative 7: startActivityForResult()
+
+#### Pros
+
+- Legacy Track Record: Widely used in older Android versions
+- Simple: Traditional implementation pattern, easy to understand
+
+#### Cons
+
+- Deprecated: Deprecated by Android official
+- Android 13+ Support: Possible operation not guaranteed on latest Android versions
+- Lifecycle Management: Risk of memory leaks
+- Jetpack Compose Integration: Memory leak risk in Compose integration
 
 ---
 
-## まとめ
+## Summary
 
-本機能は、NIP-55プロトコル、Amethyst Quartz、Clean Architecture + MVVM + Jetpack Compose、Android Keystore + EncryptedSharedPreferences、ActivityResultAPIを選定し、セキュアで保守性の高いログイン機能を実現する。
+This feature implements the selected NIP-55 protocol, Amethyst Quartz, Clean Architecture + MVVM + Jetpack Compose, Android Keystore + EncryptedSharedPreferences, and ActivityResultAPI to realize secure and maintainable login functionality.
 
-これらの技術選定は、Android標準のベストプラクティスに準拠し、将来の機能拡張（リレー通信、ブックマーク機能）への基盤を提供する。代替案と比較して、実装時間、セキュリティ、保守性のバランスが最も優れていると判断した。
+These technology selections comply with Android standard best practices and provide the foundation for future feature expansion (relay communication, bookmark functionality). Compared to alternatives, these selections offer the best balance of implementation time, security, and maintainability.
