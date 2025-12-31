@@ -27,5 +27,5 @@ data class User(val pubkey: String) {
  * @return true if the public key format is valid, false otherwise
  */
 private fun String.isValidNostrPubkey(): Boolean {
-  return this.matches(Regex("^[0-9a-f]{64}$"))
+  return this.startsWith("npub1")
 }

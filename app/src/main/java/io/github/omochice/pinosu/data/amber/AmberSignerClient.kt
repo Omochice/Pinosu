@@ -109,8 +109,7 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
    * @return true if 64-character hex string, false otherwise
    */
   private fun isValidPubkey(pubkey: String): Boolean {
-    if (pubkey.length != 64) return false
-    return pubkey.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }
+    return pubkey.startsWith("npub1")
   }
 
   /**
