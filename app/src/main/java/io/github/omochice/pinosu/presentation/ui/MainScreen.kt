@@ -66,9 +66,7 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-          // Display login status
           if (uiState.userPubkey != null) {
-            // Display user public key (Requirement 3.5: Display logged-in pubkey on main screen)
             Text(
                 text = stringResource(R.string.text_logged_in),
                 style = MaterialTheme.typography.headlineMedium,
@@ -76,7 +74,6 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Display pubkey (with partial masking recommended)
             Text(
                 text = formatPubkey(uiState.userPubkey),
                 style = MaterialTheme.typography.bodyMedium,
@@ -84,20 +81,15 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Logout button or logging out message (Requirement 3.4: Place logout button on main
-            // screen)
             if (uiState.isLoggingOut) {
-              // Display loading message during logout process (Requirement 3.2: Loading indicator)
               Text(
                   text = stringResource(R.string.message_logging_out),
                   style = MaterialTheme.typography.bodyLarge,
                   textAlign = TextAlign.Center)
             } else {
-              // Logout button
               Button(onClick = onLogout) { Text(stringResource(R.string.button_logout)) }
             }
           } else {
-            // Not logged in state (Requirement 2.3: Check logged-in status)
             Text(
                 text = stringResource(R.string.text_not_logged_in),
                 style = MaterialTheme.typography.headlineMedium,

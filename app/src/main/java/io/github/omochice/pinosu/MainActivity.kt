@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    // Task 10.1: Check login state and update UI state
     loginViewModel.checkLoginState()
 
     setContent {
@@ -74,35 +73,24 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
-  // Create NavController
   val navController = rememberNavController()
 
-  // Observe MainUiState to determine login state
   val mainUiState by viewModel.mainUiState.collectAsState()
   val loginUiState by viewModel.uiState.collectAsState()
 
-  // Task 10.3: Configure ActivityResultLauncher
-  // Requirement 1.3: Receive authentication response from Amber
   val amberLauncher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            // Process result from Amber
             viewModel.processAmberResponse(result.resultCode, result.data)
           }
 
-  // Task 10.2: Determine initial route based on login state
-  // Requirement 2.2: Check saved login state on app launch
-  // Requirement 2.3: Show main screen when logged in
   val startDestination = if (mainUiState.userPubkey != null) MAIN_ROUTE else LOGIN_ROUTE
 
   NavHost(navController = navController, startDestination = startDestination) {
-    // Login screen
     composable(LOGIN_ROUTE) {
       LoginScreen(
           uiState = loginUiState,
           onLoginButtonClick = {
-            // Task 10.3: Launch Intent after checking Amber installation
-            // Requirement 1.1: Start Amber integration on login button tap
             viewModel.onLoginButtonClicked()
             if (amberSignerClient.checkAmberInstalled()) {
               val intent = amberSignerClient.createPublicKeyIntent()
@@ -121,26 +109,16 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
             }
           },
           onNavigateToMain = {
-            // Requirement 3.3: Navigate to main screen on login success
-            navController.navigate(MAIN_ROUTE) {
-              // Remove login screen from back stack
-              popUpTo(LOGIN_ROUTE) { inclusive = true }
-            }
+            navController.navigate(MAIN_ROUTE) { popUpTo(LOGIN_ROUTE) { inclusive = true } }
             // Reset loginSuccess flag to prevent navigation loop
             viewModel.dismissError()
           })
     }
 
-    // Main screen
     composable(MAIN_ROUTE) {
-      // Task 10.2: Detect logout completion and navigate to login screen
       LaunchedEffect(mainUiState.userPubkey) {
         if (mainUiState.userPubkey == null) {
-          // Requirement 2.4: Navigate to login screen after logout
-          navController.navigate(LOGIN_ROUTE) {
-            // Remove main screen from back stack
-            popUpTo(MAIN_ROUTE) { inclusive = true }
-          }
+          navController.navigate(LOGIN_ROUTE) { popUpTo(MAIN_ROUTE) { inclusive = true } }
         }
       }
 

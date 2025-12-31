@@ -59,8 +59,6 @@ fun LoginScreen(
     onRetry: () -> Unit = {},
     onNavigateToMain: () -> Unit = {}
 ) {
-  // ========== Navigation on login success (Task 8.3) ==========
-  // Automatically navigate to main screen when loginSuccess becomes true
   LaunchedEffect(uiState.loginSuccess) {
     if (uiState.loginSuccess) {
       onNavigateToMain()
@@ -73,7 +71,6 @@ fun LoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center,
           modifier = Modifier.padding(16.dp)) {
-            // Login success message (Task 8.3)
             if (uiState.loginSuccess) {
               Text(
                   text = stringResource(R.string.message_login_success),
@@ -82,7 +79,6 @@ fun LoginScreen(
               Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Loading indicator (displayed only when isLoading is true)
             if (uiState.isLoading) {
               CircularProgressIndicator()
               Spacer(modifier = Modifier.height(16.dp))
@@ -92,18 +88,12 @@ fun LoginScreen(
               Spacer(modifier = Modifier.height(32.dp))
             }
 
-            // Login button
-            Button(
-                onClick = onLoginButtonClick, enabled = !uiState.isLoading // Disabled while loading
-                ) {
-                  Text(stringResource(R.string.button_login_with_amber))
-                }
+            Button(onClick = onLoginButtonClick, enabled = !uiState.isLoading) {
+              Text(stringResource(R.string.button_login_with_amber))
+            }
           }
     }
 
-    // ========== Error dialogs (Task 8.2) ==========
-
-    // Amber not installed dialog
     if (uiState.showAmberInstallDialog) {
       AlertDialog(
           onDismissRequest = onDismissDialog,
@@ -117,7 +107,6 @@ fun LoginScreen(
           })
     }
 
-    // Generic error dialog (timeout, user rejection, other errors)
     if (uiState.errorMessage != null) {
       val isTimeoutError = uiState.errorMessage.contains("timeout", ignoreCase = true)
 
@@ -127,10 +116,8 @@ fun LoginScreen(
           text = { Text(uiState.errorMessage) },
           confirmButton = {
             if (isTimeoutError) {
-              // Show retry button for timeout errors
               Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
             } else {
-              // Show only close button for other errors
               TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
             }
           },
