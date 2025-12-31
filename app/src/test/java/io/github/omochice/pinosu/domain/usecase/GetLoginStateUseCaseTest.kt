@@ -5,22 +5,22 @@ import io.github.omochice.pinosu.domain.model.User
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runtest
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Test
+import org.junit.test
 
 /**
- * GetLoginStateUseCaseのテストクラス
+ * test class for GetLoginStateUseCase
  *
- * Task 6.3: GetLoginStateUseCaseの実装 Requirements: 2.2, 2.3
+ * Task 6.3: Implementation of GetLoginStateUseCase Requirements: 2.2, 2.3
  *
- * テストシナリオ:
- * 1. 正常系: ログイン済みユーザーの取得
- * 2. 正常系: 未ログイン状態の取得
- * 3. 検証: 読み取り専用操作であること
+ * test scenarios:
+ * 1. Normal case: Get logged in user
+ * 2. Normal case: Get not logged in state
+ * 3. Verification: Read-only operation
  */
-class GetLoginStateUseCaseTest {
+class GetLoginStateUseCasetest {
 
   private lateinit var authRepository: AuthRepository
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
@@ -31,46 +31,46 @@ class GetLoginStateUseCaseTest {
     getLoginStateUseCase = AmberGetLoginStateUseCase(authRepository)
   }
 
-  @Test
-  fun `invoke returns logged in user when user is logged in`() = runTest {
-    // Given: ログイン済み状態
+  @test
+  fun `invoke returns logged in user when user is logged in`() = runtest {
+    // Given: Logged in state
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
-    // When: ログイン状態を取得
+    // When: Get login state
     val result = getLoginStateUseCase()
 
-    // Then: ユーザーが返される
+    // Then: User is returned
     assertEquals(testUser, result)
     coVerify(exactly = 1) { authRepository.getLoginState() }
   }
 
-  @Test
-  fun `invoke returns null when user is not logged in`() = runTest {
-    // Given: 未ログイン状態
+  @test
+  fun `invoke returns null when user is not logged in`() = runtest {
+    // Given: Not logged in state
     coEvery { authRepository.getLoginState() } returns null
 
-    // When: ログイン状態を取得
+    // When: Get login state
     val result = getLoginStateUseCase()
 
-    // Then: nullが返される
+    // Then: null is returned
     assertNull(result)
     coVerify(exactly = 1) { authRepository.getLoginState() }
   }
 
-  @Test
-  fun `invoke is read-only operation`() = runTest {
-    // Given: ログイン済み状態
+  @test
+  fun `invoke is read-only operation`() = runtest {
+    // Given: Logged in state
     val testPubkey = "npub1" + "b".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
-    // When: 複数回呼び出し
+    // When: Call multiple times
     getLoginStateUseCase()
     getLoginStateUseCase()
 
-    // Then: AuthRepositoryへの呼び出しのみで、変更操作は行われない
+    // Then: Only calls to AuthRepository, no modification operations
     coVerify(exactly = 2) { authRepository.getLoginState() }
     coVerify(exactly = 0) { authRepository.saveLoginState(any()) }
     coVerify(exactly = 0) { authRepository.logout() }

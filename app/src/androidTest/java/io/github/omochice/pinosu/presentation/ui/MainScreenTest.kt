@@ -1,276 +1,162 @@
 package io.github.omochice.pinosu.presentation.ui
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
 import org.junit.Rule
-import org.junit.Test
+import org.junit.test
+import roidx.compose.ui.test.assertIsDisplayed
+import roidx.compose.ui.test.junit4.createComposeRule
+import roidx.compose.ui.test.onNodeWithText
+import roidx.compose.ui.test.performClick
 
-/**
- * MainScreenのCompose UIテスト
- *
- * Task 9.3: MainScreenの単体テスト
- * - pubkey表示のテスト
- * - ログアウトボタン表示のテスト
- * - ナビゲーションのテスト
- *
- * Requirements: 2.3, 3.4, 3.5
- */
-class MainScreenTest {
+/*** MainScreenCompose UI tests for** Task 9.3: MainScreenUnit tests for* - pubkeydisplayoftest* - Logout buttondisplayoftest* - navigationoftest** Requirements: 2.3, 3.4, 3.5*/class MainScreentest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+ @get:Rule val composetestRule = createComposeRule()
 
-  /**
-   * Test 1: ログアウトボタンが表示される
-   *
-   * Requirement 3.4: メイン画面にログアウトボタンを配置
-   */
-  @Test
-  fun mainScreen_logoutButtonIsDisplayed() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+/*** test 1: Logout buttonis displayed** Requirement 3.4: Main screenLogout button*/ @test
+ fun mainScreen_logoutButtonIsDisplayed() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Assert
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
-  }
+// Assert composetestRule.onNodeWithText("logout").assertIsDisplayed()
+ }
 
-  /**
-   * Test 2: ユーザーのpubkeyが表示される（フォーマット済み）
-   *
-   * Requirement 3.5: メイン画面にログイン中のpubkeyを表示
-   */
-  @Test
-  fun mainScreen_userPubkeyIsDisplayed() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+/*** test 2: Userofpubkeyis displayed ()** Requirement 3.5: Main screenloginduringofpubkeydisplay*/ @test
+ fun mainScreen_userPubkeyIsDisplayed() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Assert
-    // pubkeyは部分的に表示されることを確認（最初の8文字と最後の8文字のみ）
-    val expectedFormattedPubkey = "12345678...90abcdef"
-    composeTestRule.onNodeWithText(expectedFormattedPubkey).assertIsDisplayed()
-  }
+// Assert// pubkeyis displayedVerify that (of8 afterof8of) val expectedFormattedPubkey = "12345678...90abcdef"
+ composetestRule.onNodeWithText(expectedFormattedPubkey).assertIsDisplayed()
+ }
 
-  /**
-   * Test 3: pubkeyがnullの場合、適切なメッセージが表示される
-   *
-   * Requirement 2.3: ログイン済み状態の確認
-   */
-  @Test
-  fun mainScreen_whenPubkeyIsNull_showsNotLoggedInMessage() {
-    // Arrange
-    val uiState = MainUiState(userPubkey = null, isLoggingOut = false)
+/*** test 3: pubkeynullof, properly messageis displayed** Requirement 2.3: logged instateofverify*/ @test
+ fun mainScreen_whenPubkeyIsNull_showsNotLoggedInMessage() {
+// Arrange val uiState = MainUiState(userPubkey = null, isLoggingOut = false)
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Assert
-    composeTestRule.onNodeWithText("ログインしていません").assertIsDisplayed()
-  }
+// Assert composetestRule.onNodeWithText("Not logged in").assertIsDisplayed()
+ }
 
-  /**
-   * Test 4: ログアウトボタンをタップするとコールバックが呼ばれる
-   *
-   * Requirement 2.4: ログアウト機能を提供
-   */
-  @Test
-  fun mainScreen_whenLogoutButtonClicked_callsOnLogout() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
-    var logoutCallbackCalled = false
-    val onLogout = { logoutCallbackCalled = true }
+/*** test 4: Logout buttontap** Requirement 2.4: logoutfunctionality*/ @test
+ fun mainScreen_whenLogoutButtonClicked_callsOnLogout() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+ var logoutCallbackCalled = false
+ val onLogout = { logoutCallbackCalled = true }
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
-    composeTestRule.onNodeWithText("ログアウト").performClick()
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
+ composetestRule.onNodeWithText("logout").performClick()
 
-    // Assert
-    assert(logoutCallbackCalled) { "onLogoutコールバックが呼ばれませんでした" }
-  }
+// Assert assert(logoutCallbackCalled) { "onLogout callback should not be called" }
+ }
 
-  /**
-   * Test 5: ログアウト処理中はローディングインジケーターが表示される
-   *
-   * Requirement 3.2: ログイン処理中にローディングインジケーターを表示（ログアウトにも適用）
-   */
-  @Test
-  fun mainScreen_whenLoggingOut_showsLoadingIndicator() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
+/*** test 5: logoutprocessingduringLoading indicatoris displayed** Requirement 3.2: loginduring processingLoading indicatordisplay (logout)*/ @test
+ fun mainScreen_whenLoggingOut_showsLoadingIndicator() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Assert
-    composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
-  }
+// Assert composetestRule.onNodeWithText("logoutduring...").assertIsDisplayed()
+ }
 
-  /**
-   * Test 6: ログアウト処理中はログアウトボタンが無効化される
-   *
-   * Best Practice: ログアウト中の二重クリック防止
-   */
-  @Test
-  fun mainScreen_whenLoggingOut_logoutButtonIsDisabled() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
-    var logoutCallbackCalled = false
-    val onLogout = { logoutCallbackCalled = true }
+/*** test 6: logoutprocessingduringLogout buttoninvalided** Best Practice: logoutduringof*/ @test
+ fun mainScreen_whenLoggingOut_logoutButtonIsDisabled() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
+ var logoutCallbackCalled = false
+ val onLogout = { logoutCallbackCalled = true }
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
 
-    // ログアウト処理中はボタンが表示されない（ローディングメッセージのみ）
-    composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
+// logoutprocessingbuttonis displayed (messageof) composetestRule.onNodeWithText("logoutduring...").assertIsDisplayed()
 
-    // Assert
-    // ログアウトボタンがクリックできないことを確認（存在しないため）
-    assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
-  }
+// Assert// Logout button Verify that (for) assert(!logoutCallbackCalled) { "onLogout callback should not be called during logout processing" }
+ }
 
-  /**
-   * Test 7 (Task 9.2): ログアウト完了後、ログイン画面へナビゲーションするためのコールバックが呼ばれる
-   *
-   * Requirement 2.4: ログアウト時にログイン画面へ遷移
-   *
-   * Note: この時点ではNavigation Composeは未実装（Task 10.2）のため、 ナビゲーションコールバックの存在と呼び出しのみをテストする
-   */
-  @Test
-  fun mainScreen_afterLogout_callsNavigateToLogin() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val loggedInState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
-    val loggedOutState = MainUiState(userPubkey = null, isLoggingOut = false)
-    var navigateToLoginCalled = false
-    val onNavigateToLogin = { navigateToLoginCalled = true }
+/*** test 7 (Task 9.2): logoutcompletionafter, Login screennavigationforof** Requirement 2.4: logoutwhenLogin screentransition** Note: Thisofat this pointNavigation Composeimplementation (Task 10.2)offor, navigationof test*/ @test
+ fun mainScreen_afterLogout_callsNavigateToLogin() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val loggedInState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+ val loggedOutState = MainUiState(userPubkey = null, isLoggingOut = false)
+ var navigateToLoginCalled = false
+ val onNavigateToLogin = { navigateToLoginCalled = true }
 
-    // Act - まずログイン状態でMainScreenを表示
-    composeTestRule.setContent {
-      MainScreen(uiState = loggedInState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
-    }
+// Act - login stateMainScreendisplay composetestRule.setContent {
+ MainScreen(uiState = loggedInState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
+ }
 
-    // Act - ログアウト状態に変更（pubkey = null）
-    composeTestRule.setContent {
-      MainScreen(uiState = loggedOutState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
-    }
+// Act - logoutstate (pubkey = null) composetestRule.setContent {
+ MainScreen(uiState = loggedOutState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
+ }
 
-    // Assert
-    // ログアウト完了後（pubkey = null）、ログイン画面へナビゲーションするコールバックが呼ばれる
-    assert(navigateToLoginCalled) { "ログアウト完了後、onNavigateToLoginコールバックが呼ばれるべき" }
-  }
+// Assert// logoutcompletionafter (pubkey = null), Login screennavigation assert(navigateToLoginCalled) { "onNavigateToLogin callback should be called after logout completion" }
+ }
 
-  // ========== 追加テスト: ナビゲーション境界条件 (Task 9.3) ==========
+// ========== test: navigation (Task 9.3) ==========
+/*** test 8: logoutprocessingduringnavigation** Requirement 2.4: logoutofproperly state*/ @test
+ fun mainScreen_doesNotNavigateWhileLoggingOut() {
+// Arrange val loggingOutState = MainUiState(userPubkey = null, isLoggingOut = true)
+ var navigateToLoginCalled = false
 
-  /**
-   * Test 8: ログアウト処理中はナビゲーションが呼ばれない
-   *
-   * Requirement 2.4: ログアウト時の適切な状態管理
-   */
-  @Test
-  fun mainScreen_doesNotNavigateWhileLoggingOut() {
-    // Arrange
-    val loggingOutState = MainUiState(userPubkey = null, isLoggingOut = true)
-    var navigateToLoginCalled = false
+// Act composetestRule.setContent {
+ MainScreen(
+ uiState = loggingOutState,
+ onLogout = {},
+ onNavigateToLogin = { navigateToLoginCalled = true })
+ }
 
-    // Act
-    composeTestRule.setContent {
-      MainScreen(
-          uiState = loggingOutState,
-          onLogout = {},
-          onNavigateToLogin = { navigateToLoginCalled = true })
-    }
+// Assert composetestRule.waitForIdle()
+ assert(!navigateToLoginCalled) { "Navigation should not be called during logout processing" }
+ }
 
-    // Assert
-    composeTestRule.waitForIdle()
-    assert(!navigateToLoginCalled) { "ログアウト処理中はナビゲーションが呼ばれてはいけません" }
-  }
+/*** test 9: not logged in stateofnavigation** Requirement 2.3: logged instateofverify*/ @test
+ fun mainScreen_doesNotNavigateWhenInitiallyNotLoggedIn() {
+// Arrange val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
+ var navigateToLoginCalled = false
 
-  /**
-   * Test 9: 初期から未ログイン状態の場合はナビゲーションが呼ばれない
-   *
-   * Requirement 2.3: ログイン済み状態の確認
-   */
-  @Test
-  fun mainScreen_doesNotNavigateWhenInitiallyNotLoggedIn() {
-    // Arrange
-    val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
-    var navigateToLoginCalled = false
+// Act composetestRule.setContent {
+ MainScreen(
+ uiState = notLoggedInState,
+ onLogout = {},
+ onNavigateToLogin = { navigateToLoginCalled = true })
+ }
 
-    // Act
-    composeTestRule.setContent {
-      MainScreen(
-          uiState = notLoggedInState,
-          onLogout = {},
-          onNavigateToLogin = { navigateToLoginCalled = true })
-    }
+// Assert composetestRule.waitForIdle()
+ assert(!navigateToLoginCalled) { "Navigation should not be called if initially not logged in" }
+ }
 
-    // Assert
-    composeTestRule.waitForIdle()
-    assert(!navigateToLoginCalled) { "初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません" }
-  }
+/*** test 10: pubkey (16) is displayed** Requirement 3.5: pubkeyofproperly display*/ @test
+ fun mainScreen_displaysShortPubkeyWithoutMasking() {
+// Arrange val shortPubkey = "short1234"
+ val uiState = MainUiState(userPubkey = shortPubkey, isLoggingOut = false)
 
-  /**
-   * Test 10: 短いpubkey（16文字未満）はマスキングなしで表示される
-   *
-   * Requirement 3.5: pubkeyの適切な表示
-   */
-  @Test
-  fun mainScreen_displaysShortPubkeyWithoutMasking() {
-    // Arrange
-    val shortPubkey = "short1234"
-    val uiState = MainUiState(userPubkey = shortPubkey, isLoggingOut = false)
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Assert composetestRule.onNodeWithText(shortPubkey).assertIsDisplayed()
+ }
 
-    // Assert
-    composeTestRule.onNodeWithText(shortPubkey).assertIsDisplayed()
-  }
+/*** test 11: loginduringis displayed** Requirement 2.3: logged instateofdisplay*/ @test
+ fun mainScreen_displaysLoggedInText() {
+// Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+ val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
 
-  /**
-   * Test 11: ログイン中テキストが表示される
-   *
-   * Requirement 2.3: ログイン済み状態の表示
-   */
-  @Test
-  fun mainScreen_displaysLoggedInText() {
-    // Arrange
-    val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
+// Act composetestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
+// Assert composetestRule.onNodeWithText("loginduring").assertIsDisplayed()
+ }
 
-    // Assert
-    composeTestRule.onNodeWithText("ログイン中").assertIsDisplayed()
-  }
+/*** test 12: not logged in stateLogout buttonis displayed** Requirement 3.4: properly UIdisplay*/ @test
+ fun mainScreen_hidesLogoutButtonWhenNotLoggedIn() {
+// Arrange val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
 
-  /**
-   * Test 12: 未ログイン状態ではログアウトボタンが表示されない
-   *
-   * Requirement 3.4: 適切なUI表示制御
-   */
-  @Test
-  fun mainScreen_hidesLogoutButtonWhenNotLoggedIn() {
-    // Arrange
-    val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
+// Act composetestRule.setContent { MainScreen(uiState = notLoggedInState, onLogout = {}) }
 
-    // Act
-    composeTestRule.setContent { MainScreen(uiState = notLoggedInState, onLogout = {}) }
-
-    // Assert
-    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
-  }
+// Assert composetestRule.onNodeWithText("logout").assertDoesNotExist()
+ }
 }

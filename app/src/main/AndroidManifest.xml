@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Task 1.3: Amber Intent検出用のqueries要素 -->
+    <!-- Task 1.3: queries element for Amber Intent detection -->
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
