@@ -96,7 +96,7 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
     // Validate pubkey format (64 hex characters)
     if (!isValidPubkey(pubkey)) {
       return Result.failure(
-          AmberError.InvalidResponse("Invalid pubkey format: must be 64 hex characters"))
+          AmberError.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
     }
 
     return Result.success(AmberResponse(pubkey, AMBER_PACKAGE_NAME))
@@ -106,7 +106,7 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
    * Validate pubkey format
    *
    * @param pubkey pubkey string to validate
-   * @return true if 64-character hex string, false otherwise
+   * @return true if valid Bech32-encoded pubkey (starts with npub1), false otherwise
    */
   private fun isValidPubkey(pubkey: String): Boolean {
     return pubkey.startsWith("npub1")

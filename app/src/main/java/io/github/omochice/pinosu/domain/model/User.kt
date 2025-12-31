@@ -8,13 +8,13 @@ package io.github.omochice.pinosu.domain.model
  *
  * Task 2.1: Domain model implementation Requirements: 1.4, 6.1
  *
- * @property pubkey Nostr public key (64 hexadecimal characters)
+ * @property pubkey Nostr public key (Bech32-encoded format, starts with npub1)
  * @throws IllegalArgumentException if pubkey is in an invalid format
  */
 data class User(val pubkey: String) {
   init {
     require(pubkey.isValidNostrPubkey()) {
-      "Invalid Nostr pubkey format: must be 64 hex characters"
+      "Invalid Nostr pubkey format: must be Bech32-encoded (npub1...)"
     }
   }
 }
@@ -22,7 +22,7 @@ data class User(val pubkey: String) {
 /**
  * Extension function for validating Nostr public key
  *
- * Validates that the public key is 64 hexadecimal characters (0-9, a-f).
+ * Validates that the public key is in Bech32-encoded format (starts with npub1).
  *
  * @return true if the public key format is valid, false otherwise
  */
