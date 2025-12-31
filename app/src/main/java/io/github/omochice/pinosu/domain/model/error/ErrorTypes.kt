@@ -75,36 +75,3 @@ sealed class StorageError : Exception() {
    */
   data class ReadError(override val message: String) : StorageError()
 }
-
-/**
- * Amber communication errors
- *
- * Represents errors that can occur during NIP-55 Intent communication with the Amber app. Used by
- * AmberSignerClient.
- *
- * Task 2.2: Error type definition Requirements: 1.5, 4.5, 5.1, 5.2, 5.3, 5.4
- */
-sealed class AmberError {
-  /** Amber app is not installed */
-  data object NotInstalled : AmberError()
-
-  /** User rejected the operation in Amber */
-  data object UserRejected : AmberError()
-
-  /** Response from Amber timed out */
-  data object Timeout : AmberError()
-
-  /**
-   * Response from Amber was in an invalid format
-   *
-   * @property message Error message
-   */
-  data class InvalidResponse(val message: String) : AmberError()
-
-  /**
-   * Failed to resolve Intent
-   *
-   * @property message Error message
-   */
-  data class IntentResolutionError(val message: String) : AmberError()
-}
