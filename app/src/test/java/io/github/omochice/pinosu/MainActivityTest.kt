@@ -27,7 +27,7 @@ class MainActivityTest {
   fun `when logged in on startup, should show main screen`() = runTest {
     // Given: ログイン済みユーザー
     val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
-    val loggedInUser = User("1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+    val loggedInUser = User("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
     coEvery { mockGetLoginStateUseCase() } returns loggedInUser
 
     // When: アプリ起動時にログイン状態を確認

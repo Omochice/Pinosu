@@ -123,7 +123,7 @@ class PresentationDomainIntegrationTest {
   fun `login flow - when Amber response success - should update UI state and navigate to main`() =
       runTest {
         // Given: Amberレスポンス処理が成功
-        val testPubkey = "a".repeat(64)
+        val testPubkey = "npub1" + "a".repeat(59)
         val testUser = User(testPubkey)
         val mockIntent = mockk<android.content.Intent>(relaxed = true)
         coEvery { authRepository.processAmberResponse(any(), any()) } returns
@@ -160,7 +160,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `startup flow - when user logged in - should restore login state`() = runTest {
     // Given: ログイン済みユーザーが保存されている
-    val testPubkey = "b".repeat(64)
+    val testPubkey = "npub1" + "b".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
@@ -351,7 +351,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `logout flow - when logout success - should clear login state`() = runTest {
     // Given: ログイン済み状態
-    val testPubkey = "c".repeat(64)
+    val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
     viewModel.checkLoginState()
@@ -390,7 +390,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `logout flow - when logout fails - should handle error gracefully`() = runTest {
     // Given: ログイン済み状態でログアウト失敗
-    val testPubkey = "d".repeat(64)
+    val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
     viewModel.checkLoginState()

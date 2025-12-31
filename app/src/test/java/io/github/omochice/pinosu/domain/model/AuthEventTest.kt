@@ -9,7 +9,7 @@ class AuthEventTest {
   /** UserLoggedInイベントを作成できることをテスト */
   @Test
   fun `create UserLoggedIn event`() {
-    val user = User("a".repeat(64))
+    val user = User("npub1" + "a".repeat(59))
     val event = AuthEvent.UserLoggedIn(user)
 
     assertTrue(event is AuthEvent)
@@ -29,7 +29,7 @@ class AuthEventTest {
   /** UserLoggedInイベントの equality をテスト */
   @Test
   fun `UserLoggedIn events with same user are equal`() {
-    val user = User("a".repeat(64))
+    val user = User("npub1" + "a".repeat(59))
     val event1 = AuthEvent.UserLoggedIn(user)
     val event2 = AuthEvent.UserLoggedIn(user)
 
@@ -39,8 +39,8 @@ class AuthEventTest {
   /** 異なるUserを持つUserLoggedInイベントは等しくないことをテスト */
   @Test
   fun `UserLoggedIn events with different users are not equal`() {
-    val user1 = User("a".repeat(64))
-    val user2 = User("b".repeat(64))
+    val user1 = User("npub1" + "a".repeat(59))
+    val user2 = User("npub1" + "b".repeat(59))
     val event1 = AuthEvent.UserLoggedIn(user1)
     val event2 = AuthEvent.UserLoggedIn(user2)
 
@@ -59,7 +59,7 @@ class AuthEventTest {
   /** AuthEventのsealed class特性をテスト（when式の網羅性） */
   @Test
   fun `AuthEvent sealed class allows exhaustive when`() {
-    val user = User("a".repeat(64))
+    val user = User("npub1" + "a".repeat(59))
     val loggedInEvent: AuthEvent = AuthEvent.UserLoggedIn(user)
     val loggedOutEvent: AuthEvent = AuthEvent.UserLoggedOut
 

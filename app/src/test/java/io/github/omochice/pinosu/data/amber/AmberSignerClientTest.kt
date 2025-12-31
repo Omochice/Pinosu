@@ -110,7 +110,7 @@ class AmberSignerClientTest {
   @Test
   fun testAmberResponse_Construction() {
     // Given: 有効なpubkeyとpackageName
-    val pubkey = "a".repeat(64)
+    val pubkey = "npub1" + "a".repeat(59)
     val packageName = "com.greenart7c3.nostrsigner"
 
     // When: AmberResponseを構築
@@ -129,8 +129,8 @@ class AmberSignerClientTest {
   @Test
   fun testAmberResponse_Equality() {
     // Given: 同じ値を持つ2つのAmberResponse
-    val response1 = AmberResponse("abc".repeat(21) + "a", "com.test.app")
-    val response2 = AmberResponse("abc".repeat(21) + "a", "com.test.app")
+    val response1 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
+    val response2 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
 
     // Then: 等価である
     assertEquals("Responses with same values should be equal", response1, response2)
@@ -317,7 +317,7 @@ class AmberSignerClientTest {
   @Test
   fun testHandleAmberResponse_Success_ReturnsAmberResponse() {
     // Given: RESULT_OKと有効なpubkeyを含むIntent
-    val pubkey = "a".repeat(64)
+    val pubkey = "npub1" + "a".repeat(59)
     val intent = android.content.Intent()
     intent.putExtra("result", pubkey)
 
@@ -420,15 +420,15 @@ class AmberSignerClientTest {
   }
 
   /**
-   * resultが不正な形式（64文字でない）の場合にInvalidResponseエラーを返すテスト
+   * resultが不正な形式（npub1で始まらない）の場合にInvalidResponseエラーを返すテスト
    *
    * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
    */
   @Test
   fun testHandleAmberResponse_InvalidPubkeyLength_ReturnsInvalidResponse() {
-    // Given: 不正な長さのpubkey（63文字）
+    // Given: 不正な形式のpubkey（npub1で始まらない）
     val intent = android.content.Intent()
-    intent.putExtra("result", "a".repeat(63))
+    intent.putExtra("result", "a".repeat(64))
 
     // When: handleAmberResponse()を呼び出す
     val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
@@ -442,15 +442,15 @@ class AmberSignerClientTest {
   }
 
   /**
-   * resultが不正な形式（16進数でない）の場合にInvalidResponseエラーを返すテスト
+   * resultが不正な形式（nsec1で始まる）の場合にInvalidResponseエラーを返すテスト
    *
    * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
    */
   @Test
   fun testHandleAmberResponse_InvalidPubkeyFormat_ReturnsInvalidResponse() {
-    // Given: 16進数でないpubkey（'g'を含む）
+    // Given: 秘密鍵形式のpubkey（nsec1で始まる）
     val intent = android.content.Intent()
-    intent.putExtra("result", "g" + "a".repeat(63))
+    intent.putExtra("result", "nsec1" + "a".repeat(59))
 
     // When: handleAmberResponse()を呼び出す
     val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
@@ -466,20 +466,20 @@ class AmberSignerClientTest {
   // ========== maskPubkey() Tests ==========
 
   /**
-   * 64文字のpubkeyを正しくマスキングするテスト
+   * Bech32形式のpubkeyを正しくマスキングするテスト
    *
    * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
    */
   @Test
   fun testMaskPubkey_ValidPubkey_ReturnsMaskedString() {
-    // Given: 64文字のpubkey
-    val pubkey = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    // Given: Bech32形式のpubkey
+    val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 
     // When: maskPubkey()を呼び出す
     val masked = amberSignerClient.maskPubkey(pubkey)
 
     // Then: 最初8文字 + "..." + 最後8文字の形式でマスキングされる
-    assertEquals("Should mask pubkey as first8...last8", "abcdef01...23456789", masked)
+    assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
   }
 
   /**
@@ -489,14 +489,14 @@ class AmberSignerClientTest {
    */
   @Test
   fun testMaskPubkey_DifferentPubkey_ReturnsMaskedString() {
-    // Given: 別の64文字のpubkey
-    val pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    // Given: 別のBech32形式のpubkey
+    val pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a"
 
     // When: maskPubkey()を呼び出す
     val masked = amberSignerClient.maskPubkey(pubkey)
 
     // Then: 最初8文字 + "..." + 最後8文字の形式でマスキングされる
-    assertEquals("Should mask pubkey as first8...last8", "12345678...90abcdef", masked)
+    assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
   }
 
   /**
@@ -540,8 +540,8 @@ class AmberSignerClientTest {
    */
   @Test
   fun testMaskPubkey_ResultLength_IsCorrect() {
-    // Given: 64文字のpubkey
-    val pubkey = "a".repeat(64)
+    // Given: Bech32形式のpubkey
+    val pubkey = "npub1" + "a".repeat(59)
 
     // When: maskPubkey()を呼び出す
     val masked = amberSignerClient.maskPubkey(pubkey)

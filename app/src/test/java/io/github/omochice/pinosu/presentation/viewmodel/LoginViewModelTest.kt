@@ -87,7 +87,7 @@ class LoginViewModelTest {
   @Test
   fun `checkLoginState should update mainUiState when user is logged in`() = runTest {
     // Given: ログイン済みユーザー
-    val testPubkey = "a".repeat(64)
+    val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(testPubkey)
     coEvery { getLoginStateUseCase() } returns testUser
 
@@ -218,7 +218,7 @@ class LoginViewModelTest {
   @Test
   fun `processAmberResponse should set loading state during processing`() = runTest {
     // Given: Amberレスポンス処理が成功
-    val testPubkey = "c".repeat(64)
+    val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
@@ -246,7 +246,7 @@ class LoginViewModelTest {
   @Test
   fun `processAmberResponse should set loginSuccess on success`() = runTest {
     // Given: Amberレスポンス処理が成功
-    val testPubkey = "d".repeat(64)
+    val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()

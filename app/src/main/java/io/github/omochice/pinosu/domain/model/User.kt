@@ -26,6 +26,6 @@ data class User(val pubkey: String) {
  *
  * @return true if the public key format is valid, false otherwise
  */
-private fun String.isValidNostrPubkey(): Boolean {
+fun String.isValidNostrPubkey(): Boolean {
   return this.startsWith("npub1")
 }

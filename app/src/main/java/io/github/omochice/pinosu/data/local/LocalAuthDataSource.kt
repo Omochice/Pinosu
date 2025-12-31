@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.StorageError
+import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -73,8 +74,8 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
     return try {
       val pubkey = sharedPreferences.getString(KEY_USER_PUBKEY, null) ?: return null
 
-      // Task 3.2: Validation logic - pubkey format validation
-      if (!pubkey.matches(Regex("^[0-9a-f]{64}$"))) {
+      // Task 3.2: Validation logic - pubkey format validation (Bech32-encoded)
+      if (!pubkey.isValidNostrPubkey()) {
         return null
       }
 

@@ -56,7 +56,7 @@ class AmberAuthRepositoryTest {
   @Test
   fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
     // Given: LocalAuthDataSourceがユーザーを返す
-    val expectedUser = User("a".repeat(64))
+    val expectedUser = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.getUser() } returns expectedUser
 
     // When: getLoginState()を呼び出す
@@ -95,7 +95,7 @@ class AmberAuthRepositoryTest {
   @Test
   fun testSaveLoginState_Success_ReturnsSuccess() = runTest {
     // Given: LocalAuthDataSourceが正常に保存する
-    val user = User("a".repeat(64))
+    val user = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.saveUser(user) } returns Unit
 
     // When: saveLoginState()を呼び出す
@@ -114,7 +114,7 @@ class AmberAuthRepositoryTest {
   @Test
   fun testSaveLoginState_Failure_ReturnsStorageError() = runTest {
     // Given: LocalAuthDataSourceが例外をスロー
-    val user = User("a".repeat(64))
+    val user = User("npub1" + "a".repeat(59))
     val storageError = StorageError.WriteError("Failed to save")
     coEvery { localAuthDataSource.saveUser(user) } throws storageError
 
@@ -180,7 +180,7 @@ class AmberAuthRepositoryTest {
   @Test
   fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runTest {
     // Given: Amberが成功レスポンスを返し、ローカル保存も成功
-    val pubkey = "a".repeat(64)
+    val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
     val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
 
@@ -296,7 +296,7 @@ class AmberAuthRepositoryTest {
   @Test
   fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
     // Given: Amberは成功するがローカル保存が失敗
-    val pubkey = "a".repeat(64)
+    val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
     val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
 

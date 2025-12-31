@@ -34,7 +34,7 @@ class GetLoginStateUseCaseTest {
   @Test
   fun `invoke returns logged in user when user is logged in`() = runTest {
     // Given: ログイン済み状態
-    val testPubkey = "a".repeat(64)
+    val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
@@ -62,7 +62,7 @@ class GetLoginStateUseCaseTest {
   @Test
   fun `invoke is read-only operation`() = runTest {
     // Given: ログイン済み状態
-    val testPubkey = "b".repeat(64)
+    val testPubkey = "npub1" + "b".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
