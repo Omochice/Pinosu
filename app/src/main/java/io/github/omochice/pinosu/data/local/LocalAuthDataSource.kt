@@ -14,11 +14,7 @@ import javax.inject.Singleton
 /**
  * Local authentication data data source
  *
- * Uses EncryptedSharedPreferences to securely store and retrieve user's public keys. Provides
- * TEE/SE level security through hardware-assisted encryption using Android Keystore.
- *
- * Task 3.1: EncryptedSharedPreferences initialization Task 3.2: User data save/get/delete
- * functionality Requirements: 1.4, 2.1, 2.2, 2.5, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3
+ * Uses EncryptedSharedPreferences to securely store and retrieve user's public keys.
  */
 @Singleton
 class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Context) {
@@ -26,12 +22,8 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
   private val sharedPreferences: SharedPreferences
 
   init {
-    // Task 3.1: MasterKey generation via Android Keystore (AES256_GCM)
-    // Requirement 3.2: Hardware-assisted encryption using Android Keystore
     val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
 
-    // Task 3.1: Configure AES256-SIV key encryption and AES256-GCM value encryption
-    // Requirement 3.3: Encrypt both keys and values (AES256-SIV/AES256-GCM)
     sharedPreferences =
         EncryptedSharedPreferences.create(
             context,
@@ -43,8 +35,6 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
 
   /**
    * Save user information
-   *
-   * Task 3.2: saveUser implementation Requirement 1.4: Login state persistence
    *
    * @param user User to save
    * @throws StorageError.WriteError when save fails
@@ -66,33 +56,26 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext context: Conte
   /**
    * Retrieve saved user information
    *
-   * Task 3.2: getUser implementation Requirement 2.1: State restoration from local storage
-   *
    * @return Saved user, null if not exists or invalid
    */
   suspend fun getUser(): User? {
     return try {
       val pubkey = sharedPreferences.getString(KEY_USER_PUBKEY, null) ?: return null
 
-      // Task 3.2: Validation logic - pubkey format validation (Bech32-encoded)
       if (!pubkey.isValidNostrPubkey()) {
         return null
       }
 
-      // Task 3.2: Update last_accessed timestamp
       sharedPreferences.edit().putLong(KEY_LAST_ACCESSED, System.currentTimeMillis()).apply()
 
       User(pubkey)
     } catch (e: Exception) {
-      // Return null for invalid data or decryption errors
       null
     }
   }
 
   /**
    * Clear login state
-   *
-   * Task 3.2: clearLoginState implementation Requirement 2.2: Logout functionality
    *
    * @throws StorageError.WriteError when clear fails
    */

@@ -28,19 +28,9 @@ import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
 /**
  * Main screen UI
  *
- * Task 9.1: Basic implementation of MainScreen
- * - Place logout button
- * - Display user pubkey (with partial masking)
- * - Show loading indicator during logout process
- *
- * Task 9.2: Logout process and navigation
- * - Navigate to login screen after logout completes
- *
- * Requirements: 2.3, 2.4, 3.4, 3.5
- *
  * @param uiState Main screen UI state
  * @param onLogout Callback when logout button is tapped
- * @param onNavigateToLogin Callback to navigate to login screen after logout completes (Task 9.2)
+ * @param onNavigateToLogin Callback to navigate to login screen after logout completes
  */
 @Composable
 fun MainScreen(
@@ -48,13 +38,9 @@ fun MainScreen(
     onLogout: () -> Unit,
     onNavigateToLogin: () -> Unit = {},
 ) {
-  // Task 9.2: Detect logout completion - navigate to login screen when pubkey becomes null
-  // Remember previous pubkey state and detect transition from logged in to logged out (null)
   var previousPubkey by remember { mutableStateOf(uiState.userPubkey) }
 
   LaunchedEffect(uiState.userPubkey) {
-    // Navigate when transitioning from logged in (previousPubkey != null) to logged out (userPubkey
-    // == null)
     if (previousPubkey != null && uiState.userPubkey == null && !uiState.isLoggingOut) {
       onNavigateToLogin()
     }
@@ -102,9 +88,6 @@ fun MainScreen(
 /**
  * Format public key for display
  *
- * According to design.md L329, pubkey should be displayed with partial masking: show first 8
- * characters and last 8 characters, omit the middle
- *
  * @param pubkey Nostr public key (64-character hexadecimal)
  * @return Formatted public key string
  */
@@ -116,9 +99,6 @@ private fun formatPubkey(pubkey: String): String {
   }
 }
 
-// ========== Previews ==========
-
-/** MainScreen preview - logged in state */
 @Preview(showBackground = true)
 @Composable
 private fun MainScreenLoggedInPreview() {
@@ -129,7 +109,6 @@ private fun MainScreenLoggedInPreview() {
   MainScreen(uiState = uiState, onLogout = {})
 }
 
-/** MainScreen preview - logging out state */
 @Preview(showBackground = true)
 @Composable
 private fun MainScreenLoggingOutPreview() {
@@ -140,7 +119,6 @@ private fun MainScreenLoggingOutPreview() {
   MainScreen(uiState = uiState, onLogout = {})
 }
 
-/** MainScreen preview - not logged in state */
 @Preview(showBackground = true)
 @Composable
 private fun MainScreenNotLoggedInPreview() {

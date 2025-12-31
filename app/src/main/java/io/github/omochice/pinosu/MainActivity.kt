@@ -23,22 +23,6 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 
-/**
- * MainActivity class
- *
- * Task 10.1: Check login state on app launch
- * - Call GetLoginStateUseCase in onCreate()
- * - Logged in → Show main screen
- * - Not logged in → Show login screen
- * - Clear login state when invalid data detected (implemented as null return in UseCase)
- *
- * Task 10.3: ActivityResultAPI integration
- * - Configure registerForActivityResult
- * - Integrate with AmberSignerClient
- * - Handle Amber Intent results
- *
- * Requirements: 1.1, 1.3, 2.2, 2.3
- */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -57,20 +41,6 @@ class MainActivity : ComponentActivity() {
   }
 }
 
-/**
- * Main composable for Pinosu app
- *
- * Task 10.2: Navigation Compose integration
- * - Manage screen navigation using NavHost
- * - Set initial route based on login state
- * - Implement navigation logic
- *
- * Task 10.3: ActivityResultAPI integration
- * - Integrate with AmberSignerClient
- * - Launch Amber Intent and handle results
- *
- * Requirements: 1.1, 1.3, 2.2, 2.3, 3.3
- */
 @Composable
 fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
   val navController = rememberNavController()
@@ -110,7 +80,6 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
           },
           onNavigateToMain = {
             navController.navigate(MAIN_ROUTE) { popUpTo(LOGIN_ROUTE) { inclusive = true } }
-            // Reset loginSuccess flag to prevent navigation loop
             viewModel.dismissError()
           })
     }
@@ -125,9 +94,7 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
       MainScreen(
           uiState = mainUiState,
           onLogout = { viewModel.onLogoutButtonClicked() },
-          onNavigateToLogin = {
-            // Note: Navigation after logout is automatically executed by LaunchedEffect
-          })
+          onNavigateToLogin = {})
     }
   }
 }

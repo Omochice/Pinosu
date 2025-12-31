@@ -27,22 +27,6 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
 /**
  * Composable function for the login screen
  *
- * Task 8.1: Basic implementation of LoginScreen
- * - Observe LoginViewModel.uiState with collectAsState()
- * - Place "Login with Amber" button
- * - Loading indicator display logic
- *
- * Task 8.2: Error dialog implementation
- * - Amber not installed dialog (with Play Store link)
- * - Timeout dialog (with retry button)
- * - Generic error dialog
- *
- * Task 8.3: Navigation on login success
- * - Display login success message
- * - Navigate to main screen
- *
- * Requirements: 3.1, 3.2, 3.3, 1.2, 1.5, 5.1, 5.4
- *
  * @param uiState Login screen UI state
  * @param onLoginButtonClick Callback when login button is clicked
  * @param onDismissDialog Callback to dismiss dialog
@@ -132,21 +116,18 @@ fun LoginScreen(
   }
 }
 
-/** LoginScreen preview - initial state */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
   MaterialTheme { LoginScreen(uiState = LoginUiState(), onLoginButtonClick = {}) }
 }
 
-/** LoginScreen preview - loading state */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenLoadingPreview() {
   MaterialTheme { LoginScreen(uiState = LoginUiState(isLoading = true), onLoginButtonClick = {}) }
 }
 
-/** LoginScreen preview - Amber not installed dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenAmberInstallDialogPreview() {
@@ -155,7 +136,6 @@ fun LoginScreenAmberInstallDialogPreview() {
   }
 }
 
-/** LoginScreen preview - error dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenErrorDialogPreview() {
@@ -166,7 +146,6 @@ fun LoginScreenErrorDialogPreview() {
   }
 }
 
-/** LoginScreen preview - timeout dialog */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenTimeoutDialogPreview() {
@@ -179,7 +158,6 @@ fun LoginScreenTimeoutDialogPreview() {
   }
 }
 
-/** LoginScreen preview - login success (Task 8.3) */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenSuccessPreview() {
