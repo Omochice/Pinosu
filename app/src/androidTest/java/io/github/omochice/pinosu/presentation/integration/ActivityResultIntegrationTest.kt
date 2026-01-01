@@ -1,63 +1,92 @@
 package io.github.omochice.pinosu.presentation.integration
 
-import dagger.hilt.roid.testing.HiltAndroidRule
-import dagger.hilt.roid.testing.HiltAndroidtest
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.MainActivity
 import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import javax.inject.Inject
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.test
-import roidx.compose.ui.test.junit4.createAndroidComposeRule
-import roidx.compose.ui.test.onNodeWithText
-import roidx.compose.ui.test.performClick
-import roidx.test.ext.junit.runners.AndroidJUnit4
 
+/**
+ * ActivityResultAPIとAmber Intent統合のテスト
+ *
+ * Task 10.3: ActivityResultAPIの統合
+ * - registerForActivityResultの設定
+ * - AmberSignerClientへのActivityResultLauncher渡し
+ * - Amber Intent結果のハンドリング
+ *
+ * Requirements: 1.1, 1.3
+ */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class ActivityResultIntegrationtest {
+class ActivityResultIntegrationTest {
 
- @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
+  @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
 
- @get:Rule(order = 1) val composetestRule = createAndroidComposeRule<MainActivity>()
+  @get:Rule(order = 1) val composeTestRule = createAndroidComposeRule<MainActivity>()
 
- @Inject lateinit var amberSignerClient: AmberSignerClient
+  @Inject lateinit var amberSignerClient: AmberSignerClient
 
- @Before
- fun setup() {
- hiltRule.inject()
- }
+  @Before
+  fun setup() {
+    hiltRule.inject()
+  }
 
- @test
- fun whenAmberInstalled_loginButtonClick_shouldLaunchAmberIntent() {
-// Given: Amberedingstate val isInstalled = amberSignerClient.checkAmberInstalled()
+  @Test
+  fun whenAmberInstalled_loginButtonClick_shouldLaunchAmberIntent() {
+    // Given: Amberがインストールされている状態
+    val isInstalled = amberSignerClient.checkAmberInstalled()
 
-// AmberwhenInstallednot testskip if (!isInstalled) {
- return
- }
+    // Amberが実際にインストールされていない場合はテストをスキップ
+    if (!isInstalled) {
+      return
+    }
 
-// When: Login button composetestRule.onNodeWithText("Login with Amber").performClick()
+    // When: ログインボタンをクリック
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-// Then: Amber Intented// Note: whenofIntenttestverification for,// Error dialogdisplay not Verify composetestRule.waitForIdle()
- composetestRule.onNodeWithText("Amber app not installed").assertDoesNotExist()
- }
+    // Then: Amber Intentが起動される
+    // Note: 実際のIntent起動はテスト環境では検証困難なため、
+    // エラーダイアログが表示されないことを確認
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Amberアプリがインストールされていません").assertDoesNotExist()
+  }
 
- @test
- fun whenAmberNotInstalled_loginButtonClick_shouldShowErrorDialog() {
-// Given: Amberednot state val isInstalled = amberSignerClient.checkAmberInstalled()
+  @Test
+  fun whenAmberNotInstalled_loginButtonClick_shouldShowErrorDialog() {
+    // Given: Amberがインストールされていない状態
+    val isInstalled = amberSignerClient.checkAmberInstalled()
 
-// Amber is installedtestskip if (isInstalled) {
- return
- }
+    // Amberがインストールされている場合はテストをスキップ
+    if (isInstalled) {
+      return
+    }
 
-// When: Login button composetestRule.onNodeWithText("Login with Amber").performClick()
+    // When: ログインボタンをクリック
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-// Then: AmberInstalldialogis displayed composetestRule.waitForIdle()
- composetestRule.onNodeWithText("Amber app not installed").assertExists()
- }
+    // Then: Amber未インストールダイアログが表示される
+    composeTestRule.waitForIdle()
+    composeTestRule.onNodeWithText("Amberアプリがインストールされていません").assertExists()
+  }
 
- @test
- fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {
-// Given: Login screendisplayingstate// Note: testswhenofAmberapp of for,// eda
-// Ambertesttest// testtest// ActivityResultAPIof MainActivity.kt lines 84-91 implementation// - rememberLauncherForActivityResult// - viewModel.processAmberResponse processing }
+  @Test
+  fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {
+    // Given: ログイン画面が表示されている状態
+    // Note: このテストは実際のAmberアプリとの統合が必要なため、
+    // モックされたレスポンスを使用する必要がある
+
+    // Amber統合テストは手動テスト推奨
+    // 自動化テストではモックを使用した単体テストで代替
+    // ActivityResultAPIの統合自体は MainActivity.kt lines 84-91 で実装済み
+    // - rememberLauncherForActivityResult でランチャー登録
+    // - viewModel.processAmberResponse でレスポンス処理
+  }
 }

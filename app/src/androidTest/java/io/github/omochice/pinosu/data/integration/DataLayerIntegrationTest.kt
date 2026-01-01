@@ -1,211 +1,273 @@
 package io.github.omochice.pinosu.data.integration
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.domain.model.User
-import kotlinx.coroutines.test.runtest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.*import org.junit.Before
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.test
-import roid.content.Context
-import roidx.test.core.app.ApplicationProvider
-import roidx.test.ext.junit.runners.AndroidJUnit4
-
-class DataLayerIntegrationtest {
-
- private lateinit var context: Context
- private lateinit var localAuthDataSource: LocalAuthDataSource
- private lateinit var amberSignerClient: AmberSignerClient
- private lateinit var authRepository: AmberAuthRepository
-
- @Before
- fun setup() {
- context = ApplicationProvider.getApplicationContext()
-
-// LocalAuthDataSourcewhenImplementation of (EncryptedSharedPreferences) localAuthDataSource = LocalAuthDataSource(context)
-
-// AmberSignerClientwhenImplementation of (AmbercommunicationtestDifferent test) amberSignerClient = AmberSignerClient(context)
-
-// AuthRepositorywhenImplementation of authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
- }
-
- @After
- fun tearDown() {
-// afterdataclear runtest { localAuthDataSource.clearLoginState() }
- }
-
-// ========== AuthRepository + LocalAuthDataSource test ==========
-/**
- * AuthRepository delegates Amber installation detection to AmberSignerClient
- *
- * flow:
- * 1. AuthRepository requests Amber installation check
- * 2. AmberSignerClient performs the detection
- * 3. Result is returned
- */
-@test
- fun checkAmberInstalled_shouldUseAmberSignerClient() {
-// When: Amberverify val isInstalled = authRepository.checkAmberInstalled()
-
-// Then: AmberSignerClientofresultis returned (whenofstate)// Note: resultofAmberInstallstatefor, booleanvalueofverify assertTrue(
-"checkAmberInstalled should return boolean", isInstalled || !isInstalled) // always true }
-
-// ========== EncryptedSharedPreferencestest (save → get → delete) ==========
-/**
- * EncryptedSharedPreferences integration: save and retrieve user data
- *
- * flow:
- * 1. Save user data via LocalAuthDataSource
- * 2. Data is encrypted and stored in EncryptedSharedPreferences
- * 3. Retrieve and verify saved data
- */
-@test
- fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runtest {
-// Given: testUser val testPubkey = "b".repeat(64)
- val testUser = User(testPubkey)
-
-// When: Usersave localAuthDataSource.saveUser(testUser)
- advanceUntilIdle()
-
-// Then: savedatagetcan val retrievedUser = localAuthDataSource.getUser()
- assertNotNull("Retrieved user should not be null", retrievedUser)
- assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
- }
 
 /**
- * EncryptedSharedPreferencestest: save → delete → get
+ * Data層の統合テスト
  *
- * flow:
- * 1. Save user data via LocalAuthDataSource
- * 2. Clear login state (deletion during logout)
- * 3. Verify that data is gone after deletion
- */
-@test
- fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runtest {
-// Given: Usersaveingstate val testPubkey = "c".repeat(64)
- val testUser = User(testPubkey)
- localAuthDataSource.saveUser(testUser)
- advanceUntilIdle()
-
- val userBeforeDelete = localAuthDataSource.getUser()
- assertNotNull("User should exist before delete", userBeforeDelete)
-
-// When: login stateclear localAuthDataSource.clearLoginState()
- advanceUntilIdle()
-
-// Then: deletedataget val userAfterDelete = localAuthDataSource.getUser()
- assertNull("User should be null after delete", userAfterDelete)
- }
-
-/**
- * EncryptedSharedPreferencestest: ofsavegetdelete
+ * Task 12.2: Data層の統合テスト
+ * - AuthRepository + AmberSignerClient + LocalAuthDataSource 統合テスト
+ * - EncryptedSharedPreferences実動作テスト(保存 → 取得 → 削除)
  *
- * flow:
- * 1. Save, retrieve, and delete operations in sequence
- * 2. Verify EncryptedSharedPreferences behaves correctly
- * 3. Test multiple cycles of save-get-delete
- */
-@test
- fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runtest {
-// Given: oftestUser val users =
- listOf(
- User("d".repeat(64)),
- User("e".repeat(64)),
- User("f".repeat(64)),
- )
-
-// When: Usersave → get → delete users.forEach { user ->
-// save localAuthDataSource.saveUser(user)
-
-// get val retrievedUser = localAuthDataSource.getUser()
- assertNotNull("Retrieved user should not be null", retrievedUser)
- assertEquals("Retrieved pubkey should match", user.pubkey, retrievedUser?.pubkey)
-
-// delete localAuthDataSource.clearLoginState()
-
-// deleteverify val userAfterDelete = localAuthDataSource.getUser()
- assertNull("User should be null after delete", userAfterDelete)
- }
- }
-
-/**
- * logoutflow → EncryptedSharedPreferencesdatadelete
+ * テスト方針:
+ * - Data層: 実際のAmberAuthRepository, 実際のLocalAuthDataSource, 実際のAmberSignerClient
+ * - Storage: 実際のEncryptedSharedPreferences (Android runtime必要)
+ * - Note: Amber通信部分は実際のAmberアプリが必要なため、ストレージ操作のみテスト
  *
- * flow:
- * 1. User is in logged-in state
- * 2. Call AuthRepository.logout()
- * 3. LocalAuthDataSource clears login state
- * 4. EncryptedSharedPreferences data is deleted
+ * Requirements: 1.3, 1.4, 2.1, 2.5
  */
-@test
- fun logoutFlow_shouldClearEncryptedStorage() = runtest {
-// Given: User is logged in val testPubkey = "g".repeat(64)
- val testUser = User(testPubkey)
- localAuthDataSource.saveUser(testUser)
- advanceUntilIdle()
+@RunWith(AndroidJUnit4::class)
+class DataLayerIntegrationTest {
 
- val userBeforeLogout = authRepository.getLoginState()
- assertNotNull("User should exist before logout", userBeforeLogout)
- assertEquals("Pubkey should match", testPubkey, userBeforeLogout?.pubkey)
+  private lateinit var context: Context
+  private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var amberSignerClient: AmberSignerClient
+  private lateinit var authRepository: AmberAuthRepository
 
-// When: logout authRepository.logout()
- advanceUntilIdle()
+  @Before
+  fun setup() {
+    context = ApplicationProvider.getApplicationContext()
 
-// Then: EncryptedSharedPreferencesdatadeleteed val userAfterLogout = authRepository.getLoginState()
- assertNull("User should be null after logout", userAfterLogout)
+    // LocalAuthDataSourceは実際の実装を使用 (EncryptedSharedPreferences)
+    localAuthDataSource = LocalAuthDataSource(context)
 
-// EncryptedSharedPreferencesverify val directRetrieve = localAuthDataSource.getUser()
- assertNull("User should be null in storage", directRetrieve)
- }
+    // AmberSignerClientも実際の実装を使用 (Amber通信テストは別途手動テスト推奨)
+    amberSignerClient = AmberSignerClient(context)
 
-/**
- * restart app → login state
- *
- * flow:
- * 1. Save user data
- * 2. Create new AuthRepository/LocalAuthDataSource instances (simulating app restart)
- * 3. Verify that saved login state is restored
- */
-@test
- fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runtest {
-// Given: User is logged in val testPubkey = "h".repeat(64)
- val testUser = User(testPubkey)
- localAuthDataSource.saveUser(testUser)
- advanceUntilIdle()
+    // AuthRepositoryは実際の実装を使用
+    authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
+  }
 
-// When: () val newLocalAuthDataSource = LocalAuthDataSource(context)
- val newAuthRepository = AmberAuthRepository(amberSignerClient, newLocalAuthDataSource)
+  @After
+  fun tearDown() {
+    // テスト後にデータをクリア
+    runTest { localAuthDataSource.clearLoginState() }
+  }
 
-// Then: login stateed val restoredUser = newAuthRepository.getLoginState()
- assertNotNull("User should be restored after restart", restoredUser)
- assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
- }
+  // ========== AuthRepository + LocalAuthDataSource 統合テスト ==========
 
-/**
- * invaliddata → null
- *
- * flow:
- * 1. Attempt to save invalid data
- * 2. User validation fails with an error
- * 3. Invalid data is rejected
- * 4. No data is stored
- */
-@test
- fun invalidData_shouldBeRejectedByUserValidation() = runtest {
-// Given: Invalid val invalidPubkey = "invalid_pubkey_format"
+  /**
+   * Amber未インストール検出 → AuthRepository統合
+   *
+   * 統合フロー:
+   * 1. AuthRepositoryがAmberインストール確認
+   * 2. AmberSignerClientで検出処理
+   * 3. 結果を返す
+   *
+   * Requirement 1.2
+   */
+  @Test
+  fun checkAmberInstalled_shouldUseAmberSignerClient() {
+    // When: Amberインストール確認
+    val isInstalled = authRepository.checkAmberInstalled()
 
-// When: invalid User// Then: Userofrequireexception occurs try {
- val invalidUser = User(invalidPubkey)
- localAuthDataSource.saveUser(invalidUser)
- fail("Should throw exception for invalid pubkey")
- } catch (e: IllegalArgumentException) {
-// Expected exception assertTrue("Should contain validation error", e.message?.contains("Invalid") == true)
- }
- }
+    // Then: AmberSignerClientの結果が返される (実際のデバイス状態に依存)
+    // Note: 結果はデバイスのAmberインストール状態に依存するため、boolean値のみ確認
+    assertTrue(
+        "checkAmberInstalled should return boolean", isInstalled || !isInstalled) // always true
+  }
 
-// : Coroutineofcompletion private suspend fun advanceUntilIdle() {
- kotlinx.coroutines.delay(100)
- }
+  // ========== EncryptedSharedPreferences実動作テスト (保存 → 取得 → 削除) ==========
+
+  /**
+   * EncryptedSharedPreferences実動作テスト: 保存 → 取得
+   *
+   * 統合フロー:
+   * 1. LocalAuthDataSourceにユーザー情報を保存
+   * 2. EncryptedSharedPreferencesで暗号化保存される
+   * 3. 保存したデータを取得して検証
+   *
+   * Requirements: 2.1, 6.2
+   */
+  @Test
+  fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runTest {
+    // Given: テストユーザー
+    val testPubkey = "b".repeat(64)
+    val testUser = User(testPubkey)
+
+    // When: ユーザーを保存
+    localAuthDataSource.saveUser(testUser)
+    advanceUntilIdle()
+
+    // Then: 保存したデータを取得できる
+    val retrievedUser = localAuthDataSource.getUser()
+    assertNotNull("Retrieved user should not be null", retrievedUser)
+    assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
+  }
+
+  /**
+   * EncryptedSharedPreferences実動作テスト: 保存 → 削除 → 取得
+   *
+   * 統合フロー:
+   * 1. LocalAuthDataSourceにユーザー情報を保存
+   * 2. ログアウト処理で削除
+   * 3. 削除後は取得できないことを確認
+   *
+   * Requirements: 2.5
+   */
+  @Test
+  fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runTest {
+    // Given: ユーザーが保存されている状態
+    val testPubkey = "c".repeat(64)
+    val testUser = User(testPubkey)
+    localAuthDataSource.saveUser(testUser)
+    advanceUntilIdle()
+
+    val userBeforeDelete = localAuthDataSource.getUser()
+    assertNotNull("User should exist before delete", userBeforeDelete)
+
+    // When: ログイン状態をクリア
+    localAuthDataSource.clearLoginState()
+    advanceUntilIdle()
+
+    // Then: 削除後はデータを取得できない
+    val userAfterDelete = localAuthDataSource.getUser()
+    assertNull("User should be null after delete", userAfterDelete)
+  }
+
+  /**
+   * EncryptedSharedPreferences実動作テスト: 複数回の保存・取得・削除サイクル
+   *
+   * 統合フロー:
+   * 1. 保存 → 取得 → 削除を複数回繰り返す
+   * 2. EncryptedSharedPreferencesの安定性を確認
+   *
+   * Requirements: 2.1, 2.5
+   */
+  @Test
+  fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runTest {
+    // Given: 複数のテストユーザー
+    val users =
+        listOf(
+            User("d".repeat(64)),
+            User("e".repeat(64)),
+            User("f".repeat(64)),
+        )
+
+    // When: 各ユーザーで保存 → 取得 → 削除サイクルを実行
+    users.forEach { user ->
+      // 保存
+      localAuthDataSource.saveUser(user)
+
+      // 取得
+      val retrievedUser = localAuthDataSource.getUser()
+      assertNotNull("Retrieved user should not be null", retrievedUser)
+      assertEquals("Retrieved pubkey should match", user.pubkey, retrievedUser?.pubkey)
+
+      // 削除
+      localAuthDataSource.clearLoginState()
+
+      // 削除確認
+      val userAfterDelete = localAuthDataSource.getUser()
+      assertNull("User should be null after delete", userAfterDelete)
+    }
+  }
+
+  /**
+   * ログアウトフロー → EncryptedSharedPreferencesからデータ削除
+   *
+   * 統合フロー:
+   * 1. ユーザーがログイン済み状態
+   * 2. AuthRepository.logout()を呼び出す
+   * 3. LocalAuthDataSourceでログイン状態がクリアされる
+   * 4. EncryptedSharedPreferencesからデータが削除される
+   *
+   * Requirements: 2.4, 2.5
+   */
+  @Test
+  fun logoutFlow_shouldClearEncryptedStorage() = runTest {
+    // Given: ユーザーがログイン済み
+    val testPubkey = "g".repeat(64)
+    val testUser = User(testPubkey)
+    localAuthDataSource.saveUser(testUser)
+    advanceUntilIdle()
+
+    val userBeforeLogout = authRepository.getLoginState()
+    assertNotNull("User should exist before logout", userBeforeLogout)
+    assertEquals("Pubkey should match", testPubkey, userBeforeLogout?.pubkey)
+
+    // When: ログアウト
+    authRepository.logout()
+    advanceUntilIdle()
+
+    // Then: EncryptedSharedPreferencesからデータが削除される
+    val userAfterLogout = authRepository.getLoginState()
+    assertNull("User should be null after logout", userAfterLogout)
+
+    // EncryptedSharedPreferencesから直接確認
+    val directRetrieve = localAuthDataSource.getUser()
+    assertNull("User should be null in storage", directRetrieve)
+  }
+
+  /**
+   * アプリ再起動シミュレーション → ログイン状態復元
+   *
+   * 統合フロー:
+   * 1. ユーザー情報を保存
+   * 2. AuthRepository/LocalAuthDataSourceインスタンスを再作成 (再起動シミュレーション)
+   * 3. 保存されたログイン状態を復元できることを確認
+   *
+   * Requirements: 2.2, 2.3
+   */
+  @Test
+  fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runTest {
+    // Given: ユーザーがログイン済み
+    val testPubkey = "h".repeat(64)
+    val testUser = User(testPubkey)
+    localAuthDataSource.saveUser(testUser)
+    advanceUntilIdle()
+
+    // When: アプリ再起動をシミュレーション (新しいインスタンスを作成)
+    val newLocalAuthDataSource = LocalAuthDataSource(context)
+    val newAuthRepository = AmberAuthRepository(amberSignerClient, newLocalAuthDataSource)
+
+    // Then: ログイン状態が復元される
+    val restoredUser = newAuthRepository.getLoginState()
+    assertNotNull("User should be restored after restart", restoredUser)
+    assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
+  }
+
+  /**
+   * 不正データハンドリング → nullを返す
+   *
+   * 統合フロー:
+   * 1. 不正な公開鍵フォーマットのデータを保存しようとする
+   * 2. Userクラスのバリデーションでエラー
+   * 3. 保存されずにnullが返される
+   *
+   * Requirement 6.1
+   */
+  @Test
+  fun invalidData_shouldBeRejectedByUserValidation() = runTest {
+    // Given: 不正な公開鍵フォーマット
+    val invalidPubkey = "invalid_pubkey_format"
+
+    // When: 不正なUserを作成しようとする
+    // Then: Userクラスのrequireで例外が発生
+    try {
+      val invalidUser = User(invalidPubkey)
+      localAuthDataSource.saveUser(invalidUser)
+      fail("Should throw exception for invalid pubkey")
+    } catch (e: IllegalArgumentException) {
+      // Expected exception
+      assertTrue("Should contain validation error", e.message?.contains("Invalid") == true)
+    }
+  }
+
+  // ヘルパー関数: Coroutineの完了を待つ
+  private suspend fun advanceUntilIdle() {
+    kotlinx.coroutines.delay(100)
+  }
 }

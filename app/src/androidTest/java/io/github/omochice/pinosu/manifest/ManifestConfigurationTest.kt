@@ -1,18 +1,19 @@
 package io.github.omochice.pinosu.manifest
 
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.test
-import roid.content.Context
-import roid.content.Intent
-import roid.content.pm.PackageManager
-import roid.net.Uri
-import roidx.test.core.app.ApplicationProvider
-import roidx.test.ext.junit.runners.AndroidJUnit4
 
+/** AndroidManifest.xmlの設定をテストする Task 1.3: Androidマニフェストの基本設定 */
 @RunWith(AndroidJUnit4::class)
-class ManifestConfigurationtest {
+class ManifestConfigurationTest {
 
   private lateinit var context: Context
   private lateinit var packageManager: PackageManager
@@ -23,42 +24,46 @@ class ManifestConfigurationtest {
     packageManager = context.packageManager
   }
 
-  @test
+  /** アプリケーション名が正しく設定されているかテスト Task 1.3: アプリケーション名とアイコンの設定 */
+  @Test
   fun testApplicationName() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
-    // Verify application name is set
+    // アプリケーション名が設定されていることを確認
     assertNotNull("Application name should not be null", appName)
     assertTrue("Application name should not be empty", appName.isNotEmpty())
   }
 
-  @test
+  /** アプリケーションアイコンが設定されているかテスト Task 1.3: アプリケーション名とアイコンの設定 */
+  @Test
   fun testApplicationIcon() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appIcon = applicationInfo.icon
 
-    // Verify icon is set (not default)
+    // アイコンが設定されていることを確認（デフォルト以外）
     assertTrue("Application icon should be set", appIcon != 0)
   }
 
-  @test
+  /** <queries>要素でAmber Intent検出が可能かテスト Task 1.3: <queries> 要素の追加（Amber Intent検出用） */
+  @Test
   fun testQueriesElementForAmberIntent() {
-    // Create Intent with nostrsigner scheme
+    // nostrsigner スキームのIntentを作成
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
 
-    // Test if queries allow querying apps that can process this Intent
-    // If queries element is correctly set, resolveActivity should not be null
-    // and queryIntentActivities should return results
+    // このIntentを処理できるアプリがあるかクエリ可能かテスト
+    // queries要素が正しく設定されていれば、resolveActivityがnullでない、または
+    // queryIntentActivitiesが空でないはず
     val resolveInfo =
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
-    // Verify queries element is set
-    // The query itself is possible even if Amber is not actually installed
+    // queries要素が設定されていることを確認
+    // 実際にAmberがインストールされていなくてもクエリ自体は可能
     assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
   }
 
-  @test
+  /** MainActivityがexportedとして正しく設定されているかテスト Task 1.3: Exported Activity設定（Android 13+対応） */
+  @Test
   fun testMainActivityExported() {
     val intent =
         Intent(Intent.ACTION_MAIN).apply {
@@ -73,7 +78,7 @@ class ManifestConfigurationtest {
 
     assertNotNull("MainActivity should be resolvable", resolveInfo)
 
-    // For Android 12 (API 31) and later, exported must be explicitly set
+    // Android 12 (API 31)以降ではexportedが明示的に必要
     val activityInfo = resolveInfo?.activityInfo
     assertNotNull("ActivityInfo should not be null", activityInfo)
     assertTrue(

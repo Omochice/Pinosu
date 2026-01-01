@@ -1,15 +1,15 @@
 package io.github.omochice.pinosu
 
 import org.junit.Assert.*
-import org.junit.test
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
- * See [testing documentation](http://d. roid.com/tools/testing).
+ * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnittest {
-  @test
+class ExampleUnitTest {
+  @Test
   fun addition_isCorrect() {
     assertEquals(4, 2 + 2)
   }

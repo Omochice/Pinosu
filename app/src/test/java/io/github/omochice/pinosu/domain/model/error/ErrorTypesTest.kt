@@ -1,203 +1,227 @@
 package io.github.omochice.pinosu.domain.model.error
 
-import org.junit.Assert.*import org.junit.test
+import org.junit.Assert.*
+import org.junit.Test
 
+/** エラー型のテスト Task 2.2: エラー型の定義 */
+class ErrorTypesTest {
 
-// ========== LoginError tests ==========
-/** LoginError.AmberNotInstalledtest that User can be created */ @test
- fun `create LoginError AmberNotInstalled`() {
- val error = LoginError.AmberNotInstalled
+  // ========== LoginError Tests ==========
 
- assertTrue(error is LoginError)
- assertTrue(error is LoginError.AmberNotInstalled)
- }
+  /** LoginError.AmberNotInstalledを作成できることをテスト */
+  @Test
+  fun `create LoginError AmberNotInstalled`() {
+    val error = LoginError.AmberNotInstalled
 
-/** LoginError.UserRejectedtest that User can be created */ @test
- fun `create LoginError UserRejected`() {
- val error = LoginError.UserRejected
+    assertTrue(error is LoginError)
+    assertTrue(error is LoginError.AmberNotInstalled)
+  }
 
- assertTrue(error is LoginError)
- assertTrue(error is LoginError.UserRejected)
- }
+  /** LoginError.UserRejectedを作成できることをテスト */
+  @Test
+  fun `create LoginError UserRejected`() {
+    val error = LoginError.UserRejected
 
-/** LoginError.Timeouttest that User can be created */ @test
- fun `create LoginError Timeout`() {
- val error = LoginError.Timeout
+    assertTrue(error is LoginError)
+    assertTrue(error is LoginError.UserRejected)
+  }
 
- assertTrue(error is LoginError)
- assertTrue(error is LoginError.Timeout)
- }
+  /** LoginError.Timeoutを作成できることをテスト */
+  @Test
+  fun `create LoginError Timeout`() {
+    val error = LoginError.Timeout
 
-/** LoginError.NetworkErrortest that User can be created */ @test
- fun `create LoginError NetworkError with message`() {
- val message = "Connection failed"
- val error = LoginError.NetworkError(message)
+    assertTrue(error is LoginError)
+    assertTrue(error is LoginError.Timeout)
+  }
 
- assertTrue(error is LoginError)
- assertTrue(error is LoginError.NetworkError)
- assertEquals(message, error.message)
- }
+  /** LoginError.NetworkErrorを作成できることをテスト */
+  @Test
+  fun `create LoginError NetworkError with message`() {
+    val message = "Connection failed"
+    val error = LoginError.NetworkError(message)
 
-/** LoginError.UnknownErrortest that User can be created */ @test
- fun `create LoginError UnknownError with throwable`() {
- val throwable = RuntimeException("test exception")
- val error = LoginError.UnknownError(throwable)
+    assertTrue(error is LoginError)
+    assertTrue(error is LoginError.NetworkError)
+    assertEquals(message, error.message)
+  }
 
- assertTrue(error is LoginError)
- assertTrue(error is LoginError.UnknownError)
- assertEquals(throwable, error.throwable)
- }
+  /** LoginError.UnknownErrorを作成できることをテスト */
+  @Test
+  fun `create LoginError UnknownError with throwable`() {
+    val throwable = RuntimeException("Test exception")
+    val error = LoginError.UnknownError(throwable)
 
-/** LoginErrorofwhentest */ @test
- fun `LoginError sealed class allows exhaustive when`() {
- val errors: List<LoginError> =
- listOf(
- LoginError.AmberNotInstalled,
- LoginError.UserRejected,
- LoginError.Timeout,
- LoginError.NetworkError("test"),
- LoginError.UnknownError(RuntimeException()))
+    assertTrue(error is LoginError)
+    assertTrue(error is LoginError.UnknownError)
+    assertEquals(throwable, error.throwable)
+  }
 
- errors.forEach { error ->
- val result =
- when (error) {
- is LoginError.AmberNotInstalled -> "amber_not_installed"
- is LoginError.UserRejected -> "user_rejected"
- is LoginError.Timeout -> "timeout"
- is LoginError.NetworkError -> "network_error"
- is LoginError.UnknownError -> "unknown_error"
- }
+  /** LoginErrorのwhen式網羅性をテスト */
+  @Test
+  fun `LoginError sealed class allows exhaustive when`() {
+    val errors: List<LoginError> =
+        listOf(
+            LoginError.AmberNotInstalled,
+            LoginError.UserRejected,
+            LoginError.Timeout,
+            LoginError.NetworkError("test"),
+            LoginError.UnknownError(RuntimeException()))
 
- assertNotNull(result)
- }
- }
+    errors.forEach { error ->
+      val result =
+          when (error) {
+            is LoginError.AmberNotInstalled -> "amber_not_installed"
+            is LoginError.UserRejected -> "user_rejected"
+            is LoginError.Timeout -> "timeout"
+            is LoginError.NetworkError -> "network_error"
+            is LoginError.UnknownError -> "unknown_error"
+          }
 
-// ========== LogoutError tests ==========
-/** LogoutError.StorageErrortest that User can be created */ @test
- fun `create LogoutError StorageError with message`() {
- val message = "Failed to clear storage"
- val error = LogoutError.StorageError(message)
+      assertNotNull(result)
+    }
+  }
 
- assertTrue(error is LogoutError)
- assertTrue(error is LogoutError.StorageError)
- assertEquals(message, error.message)
- }
+  // ========== LogoutError Tests ==========
 
-/** LogoutErrorofwhentest */ @test
- fun `LogoutError sealed class allows exhaustive when`() {
- val error: LogoutError = LogoutError.StorageError("test")
+  /** LogoutError.StorageErrorを作成できることをテスト */
+  @Test
+  fun `create LogoutError StorageError with message`() {
+    val message = "Failed to clear storage"
+    val error = LogoutError.StorageError(message)
 
- val result =
- when (error) {
- is LogoutError.StorageError -> "storage_error"
- }
+    assertTrue(error is LogoutError)
+    assertTrue(error is LogoutError.StorageError)
+    assertEquals(message, error.message)
+  }
 
- assertEquals("storage_error", result)
- }
+  /** LogoutErrorのwhen式網羅性をテスト */
+  @Test
+  fun `LogoutError sealed class allows exhaustive when`() {
+    val error: LogoutError = LogoutError.StorageError("test")
 
-// ========== StorageError tests ==========
-/** StorageError.WriteErrortest that User can be created */ @test
- fun `create StorageError WriteError with message`() {
- val message = "Write failed"
- val error = StorageError.WriteError(message)
+    val result =
+        when (error) {
+          is LogoutError.StorageError -> "storage_error"
+        }
 
- assertTrue(error is StorageError)
- assertTrue(error is StorageError.WriteError)
- assertEquals(message, error.message)
- }
+    assertEquals("storage_error", result)
+  }
 
-/** StorageError.ReadErrortest that User can be created */ @test
- fun `create StorageError ReadError with message`() {
- val message = "Read failed"
- val error = StorageError.ReadError(message)
+  // ========== StorageError Tests ==========
 
- assertTrue(error is StorageError)
- assertTrue(error is StorageError.ReadError)
- assertEquals(message, error.message)
- }
+  /** StorageError.WriteErrorを作成できることをテスト */
+  @Test
+  fun `create StorageError WriteError with message`() {
+    val message = "Write failed"
+    val error = StorageError.WriteError(message)
 
-/** StorageErrorofwhentest */ @test
- fun `StorageError sealed class allows exhaustive when`() {
- val errors: List<StorageError> =
- listOf(StorageError.WriteError("write"), StorageError.ReadError("read"))
+    assertTrue(error is StorageError)
+    assertTrue(error is StorageError.WriteError)
+    assertEquals(message, error.message)
+  }
 
- errors.forEach { error ->
- val result =
- when (error) {
- is StorageError.WriteError -> "write_error"
- is StorageError.ReadError -> "read_error"
- }
+  /** StorageError.ReadErrorを作成できることをテスト */
+  @Test
+  fun `create StorageError ReadError with message`() {
+    val message = "Read failed"
+    val error = StorageError.ReadError(message)
 
- assertNotNull(result)
- }
- }
+    assertTrue(error is StorageError)
+    assertTrue(error is StorageError.ReadError)
+    assertEquals(message, error.message)
+  }
 
-// ========== AmberError tests ==========
-/** AmberError.NotInstalledtest that User can be created */ @test
- fun `create AmberError NotInstalled`() {
- val error = AmberError.NotInstalled
+  /** StorageErrorのwhen式網羅性をテスト */
+  @Test
+  fun `StorageError sealed class allows exhaustive when`() {
+    val errors: List<StorageError> =
+        listOf(StorageError.WriteError("write"), StorageError.ReadError("read"))
 
- assertTrue(error is AmberError)
- assertTrue(error is AmberError.NotInstalled)
- }
+    errors.forEach { error ->
+      val result =
+          when (error) {
+            is StorageError.WriteError -> "write_error"
+            is StorageError.ReadError -> "read_error"
+          }
 
-/** AmberError.UserRejectedtest that User can be created */ @test
- fun `create AmberError UserRejected`() {
- val error = AmberError.UserRejected
+      assertNotNull(result)
+    }
+  }
 
- assertTrue(error is AmberError)
- assertTrue(error is AmberError.UserRejected)
- }
+  // ========== AmberError Tests ==========
 
-/** AmberError.Timeouttest that User can be created */ @test
- fun `create AmberError Timeout`() {
- val error = AmberError.Timeout
+  /** AmberError.NotInstalledを作成できることをテスト */
+  @Test
+  fun `create AmberError NotInstalled`() {
+    val error = AmberError.NotInstalled
 
- assertTrue(error is AmberError)
- assertTrue(error is AmberError.Timeout)
- }
+    assertTrue(error is AmberError)
+    assertTrue(error is AmberError.NotInstalled)
+  }
 
-/** AmberError.InvalidResponsetest that User can be created */ @test
- fun `create AmberError InvalidResponse with message`() {
- val message = "Invalid response format"
- val error = AmberError.InvalidResponse(message)
+  /** AmberError.UserRejectedを作成できることをテスト */
+  @Test
+  fun `create AmberError UserRejected`() {
+    val error = AmberError.UserRejected
 
- assertTrue(error is AmberError)
- assertTrue(error is AmberError.InvalidResponse)
- assertEquals(message, error.message)
- }
+    assertTrue(error is AmberError)
+    assertTrue(error is AmberError.UserRejected)
+  }
 
-/** AmberError.IntentResolutionErrortest that User can be created */ @test
- fun `create AmberError IntentResolutionError with message`() {
- val message = "Intent resolution failed"
- val error = AmberError.IntentResolutionError(message)
+  /** AmberError.Timeoutを作成できることをテスト */
+  @Test
+  fun `create AmberError Timeout`() {
+    val error = AmberError.Timeout
 
- assertTrue(error is AmberError)
- assertTrue(error is AmberError.IntentResolutionError)
- assertEquals(message, error.message)
- }
+    assertTrue(error is AmberError)
+    assertTrue(error is AmberError.Timeout)
+  }
 
-/** AmberErrorofwhentest */ @test
- fun `AmberError sealed class allows exhaustive when`() {
- val errors: List<AmberError> =
- listOf(
- AmberError.NotInstalled,
- AmberError.UserRejected,
- AmberError.Timeout,
- AmberError.InvalidResponse("test"),
- AmberError.IntentResolutionError("test"))
+  /** AmberError.InvalidResponseを作成できることをテスト */
+  @Test
+  fun `create AmberError InvalidResponse with message`() {
+    val message = "Invalid response format"
+    val error = AmberError.InvalidResponse(message)
 
- errors.forEach { error ->
- val result =
- when (error) {
- is AmberError.NotInstalled -> "not_installed"
- is AmberError.UserRejected -> "user_rejected"
- is AmberError.Timeout -> "timeout"
- is AmberError.InvalidResponse -> "invalid_response"
- is AmberError.IntentResolutionError -> "intent_resolution_error"
- }
+    assertTrue(error is AmberError)
+    assertTrue(error is AmberError.InvalidResponse)
+    assertEquals(message, error.message)
+  }
 
- assertNotNull(result)
- }
- }
+  /** AmberError.IntentResolutionErrorを作成できることをテスト */
+  @Test
+  fun `create AmberError IntentResolutionError with message`() {
+    val message = "Intent resolution failed"
+    val error = AmberError.IntentResolutionError(message)
+
+    assertTrue(error is AmberError)
+    assertTrue(error is AmberError.IntentResolutionError)
+    assertEquals(message, error.message)
+  }
+
+  /** AmberErrorのwhen式網羅性をテスト */
+  @Test
+  fun `AmberError sealed class allows exhaustive when`() {
+    val errors: List<AmberError> =
+        listOf(
+            AmberError.NotInstalled,
+            AmberError.UserRejected,
+            AmberError.Timeout,
+            AmberError.InvalidResponse("test"),
+            AmberError.IntentResolutionError("test"))
+
+    errors.forEach { error ->
+      val result =
+          when (error) {
+            is AmberError.NotInstalled -> "not_installed"
+            is AmberError.UserRejected -> "user_rejected"
+            is AmberError.Timeout -> "timeout"
+            is AmberError.InvalidResponse -> "invalid_response"
+            is AmberError.IntentResolutionError -> "intent_resolution_error"
+          }
+
+      assertNotNull(result)
+    }
+  }
 }

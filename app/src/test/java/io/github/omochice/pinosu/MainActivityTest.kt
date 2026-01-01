@@ -4,48 +4,76 @@ import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.runtest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.test
+import org.junit.Test
 
+/**
+ * MainActivityの単体テスト
+ *
+ * Task 10.1: アプリ起動時のログイン状態確認
+ * - GetLoginStateUseCaseを呼び出してログイン状態を確認
+ * - ログイン済み → メイン画面表示
+ * - 未ログイン → ログイン画面表示
+ * - 不正データ検出時のログイン状態クリア
+ *
+ * Requirements: 2.2, 2.3
+ */
+class MainActivityTest {
 
-// ========== Check login state on app startup ==========
- @test
- fun `when logged in on startup, should show main screen`() = runtest {
-// Given: Logged in user val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
- val loggedInUser = User("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
- coEvery { mockGetLoginStateUseCase() } returns loggedInUser
+  // ========== アプリ起動時のログイン状態確認 ==========
 
-// When: Check login state on app startup val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
+  @Test
+  fun `when logged in on startup, should show main screen`() = runTest {
+    // Given: ログイン済みユーザー
+    val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
+    val loggedInUser = User("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
+    coEvery { mockGetLoginStateUseCase() } returns loggedInUser
 
-// Then: Main screen is displayed assertEquals("MainScreen", initialDestination)
- }
+    // When: アプリ起動時にログイン状態を確認
+    val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
 
- @test
- fun `when not logged in on startup, should show login screen`() = runtest {
-// Given: Not logged in user val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
- coEvery { mockGetLoginStateUseCase() } returns null
+    // Then: メイン画面が表示される
+    assertEquals("MainScreen", initialDestination)
+  }
 
-// When: Check login state on app startup val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
+  @Test
+  fun `when not logged in on startup, should show login screen`() = runTest {
+    // Given: 未ログインユーザー
+    val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
+    coEvery { mockGetLoginStateUseCase() } returns null
 
-// Then: Login screen is displayed assertEquals("LoginScreen", initialDestination)
- }
+    // When: アプリ起動時にログイン状態を確認
+    val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
 
- @test
- fun `when invalid data detected on startup, should show login screen`() = runtest {
-// Given: Invalid data (assumed to return null from UseCase) val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
- coEvery { mockGetLoginStateUseCase() } returns null
+    // Then: ログイン画面が表示される
+    assertEquals("LoginScreen", initialDestination)
+  }
 
-// When: Check login state on app startup val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
+  @Test
+  fun `when invalid data detected on startup, should show login screen`() = runTest {
+    // Given: 不正なデータ（UseCase側でnullを返す想定）
+    val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
+    coEvery { mockGetLoginStateUseCase() } returns null
 
-// Then: Login screen is displayed (invalid data already converted to null by UseCase) assertEquals("LoginScreen", initialDestination)
- }
+    // When: アプリ起動時にログイン状態を確認
+    val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)
 
-// ========== Helper functions ==========
-/*** Determine the initial screen based on login state** This a helper function to test the logic that will be implemented in MainActivity*/ private suspend fun determineInitialDestination(
- getLoginStateUseCase: GetLoginStateUseCase
- ): String {
- val user = getLoginStateUseCase()
- return if (user != null) "MainScreen" else "LoginScreen"
- }
+    // Then: ログイン画面が表示される（不正データはUseCaseでnull変換済み）
+    assertEquals("LoginScreen", initialDestination)
+  }
+
+  // ========== ヘルパー関数 ==========
+
+  /**
+   * ログイン状態に基づいて初期表示画面を決定する
+   *
+   * これはMainActivityに実装される予定のロジックをテストするためのヘルパー関数
+   */
+  private suspend fun determineInitialDestination(
+      getLoginStateUseCase: GetLoginStateUseCase
+  ): String {
+    val user = getLoginStateUseCase()
+    return if (user != null) "MainScreen" else "LoginScreen"
+  }
 }

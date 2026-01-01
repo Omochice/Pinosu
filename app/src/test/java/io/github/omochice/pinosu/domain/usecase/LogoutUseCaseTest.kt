@@ -5,51 +5,91 @@ import io.github.omochice.pinosu.domain.model.error.LogoutError
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.test.runtest
-import org.junit.Assert.*import org.junit.Before
-import org.junit.test
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
 
+/**
+ * LogoutUseCaseの単体テスト
+ *
+ * Task 6.2: LogoutUseCaseの実装
+ * - ログアウト成功のテスト
+ * - ログアウト失敗のテスト
+ * - 冪等性の保証
+ *
+ * Requirements: 2.4, 2.5
+ */
+class LogoutUseCaseTest {
 
- private lateinit var authRepository: AuthRepository
- private lateinit var logoutUseCase: LogoutUseCase
+  private lateinit var authRepository: AuthRepository
+  private lateinit var logoutUseCase: LogoutUseCase
 
- @Before
- fun setup() {
- authRepository = mockk(relaxed = true)
- logoutUseCase = AmberLogoutUseCase(authRepository)
- }
+  @Before
+  fun setup() {
+    authRepository = mockk(relaxed = true)
+    logoutUseCase = AmberLogoutUseCase(authRepository)
+  }
 
-// ========== invoke() tests ==========
- fun testInvoke_Success_ReturnsSuccess() = runtest {
-// Given: AuthRepositorysuccess coEvery { authRepository.logout() } returns Result.success(Unit)
+  // ========== invoke() Tests ==========
 
-// When: Call invoke() val result = logoutUseCase()
+  /**
+   * ログアウト成功のテスト
+   *
+   * Task 6.2: invoke()実装 Requirement 2.4: ログアウト機能
+   */
+  @Test
+  fun testInvoke_Success_ReturnsSuccess() = runTest {
+    // Given: AuthRepositoryが成功を返す
+    coEvery { authRepository.logout() } returns Result.success(Unit)
 
-// Then: Success is returned assertTrue("Should return success", result.isSuccess)
- coVerify { authRepository.logout() }
- }
+    // When: invoke()を呼び出す
+    val result = logoutUseCase()
 
- fun testInvoke_Failure_ReturnsLogoutError() = runtest {
-// Given: AuthRepositoryfailure val error = LogoutError.StorageError("Failed to clear")
- coEvery { authRepository.logout() } returns Result.failure(error)
+    // Then: Successが返される
+    assertTrue("Should return success", result.isSuccess)
+    coVerify { authRepository.logout() }
+  }
 
-// When: Call invoke() val result = logoutUseCase()
+  /**
+   * ログアウト失敗のテスト
+   *
+   * Task 6.2: invoke()実装 Requirement 2.5: エラーハンドリング
+   */
+  @Test
+  fun testInvoke_Failure_ReturnsLogoutError() = runTest {
+    // Given: AuthRepositoryが失敗を返す
+    val error = LogoutError.StorageError("Failed to clear")
+    coEvery { authRepository.logout() } returns Result.failure(error)
 
-// Then: Failure is returned assertTrue("Should return failure", result.isFailure)
- val exception = result.exceptionOrNull()
- assertTrue(
- "Exception should be LogoutError.StorageError", exception is LogoutError.StorageError)
- coVerify { authRepository.logout() }
- }
+    // When: invoke()を呼び出す
+    val result = logoutUseCase()
 
- fun testInvoke_Idempotency_MultipleCallsSucceed() = runtest {
-// Given: AuthRepositorysuccess coEvery { authRepository.logout() } returns Result.success(Unit)
+    // Then: Failureが返される
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue(
+        "Exception should be LogoutError.StorageError", exception is LogoutError.StorageError)
+    coVerify { authRepository.logout() }
+  }
 
-// When: invoke()2call val result1 = logoutUseCase()
- val result2 = logoutUseCase()
+  /**
+   * 冪等性のテスト - 複数回呼び出しても正常に動作
+   *
+   * Task 6.2: 冪等性の保証 Requirement 2.5: ログアウト処理の冪等性
+   */
+  @Test
+  fun testInvoke_Idempotency_MultipleCallsSucceed() = runTest {
+    // Given: AuthRepositoryが常に成功を返す
+    coEvery { authRepository.logout() } returns Result.success(Unit)
 
-// Then: success assertTrue("First call should succeed", result1.isSuccess)
- assertTrue("Second call should succeed", result2.isSuccess)
- coVerify(exactly = 2) { authRepository.logout() }
- }
+    // When: invoke()を2回呼び出す
+    val result1 = logoutUseCase()
+    val result2 = logoutUseCase()
+
+    // Then: 両方とも成功する
+    assertTrue("First call should succeed", result1.isSuccess)
+    assertTrue("Second call should succeed", result2.isSuccess)
+    coVerify(exactly = 2) { authRepository.logout() }
+  }
 }

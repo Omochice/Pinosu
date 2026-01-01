@@ -1,12 +1,12 @@
 package io.github.omochice.pinosu
 
-import roid.app.Activity
-import roidx.compose.ui.test.*
-import roidx.compose.ui.test.junit4.createAndroidComposeRule
-import roidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt. roid.testing.BindValue
-import dagger.hilt. roid.testing.HiltAndroidRule
-import dagger.hilt. roid.testing.HiltAndroidtest
+import android.app.Activity
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.domain.model.User
@@ -15,22 +15,33 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
-import org.junit.test
+import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * test content:
- * 1. login flow (Login screen → Login button tap → loading display → Main screen transition)
- * 2. Amber not installed error flow
- * 3. logout flow (Main screen → Logout button tap → Login screen transition)
+ * Task 13.1: 主要ユーザーフローのUIテスト
+ *
+ * Requirements:
+ * - 1.1: ログインボタンタップでAmber連携開始
+ * - 1.2: Amber未インストール時にダイアログ表示
+ * - 2.4: ログアウト機能提供
+ * - 3.1: ログイン画面に「Amberでログイン」ボタン配置
+ * - 3.2: ログイン処理中にローディングインジケーター表示
+ * - 3.3: ログイン成功時にメイン画面への画面遷移
+ * - 3.4: メイン画面にログアウトボタン配置
+ *
+ * テスト内容:
+ * 1. ログインフロー（ログイン画面 → ログインボタンタップ → ローディング表示 → メイン画面遷移）
+ * 2. Amber未インストールエラーフロー
+ * 3. ログアウトフロー（メイン画面 → ログアウトボタンタップ → ログイン画面遷移）
  */
-@HiltAndroidtest
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class UserFlowtest {
+class UserFlowTest {
 
   @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
 
-  @get:Rule(order = 1) val composetestRule = createAndroidComposeRule<MainActivity>()
+  @get:Rule(order = 1) val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @BindValue @JvmField val mockAmberSignerClient: AmberSignerClient = mockk(relaxed = true)
 
@@ -39,214 +50,235 @@ class UserFlowtest {
   @Before
   fun setup() {
     hiltRule.inject()
-    // Default not logged in state
+    // デフォルトで未ログイン状態
     coEvery { mockLocalAuthDataSource.getUser() } returns null
   }
 
   /**
-   * login flow - Login screen is displayed
+   * Test 1: ログインフロー - ログイン画面が表示されること
    *
-   * Given: App startup (not logged in) When: app starts Then: Login screen is displayed ("Login with Amber" button is displayed)
+   * Given: アプリを起動（未ログイン状態） When: アプリが起動する Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
+   *
+   * Requirement 3.1: ログイン画面に「Amberでログイン」ボタン配置
    */
-  @test
-  fun loginFlow_displaysLoginScreen() {
-    // Then: "Login with Amber" button is displayed on Login screen
-    composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
+  @Test
+  fun loginFlow_step1_displaysLoginScreen() {
+    // Then: ログイン画面の「Amberでログイン」ボタンが表示されている
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
   }
 
   /**
-   * login flow - Login button tap to loading display
+   * Test 2: ログインフロー - ログインボタンタップでローディング表示
    *
-   * Given: Login screen is displayed When: "Login with Amber" button tap Then: Loading indicator is displayed
+   * Given: ログイン画面が表示されている When: 「Amberでログイン」ボタンをタップ Then: ローディングインジケーターが表示される
    *
-   * Note: This test verifies the loading state before the Amber Intent is launched
+   * Requirement 3.2: ログイン処理中にローディングインジケーター表示
+   *
+   * Note: このテストはAmber Intentが起動される前のローディング状態を確認する
    */
-  @test
-  fun loginFlow_displaysLoadingOnButtonClick() {
-    // Given: Amber is installed
+  @Test
+  fun loginFlow_step2_displaysLoadingOnButtonClick() {
+    // Given: Amberがインストールされている
     every { mockAmberSignerClient.checkAmberInstalled() } returns true
     every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
-    // When: Tap login button
-    composetestRule.onNodeWithText("Login with Amber").performClick()
+    // When: ログインボタンをタップ
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-    // Then: Loading indicator is displayed
-    composetestRule.onNodeWithTag("LoadingIndicator").assertIsDisplayed()
+    // Then: ローディングインジケーターが表示される
+    composeTestRule.onNodeWithTag("LoadingIndicator").assertIsDisplayed()
 
-    // Then: Login button is disabled
-    composetestRule.onNodeWithText("Login with Amber").assertIsNotEnabled()
+    // Then: ログインボタンが無効化される
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsNotEnabled()
   }
 
   /**
-   * login flow - transition to Main screen after login success
+   * Test 3: ログインフロー - ログイン成功後にメイン画面に遷移
    *
-   * Given: Login screen is displayed When: login succeeds Then: transition to Main screen and "logout" button is displayed
+   * Given: ログイン画面が表示されている When: ログインに成功する Then: メイン画面に遷移し、「ログアウト」ボタンが表示される
    *
-   * Note: Simulation of Amber Intent result is necessary
+   * Requirement 3.3: ログイン成功時にメイン画面への画面遷移 Requirement 3.4: メイン画面にログアウトボタン配置
+   *
+   * Note: Amber Intent結果のシミュレーションが必要
    */
-  @test
-  fun loginFlow_navigatesToMainScreenOnSuccess() {
-    // Given: Amber is installed
+  @Test
+  fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
+    // Given: Amberがインストールされている
     every { mockAmberSignerClient.checkAmberInstalled() } returns true
     every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
-    // Given: local save succeeds
+    // Given: ローカル保存が成功する
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.saveUser(any()) } returns Unit
 
-    // Given: response from Amber is success
-    every { mockAmberSignerClient.h leAmberResponse(Activity.RESULT_OK, any()) } returns
+    // Given: Amberからの応答が成功
+    every { mockAmberSignerClient.handleAmberResponse(Activity.RESULT_OK, any()) } returns
         Result.success(
             io.github.omochice.pinosu.data.amber.AmberResponse(
                 pubkey = testUser.pubkey, packageName = "com.greenart7c3.nostrsigner"))
 
-    // When: Tap login button
-    composetestRule.onNodeWithText("Login with Amber").performClick()
+    // When: ログインボタンをタップ
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-    // When: Simulate success response from Amber (direct call to ViewModel's processAmberResponse is expected)
-    // Note: In actual implementation, the Intent result processing is performed by MainActivity's amberLauncher,
-    // so here we directly verify the ViewModel's state change instead,
-    // and verify the result of UI transition
+    // When: Amberからの成功レスポンスをシミュレート（ViewModelのprocessAmberResponseを直接呼び出す想定）
+    // Note: 実際のIntent結果処理はMainActivityのamberLauncherで行われるため、
+    // ここではViewModelの状態変更を直接検証するのではなく、
+    // UIの遷移結果を検証する
 
-    // Then: transition to Main screen ("logout" button is displayed)
-    // This test only verifies the UI transition
-    composetestRule.waitUntil(timeoutMillis = 5000) {
-      composetestRule.onAllNodesWithText("logout").fetchSemanticsNodes().isNotEmpty()
+    // Then: メイン画面に遷移している（「ログアウト」ボタンが表示される）
+    // Note: 実際のActivityResultLauncher経由のフローは統合テストで検証済み（Task 12.1）
+    // このテストではUI遷移の確認にとどめる
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
-    composetestRule.onNodeWithText("logout").assertIsDisplayed()
+    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
   }
 
   /**
-   * Amber not installed error flow - Error dialog display
+   * Test 4: Amber未インストールエラーフロー - エラーダイアログ表示
    *
-   * Given: Login screen is displayed When: Amber is not installed and Login button tap Then: Amber not installed Error dialog is displayed
+   * Given: ログイン画面が表示されている When: Amberがインストールされていない状態でログインボタンをタップ Then: Amber未インストールエラーダイアログが表示される
+   *
+   * Requirement 1.2: Amber未インストール時にダイアログ表示
    */
-  @test
-  fun amberNotInstalledFlow_displaysErrorDialog() {
-    // Given: Amber is not installed
+  @Test
+  fun amberNotInstalledFlow_step1_displaysErrorDialog() {
+    // Given: Amberがインストールされていない
     every { mockAmberSignerClient.checkAmberInstalled() } returns false
 
-    // When: Tap login button
-    composetestRule.onNodeWithText("Login with Amber").performClick()
+    // When: ログインボタンをタップ
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-    // Then: Amber not installed Error dialog is displayed
-    composetestRule
-        .onNodeWithText("Amber app is not installed. Please install it from Google Play Store.")
+    // Then: Amber未インストールエラーダイアログが表示される
+    composeTestRule
+        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertIsDisplayed()
 
-    // Then: "Install" button is displayed
-    composetestRule.onNodeWithText("Install").assertIsDisplayed()
+    // Then: 「インストール」ボタンが表示される
+    composeTestRule.onNodeWithText("インストール").assertIsDisplayed()
 
-    // Then: "Close" button is displayed
-    composetestRule.onNodeWithText("Close").assertIsDisplayed()
+    // Then: 「閉じる」ボタンが表示される
+    composeTestRule.onNodeWithText("閉じる").assertIsDisplayed()
   }
 
   /**
-   * Amber not installed error flow - Close dialog
+   * Test 5: Amber未インストールエラーフロー - ダイアログを閉じる
    *
-   * Given: Amber not installed Error dialog is displayed When: "Close" button tap Then: dialog is closed and stays on Login screen
+   * Given: Amber未インストールエラーダイアログが表示されている When: 「閉じる」ボタンをタップ Then: ダイアログが閉じられ、ログイン画面に留まる
+   *
+   * Requirement 1.2: Amber未インストール時にダイアログ表示
    */
-  @test
-  fun amberNotInstalledFlow_dismissDialog() {
-    // Given: Amber is not installed
+  @Test
+  fun amberNotInstalledFlow_step2_dismissDialog() {
+    // Given: Amberがインストールされていない
     every { mockAmberSignerClient.checkAmberInstalled() } returns false
 
-    // Given: Tap login button to display Error dialog
-    composetestRule.onNodeWithText("Login with Amber").performClick()
-    composetestRule
-        .onNodeWithText("Amber app is not installed. Please install it from Google Play Store.")
+    // Given: ログインボタンをタップしてエラーダイアログを表示
+    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule
+        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertIsDisplayed()
 
-    // When: Tap "Close" button
-    composetestRule.onNodeWithText("Close").performClick()
+    // When: 「閉じる」ボタンをタップ
+    composeTestRule.onNodeWithText("閉じる").performClick()
 
-    // Then: Dialog is closed
-    composetestRule
-        .onNodeWithText("Amber app is not installed. Please install it from Google Play Store.")
+    // Then: ダイアログが閉じられる
+    composeTestRule
+        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertDoesNotExist()
 
-    // Then: Stay on Login screen ("Login with Amber" button is displayed)
-    composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
+    // Then: ログイン画面に留まる（「Amberでログイン」ボタンが表示されている）
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
   }
 
   /**
-   * logout flow - Main screen Logout button tap
+   * Test 6: ログアウトフロー - メイン画面でログアウトボタンをタップ
    *
-   * Given: Main screen is displayed (logged in state) When: Tap logout button Then: transition to Login screen and "Login with Amber" button is displayed
+   * Given: メイン画面が表示されている（ログイン済み状態） When: ログアウトボタンをタップ Then: ログイン画面に遷移し、「Amberでログイン」ボタンが表示される
+   *
+   * Requirement 2.4: ログアウト機能提供
    */
-  @test
-  fun logoutFlow_navigatesToLoginScreenOnLogout() {
-    // Given: App startup with logged in state
+  @Test
+  fun logoutFlow_step1_navigatesToLoginScreenOnLogout() {
+    // Given: ログイン済み状態でアプリを起動
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
     coEvery { mockLocalAuthDataSource.clearLoginState() } returns Unit
 
-    // Given: Restart app to reflect login state
-    composetestRule.activityRule.scenario.recreate()
+    // Given: アプリを再起動してログイン状態を反映
+    composeTestRule.activityRule.scenario.recreate()
 
-    // Given: Main screen is displayed ("logout" button is displayed)
-    composetestRule.waitUntil(timeoutMillis = 3000) {
-      composetestRule.onAllNodesWithText("logout").fetchSemanticsNodes().isNotEmpty()
+    // Given: メイン画面が表示されている（「ログアウト」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
-    composetestRule.onNodeWithText("logout").assertIsDisplayed()
+    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
 
-    // When: Tap logout button
-    composetestRule.onNodeWithText("logout").performClick()
+    // When: ログアウトボタンをタップ
+    composeTestRule.onNodeWithText("ログアウト").performClick()
 
-    // Then: transition to Login screen ("Login with Amber" button is displayed)
-    composetestRule.waitUntil(timeoutMillis = 3000) {
-      composetestRule.onAllNodesWithText("Login with Amber").fetchSemanticsNodes().isNotEmpty()
+    // Then: ログイン画面に遷移している（「Amberでログイン」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("Amberでログイン").fetchSemanticsNodes().isNotEmpty()
     }
-    composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
 
-    // Then: Logout button is not displayed
-    composetestRule.onNodeWithText("logout").assertDoesNotExist()
+    // Then: ログアウトボタンは表示されていない
+    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
 
   /**
-   * Given: Logged in state is saved When: app starts Then: Main screen is displayed (skip Login screen)
+   * Test 7 (Task 13.2): アプリ再起動とログイン状態復元 - ログイン済み状態でアプリ起動
+   *
+   * Given: ログイン済み状態が保存されている When: アプリを起動する Then: メイン画面が表示される（ログイン画面をスキップ）
+   *
+   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認 Requirement 2.3: ログイン済み状態でメイン画面表示
    */
-  @test
+  @Test
   fun appRestart_whenLoggedIn_displaysMainScreen() {
-    // Given: Logged in state is saved
+    // Given: ログイン済み状態が保存されている
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
-    // When: Restart app
-    composetestRule.activityRule.scenario.recreate()
+    // When: アプリを再起動
+    composeTestRule.activityRule.scenario.recreate()
 
-    // Then: Main screen is displayed ("logout" button is displayed)
-    composetestRule.waitUntil(timeoutMillis = 3000) {
-      composetestRule.onAllNodesWithText("logout").fetchSemanticsNodes().isNotEmpty()
+    // Then: メイン画面が表示される（「ログアウト」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
-    composetestRule.onNodeWithText("logout").assertIsDisplayed()
+    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
 
-    // Then: User's pubkey is displayed
-    val maskedPubkey = "1234abcd...5678efgh" // format: first 8 characters...last 8 characters masked
-    composetestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
+    // Then: ユーザーのpubkeyが表示される
+    val maskedPubkey = "1234abcd...5678efgh" // 最初8文字...最後8文字のマスキング形式
+    composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
 
-    // Then: Login screen is not displayed
-    composetestRule.onNodeWithText("Login with Amber").assertDoesNotExist()
+    // Then: ログイン画面は表示されていない
+    composeTestRule.onNodeWithText("Amberでログイン").assertDoesNotExist()
   }
 
   /**
-   * Given: login state is not saved When: app starts Then: Login screen is displayed
+   * Test 8 (Task 13.2): アプリ再起動とログイン状態復元 - 未ログイン状態でアプリ起動
+   *
+   * Given: ログイン状態が保存されていない When: アプリを起動する Then: ログイン画面が表示される
+   *
+   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認
    */
-  @test
+  @Test
   fun appRestart_whenNotLoggedIn_displaysLoginScreen() {
-    // Given: login state is not saved (default set)
+    // Given: ログイン状態が保存されていない（デフォルト設定）
     coEvery { mockLocalAuthDataSource.getUser() } returns null
 
-    // When: Restart app
-    composetestRule.activityRule.scenario.recreate()
+    // When: アプリを再起動
+    composeTestRule.activityRule.scenario.recreate()
 
-    // Then: Login screen is displayed ("Login with Amber" button is displayed)
-    composetestRule.waitUntil(timeoutMillis = 3000) {
-      composetestRule.onAllNodesWithText("Login with Amber").fetchSemanticsNodes().isNotEmpty()
+    // Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
+    composeTestRule.waitUntil(timeoutMillis = 3000) {
+      composeTestRule.onAllNodesWithText("Amberでログイン").fetchSemanticsNodes().isNotEmpty()
     }
-    composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
 
-    // Then: Main screen is not displayed
-    composetestRule.onNodeWithText("logout").assertDoesNotExist()
+    // Then: メイン画面は表示されていない
+    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
 }
