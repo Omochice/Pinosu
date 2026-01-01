@@ -9,7 +9,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
 /**
  * Unit tests for AmberSignerClient
@@ -17,7 +16,6 @@ import org.robolectric.annotation.Config
  * - AmberResponse, AmberError data class validation
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [28])
 class AmberSignerClientTest {
 
   private lateinit var context: Context
