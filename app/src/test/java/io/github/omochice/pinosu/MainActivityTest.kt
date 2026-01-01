@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.runtest
 import org.junit.Assert.assertEquals
 import org.junit.test
 
-/*** Unit tests for MainActivity** Task 10.1: Check login state on app startup* - Call GetLoginStateUseCase to check login state* - Logged in → Show main screen* - Not logged in → Show login screen* - Clear login state when invalid data is detected** Requirements: 2.2, 2.3*/class MainActivitytest {
 
 // ========== Check login state on app startup ==========
  @test

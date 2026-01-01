@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.runtest
 import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 
-/*** AmberAuthRepositoryUnit tests for** Task 5.1: AuthRepositoryImplementation of* - getLoginState(), saveLoginState(), logout()oftest* - loginWithAmber()oftest (AmberInstalldetection)* - AmberResponseprocessing localsaveofflowtest** Task 5.3: AuthRepositoryUnit tests for ()* - Ambersuccess → localsavesuccessNormaltest ✓* - Amberfailureoferrortest ✓* - logoutprocessingtest ✓* - test ✓** Requirements: 1.3, 1.4, 1.5, 2.1, 2.2, 2.4, 2.5*/class AmberAuthRepositorytest {
 
  private lateinit var amberSignerClient: AmberSignerClient
  private lateinit var localAuthDataSource: LocalAuthDataSource
@@ -30,7 +29,6 @@ import org.junit.test
  }
 
 // ========== getLoginState() tests ==========
-/*** logged instateofgetsuccesstest** Task 5.1: getLoginState()implementation Requirement 2.2: login stateverify*/ @test
  fun testGetLoginState_WhenUserExists_ReturnsUser() = runtest {
 // Given: LocalAuthDataSourceUser val expectedUser = User("npub1" + "a".repeat(59))
  coEvery { localAuthDataSource.getUser() } returns expectedUser
@@ -41,7 +39,6 @@ import org.junit.test
  coVerify { localAuthDataSource.getUser() }
  }
 
-/*** not logged in stateofgettest** Task 5.1: getLoginState()implementation Requirement 2.2: login stateverify*/ @test
  fun testGetLoginState_WhenNoUser_ReturnsNull() = runtest {
 // Given: LocalAuthDataSourcenull coEvery { localAuthDataSource.getUser() } returns null
 
@@ -52,7 +49,6 @@ import org.junit.test
  }
 
 // ========== saveLoginState() tests ==========
-/*** login stateofsavesuccesstest** Task 5.1: saveLoginState()implementation Requirement 1.4: login statesave*/ @test
  fun testSaveLoginState_Success_ReturnsSuccess() = runtest {
 // Given: LocalAuthDataSourcesuccessfullysave val user = User("npub1" + "a".repeat(59))
  coEvery { localAuthDataSource.saveUser(user) } returns Unit
@@ -63,7 +59,6 @@ import org.junit.test
  coVerify { localAuthDataSource.saveUser(user) }
  }
 
-/*** login stateofsavefailuretest** Task 5.1: saveLoginState()implementation Requirement 5.2: error*/ @test
  fun testSaveLoginState_Failure_ReturnsStorageError() = runtest {
 // Given: LocalAuthDataSourcethrow exception val user = User("npub1" + "a".repeat(59))
  val storageError = StorageError.WriteError("Failed to save")
@@ -78,7 +73,6 @@ import org.junit.test
  }
 
 // ========== logout() tests ==========
-/*** logoutsuccesstest** Task 5.1: logout()implementation Requirement 2.4: logoutfunctionality*/ @test
  fun testLogout_Success_ReturnsSuccess() = runtest {
 // Given: LocalAuthDataSourcesuccessfullyclear coEvery { localAuthDataSource.clearLoginState() } returns Unit
 
@@ -88,7 +82,6 @@ import org.junit.test
  coVerify { localAuthDataSource.clearLoginState() }
  }
 
-/*** logoutfailuretest** Task 5.1: logout()implementation Requirement 5.2: error*/ @test
  fun testLogout_Failure_ReturnsLogoutError() = runtest {
 // Given: LocalAuthDataSourcethrow exception val storageError = StorageError.WriteError("Failed to clear")
  coEvery { localAuthDataSource.clearLoginState() } throws storageError
@@ -103,7 +96,6 @@ import org.junit.test
  }
 
 // ========== processAmberResponse() tests ==========
-/*** Amberprocessingsuccesslocalsavesuccesstest** Task 5.1: AmberSignerClient → LocalAuthDataSourceflow Requirement 1.3, 1.4: Amberauthentication localsave*/ @test
  fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runtest {
 // Given: Ambersuccess, localsavesuccess val pubkey = "npub1" + "a".repeat(59)
  val intent = Intent().apply { putExtra("result", pubkey) }
@@ -122,7 +114,6 @@ import org.junit.test
  coVerify { localAuthDataSource.saveUser(any()) }
  }
 
-/*** Amberedoftest** Task 5.1: Ambererror Requirement 1.5: error*/ @test
  fun testProcessAmberResponse_UserRejected_ReturnsLoginError() = runtest {
 // Given: AmberUser val intent = Intent().apply { putExtra("rejected", true) }
  every { amberSignerClient.h leAmberResponse( roid.app.Activity.RESULT_OK, intent) } returns
@@ -135,8 +126,6 @@ import org.junit.test
  assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
  }
 
-// ========== Task 5.2: Additional Error H ling tests ==========
-/*** AmberInstallerroroftest** Task 5.2: error Requirement 1.5: AmberNotInstalled*/ @test
  fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runtest {
 // Given: AmberNotInstallederror val intent = Intent()
  every { amberSignerClient.h leAmberResponse(any(), any()) } returns
@@ -151,7 +140,6 @@ import org.junit.test
  exception is LoginError.AmberNotInstalled)
  }
 
-/*** Ambererroroftest** Task 5.2: error Requirement 1.5: Timeout*/ @test
  fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runtest {
 // Given: AmberTimeouterror val intent = Intent()
  every { amberSignerClient.h leAmberResponse(any(), any()) } returns
@@ -164,7 +152,6 @@ import org.junit.test
  assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
  }
 
-/*** Amber InvalidResponseerroroftest (NetworkError)** Task 5.2: error Requirement 5.2: NetworkError*/ @test
  fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runtest {
 // Given: AmberInvalidResponseerror val intent = Intent()
  every { amberSignerClient.h leAmberResponse(any(), any()) } returns
@@ -178,7 +165,6 @@ import org.junit.test
  assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
  }
 
-/*** test: Ambersuccess → localsavefailure** Task 5.2: Requirement 5.2: localsavefailureof*/ @test
  fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runtest {
 // Given: Ambersuccesslocalsavefailure val pubkey = "npub1" + "a".repeat(59)
  val intent = Intent().apply { putExtra("result", pubkey) }
@@ -199,7 +185,6 @@ import org.junit.test
  }
 
 // ========== checkAmberInstalled() tests ==========
-/*** Amber is installedoftest** Task 5.1: AmberInstallverify Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 // Given: AmberSignerClienttrue every { amberSignerClient.checkAmberInstalled() } returns true
 
@@ -208,7 +193,6 @@ import org.junit.test
 // Then: true is returned assertTrue("Should return true when Amber is installed", result)
  }
 
-/*** Amber is not installedoftest** Task 5.1: AmberInstallverify Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 // Given: AmberSignerClientfalse every { amberSignerClient.checkAmberInstalled() } returns false
 

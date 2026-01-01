@@ -7,7 +7,6 @@ import io.mockk.verify
 import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 
-/*** LoginUseCaseUnit tests** Task 6.1: LoginUseCaseImplementation of* - AmberInstallverifytests* - errortests** Requirements: 1.1, 1.3, 1.4, 1.5, 4.5*/class LoginUseCasetest {
 
  private lateinit var authRepository: AuthRepository
  private lateinit var loginUseCase: LoginUseCase
@@ -19,7 +18,6 @@ import org.junit.test
  }
 
 // ========== checkAmberInstalled() tests ==========
-/*** AmberInstalltests** Task 6.1: AmberInstallverify Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 // Given: AuthRepositoryfalse every { authRepository.checkAmberInstalled() } returns false
 
@@ -29,7 +27,6 @@ import org.junit.test
  verify { authRepository.checkAmberInstalled() }
  }
 
-/*** AmberInstalloftests** Task 6.1: AmberInstallverify Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 // Given: AuthRepositorytrue every { authRepository.checkAmberInstalled() } returns true
 

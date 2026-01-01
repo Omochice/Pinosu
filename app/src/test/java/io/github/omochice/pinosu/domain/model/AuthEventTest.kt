@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.domain.model
 
 import org.junit.Assert.*import org.junit.test
 
-/** AuthEvent sealed classtests Task 2.1: Domain model implementation () */class AuthEventtest {
 
 /** UserLoggedIntest that User can be created */ @test
  fun `create UserLoggedIn event`() {

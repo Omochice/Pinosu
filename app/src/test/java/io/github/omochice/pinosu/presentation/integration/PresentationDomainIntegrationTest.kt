@@ -27,7 +27,6 @@ import org.junit.After
 import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 
-/*** Presentation DomainIntegration tests for** Task 12.1: Presentation DomainIntegration tests for* - LoginViewModel + UseCasestest* - errorflowtest* - logoutflowtest** test approach:* - Presentation: whenofLoginViewModel* - Domain: whenofUseCasesImplementations (AmberLoginUseCase, AmberLogoutUseCase,* AmberGetLoginStateUseCase)* - Data: edAuthRepository** Requirements: 1.1, 1.5, 2.4*/@OptIn(ExperimentalCoroutinesApi::class)
 class PresentationDomainIntegrationtest {
 
  private lateinit var authRepository: AuthRepository

@@ -14,7 +14,6 @@ import roidx.compose.ui.test.onNodeWithText
 import roidx.compose.ui.test.performClick
 import roidx.test.ext.junit.runners.AndroidJUnit4
 
-/*** ActivityResultAPI Amber Intenttests** Task 10.3: ActivityResultAPIof* - registerForActivityResultofset* - AmberSignerClientofActivityResultLauncher* - Amber Intentresultof** Requirements: 1.1, 1.3*/@HiltAndroidtest
 @RunWith(AndroidJUnit4::class)
 class ActivityResultIntegrationtest {
 

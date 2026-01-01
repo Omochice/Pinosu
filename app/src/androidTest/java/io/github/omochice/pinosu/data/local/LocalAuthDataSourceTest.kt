@@ -8,7 +8,6 @@ import roid.content.Context
 import roidx.test.core.app.ApplicationProvider
 import roidx.test.ext.junit.runners.AndroidJUnit4
 
-/*** LocalAuthDataSourceofInitialization tests Task 3.1:* EncryptedSharedPreferencesofinitializeprocessing*/@RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourcetest {
 
  private lateinit var context: Context
@@ -29,12 +28,10 @@ class LocalAuthDataSourcetest {
  .commit()
  }
 
-/*** LocalAuthDataSourcesuccessfullyinitializecan test Task 3.1:* EncryptedSharedPreferencesofinitializeprocessing*/ @test
  fun testInitialization() {
 // LocalAuthDataSourceofcan Verify assertNotNull("LocalAuthDataSource should be initialized", dataSource)
  }
 
-/*** EncryptedSharedPreferencessuccessfullyis created test Task 3.1: Android* KeystoreofMasterKey (AES256_GCM)*/ @test
  fun testEncryptedSharedPreferencesCreation() {
 // EncryptedSharedPreferencesofpossiblea Verify// initializewhenerrored not Verify try {
 dataSource.toString() // valida Verify assertTrue("EncryptedSharedPreferences should be created successfully", true)
@@ -43,12 +40,10 @@ dataSource.toString() // valida Verify assertTrue("EncryptedSharedPreferences sh
  }
  }
 
-/** MasterKeysuccessfullyed test Task 3.1: Android KeystoreofMasterKey (AES256_GCM) */ @test
  fun testMasterKeyGeneration() {
 // MasterKeyofsuccessing Verify// (LocalAuthDataSourceofinitializesuccess, MasterKeyeding) assertNotNull("MasterKey should be generated", dataSource)
  }
 
-/*** encryptionkeyis correctlyseted test Task 3.1:* AES256-SIVkeyencryption, AES256-GCMvalueencryptionofset*/ @test
  fun testEncryptionSchemes() {
 // encryptionkeyofsetnormala Verify// (initializesuccess, encryptionkeycorrectlyseteding) assertNotNull("Encryption schemes should be configured", dataSource)
  }

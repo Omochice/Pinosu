@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.runtest
 import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 
-/*** LogoutUseCaseUnit tests** Task 6.2: LogoutUseCaseImplementation of* - logoutsuccesstests* - logoutfailuretests* - of** Requirements: 2.4, 2.5*/class LogoutUseCasetest {
 
  private lateinit var authRepository: AuthRepository
  private lateinit var logoutUseCase: LogoutUseCase
@@ -21,7 +20,6 @@ import org.junit.test
  }
 
 // ========== invoke() tests ==========
-/*** logoutsuccesstests** Task 6.2: invoke()implementation Requirement 2.4: logoutfunctionality*/ @test
  fun testInvoke_Success_ReturnsSuccess() = runtest {
 // Given: AuthRepositorysuccess coEvery { authRepository.logout() } returns Result.success(Unit)
 
@@ -31,7 +29,6 @@ import org.junit.test
  coVerify { authRepository.logout() }
  }
 
-/*** logoutfailuretests** Task 6.2: invoke()implementation Requirement 2.5: error*/ @test
  fun testInvoke_Failure_ReturnsLogoutError() = runtest {
 // Given: AuthRepositoryfailure val error = LogoutError.StorageError("Failed to clear")
  coEvery { authRepository.logout() } returns Result.failure(error)
@@ -45,7 +42,6 @@ import org.junit.test
  coVerify { authRepository.logout() }
  }
 
-/*** tests - successfully** Task 6.2: of Requirement 2.5: logoutprocessingof*/ @test
  fun testInvoke_Idempotency_MultipleCallsSucceed() = runtest {
 // Given: AuthRepositorysuccess coEvery { authRepository.logout() } returns Result.success(Unit)
 

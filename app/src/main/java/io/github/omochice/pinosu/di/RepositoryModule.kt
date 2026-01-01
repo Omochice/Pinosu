@@ -10,7 +10,6 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 /**
  * Repository DI module
  *
- * Task 7.3: Dependency injection configuration - Repository layer DI setup
  *
  * Provides implementation of AuthRepository interface. The @Binds annotation causes Hilt to
  * generate binding code at compile time.

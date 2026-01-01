@@ -10,7 +10,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectrictestRunner
 import org.robolectric.annotation.Config
 
-/*** AmberSignerClientUnit tests** Task 4.1: AmberSignerClientBasic implementation* - checkAmberInstalled()tests* - AmberResponse, AmberErrordataofverification** Requirements: 1.2, 5.1*/@RunWith(RobolectrictestRunner::class)
 @Config(sdk = [28])
 class AmberSignerClienttest {
 
@@ -29,7 +28,6 @@ class AmberSignerClienttest {
  }
 
 // ========== checkAmberInstalled() tests ==========
-/*** Ambertest that returns true when installed** Task 4.1: checkAmberInstalled()implementation Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 // Given: Ambereding every {
  packageManager.getPackageInfo(
@@ -41,7 +39,6 @@ class AmberSignerClienttest {
 // Then: true is returned assertTrue("Should return true when Amber is installed", result)
  }
 
-/*** Ambertest that returns false when not installed** Task 4.1: AmberInstalldetection Requirement 1.2: AmberInstalldetection*/ @test
  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 // Given: Amberednot (PackageManager.NameNotFoundException) every {
  packageManager.getPackageInfo(
@@ -53,7 +50,6 @@ class AmberSignerClienttest {
 // Then: false is returned assertFalse("Should return false when Amber is not installed", result)
  }
 
-/*** PackageManagertest that returns false when exception occurs** Task 4.1: error*/ @test
  fun testCheckAmberInstalled_OnException_ReturnsFalse() {
 // Given: PackageManagerthrow exception every {
  packageManager.getPackageInfo(
@@ -66,7 +62,6 @@ class AmberSignerClienttest {
  }
 
 // ========== AmberResponse Data Class tests ==========
-/*** AmberResponsedatais correctlyed test** Task 4.1: AmberResponsedataof*/ @test
  fun testAmberResponse_Construction() {
 // Given: Validpubkey packageName val pubkey = "npub1" + "a".repeat(59)
  val packageName = "com.greenart7c3.nostrsigner"
@@ -77,7 +72,6 @@ class AmberSignerClienttest {
  assertEquals("PackageName should match", packageName, response.packageName)
  }
 
-/*** AmberResponsecorrectlythattest** Task 4.1: dataofverification*/ @test
  fun testAmberResponse_Equality() {
 // Given: Two with the same valueAmberResponse val response1 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
  val response2 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
@@ -86,28 +80,24 @@ class AmberSignerClienttest {
  }
 
 // ========== AmberError Sealed Class tests ==========
-/*** AmberError.NotInstalledis correctlyed test** Task 4.1: AmberErrorof Requirement 5.1: Amberdetectionoferror*/ @test
  fun testAmberError_NotInstalled() {
 // When: NotInstallederror val error: AmberError = AmberError.NotInstalled
 
 // Then: Correcttype assertTrue("Should be NotInstalled type", error is AmberError.NotInstalled)
  }
 
-/*** AmberError.UserRejectedis correctlyed test** Task 4.1: AmberErrorof*/ @test
  fun testAmberError_UserRejected() {
 // When: UserRejectederror val error: AmberError = AmberError.UserRejected
 
 // Then: Correcttype assertTrue("Should be UserRejected type", error is AmberError.UserRejected)
  }
 
-/*** AmberError.Timeoutis correctlyed test** Task 4.1: AmberErrorof*/ @test
  fun testAmberError_Timeout() {
 // When: Timeouterror val error: AmberError = AmberError.Timeout
 
 // Then: Correcttype assertTrue("Should be Timeout type", error is AmberError.Timeout)
  }
 
-/*** AmberError.InvalidResponseis correctlyed test** Task 4.1: AmberErrorof*/ @test
  fun testAmberError_InvalidResponse() {
 // Given: Error message val message = "Invalid response format"
 
@@ -117,7 +107,6 @@ class AmberSignerClienttest {
  assertEquals("Message should match", message, (error as AmberError.InvalidResponse).message)
  }
 
-/*** AmberError.IntentResolutionErroris correctlyed test** Task 4.1: AmberErrorof*/ @test
  fun testAmberError_IntentResolutionError() {
 // Given: Error message val message = "Cannot resolve intent"
 
@@ -129,7 +118,6 @@ class AmberSignerClienttest {
  }
 
 // ========== createPublicKeyIntent() tests ==========
-/*** createPublicKeyIntent()with correct schemeIntentthattest** Task 4.2: Intent (nostrsigner: key) Requirement 4.1: NIP-55*/ @test
  fun testCreatePublicKeyIntent_HasCorrectScheme() {
 // When: Call createPublicKeyIntent() val intent = amberSignerClient.createPublicKeyIntent()
 
@@ -140,7 +128,6 @@ class AmberSignerClienttest {
  intent.data?.scheme)
  }
 
-/*** createPublicKeyIntent()correct package namesetthattest** Task 4.2: Requirement 1.3: Amber*/ @test
  fun testCreatePublicKeyIntent_HasCorrectPackage() {
 // When: Call createPublicKeyIntent() val intent = amberSignerClient.createPublicKeyIntent()
 
@@ -150,7 +137,6 @@ class AmberSignerClienttest {
  intent.`package`)
  }
 
-/*** createPublicKeyIntent()get_public_keysetthattest** Task 4.2: type: get_public_keyset Requirement 4.1: NIP-55*/ @test
  fun testCreatePublicKeyIntent_HasCorrectType() {
 // When: Call createPublicKeyIntent() val intent = amberSignerClient.createPublicKeyIntent()
 
@@ -160,7 +146,6 @@ class AmberSignerClienttest {
  intent.getStringExtra("type"))
  }
 
-/*** createPublicKeyIntent()correct flagssetthattest** Task 4.2: FLAG_ACTIVITY_SINGLE_TOP FLAG_ACTIVITY_CLEAR_TOPofset Requirement 4.2: Intentset*/ @test
  fun testCreatePublicKeyIntent_HasCorrectFlags() {
 // When: Call createPublicKeyIntent() val intent = amberSignerClient.createPublicKeyIntent()
 
@@ -173,7 +158,6 @@ class AmberSignerClienttest {
  (intent.flags expectedFlags) == expectedFlags)
  }
 
-/*** createPublicKeyIntent()ACTION_VIEWsetthattest** Task 4.2: Intent*/ @test
  fun testCreatePublicKeyIntent_HasCorrectAction() {
 // When: Call createPublicKeyIntent() val intent = amberSignerClient.createPublicKeyIntent()
 
@@ -182,7 +166,6 @@ class AmberSignerClienttest {
  }
 
 // ========== h leAmberResponse() tests ==========
-/*** Normal (RESULT_OK + pubkey)correctlyprocessingtest** Task 4.3: h leAmberResponseimplementation Requirement 1.3: Amberprocessing*/ @test
  fun testH leAmberResponse_Success_ReturnsAmberResponse() {
 // Given: RESULT_OK valid pubkeyIntent val pubkey = "npub1" + "a".repeat(59)
  val intent = roid.content.Intent()
@@ -200,7 +183,6 @@ class AmberSignerClienttest {
  response?.packageName)
  }
 
-/*** User (rejected=true)test that detects** Task 4.3: Userdetection Requirement 1.5: error*/ @test
  fun testH leAmberResponse_UserRejected_ReturnsError() {
 // Given: Intent with rejected=true val intent = roid.content.Intent()
  intent.putExtra("rejected", true)
@@ -214,7 +196,6 @@ class AmberSignerClienttest {
  error is AmberError.UserRejected || error.toString().contains("UserRejected"))
  }
 
-/*** RESULT_CANCELEDofUserRejectederrortest that returns** Task 4.3: Userdetection Requirement 1.5: error*/ @test
  fun testH leAmberResponse_ResultCanceled_ReturnsUserRejected() {
 // Given: RESULT_CANCELED val intent = roid.content.Intent()
 
@@ -227,7 +208,6 @@ class AmberSignerClienttest {
  error is AmberError.UserRejected || error.toString().contains("UserRejected"))
  }
 
-/*** IntentnullofInvalidResponseerrortest that returns** Task 4.3: invalidoferror Requirement 5.3: error*/ @test
  fun testH leAmberResponse_NullIntent_ReturnsInvalidResponse() {
 // Given: null Intent// When: Call h leAmberResponse() val result = amberSignerClient.h leAmberResponse( roid.app.Activity.RESULT_OK, null)
 
@@ -238,7 +218,6 @@ class AmberSignerClienttest {
  error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
  }
 
-/*** resultempty stringofInvalidResponseerrortest that returns** Task 4.3: invalidoferror Requirement 5.3: error*/ @test
  fun testH leAmberResponse_EmptyResult_ReturnsInvalidResponse() {
 // Given: Empty result val intent = roid.content.Intent()
  intent.putExtra("result", "")
@@ -252,7 +231,6 @@ class AmberSignerClienttest {
  error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
  }
 
-/*** resultinvalid format (npub1does not start with)ofInvalidResponseerrortest that returns** Task 4.3: invalidoferror Requirement 5.3: error*/ @test
  fun testH leAmberResponse_InvalidPubkeyLength_ReturnsInvalidResponse() {
 // Given: Invalidformatofpubkey (npub1does not start with) val intent = roid.content.Intent()
  intent.putExtra("result", "a".repeat(64))
@@ -266,7 +244,6 @@ class AmberSignerClienttest {
  error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
  }
 
-/*** resultinvalid format (nsec1starts with)ofInvalidResponseerrortest that returns** Task 4.3: invalidoferror Requirement 5.3: error*/ @test
  fun testH leAmberResponse_InvalidPubkeyFormat_ReturnsInvalidResponse() {
 // Given: Private key format pubkey (nsec1starts with) val intent = roid.content.Intent()
  intent.putExtra("result", "nsec1" + "a".repeat(59))
@@ -281,7 +258,6 @@ class AmberSignerClienttest {
  }
 
 // ========== maskPubkey() tests ==========
-/*** Bech32 formatofpubkeycorrectlytest** Task 4.4: pubkeyImplementation of Requirement 6.3: dataof*/ @test
  fun testMaskPubkey_ValidPubkey_ReturnsMaskedString() {
 // Given: Bech32 format pubkey val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 
@@ -290,7 +266,6 @@ class AmberSignerClienttest {
 // Then: first 8 characters + "..." + last 8 charactersofformated assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
  }
 
-/*** differentpubkeyformating test** Task 4.4: pubkeyImplementation of Requirement 6.3: dataof*/ @test
  fun testMaskPubkey_DifferentPubkey_ReturnsMaskedString() {
 // Given: Different ofBech32 formatofpubkey val pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a"
 
@@ -299,7 +274,6 @@ class AmberSignerClienttest {
 // Then: first 8 characters + "..." + last 8 charactersofformated assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
  }
 
-/*** pubkey (64)tests** Task 4.4: pubkeyImplementation of Requirement 6.3: dataof*/ @test
  fun testMaskPubkey_ShortPubkey_ReturnsOriginalString() {
 // Given: Short pubkey with 16 characters or less val pubkey = "abcdef0123456789"
 
@@ -308,7 +282,6 @@ class AmberSignerClienttest {
 // Then: ofstring assertEquals("Should return original string when pubkey is too short", pubkey, masked)
  }
 
-/*** empty stringtests** Task 4.4: pubkeyImplementation of Requirement 6.3: dataof*/ @test
  fun testMaskPubkey_EmptyString_ReturnsEmptyString() {
 // Given: Empty string val pubkey = ""
 
@@ -317,7 +290,6 @@ class AmberSignerClienttest {
 // Then: empty string assertEquals("Should return empty string when input is empty", "", masked)
  }
 
-/*** resultoflengthnot test** Task 4.4: pubkeyImplementation of Requirement 6.3: dataof*/ @test
  fun testMaskPubkey_ResultLength_IsCorrect() {
 // Given: Bech32 format pubkey val pubkey = "npub1" + "a".repeat(59)
 

@@ -19,7 +19,6 @@ import org.junit.test
 import org.junit.runner.RunWith
 
 /**
- * Task 13.1: UI tests for main user flows
  *
  * Requirements:
  * - 1.1: Login button tap to start Amber integration
@@ -126,7 +125,6 @@ class UserFlowtest {
     // and verify the result of UI transition
 
     // Then: transition to Main screen ("logout" button is displayed)
-    // Note: The actual flow via ActivityResultLauncher has been verified in the integration test (Task 12.1)
     // This test only verifies the UI transition
     composetestRule.waitUntil(timeoutMillis = 5000) {
       composetestRule.onAllNodesWithText("logout").fetchSemanticsNodes().isNotEmpty()
@@ -228,7 +226,6 @@ class UserFlowtest {
   }
 
   /**
-   * test 7 (Task 13.2): App restart and login state restoration - app startup with logged in state
    *
    * Given: Logged in state is saved When: app starts Then: Main screen is displayed (skip Login screen)
    *
@@ -258,7 +255,6 @@ class UserFlowtest {
   }
 
   /**
-   * test 8 (Task 13.2): App restart and login state restoration - app startup with not logged in state
    *
    * Given: login state is not saved When: app starts Then: Login screen is displayed
    *

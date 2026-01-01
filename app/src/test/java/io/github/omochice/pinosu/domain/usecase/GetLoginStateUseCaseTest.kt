@@ -13,7 +13,6 @@ import org.junit.test
 /**
  * test class for GetLoginStateUseCase
  *
- * Task 6.3: Implementation of GetLoginStateUseCase Requirements: 2.2, 2.3
  *
  * test scenarios:
  * 1. Normal case: Get logged in user

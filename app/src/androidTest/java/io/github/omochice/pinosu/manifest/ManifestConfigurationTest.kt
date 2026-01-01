@@ -11,7 +11,6 @@ import roid.net.Uri
 import roidx.test.core.app.ApplicationProvider
 import roidx.test.ext.junit.runners.AndroidJUnit4
 
-/** Test the AndroidManifest.xml settings. Task 1.3: Setting up basic Android manifest */
 @RunWith(AndroidJUnit4::class)
 class ManifestConfigurationtest {
 
@@ -24,7 +23,6 @@ class ManifestConfigurationtest {
     packageManager = context.packageManager
   }
 
-  /** Test if the application name is correctly set. Task 1.3: Setting application name and icon */
   @test
   fun testApplicationName() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
@@ -35,7 +33,6 @@ class ManifestConfigurationtest {
     assertTrue("Application name should not be empty", appName.isNotEmpty())
   }
 
-  /** Test if the application icon is correctly set. Task 1.3: Setting application name and icon */
   @test
   fun testApplicationIcon() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
@@ -45,7 +42,6 @@ class ManifestConfigurationtest {
     assertTrue("Application icon should be set", appIcon != 0)
   }
 
-  /** Test if <queries> element allows Amber Intent detection. Task 1.3: Adding <queries> element for Amber Intent detection */
   @test
   fun testQueriesElementForAmberIntent() {
     // Create Intent with nostrsigner scheme
@@ -62,7 +58,6 @@ class ManifestConfigurationtest {
     assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
   }
 
-  /** Test if MainActivity is correctly exported. Task 1.3: Setting up Exported Activity (Android 13+ support) */
   @test
   fun testMainActivityExported() {
     val intent =

@@ -9,7 +9,6 @@ import roidx.compose.ui.test.junit4.createComposeRule
 import roidx.compose.ui.test.onNodeWithText
 import roidx.compose.ui.test.performClick
 
-/*** LoginScreenCompose UI tests for** Task 8.1: LoginScreenBasic implementation* - Login buttondisplayoftest* - display loading indicatoroftest* - UIstatedisplayoftest** Requirements: 3.1, 3.2*/class LoginScreentest {
 
  @get:Rule val composetestRule = createComposeRule()
 
@@ -77,7 +76,6 @@ import roidx.compose.ui.test.performClick
 // Then: invalidedingfor assert(clickCount == 0) { "Login button should be disabled when loading" }
  }
 
-// ========== Error dialogdisplayof (Task 8.2) ==========
  @test
  fun loginScreen_displaysAmberInstallDialogWhenRequested() {
 // Given: showAmberInstallDialog = true ofLoginUiState val dialogState = LoginUiState(showAmberInstallDialog = true)
@@ -152,7 +150,6 @@ import roidx.compose.ui.test.performClick
 // Then: retry assert(retryCalled) { "Retry button should trigger callback" }
  }
 
-// ========== login succeedsofdisplay navigationoftest (Task 8.3) ==========
  @test
  fun loginScreen_displaysSuccessMessageWhenLoginSucceeds() {
 // Given: loginSuccess = true ofLoginUiState val successState = LoginUiState(loginSuccess = true)
@@ -204,7 +201,6 @@ import roidx.compose.ui.test.performClick
  }
  }
 
-// ========== errorofUItest (Task 13.3) ==========// Requirements: 1.5 (authenticationfailurewhenerrormessagedisplay), 5.4 (when)
  @test
  fun loginScreen_displaysUserRejectionErrorMessage() {
 // Given: UsererrormessageofLoginUiState val errorState = LoginUiState(errorMessage = "Login cancelled. Please try again.")

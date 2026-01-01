@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.domain.usecase
 /**
  * Login process UseCase interface
  *
- * Task 6.1: LoginUseCase implementation
  * - Amber installation verification
  * - Delegation to AuthRepository
  *
@@ -16,7 +15,6 @@ interface LoginUseCase {
    *
    * Delegates to AuthRepository to verify Amber installation status.
    *
-   * Task 6.1: checkAmberInstalled() implementation Requirement 1.2: Amber not installed detection
    *
    * @return true if Amber is installed
    */

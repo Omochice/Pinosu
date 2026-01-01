@@ -14,7 +14,6 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 /**
  * Use case dependency injection module
  *
- * Task 7.3: Dependency injection configuration
  * - Binding use case interfaces to their implementations
  *
  * Uses @Binds to bind interfaces to implementations

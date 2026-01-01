@@ -12,7 +12,6 @@ import roidx.compose.ui.test.junit4.createAndroidComposeRule
 import roidx.compose.ui.test.onNodeWithText
 import roidx.test.ext.junit.runners.AndroidJUnit4
 
-/*** Task 10.2: Navigation ComposeIntegration tests for** Requirements:* - 2.3: logged instateMain screendisplay* - 3.3: login succeedswhenMain screenscreen transition to** test content:* 1. not logged in stateLogin screenis displayed* 2. after login succeedsMain screentransitionthat* 3. after logoutLogin screentransitionthat* 4. Back Pressproperlyscreen transitionthat*/@HiltAndroidtest
 @RunWith(AndroidJUnit4::class)
 class Navigationtest {
 
@@ -32,9 +31,7 @@ class Navigationtest {
 // Then: Login screenof"Login with Amber"is displayeding composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
  }
 
-/*** test 2: after login succeedsMain screentransitionthat** Given: Login screenis displayeding When: login succeeds Then: Main screentransition"logout"buttonis displayed** Requirement 3.3: login succeedswhenMain screenscreen transition to** Note: whenofAmbercommunicationtestsTask 10.3planned implementation tests, LoginViewModel.mainUiState.userPubkeynull* statesimulate*/ @test
  fun navigation_whenLoginSuccess_navigatesToMainScreen() {
-// Note: whenofloginprocessingTask 10.3planned implementation// tests, ViewModel ofstatebynavigationverification// at this pointskip (implementationaftervalid)// TODO: Task 10.3 completionafterimplementation }
 
 /*** test 3: Main screenLogout buttontapLogin screentransitionthat** Given: Main screenis displayeding (logged instate) When: Tap logout button Then: Login* screentransition"Login with Amber"buttonis displayed** Requirement 2.4: logoutfunctionality** Note: login stateofbeforesetup*/ @test
  fun navigation_whenLogout_navigatesToLoginScreen() {

@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.presentation.navigation
 
 /**
- * Task 10.2: Navigation Compose integration
  *
  * Screen route definitions within the application
  *

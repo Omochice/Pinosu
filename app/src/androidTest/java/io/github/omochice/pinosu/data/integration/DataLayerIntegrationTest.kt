@@ -13,7 +13,6 @@ import roid.content.Context
 import roidx.test.core.app.ApplicationProvider
 import roidx.test.ext.junit.runners.AndroidJUnit4
 
-/*** DataIntegration tests for** Task 12.2: DataIntegration tests for* - AuthRepository + AmberSignerClient + LocalAuthDataSource test* - EncryptedSharedPreferencestest(save → get → delete)** test approach:* - Data: whenofAmberAuthRepository, whenofLocalAuthDataSource, whenofAmberSignerClient* - Storage: whenofEncryptedSharedPreferences (Android runtime)* - Note: AmbercommunicationwhenofAmberapp for, oftest** Requirements: 1.3, 1.4, 2.1, 2.5*/@RunWith(AndroidJUnit4::class)
 class DataLayerIntegrationtest {
 
  private lateinit var context: Context

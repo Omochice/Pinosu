@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.domain.model.error
 
 import org.junit.Assert.*import org.junit.test
 
-/** errortypetests Task 2.2: errortypeof */class ErrorTypestest {
 
 // ========== LoginError tests ==========
 /** LoginError.AmberNotInstalledtest that User can be created */ @test

@@ -6,7 +6,6 @@ package io.github.omochice.pinosu.domain.model
  * Domain model representing the login state of a Nostr user. Only holds the public key (pubkey) and
  * never stores the private key.
  *
- * Task 2.1: Domain model implementation Requirements: 1.4, 6.1
  *
  * @property pubkey Nostr public key (Bech32-encoded format, starts with npub1)
  * @throws IllegalArgumentException if pubkey is in an invalid format

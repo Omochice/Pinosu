@@ -21,7 +21,6 @@ import org.junit.After
 import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 
-/*** LoginViewModelUnit tests for** Task 7.1: LoginViewModelImplementation of* - UIstateoftest* - Useroftest* - UseCasesoftest** Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5*/@OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModeltest {
 
  private lateinit var loginUseCase: LoginUseCase
@@ -167,7 +166,6 @@ class LoginViewModeltest {
 // Then: checkAmberInstalled() (onLoginButtonClicked same) io.mockk.verify { loginUseCase.checkAmberInstalled() }
  }
 
-// ========== processAmberResponse() of (Task 7.2) ==========
  @test
  fun `processAmberResponse should set loading state during processing`() = runtest {
 // Given: Amber responseprocessingsuccess val testPubkey = "npub1" + "c".repeat(59)

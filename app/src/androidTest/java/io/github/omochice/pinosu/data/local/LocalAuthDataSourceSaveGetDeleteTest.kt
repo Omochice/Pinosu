@@ -10,7 +10,6 @@ import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 import org.junit.runner.RunWith
 
-/*** LocalAuthDataSourcetests for save/get/delete functions** Task 3.2: Userdataofsavegetdeletefunctionality Requirements: 1.4, 2.1, 2.2, 2.5*/@RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceSaveGetDeletetest {
 
  private lateinit var context: Context
@@ -28,14 +27,12 @@ class LocalAuthDataSourceSaveGetDeletetest {
  }
 
 // ========== saveUser tests ==========
-/** Usersuccessfullysavecan test Task 3.2: saveUserimplementation */ @test
  fun testSaveUser_Success() = runtest {
  val user = User("a".repeat(64))
 
 // ed Verify that dataSource.saveUser(user)
 // success - exception occurs }
 
-/** Usersavewhened test Task 3.2: created_at/last_accessed */ @test
  fun testSaveUser_SetsTimestamps() = runtest {
  val user = User("b".repeat(64))
  val beforeSave = System.currentTimeMillis()
@@ -58,7 +55,6 @@ dataSource.saveUser(user2) // ed Verify that
  }
 
 // ========== getUser tests ==========
-/** saveedUsergetcan test Task 3.2: getUserimplementation */ @test
  fun testGetUser_AfterSave() = runtest {
  val user = User("e".repeat(64))
  dataSource.saveUser(user)
@@ -69,14 +65,12 @@ dataSource.saveUser(user2) // ed Verify that
  assertEquals("Retrieved pubkey should match", user.pubkey, retrieved?.pubkey)
  }
 
-/** datasaveednot null test Task 3.2: null */ @test
  fun testGetUser_NoDataReturnsNull() = runtest {
  val retrieved = dataSource.getUser()
 
  assertNull("getUser should return null when no data exists", retrieved)
  }
 
-/** invalid pubkeydatasaveedingnull test Task 3.2: verification */ @test
  fun testGetUser_InvalidDataReturnsNull() = runtest {
 // invalid datasave context
  .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
@@ -116,7 +110,6 @@ Thread.sleep(10) //
  }
 
 // ========== clearLoginState tests ==========
-/** login statesuccessfullyclearcan test Task 3.2: clearLoginStateimplementation */ @test
  fun testClearLoginState_Success() = runtest {
  val user = User("2".repeat(64))
  dataSource.saveUser(user)

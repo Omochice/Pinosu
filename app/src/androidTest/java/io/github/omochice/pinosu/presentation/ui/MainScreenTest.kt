@@ -8,7 +8,6 @@ import roidx.compose.ui.test.junit4.createComposeRule
 import roidx.compose.ui.test.onNodeWithText
 import roidx.compose.ui.test.performClick
 
-/*** MainScreenCompose UI tests for** Task 9.3: MainScreenUnit tests for* - pubkeydisplayoftest* - Logout buttondisplayoftest* - navigationoftest** Requirements: 2.3, 3.4, 3.5*/class MainScreentest {
 
  @get:Rule val composetestRule = createComposeRule()
 
@@ -79,7 +78,6 @@ import roidx.compose.ui.test.performClick
 // Assert// Logout button Verify that (for) assert(!logoutCallbackCalled) { "onLogout callback should not be called during logout processing" }
  }
 
-/*** test 7 (Task 9.2): logoutcompletionafter, Login screennavigationforof** Requirement 2.4: logoutwhenLogin screentransition** Note: Thisofat this pointNavigation Composeimplementation (Task 10.2)offor, navigationof test*/ @test
  fun mainScreen_afterLogout_callsNavigateToLogin() {
 // Arrange val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
  val loggedInState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -98,7 +96,6 @@ import roidx.compose.ui.test.performClick
 // Assert// logoutcompletionafter (pubkey = null), Login screennavigation assert(navigateToLoginCalled) { "onNavigateToLogin callback should be called after logout completion" }
  }
 
-// ========== test: navigation (Task 9.3) ==========
 /*** test 8: logoutprocessingduringnavigation** Requirement 2.4: logoutofproperly state*/ @test
  fun mainScreen_doesNotNavigateWhileLoggingOut() {
 // Arrange val loggingOutState = MainUiState(userPubkey = null, isLoggingOut = true)

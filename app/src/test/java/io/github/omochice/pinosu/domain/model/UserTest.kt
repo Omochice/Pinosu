@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.domain.model
 
 import org.junit.Assert.*import org.junit.test
 
-/** Userentity tests Task 2.1: Domain model implementation */class Usertest {
 
 /** Normal pubkey (Bech32 format)User test that User can be created */ @test
  fun `create User with valid pubkey`() {

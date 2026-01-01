@@ -11,7 +11,6 @@ import org.junit.Assert.*import org.junit.Before
 import org.junit.test
 import org.junit.runner.RunWith
 
-/*** LocalAuthDataSourcetests for encryption/decryption error h ling** Task 3.3: LocalAuthDataSourceUnit tests for* - invaliddataoferrortest* - encryptiondecryptionNormalverify Requirements: 2.1, 2.2, 2.5, 6.2*/@RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceEncryptionAndErrortest {
 
  private lateinit var context: Context
@@ -29,7 +28,6 @@ class LocalAuthDataSourceEncryptionAndErrortest {
  }
 
 // ========== Encryption/Decryption Verification tests ==========
-/*** dataencryptionedsaveed verifytest** Task 3.3: encryptiondecryptionNormalverify Requirement 6.2: EncryptedSharedPreferencesencryption*/ @test
  fun testDataIsEncryptedInStorage() = runtest {
 val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
 // Usersave dataSource.saveUser(user)
@@ -52,7 +50,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertFalse("Data should be encrypted, not stored in plaintext", foundPlaintextPubkey)
  }
 
-/*** encryptioneddatacorrectlydecryptioned verifytest** Task 3.3: encryptiondecryptionNormalverify*/ @test
  fun testEncryptedDataCanBeDecrypted() = runtest {
  val user = User("1234abcd".repeat(8))
 
@@ -64,7 +61,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
  }
 
-/*** differentsameencryptionkeydecryptioncanVerify that** Task 3.3: encryptiondecryptionNormalverify Requirement 6.2: Android KeystoreofMasterKey*/ @test
  fun testEncryptionKeyPersistenceAcrossInstances() = runtest {
  val user = User("fedcba98".repeat(8))
 
@@ -78,7 +74,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertEquals("Data should be consistent across instances", user.pubkey, retrieved?.pubkey)
  }
 
-/*** ofsavegetencryptiondecryptionsuccessfullyVerify that** Task 3.3: encryptiondecryptionNormalverify*/ @test
  fun testMultipleEncryptionDecryptionCycles() = runtest {
  val users =
  listOf(
@@ -95,7 +90,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  }
 
 // ========== Error H ling tests ==========
-/*** invalid formatofpubkeysaveedingnullVerify that** Task 3.3: invaliddataoferrortest Requirement 2.1: dataverification*/ @test
  fun testGetUser_InvalidPubkeyFormat_ReturnsNull() = runtest {
  val invalidPubkeys =
  listOf(
@@ -116,7 +110,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  }
  }
 
-/*** pubkey nullVerify that** Task 3.3: invaliddataoferrortest*/ @test
  fun testGetUser_MissingPubkey_ReturnsNull() = runtest {
 // state context
  .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
@@ -130,7 +123,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertNull("getUser should return null when pubkey is missing", retrieved)
  }
 
-/*** SharedPreferencesofedVerify that** Task 3.3: invaliddataoferrortest Requirement 2.2: error*/ @test
  fun testGetUser_ExceptionH ling_ReturnsNull() = runtest {
 // invalid typeofdatasave (Stringing ThisIntsave) context
  .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
@@ -142,7 +134,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertNull("getUser should return null on exception", retrieved)
  }
 
-/*** empty stringofpubkeysaveedingnullVerify that** Task 3.3: invaliddataoferrortest*/ @test
  fun testGetUser_EmptyPubkey_ReturnsNull() = runtest {
  context
  .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
@@ -155,7 +146,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertNull("getUser should return null for empty pubkey", retrieved)
  }
 
-/*** invalid correctlyprocessingedVerify that** Task 3.3: invaliddataoferrortest** Note: EncryptedSharedPreferencesingfor, dataof . Thisoftest , Implementation ofverification.*/ @test
  fun testGetUser_TimestampH ling() = runtest {
  val user = User("deadbeef".repeat(8))
 
@@ -167,7 +157,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
  }
 
-/*** clearLoginStateaftersaveeddatadeleteedVerify that** Task 3.3: errortest Requirement 2.5: login stateofclear*/ @test
  fun testClearLoginState_RemovesAllData() = runtest {
  val user = User("cafe1234".repeat(8))
 
@@ -185,7 +174,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
 // getUsernullis returnedVerify that assertNull("getUser should return null after clear", dataSource.getUser())
  }
 
-/*** saveUserStorageError.WriteError Verify that** Note: EncryptedSharedPreferences for, whenWriteError of.Thisoftest errorofverification.** Task 3.3: invaliddataoferrortest*/ @test
  fun testSaveUser_ValidatesErrorType() = runtest {
 // Implementation of, EncryptedSharedPreferencesthrow exception// offor, normalofverify val user = User("beef".repeat(16))
 
@@ -198,7 +186,6 @@ val user = User("abcd1234".repeat(8)) // 64ofvalid pubkey
  }
  }
 
-/*** clearLoginStateStorageError.WriteError Verify that** Note: EncryptedSharedPreferences for, whenWriteError of.Thisoftest errorofverification.** Task 3.3: invaliddataoferrortest*/ @test
  fun testClearLoginState_ValidatesErrorType() = runtest {
 // Implementation of, EncryptedSharedPreferencesthrow exception// offor, normalofverify try {
  dataSource.clearLoginState()
