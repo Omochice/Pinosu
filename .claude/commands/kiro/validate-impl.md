@@ -10,11 +10,11 @@ argument-hint: [feature-name] [task-numbers]
 
 - **Mission**: Verify that implementation aligns with approved requirements, design, and tasks
 - **Success Criteria**:
-  - All specified tasks marked as completed
-  - Tests exist and pass for implemented functionality
-  - Requirements traceability confirmed (EARS requirements covered)
-  - Design structure reflected in implementation
-  - No regressions in existing functionality
+    - All specified tasks marked as completed
+    - Tests exist and pass for implemented functionality
+    - Requirements traceability confirmed (EARS requirements covered)
+    - Design structure reflected in implementation
+    - No regressions in existing functionality
 </background_information>
 
 <instructions>
@@ -53,8 +53,8 @@ For each detected feature:
 - Read `.kiro/specs/<feature>/design.md` for design structure
 - Read `.kiro/specs/<feature>/tasks.md` for task list
 - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
-  - Default files: `structure.md`, `tech.md`, `product.md`
-  - All custom steering files (regardless of mode settings)
+    - Default files: `structure.md`, `tech.md`, `product.md`
+    - All custom steering files (regardless of mode settings)
 
 ### 3. Execute Validation
 

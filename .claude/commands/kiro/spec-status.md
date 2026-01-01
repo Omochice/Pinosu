@@ -10,9 +10,9 @@ argument-hint: <feature-name>
 
 - **Mission**: Display comprehensive status and progress for a specification
 - **Success Criteria**:
-  - Show current phase and completion status
-  - Identify next actions and blockers
-  - Provide clear visibility into progress
+    - Show current phase and completion status
+    - Identify next actions and blockers
+    - Provide clear visibility into progress
 </background_information>
 
 <instructions>

@@ -10,10 +10,10 @@ argument-hint: <feature-name> [-y]
 
 - **Mission**: Generate comprehensive technical design document that translates requirements (WHAT) into architectural design (HOW)
 - **Success Criteria**:
-  - All requirements mapped to technical components with clear interfaces
-  - Appropriate architecture discovery and research completed
-  - Design aligns with steering context and existing patterns
-  - Visual diagrams included for complex architectures
+    - All requirements mapped to technical components with clear interfaces
+    - Appropriate architecture discovery and research completed
+    - Design aligns with steering context and existing patterns
+    - Visual diagrams included for complex architectures
 </background_information>
 
 <instructions>
@@ -44,29 +44,29 @@ Generate technical design document for feature **$1** based on approved requirem
 **Critical: This phase ensures design is based on complete, accurate information.**
 
 1. **Classify Feature Type**:
-   - **New Feature** (greenfield) → Full discovery required
-   - **Extension** (existing system) → Integration-focused discovery
-   - **Simple Addition** (CRUD/UI) → Minimal or no discovery
-   - **Complex Integration** → Comprehensive analysis required
+    - **New Feature** (greenfield) → Full discovery required
+    - **Extension** (existing system) → Integration-focused discovery
+    - **Simple Addition** (CRUD/UI) → Minimal or no discovery
+    - **Complex Integration** → Comprehensive analysis required
 
 2. **Execute Appropriate Discovery Process**:
 
    **For Complex/New Features**:
 
-   - Read and execute `.kiro/settings/rules/design-discovery-full.md`
-   - Conduct thorough research using WebSearch/WebFetch:
-     - Latest architectural patterns and best practices
-     - External dependency verification (APIs, libraries, versions, compatibility)
-     - Official documentation, migration guides, known issues
-     - Performance benchmarks and security considerations
+    - Read and execute `.kiro/settings/rules/design-discovery-full.md`
+    - Conduct thorough research using WebSearch/WebFetch:
+        - Latest architectural patterns and best practices
+        - External dependency verification (APIs, libraries, versions, compatibility)
+        - Official documentation, migration guides, known issues
+        - Performance benchmarks and security considerations
 
    **For Extensions**:
-   - Read and execute `.kiro/settings/rules/design-discovery-light.md`
-   - Focus on integration points, existing patterns, compatibility
-   - Use Grep to analyze existing codebase patterns
+    - Read and execute `.kiro/settings/rules/design-discovery-light.md`
+    - Focus on integration points, existing patterns, compatibility
+    - Use Grep to analyze existing codebase patterns
 
    **For Simple Additions**:
-   - Skip formal discovery, quick pattern check only
+    - Skip formal discovery, quick pattern check only
 
 3. **Retain Discovery Findings for Step 3**:
 - External API contracts and constraints
@@ -107,11 +107,11 @@ Generate technical design document for feature **$1** based on approved requirem
 ## Critical Constraints
 
 - **Type Safety**:
-  - Enforce strong typing aligned with the project's technology stack.
-  - For statically typed languages, define explicit types/interfaces and avoid unsafe casts.
-  - For TypeScript, never use `any`; prefer precise types and generics.
-  - For dynamically typed languages, provide type hints/annotations where available (e.g., Python type hints) and validate inputs at boundaries.
-  - Document public interfaces and contracts clearly to ensure cross-component type safety.
+    - Enforce strong typing aligned with the project's technology stack.
+    - For statically typed languages, define explicit types/interfaces and avoid unsafe casts.
+    - For TypeScript, never use `any`; prefer precise types and generics.
+    - For dynamically typed languages, provide type hints/annotations where available (e.g., Python type hints) and validate inputs at boundaries.
+    - Document public interfaces and contracts clearly to ensure cross-component type safety.
 - **Latest Information**: Use WebSearch/WebFetch for external dependencies and best practices
 - **Steering Alignment**: Respect existing architecture patterns from steering context
 - **Template Adherence**: Follow specs/design.md template structure and generation instructions strictly
@@ -174,7 +174,7 @@ Provide brief summary in the language specified in spec.json:
 - **Default**: Use full discovery process (`.kiro/settings/rules/design-discovery-full.md`)
 - **Rationale**: Better to over-research than miss critical context
 - **Invalid Requirement IDs**:
-  - **Stop Execution**: If requirements.md is missing numeric IDs or uses non-numeric headings (for example, "Requirement A"), stop and instruct the user to fix requirements.md before continuing.
+    - **Stop Execution**: If requirements.md is missing numeric IDs or uses non-numeric headings (for example, "Requirement A"), stop and instruct the user to fix requirements.md before continuing.
 
 ### Next Phase: Task Generation
 

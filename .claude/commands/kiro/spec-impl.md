@@ -10,10 +10,10 @@ argument-hint: <feature-name> [task-numbers]
 
 - **Mission**: Execute implementation tasks using Test-Driven Development methodology based on approved specifications
 - **Success Criteria**:
-  - All tests written before implementation code
-  - Code passes all tests with no regressions
-  - Tasks marked as completed in tasks.md
-  - Implementation aligns with design and requirements
+    - All tests written before implementation code
+    - Code passes all tests with no regressions
+    - Tasks marked as completed in tasks.md
+    - Implementation aligns with design and requirements
 </background_information>
 
 <instructions>
@@ -47,28 +47,28 @@ Execute implementation tasks for feature **$1** using Test-Driven Development.
 For each selected task, follow Kent Beck's TDD cycle:
 
 1. **RED - Write Failing Test**:
-   - Write test for the next small piece of functionality
-   - Test should fail (code doesn't exist yet)
-   - Use descriptive test names
+    - Write test for the next small piece of functionality
+    - Test should fail (code doesn't exist yet)
+    - Use descriptive test names
 
 2. **GREEN - Write Minimal Code**:
-   - Implement simplest solution to make test pass
-   - Focus only on making THIS test pass
-   - Avoid over-engineering
+    - Implement simplest solution to make test pass
+    - Focus only on making THIS test pass
+    - Avoid over-engineering
 
 3. **REFACTOR - Clean Up**:
-   - Improve code structure and readability
-   - Remove duplication
-   - Apply design patterns where appropriate
-   - Ensure all tests still pass after refactoring
+    - Improve code structure and readability
+    - Remove duplication
+    - Apply design patterns where appropriate
+    - Ensure all tests still pass after refactoring
 
 4. **VERIFY - Validate Quality**:
-   - All tests pass (new and existing)
-   - No regressions in existing functionality
-   - Code coverage maintained or improved
+    - All tests pass (new and existing)
+    - No regressions in existing functionality
+    - Code coverage maintained or improved
 
 5. **MARK COMPLETE**:
-   - Update checkbox from `- [ ]` to `- [x]` in tasks.md
+    - Update checkbox from `- [ ]` to `- [x]` in tasks.md
 
 ## Critical Constraints
 

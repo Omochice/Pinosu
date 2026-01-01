@@ -9,32 +9,32 @@ Analyze the gap between requirements and existing codebase to inform implementat
 ### 1. Current State Investigation
 
 - Scan for domain-related assets:
-  - Key files/modules and directory layout
-  - Reusable components/services/utilities
-  - Dominant architecture patterns and constraints
+    - Key files/modules and directory layout
+    - Reusable components/services/utilities
+    - Dominant architecture patterns and constraints
 
 - Extract conventions:
-  - Naming, layering, dependency direction
-  - Import/export patterns and dependency hotspots
-  - Testing placement and approach
+    - Naming, layering, dependency direction
+    - Import/export patterns and dependency hotspots
+    - Testing placement and approach
 
 - Note integration surfaces:
-  - Data models/schemas, API clients, auth mechanisms
+    - Data models/schemas, API clients, auth mechanisms
 
 ### 2. Requirements Feasibility Analysis
 
 - From EARS requirements, list technical needs:
-  - Data models, APIs/services, UI/components
-  - Business rules/validation
-  - Non-functionals: security, performance, scalability, reliability
+    - Data models, APIs/services, UI/components
+    - Business rules/validation
+    - Non-functionals: security, performance, scalability, reliability
 
 - Identify gaps and constraints:
-  - Missing capabilities in current codebase
-  - Unknowns to be researched later (mark as "Research Needed")
-  - Constraints from existing architecture and patterns
+    - Missing capabilities in current codebase
+    - Unknowns to be researched later (mark as "Research Needed")
+    - Constraints from existing architecture and patterns
 
 - Note complexity signals:
-  - Simple CRUD / algorithmic logic / workflows / external integrations
+    - Simple CRUD / algorithmic logic / workflows / external integrations
 
 ### 3. Implementation Approach Options
 
@@ -43,19 +43,19 @@ Analyze the gap between requirements and existing codebase to inform implementat
 **When to consider**: Feature fits naturally into existing structure
 
 - **Which files/modules to extend**:
-  - Identify specific files requiring changes
-  - Assess impact on existing functionality
-  - Evaluate backward compatibility concerns
+    - Identify specific files requiring changes
+    - Assess impact on existing functionality
+    - Evaluate backward compatibility concerns
 
 - **Compatibility assessment**:
-  - Check if extension respects existing interfaces
-  - Verify no breaking changes to consumers
-  - Assess test coverage impact
+    - Check if extension respects existing interfaces
+    - Verify no breaking changes to consumers
+    - Assess test coverage impact
 
 - **Complexity and maintainability**:
-  - Evaluate cognitive load of additional functionality
-  - Check if single responsibility principle is maintained
-  - Assess if file size remains manageable
+    - Evaluate cognitive load of additional functionality
+    - Check if single responsibility principle is maintained
+    - Assess if file size remains manageable
 
 **Trade-offs**:
 
@@ -69,19 +69,19 @@ Analyze the gap between requirements and existing codebase to inform implementat
 **When to consider**: Feature has distinct responsibility or existing components are already complex
 
 - **Rationale for new creation**:
-  - Clear separation of concerns justifies new file
-  - Existing components are already complex
-  - Feature has distinct lifecycle or dependencies
+    - Clear separation of concerns justifies new file
+    - Existing components are already complex
+    - Feature has distinct lifecycle or dependencies
 
 - **Integration points**:
-  - How new components connect to existing system
-  - APIs or interfaces exposed
-  - Dependencies on existing components
+    - How new components connect to existing system
+    - APIs or interfaces exposed
+    - Dependencies on existing components
 
 - **Responsibility boundaries**:
-  - Clear definition of what new component owns
-  - Interfaces with existing components
-  - Data flow and control flow
+    - Clear definition of what new component owns
+    - Interfaces with existing components
+    - Data flow and control flow
 
 **Trade-offs**:
 
@@ -96,19 +96,19 @@ Analyze the gap between requirements and existing codebase to inform implementat
 **When to consider**: Complex features requiring both extension and new creation
 
 - **Combination strategy**:
-  - Which parts extend existing components
-  - Which parts warrant new components
-  - How they interact
+    - Which parts extend existing components
+    - Which parts warrant new components
+    - How they interact
 
 - **Phased implementation**:
-  - Initial phase: minimal viable changes
-  - Subsequent phases: refactoring or new components
-  - Migration strategy if needed
+    - Initial phase: minimal viable changes
+    - Subsequent phases: refactoring or new components
+    - Migration strategy if needed
 
 - **Risk mitigation**:
-  - Incremental rollout approach
-  - Feature flags or configuration
-  - Rollback strategy
+    - Incremental rollout approach
+    - Feature flags or configuration
+    - Rollback strategy
 
 **Trade-offs**:
 
@@ -125,14 +125,14 @@ Analyze the gap between requirements and existing codebase to inform implementat
 ### 5. Implementation Complexity & Risk
 
 - Effort:
-  - S (1–3 days): existing patterns, minimal deps, straightforward integration
-  - M (3–7 days): some new patterns/integrations, moderate complexity
-  - L (1–2 weeks): significant functionality, multiple integrations or workflows
-  - XL (2+ weeks): architectural changes, unfamiliar tech, broad impact
+    - S (1–3 days): existing patterns, minimal deps, straightforward integration
+    - M (3–7 days): some new patterns/integrations, moderate complexity
+    - L (1–2 weeks): significant functionality, multiple integrations or workflows
+    - XL (2+ weeks): architectural changes, unfamiliar tech, broad impact
 - Risk:
-  - High: unknown tech, complex integrations, architectural shifts, unclear perf/security path
-  - Medium: new patterns with guidance, manageable integrations, known perf solutions
-  - Low: extend established patterns, familiar tech, clear scope, minimal integration
+    - High: unknown tech, complex integrations, architectural shifts, unclear perf/security path
+    - Medium: new patterns with guidance, manageable integrations, known perf solutions
+    - Low: extend established patterns, familiar tech, clear scope, minimal integration
 
 ### Output Checklist
 
@@ -140,8 +140,8 @@ Analyze the gap between requirements and existing codebase to inform implementat
 - Options A/B/C with short rationale and trade-offs
 - Effort (S/M/L/XL) and Risk (High/Medium/Low) with one-line justification each
 - Recommendations for design phase:
-  - Preferred approach and key decisions
-  - Research items to carry forward
+    - Preferred approach and key decisions
+    - Research items to carry forward
 
 ## Principles
 

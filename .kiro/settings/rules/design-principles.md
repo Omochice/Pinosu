@@ -95,9 +95,9 @@
 ### System Flows
 
 - Add diagrams only when they clarify behavior:  
-  - **Sequence** for multi-step interactions  
-  - **Process/State** for branching rules or lifecycle  
-  - **Data/Event** for pipelines or async patterns
+    - **Sequence** for multi-step interactions  
+    - **Process/State** for branching rules or lifecycle  
+    - **Data/Event** for pipelines or async patterns
 - Always use pure Mermaid. If no complex flow exists, omit the entire section.
 
 ### Requirements Traceability
@@ -119,8 +119,8 @@
 - Service interfaces must declare method signatures, inputs/outputs, and error envelopes. API/Event/Batch contracts require schema tables or bullet lists covering trigger, payload, delivery, idempotency.
 - Use **Integration & Migration Notes**, **Validation Hooks**, and **Open Questions / Risks** to document rollout strategy, observability, and unresolved decisions.
 - Detail density rules:
-  - **Full block**: components introducing new boundaries (logic hooks, shared services, external integrations, data layers).
-  - **Summary-only**: presentational/UI components with no new boundaries (plus a short Implementation Note if needed).
+    - **Full block**: components introducing new boundaries (logic hooks, shared services, external integrations, data layers).
+    - **Summary-only**: presentational/UI components with no new boundaries (plus a short Implementation Note if needed).
 - Implementation Notes must combine Integration / Validation / Risks into a single bulleted subsection to reduce repetition.
 - Prefer lists or inline descriptors for short data (dependencies, contract selections). Use tables only when comparing multiple items.
 
@@ -175,10 +175,10 @@ graph TB
 - **Plain Mermaid only** – avoid custom styling or unsupported syntax.
 - **Node IDs** – alphanumeric plus underscores only (e.g., `Client`, `ServiceA`). Do not use `@`, `/`, or leading `-`.
 - **Labels** – simple words. Do not embed parentheses `()`, square brackets `[]`, quotes `"`, or slashes `/`.
-  - ❌ `DnD[@dnd-kit/core]` → invalid ID (`@`).
-  - ❌ `UI[KanbanBoard(React)]` → invalid label (`()`).
-  - ✅ `DndKit[dnd-kit core]` → use plain text in labels, keep technology details in the accompanying description.
-  - ℹ️ Mermaid strict-mode will otherwise fail with errors like `Expecting 'SQE' ... got 'PS'`; remove punctuation from labels before rendering.
+    - ❌ `DnD[@dnd-kit/core]` → invalid ID (`@`).
+    - ❌ `UI[KanbanBoard(React)]` → invalid label (`()`).
+    - ✅ `DndKit[dnd-kit core]` → use plain text in labels, keep technology details in the accompanying description.
+    - ℹ️ Mermaid strict-mode will otherwise fail with errors like `Expecting 'SQE' ... got 'PS'`; remove punctuation from labels before rendering.
 - **Edges** – show data or control flow direction.
 - **Groups** – using Mermaid subgraphs to cluster related components is allowed; use it sparingly for clarity.
 
