@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** LocalAuthDataSourceの保存・取得・削除機能のテスト */
+/** Tests for LocalAuthDataSource save, get, and delete functionality */
 @RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceSaveGetDeleteTest {
 
@@ -46,7 +46,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNotNull("Saved user should be retrievable", savedUser)
   }
 
-  /** 既存のユーザーを上書き保存できることをテスト */
+  /** Test that existing user can be overwritten */
   @Test
   fun testSaveUser_Overwrite() = runTest {
     val user1 = User("c".repeat(64))
@@ -90,7 +90,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNull("getUser should return null for invalid pubkey", retrieved)
   }
 
-  /** created_atタイムスタンプが正しく保存・取得されることをテスト */
+  /** Test that created_at timestamp is saved and retrieved correctly */
   @Test
   fun testGetUser_PreservesCreatedAt() = runTest {
     val user = User("f".repeat(64))
@@ -103,7 +103,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
-  /** last_accessedタイムスタンプが正しく保存・取得されることをテスト */
+  /** Test that last_accessed timestamp is saved and retrieved correctly */
   @Test
   fun testGetUser_UpdatesLastAccessed() = runTest {
     val user = User("1".repeat(64))
@@ -130,13 +130,10 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNull("User should be null after clear", retrieved)
   }
 
-  /** データがない状態でクリアを実行しても成功することをテスト */
-  @Test
-  fun testClearLoginState_NoDataSucceeds() = runTest {
-    dataSource.clearLoginState()
-  }
+  /** Test that clear succeeds even when no data exists */
+  @Test fun testClearLoginState_NoDataSucceeds() = runTest { dataSource.clearLoginState() }
 
-  /** クリア後にタイムスタンプも削除されることをテスト */
+  /** Test that timestamps are also removed after clear */
   @Test
   fun testClearLoginState_RemovesTimestamps() = runTest {
     val user = User("3".repeat(64))
@@ -150,8 +147,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertFalse("login_last_accessed should be removed", prefs.contains("login_last_accessed"))
   }
 
-  /** ストレージエラー時にStorageError.WriteErrorを返すことをテスト（将来拡張用） */
-  @Test
-  fun testSaveUser_HandlesStorageError() = runTest {
-  }
+  /** Test error handling for storage errors (placeholder for future extension) */
+  @Test fun testSaveUser_HandlesStorageError() = runTest {}
 }

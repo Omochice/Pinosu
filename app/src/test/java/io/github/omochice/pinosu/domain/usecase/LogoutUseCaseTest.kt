@@ -11,10 +11,10 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * LogoutUseCaseの単体テスト
- * - ログアウト成功のテスト
- * - ログアウト失敗のテスト
- * - 冪等性の保証
+ * Unit tests for LogoutUseCase
+ * - Logout success test
+ * - Logout failure test
+ * - Idempotency guarantee
  */
 class LogoutUseCaseTest {
 
@@ -27,7 +27,7 @@ class LogoutUseCaseTest {
     logoutUseCase = AmberLogoutUseCase(authRepository)
   }
 
-  /** ログアウト成功のテスト */
+  /** Test successful logout */
   @Test
   fun testInvoke_Success_ReturnsSuccess() = runTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
@@ -38,7 +38,7 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /** ログアウト失敗のテスト */
+  /** Test logout failure */
   @Test
   fun testInvoke_Failure_ReturnsLogoutError() = runTest {
     val error = LogoutError.StorageError("Failed to clear")
@@ -53,7 +53,7 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /** 冪等性のテスト - 複数回呼び出しても正常に動作 */
+  /** Idempotency test - multiple calls work correctly */
   @Test
   fun testInvoke_Idempotency_MultipleCallsSucceed() = runTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)

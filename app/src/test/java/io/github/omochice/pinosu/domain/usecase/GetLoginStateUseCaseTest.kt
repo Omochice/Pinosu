@@ -11,12 +11,12 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * GetLoginStateUseCaseのテストクラス
+ * Test class for GetLoginStateUseCase
  *
- * テストシナリオ:
- * 1. 正常系: ログイン済みユーザーの取得
- * 2. 正常系: 未ログイン状態の取得
- * 3. 検証: 読み取り専用操作であること
+ * Test scenarios:
+ * 1. Happy path: Retrieve logged-in user
+ * 2. Happy path: Retrieve not-logged-in state
+ * 3. Verify: Read-only operation
  */
 class GetLoginStateUseCaseTest {
 

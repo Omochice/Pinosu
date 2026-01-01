@@ -15,10 +15,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * ActivityResultAPIとAmber Intent統合のテスト
- * - registerForActivityResultの設定
- * - AmberSignerClientへのActivityResultLauncher渡し
- * - Amber Intent結果のハンドリング
+ * Tests for ActivityResultAPI and Amber Intent integration
+ * - registerForActivityResult configuration
+ * - ActivityResultLauncher passing to AmberSignerClient
+ * - Amber Intent result handling
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -65,7 +65,5 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("Amberアプリがインストールされていません").assertExists()
   }
 
-  @Test
-  fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {
-  }
+  @Test fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {}
 }

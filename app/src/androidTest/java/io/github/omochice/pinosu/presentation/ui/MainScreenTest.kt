@@ -9,10 +9,10 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * MainScreenのCompose UIテスト
- * - pubkey表示のテスト
- * - ログアウトボタン表示のテスト
- * - ナビゲーションのテスト
+ * Compose UI tests for MainScreen
+ * - Pubkey display test
+ * - Logout button display test
+ * - Navigation test
  */
 class MainScreenTest {
 
@@ -37,7 +37,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    // pubkeyは部分的に表示されることを確認（最初の8文字と最後の8文字のみ）
+    // Verify pubkey is partially displayed（only first and last 8 characters）
     val expectedFormattedPubkey = "12345678...90abcdef"
     composeTestRule.onNodeWithText(expectedFormattedPubkey).assertIsDisplayed()
   }
@@ -77,7 +77,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
   }
 
-  /** Best Practice: ログアウト中の二重クリック防止 */
+  /** Best Practice: Prevent double-click during logout */
   @Test
   fun mainScreen_whenLoggingOut_logoutButtonIsDisabled() {
 
@@ -88,10 +88,10 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
 
-    // ログアウト処理中はボタンが表示されない（ローディングメッセージのみ）
+    // Button is not shown during logout processing（only loading message shown）
     composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
 
-    // ログアウトボタンがクリックできないことを確認（存在しないため）
+    // Verify logout button is not clickable（since it doesn't exist）
     assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
   }
 
@@ -112,8 +112,8 @@ class MainScreenTest {
       MainScreen(uiState = loggedOutState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
     }
 
-    // ログアウト完了後（pubkey = null）、ログイン画面へナビゲーションするコールバックが呼ばれる
-    assert(navigateToLoginCalled) { "ログアウト完了後、onNavigateToLoginコールバックが呼ばれるべき" }
+    // After logout completion（pubkey = null）、callback to navigate to login screen is called
+    assert(navigateToLoginCalled) { "After logout completion、onNavigateToLoginコールバックが呼ばれるべき" }
   }
 
   @Test

@@ -19,10 +19,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * テスト内容:
- * 1. ログインフロー（ログイン画面 → ログインボタンタップ → ローディング表示 → メイン画面遷移）
- * 2. Amber未インストールエラーフロー
- * 3. ログアウトフロー（メイン画面 → ログアウトボタンタップ → ログイン画面遷移）
+ * Test scenarios:
+ * 1. Login flow (login screen → login button tap → loading display → main screen navigate)
+ * 2. Amber not installed error flow
+ * 3. Logout flow (main screen → logout button tap → login screen navigate)
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -48,7 +48,7 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
   }
 
-  /** Note: このテストはAmber Intentが起動される前のローディング状態を確認する */
+  /** Note: This test verifies loading state before Amber Intent is launched */
   @Test
   fun loginFlow_step2_displaysLoadingOnButtonClick() {
 
@@ -62,7 +62,7 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("Amberでログイン").assertIsNotEnabled()
   }
 
-  /** Note: Amber Intent結果のシミュレーションが必要 */
+  /** Note: Amber Intent result simulation is required */
   @Test
   fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
 
@@ -79,11 +79,11 @@ class UserFlowTest {
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-    // Note: 実際のIntent結果処理はMainActivityのamberLauncherで行われるため、
-    // ここではViewModelの状態変更を直接検証するのではなく、
-    // UIの遷移結果を検証する
+    // Note: Actual Intent result is handled in MainActivity's amberLauncher、
+    // Here we verify UI transitions instead of ViewModel state changes directly、
+    // verify UI transition results
 
-    // このテストではUI遷移の確認にとどめる
+    // This test verifies UI transitions only
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
@@ -162,7 +162,7 @@ class UserFlowTest {
     }
     composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
 
-    val maskedPubkey = "1234abcd...5678efgh" // 最初8文字...最後8文字のマスキング形式
+    val maskedPubkey = "1234abcd...5678efgh" // masking format first 8 chars...last 8 chars
     composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
 
     composeTestRule.onNodeWithText("Amberでログイン").assertDoesNotExist()

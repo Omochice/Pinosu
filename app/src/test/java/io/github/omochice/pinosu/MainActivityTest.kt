@@ -9,11 +9,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * MainActivityの単体テスト
- * - GetLoginStateUseCaseを呼び出してログイン状態を確認
- * - ログイン済み → メイン画面表示
- * - 未ログイン → ログイン画面表示
- * - 不正データ検出時のログイン状態クリア
+ * Unit tests for MainActivity
+ * - Call GetLoginStateUseCase to verify login state
+ * - Logged-in → display main screen
+ * - Not logged-in → display login screen
+ * - Clear login state when invalid data detected
  */
 class MainActivityTest {
 
@@ -49,9 +49,9 @@ class MainActivityTest {
   }
 
   /**
-   * ログイン状態に基づいて初期表示画面を決定する
+   * Determine initial display screen based on login state
    *
-   * これはMainActivityに実装される予定のロジックをテストするためのヘルパー関数
+   * Helper function to test logic planned for MainActivity
    */
   private suspend fun determineInitialDestination(
       getLoginStateUseCase: GetLoginStateUseCase

@@ -13,9 +13,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * LocalAuthDataSourceの暗号化・復号化とエラーハンドリングのテスト
- * - 不正データ読み込み時のエラーハンドリングテスト
- * - 暗号化・復号化の正常動作確認
+ * Tests for LocalAuthDataSource encryption, decryption, and error handling
+ * - Error handling tests for reading invalid data
+ * - Verification of proper encryption and decryption operation
  */
 @RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceEncryptionAndErrorTest {
@@ -34,10 +34,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
-  /** データが暗号化されて保存されることを確認するテスト */
+  /** Test that data is stored in encrypted form */
   @Test
   fun testDataIsEncryptedInStorage() = runTest {
-    val user = User("abcd1234".repeat(8)) // 64文字の有効なpubkey
+    val user = User("abcd1234".repeat(8)) // 64-character valid pubkey
 
     dataSource.saveUser(user)
 
@@ -59,7 +59,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertFalse("Data should be encrypted, not stored in plaintext", foundPlaintextPubkey)
   }
 
-  /** 暗号化されたデータが正しく復号化されることを確認するテスト */
+  /** Test that encrypted data is correctly decrypted */
   @Test
   fun testEncryptedDataCanBeDecrypted() = runTest {
     val user = User("1234abcd".repeat(8))
@@ -72,7 +72,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
   }
 
-  /** 異なるインスタンスでも同じ暗号化キーを使用して復号化できることを確認 */
+  /** Test that same encryption key is used to decrypt across different instances */
   @Test
   fun testEncryptionKeyPersistenceAcrossInstances() = runTest {
     val user = User("fedcba98".repeat(8))
@@ -87,7 +87,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Data should be consistent across instances", user.pubkey, retrieved?.pubkey)
   }
 
-  /** 複数回の保存・取得でも暗号化・復号化が正常に動作することを確認 */
+  /** Test that encryption and decryption works correctly through multiple cycles */
   @Test
   fun testMultipleEncryptionDecryptionCycles() = runTest {
     val users =
@@ -104,7 +104,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     }
   }
 
-  /** 不正な形式のpubkeyが保存されている場合にnullを返すことを確認 */
+  /** Test that null is returned when invalid pubkey format is stored */
   @Test
   fun testGetUser_InvalidPubkeyFormat_ReturnsNull() = runTest {
     val invalidPubkeys =
@@ -131,7 +131,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     }
   }
 
-  /** pubkeyが存在しない場合にnullを返すことを確認 */
+  /** Test that null is returned when pubkey is missing */
   @Test
   fun testGetUser_MissingPubkey_ReturnsNull() = runTest {
     context
@@ -146,7 +146,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null when pubkey is missing", retrieved)
   }
 
-  /** SharedPreferences読み込み時の例外がキャッチされることを確認 */
+  /** Test that exceptions during SharedPreferences read are caught */
   @Test
   fun testGetUser_ExceptionHandling_ReturnsNull() = runTest {
     context
@@ -160,7 +160,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null on exception", retrieved)
   }
 
-  /** 空文字列のpubkeyが保存されている場合にnullを返すことを確認 */
+  /** Test that null is returned when empty string pubkey is stored */
   @Test
   fun testGetUser_EmptyPubkey_ReturnsNull() = runTest {
     context
@@ -174,11 +174,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null for empty pubkey", retrieved)
   }
 
-  /**
-   * タイムスタンプが不正な場合でも正しく処理されることを確認
-   *
-   * Note: EncryptedSharedPreferencesを使用しているため、データの直接注入ができない。 このテストは将来的な参照用として残すが、現在の実装では検証が困難。
-   */
+  /** Test that timestamps are handled correctly even if invalid */
   @Test
   fun testGetUser_TimestampHandling() = runTest {
     val user = User("deadbeef".repeat(8))
@@ -191,7 +187,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
-  /** clearLoginState後に保存されたデータがすべて削除されることを確認 */
+  /** Test that all data is removed after clearLoginState */
   @Test
   fun testClearLoginState_RemovesAllData() = runTest {
     val user = User("cafe1234".repeat(8))
@@ -210,11 +206,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null after clear", dataSource.getUser())
   }
 
-  /**
-   * saveUserが例外をStorageError.WriteErrorとしてスローすることを確認
-   *
-   * Note: EncryptedSharedPreferencesは非常に堅牢なため、実際にWriteErrorを 発生させるのは困難。このテストは将来的なエラーハンドリングの検証用。
-   */
+  /** Test that saveUser throws StorageError.WriteError on exception */
   @Test
   fun testSaveUser_ValidatesErrorType() = runTest {
     val user = User("beef".repeat(16))
@@ -228,11 +220,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     }
   }
 
-  /**
-   * clearLoginStateが例外をStorageError.WriteErrorとしてスローすることを確認
-   *
-   * Note: EncryptedSharedPreferencesは非常に堅牢なため、実際にWriteErrorを 発生させるのは困難。このテストは将来的なエラーハンドリングの検証用。
-   */
+  /** Test that clearLoginState throws StorageError.WriteError on exception */
   @Test
   fun testClearLoginState_ValidatesErrorType() = runTest {
     try {

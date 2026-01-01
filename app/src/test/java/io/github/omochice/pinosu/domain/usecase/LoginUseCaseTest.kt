@@ -9,9 +9,9 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * LoginUseCaseの単体テスト
- * - Amberインストール確認のテスト
- * - エラーハンドリングのテスト
+ * Unit tests for LoginUseCase
+ * - Amber installation verification test
+ * - Error handling test
  */
 class LoginUseCaseTest {
 
@@ -24,7 +24,7 @@ class LoginUseCaseTest {
     loginUseCase = AmberLoginUseCase(authRepository)
   }
 
-  /** Amber未インストール時のテスト */
+  /** Test when Amber is not installed */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 
@@ -36,7 +36,7 @@ class LoginUseCaseTest {
     verify { authRepository.checkAmberInstalled() }
   }
 
-  /** Amberインストール済みの時のテスト */
+  /** Test when Amber is installed */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 

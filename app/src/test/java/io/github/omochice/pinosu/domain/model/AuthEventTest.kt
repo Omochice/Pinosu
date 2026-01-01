@@ -5,7 +5,7 @@ import org.junit.Test
 
 class AuthEventTest {
 
-  /** UserLoggedInイベントを作成できることをテスト */
+  /** Test that UserLoggedIn event can be created */
   @Test
   fun `create UserLoggedIn event`() {
     val user = User("npub1" + "a".repeat(59))
@@ -16,7 +16,7 @@ class AuthEventTest {
     assertEquals(user, event.user)
   }
 
-  /** UserLoggedOutイベントを作成できることをテスト */
+  /** Test that UserLoggedOut event can be created */
   @Test
   fun `create UserLoggedOut event`() {
     val event = AuthEvent.UserLoggedOut
@@ -25,7 +25,7 @@ class AuthEventTest {
     assertTrue(event is AuthEvent.UserLoggedOut)
   }
 
-  /** UserLoggedInイベントの equality をテスト */
+  /** Test UserLoggedIn event equality */
   @Test
   fun `UserLoggedIn events with same user are equal`() {
     val user = User("npub1" + "a".repeat(59))
@@ -35,7 +35,7 @@ class AuthEventTest {
     assertEquals(event1, event2)
   }
 
-  /** 異なるUserを持つUserLoggedInイベントは等しくないことをテスト */
+  /** Test UserLoggedIn events with different users are not equal */
   @Test
   fun `UserLoggedIn events with different users are not equal`() {
     val user1 = User("npub1" + "a".repeat(59))
@@ -46,7 +46,7 @@ class AuthEventTest {
     assertNotEquals(event1, event2)
   }
 
-  /** UserLoggedOutイベントのシングルトン性をテスト */
+  /** Test UserLoggedOut event singleton nature */
   @Test
   fun `UserLoggedOut is singleton`() {
     val event1 = AuthEvent.UserLoggedOut
@@ -55,14 +55,14 @@ class AuthEventTest {
     assertSame(event1, event2)
   }
 
-  /** AuthEventのsealed class特性をテスト（when式の網羅性） */
+  /** Test AuthEvent sealed class properties（when expression exhaustiveness） */
   @Test
   fun `AuthEvent sealed class allows exhaustive when`() {
     val user = User("npub1" + "a".repeat(59))
     val loggedInEvent: AuthEvent = AuthEvent.UserLoggedIn(user)
     val loggedOutEvent: AuthEvent = AuthEvent.UserLoggedOut
 
-    // When式が網羅的であることを確認（コンパイル時チェック）
+    // Verify when expression is exhaustive（compile-time check）
     val loggedInResult =
         when (loggedInEvent) {
           is AuthEvent.UserLoggedIn -> "logged_in"

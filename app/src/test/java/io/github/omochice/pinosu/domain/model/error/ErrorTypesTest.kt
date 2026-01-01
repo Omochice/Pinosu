@@ -6,7 +6,7 @@ import org.junit.Test
 
 class ErrorTypesTest {
 
-  /** LoginError.AmberNotInstalledを作成できることをテスト */
+  /** Test that LoginError.AmberNotInstalled can be created */
   @Test
   fun `create LoginError AmberNotInstalled`() {
     val error = LoginError.AmberNotInstalled
@@ -15,7 +15,7 @@ class ErrorTypesTest {
     assertTrue(error is LoginError.AmberNotInstalled)
   }
 
-  /** LoginError.UserRejectedを作成できることをテスト */
+  /** Test that LoginError.UserRejected can be created */
   @Test
   fun `create LoginError UserRejected`() {
     val error = LoginError.UserRejected
@@ -24,7 +24,7 @@ class ErrorTypesTest {
     assertTrue(error is LoginError.UserRejected)
   }
 
-  /** LoginError.Timeoutを作成できることをテスト */
+  /** Test that LoginError.Timeout can be created */
   @Test
   fun `create LoginError Timeout`() {
     val error = LoginError.Timeout
@@ -33,7 +33,7 @@ class ErrorTypesTest {
     assertTrue(error is LoginError.Timeout)
   }
 
-  /** LoginError.NetworkErrorを作成できることをテスト */
+  /** Test that LoginError.NetworkError can be created */
   @Test
   fun `create LoginError NetworkError with message`() {
     val message = "Connection failed"
@@ -44,7 +44,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** LoginError.UnknownErrorを作成できることをテスト */
+  /** Test that LoginError.UnknownError can be created */
   @Test
   fun `create LoginError UnknownError with throwable`() {
     val throwable = RuntimeException("Test exception")
@@ -55,7 +55,7 @@ class ErrorTypesTest {
     assertEquals(throwable, error.throwable)
   }
 
-  /** LoginErrorのwhen式網羅性をテスト */
+  /** Test LoginError when expression exhaustiveness */
   @Test
   fun `LoginError sealed class allows exhaustive when`() {
     val errors: List<LoginError> =
@@ -80,7 +80,7 @@ class ErrorTypesTest {
     }
   }
 
-  /** LogoutError.StorageErrorを作成できることをテスト */
+  /** Test that LogoutError.StorageError can be created */
   @Test
   fun `create LogoutError StorageError with message`() {
     val message = "Failed to clear storage"
@@ -91,7 +91,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** LogoutErrorのwhen式網羅性をテスト */
+  /** Test LogoutError when expression exhaustiveness */
   @Test
   fun `LogoutError sealed class allows exhaustive when`() {
     val error: LogoutError = LogoutError.StorageError("test")
@@ -104,7 +104,7 @@ class ErrorTypesTest {
     assertEquals("storage_error", result)
   }
 
-  /** StorageError.WriteErrorを作成できることをテスト */
+  /** Test StorageError.WriteError can be created */
   @Test
   fun `create StorageError WriteError with message`() {
     val message = "Write failed"
@@ -115,7 +115,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** StorageError.ReadErrorを作成できることをテスト */
+  /** Test StorageError.ReadError can be created */
   @Test
   fun `create StorageError ReadError with message`() {
     val message = "Read failed"
@@ -126,7 +126,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** StorageErrorのwhen式網羅性をテスト */
+  /** Test StorageError when expression exhaustiveness */
   @Test
   fun `StorageError sealed class allows exhaustive when`() {
     val errors: List<StorageError> =
@@ -143,7 +143,7 @@ class ErrorTypesTest {
     }
   }
 
-  /** AmberError.NotInstalledを作成できることをテスト */
+  /** Test AmberError.NotInstalled can be created */
   @Test
   fun `create AmberError NotInstalled`() {
     val error = AmberError.NotInstalled
@@ -152,7 +152,7 @@ class ErrorTypesTest {
     assertTrue(error is AmberError.NotInstalled)
   }
 
-  /** AmberError.UserRejectedを作成できることをテスト */
+  /** Test AmberError.UserRejected can be created */
   @Test
   fun `create AmberError UserRejected`() {
     val error = AmberError.UserRejected
@@ -161,7 +161,7 @@ class ErrorTypesTest {
     assertTrue(error is AmberError.UserRejected)
   }
 
-  /** AmberError.Timeoutを作成できることをテスト */
+  /** Test AmberError.Timeout can be created */
   @Test
   fun `create AmberError Timeout`() {
     val error = AmberError.Timeout
@@ -170,7 +170,7 @@ class ErrorTypesTest {
     assertTrue(error is AmberError.Timeout)
   }
 
-  /** AmberError.InvalidResponseを作成できることをテスト */
+  /** Test AmberError.InvalidResponse can be created */
   @Test
   fun `create AmberError InvalidResponse with message`() {
     val message = "Invalid response format"
@@ -181,7 +181,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** AmberError.IntentResolutionErrorを作成できることをテスト */
+  /** Test AmberError.IntentResolutionError can be created */
   @Test
   fun `create AmberError IntentResolutionError with message`() {
     val message = "Intent resolution failed"
@@ -192,7 +192,7 @@ class ErrorTypesTest {
     assertEquals(message, error.message)
   }
 
-  /** AmberErrorのwhen式網羅性をテスト */
+  /** Test AmberError when expression exhaustiveness */
   @Test
   fun `AmberError sealed class allows exhaustive when`() {
     val errors: List<AmberError> =

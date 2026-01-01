@@ -10,10 +10,10 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * LoginScreenのCompose UIテスト
- * - ログインボタン表示のテスト
- * - ローディングインジケーター表示のテスト
- * - UI状態に応じた表示切り替えのテスト
+ * Compose UI tests for LoginScreen
+ * - Login button display test
+ * - Loading indicator display test
+ * - UI display switching based on state
  */
 class LoginScreenTest {
 

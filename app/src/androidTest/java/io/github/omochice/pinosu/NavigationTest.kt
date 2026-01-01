@@ -13,11 +13,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * テスト内容:
- * 1. 未ログイン状態でログイン画面が表示されること
- * 2. ログイン成功後にメイン画面に遷移すること
- * 3. ログアウト後にログイン画面に遷移すること
- * 4. Back Pressで適切に画面遷移すること
+ * Test cases:
+ * 1. Login screen is displayed when not logged in
+ * 2. Navigate to main screen after successful login
+ * 3. Navigate to login screen after logout
+ * 4. Proper screen transitions with Back Press
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -40,39 +40,39 @@ class NavigationTest {
     composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
   }
 
-  /** このテストでは、LoginViewModel.mainUiState.userPubkeyがnullでない状態をシミュレート */
+  /** This test simulates the state where LoginViewModel.mainUiState.userPubkey is not null */
   @Test
   fun navigation_whenLoginSuccess_navigatesToMainScreen() {
 
-    // このテストは、ViewModel の状態変更によるナビゲーションを検証する
-    // 現時点ではスキップ（実装後に有効化）
+    // This test verifies navigation state changes through ViewModel
+    // Currently skipped until implementation is complete
 
   }
 
-  /** Note: ログイン状態の事前セットアップが必要 */
+  /** Note: Pre-setup of login state is required */
   @Test
   fun navigation_whenLogout_navigatesToLoginScreen() {
-    // Note: ログイン状態のセットアップが必要
-    // このテストは、ログアウト後のナビゲーション動作を検証する
-    // 現時点ではスキップ（実装後に有効化）
-    // TODO: ログイン状態のセットアップ方法を実装後に有効化
+    // Note: Setup of login state is required
+    // This test verifies navigation behavior after logout
+    // Currently skipped until implementation is complete
+    // TODO: Enable after implementing login state setup method
   }
 
-  /** Note: Back Press処理の実装後にテスト */
+  /** Note: Test after implementing Back Press handling */
   @Test
   fun navigation_onBackPressFromMainScreen_exitsApp() {
-    // Note: Back Press処理の実装が必要
-    // このテストは、メイン画面からのBack Press動作を検証する
-    // 現時点ではスキップ（実装後に有効化）
-    // TODO: Back Press処理実装後に有効化
+    // Note: Implementation of Back Press handling is required
+    // This test verifies Back Press behavior from main screen
+    // Currently skipped until implementation is complete
+    // TODO: Enable after implementing Back Press handling
   }
 
-  /** Requirement: ユーザビリティ要件（ログイン画面はルート画面） */
+  /** Requirement: Usability requirement (login screen is the root screen) */
   @Test
   fun navigation_onBackPressFromLoginScreen_exitsApp() {
-    // Note: Back Press処理の実装が必要
-    // このテストは、ログイン画面からのBack Press動作を検証する
-    // 現時点ではスキップ（実装後に有効化）
-    // TODO: Back Press処理実装後に有効化
+    // Note: Implementation of Back Press handling is required
+    // This test verifies Back Press behavior from login screen
+    // Currently skipped until implementation is complete
+    // TODO: Enable after implementing Back Press handling
   }
 }

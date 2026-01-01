@@ -15,14 +15,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Data層の統合テスト
- * - AuthRepository + AmberSignerClient + LocalAuthDataSource 統合テスト
- * - EncryptedSharedPreferences実動作テスト(保存 → 取得 → 削除)
+ * Integration tests for data layer
+ * - AuthRepository + AmberSignerClient + LocalAuthDataSource integration test
+ * - EncryptedSharedPreferences runtime test (save → retrieve → delete)
  *
- * テスト方針:
- * - Data層: 実際のAmberAuthRepository, 実際のLocalAuthDataSource, 実際のAmberSignerClient
- * - Storage: 実際のEncryptedSharedPreferences (Android runtime必要)
- * - Note: Amber通信部分は実際のAmberアプリが必要なため、ストレージ操作のみテスト
+ * Test strategy:
+ * - Data layer: Using actual AmberAuthRepository, LocalAuthDataSource, AmberSignerClient
+ * - Storage: Using actual EncryptedSharedPreferences (Android runtime required)
+ * - Note: Amber communication requires actual Amber app, testing storage operations only
  */
 @RunWith(AndroidJUnit4::class)
 class DataLayerIntegrationTest {
@@ -49,12 +49,12 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * Amber未インストール検出 → AuthRepository統合
+   * Amber not installed detection → AuthRepository integration
    *
-   * 統合フロー:
-   * 1. AuthRepositoryがAmberインストール確認
-   * 2. AmberSignerClientで検出処理
-   * 3. 結果を返す
+   * Integration flow:
+   * 1. AuthRepository checks for Amber installation
+   * 2. AmberSignerClient detects
+   * 3. Return result
    */
   @Test
   fun checkAmberInstalled_shouldUseAmberSignerClient() {
@@ -65,12 +65,12 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences実動作テスト: 保存 → 取得
+   * EncryptedSharedPreferences runtime test: Save → Retrieve
    *
-   * 統合フロー:
-   * 1. LocalAuthDataSourceにユーザー情報を保存
-   * 2. EncryptedSharedPreferencesで暗号化保存される
-   * 3. 保存したデータを取得して検証
+   * Integration flow:
+   * 1. Save user info to LocalAuthDataSource
+   * 2. Encrypted and stored in EncryptedSharedPreferences
+   * 3. Retrieve and verify saved data
    */
   @Test
   fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runTest {
@@ -86,12 +86,12 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences実動作テスト: 保存 → 削除 → 取得
+   * EncryptedSharedPreferences runtime test: Save → Delete → Retrieve
    *
-   * 統合フロー:
-   * 1. LocalAuthDataSourceにユーザー情報を保存
-   * 2. ログアウト処理で削除
-   * 3. 削除後は取得できないことを確認
+   * Integration flow:
+   * 1. Save user info to LocalAuthDataSource
+   * 2. Delete during logout
+   * 3. Verify data cannot be retrieved after deletion
    */
   @Test
   fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runTest {
@@ -111,11 +111,11 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences実動作テスト: 複数回の保存・取得・削除サイクル
+   * EncryptedSharedPreferences runtime test: Multiple save-get-delete cycles
    *
-   * 統合フロー:
-   * 1. 保存 → 取得 → 削除を複数回繰り返す
-   * 2. EncryptedSharedPreferencesの安定性を確認
+   * Integration flow:
+   * 1. Repeat save → retrieve → delete multiple times
+   * 2. Verify stability of EncryptedSharedPreferences
    */
   @Test
   fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runTest {
@@ -141,13 +141,13 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * ログアウトフロー → EncryptedSharedPreferencesからデータ削除
+   * Logout flow → Delete data from EncryptedSharedPreferences
    *
-   * 統合フロー:
-   * 1. ユーザーがログイン済み状態
-   * 2. AuthRepository.logout()を呼び出す
-   * 3. LocalAuthDataSourceでログイン状態がクリアされる
-   * 4. EncryptedSharedPreferencesからデータが削除される
+   * Integration flow:
+   * 1. User is logged in
+   * 2. Call AuthRepository.logout()
+   * 3. Login state is cleared in LocalAuthDataSource
+   * 4. Data is deleted from EncryptedSharedPreferences
    */
   @Test
   fun logoutFlow_shouldClearEncryptedStorage() = runTest {
@@ -171,12 +171,12 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * アプリ再起動シミュレーション → ログイン状態復元
+   * App restart simulation → Restore login state
    *
-   * 統合フロー:
-   * 1. ユーザー情報を保存
-   * 2. AuthRepository/LocalAuthDataSourceインスタンスを再作成 (再起動シミュレーション)
-   * 3. 保存されたログイン状態を復元できることを確認
+   * Integration flow:
+   * 1. Save user info
+   * 2. Recreate AuthRepository/LocalAuthDataSource instances (simulating restart)
+   * 3. Verify that saved login state is restored
    */
   @Test
   fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runTest {
@@ -194,12 +194,12 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * 不正データハンドリング → nullを返す
+   * Invalid data handling → Return null
    *
-   * 統合フロー:
-   * 1. 不正な公開鍵フォーマットのデータを保存しようとする
-   * 2. Userクラスのバリデーションでエラー
-   * 3. 保存されずにnullが返される
+   * Integration flow:
+   * 1. Try to save data with invalid public key format
+   * 2. User class validation error
+   * 3. Data is not saved, null is returned
    */
   @Test
   fun invalidData_shouldBeRejectedByUserValidation() = runTest {

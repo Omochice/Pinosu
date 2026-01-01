@@ -18,14 +18,14 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * AmberAuthRepositoryの単体テスト
- * - getLoginState(), saveLoginState(), logout()のテスト
- * - loginWithAmber()のテスト（Amber未インストール検出）
- * - AmberResponse処理とローカル保存のフローテスト
- * - Amber成功 → ローカル保存成功の正常系テスト ✓
- * - Amber失敗時のエラー分類テスト ✓
- * - ログアウト処理テスト ✓
- * - トランザクション整合性テスト ✓
+ * Unit tests for AmberAuthRepository
+ * - getLoginState(), saveLoginState(), logout() test
+ * - loginWithAmber() test (Amber not installed detection)
+ * - AmberResponse processing and local save flow test
+ * - Amber success → local save success happy path test ✓
+ * - Amber failure error classification test ✓
+ * - Logout handling test ✓
+ * - Transaction consistency test ✓
  */
 class AmberAuthRepositoryTest {
 
@@ -40,7 +40,7 @@ class AmberAuthRepositoryTest {
     authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
   }
 
-  /** ログイン済み状態の取得が成功するテスト */
+  /** Test successful retrieval of logged-in state */
   @Test
   fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
     val expectedUser = User("npub1" + "a".repeat(59))
@@ -52,7 +52,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.getUser() }
   }
 
-  /** 未ログイン状態の取得テスト */
+  /** Test retrieval of not-logged-in state */
   @Test
   fun testGetLoginState_WhenNoUser_ReturnsNull() = runTest {
     coEvery { localAuthDataSource.getUser() } returns null
@@ -63,7 +63,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.getUser() }
   }
 
-  /** ログイン状態の保存が成功するテスト */
+  /** Test successful save of login state */
   @Test
   fun testSaveLoginState_Success_ReturnsSuccess() = runTest {
     val user = User("npub1" + "a".repeat(59))
@@ -75,7 +75,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  /** ログイン状態の保存が失敗するテスト */
+  /** Test that login state save fails */
   @Test
   fun testSaveLoginState_Failure_ReturnsStorageError() = runTest {
     val user = User("npub1" + "a".repeat(59))
@@ -90,7 +90,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  /** ログアウトが成功するテスト */
+  /** Test successful logout */
   @Test
   fun testLogout_Success_ReturnsSuccess() = runTest {
     coEvery { localAuthDataSource.clearLoginState() } returns Unit
@@ -101,7 +101,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /** ログアウトが失敗するテスト */
+  /** Test that logout fails */
   @Test
   fun testLogout_Failure_ReturnsLogoutError() = runTest {
     val storageError = StorageError.WriteError("Failed to clear")
@@ -116,7 +116,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /** Amberレスポンス処理が成功してローカル保存も成功するテスト */
+  /** Test Amber response success and local save success */
   @Test
   fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
@@ -136,7 +136,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(any()) }
   }
 
-  /** Amberレスポンスが拒否された場合のテスト */
+  /** Test Amber response rejection */
   @Test
   fun testProcessAmberResponse_UserRejected_ReturnsLoginError() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
@@ -150,7 +150,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
   }
 
-  /** Amber未インストールエラーの分類テスト */
+  /** Test Amber not installed error classification */
   @Test
   fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runTest {
     val intent = Intent()
@@ -166,7 +166,7 @@ class AmberAuthRepositoryTest {
         exception is LoginError.AmberNotInstalled)
   }
 
-  /** Amberタイムアウトエラーの分類テスト */
+  /** Test Amber timeout error classification */
   @Test
   fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runTest {
     val intent = Intent()
@@ -180,7 +180,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
   }
 
-  /** Amber InvalidResponseエラーの分類テスト（NetworkErrorとして扱う） */
+  /** Test Amber InvalidResponse error classification（treated as NetworkError） */
   @Test
   fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runTest {
     val intent = Intent()
@@ -195,7 +195,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
   }
 
-  /** トランザクション整合性テスト: Amber成功 → ローカル保存失敗 */
+  /** Transaction consistency test: Amber success → local save failure */
   @Test
   fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
@@ -212,12 +212,12 @@ class AmberAuthRepositoryTest {
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
 
-    // StorageErrorが原因として含まれていることを確認
+    // Verify StorageError is included as cause
     val unknownError = exception as LoginError.UnknownError
     assertTrue("Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
   }
 
-  /** Amberがインストールされている場合のテスト */
+  /** Test when Amber is installed */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 
@@ -228,7 +228,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Should return true when Amber is installed", result)
   }
 
-  /** Amberがインストールされていない場合のテスト */
+  /** Test when Amber is not installed */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 

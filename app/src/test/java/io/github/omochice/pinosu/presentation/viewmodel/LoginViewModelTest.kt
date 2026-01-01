@@ -23,10 +23,10 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * LoginViewModelの単体テスト
- * - UI状態管理のテスト
- * - ユーザー操作ハンドリングのテスト
- * - UseCases呼び出しのテスト
+ * Unit tests for LoginViewModel
+ * - UI state management test
+ * - User interaction handling test
+ * - UseCases invocation test
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
@@ -146,7 +146,6 @@ class LoginViewModelTest {
 
   @Test
   fun `dismissError should clear error message`() = runTest {
-
     every { loginUseCase.checkAmberInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
