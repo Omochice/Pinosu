@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.domain.model.error
 
+import io.github.omochice.pinosu.data.amber.AmberError
 import org.junit.Assert.*
 import org.junit.Test
 
