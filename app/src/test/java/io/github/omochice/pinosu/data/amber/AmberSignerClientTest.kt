@@ -34,8 +34,6 @@ class AmberSignerClientTest {
     amberSignerClient = AmberSignerClient(context)
   }
 
-  // ========== checkAmberInstalled() Tests ==========
-
   /** Amberがインストールされている場合にtrueを返すテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
@@ -78,8 +76,6 @@ class AmberSignerClientTest {
     assertFalse("Should return false on exception", result)
   }
 
-  // ========== AmberResponse Data Class Tests ==========
-
   /** AmberResponseデータクラスが正しく構築されることをテスト */
   @Test
   fun testAmberResponse_Construction() {
@@ -102,8 +98,6 @@ class AmberSignerClientTest {
 
     assertEquals("Responses with same values should be equal", response1, response2)
   }
-
-  // ========== AmberError Sealed Class Tests ==========
 
   /** AmberError.NotInstalledが正しく構築されることをテスト */
   @Test
@@ -156,8 +150,6 @@ class AmberSignerClientTest {
     assertEquals(
         "Message should match", message, (error as AmberError.IntentResolutionError).message)
   }
-
-  // ========== createPublicKeyIntent() Tests ==========
 
   /** createPublicKeyIntent()が正しいスキームのIntentを作成することをテスト */
   @Test
@@ -221,8 +213,6 @@ class AmberSignerClientTest {
     assertEquals(
         "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
-
-  // ========== handleAmberResponse() Tests ==========
 
   /** 正常なレスポンス（RESULT_OK + pubkey）を正しく処理するテスト */
   @Test
@@ -335,8 +325,6 @@ class AmberSignerClientTest {
         "Error should be InvalidResponse",
         error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
-
-  // ========== maskPubkey() Tests ==========
 
   /** Bech32形式のpubkeyを正しくマスキングするテスト */
   @Test

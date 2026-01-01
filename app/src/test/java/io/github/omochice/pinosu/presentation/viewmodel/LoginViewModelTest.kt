@@ -54,8 +54,6 @@ class LoginViewModelTest {
     Dispatchers.resetMain()
   }
 
-  // ========== 初期状態のテスト ==========
-
   @Test
   fun `initial LoginUiState should have default values`() = runTest {
     val state = viewModel.uiState.first()
@@ -73,8 +71,6 @@ class LoginViewModelTest {
     assertNull("userPubkey should be null", state.userPubkey)
     assertFalse("isLoggingOut should be false", state.isLoggingOut)
   }
-
-  // ========== checkLoginState() のテスト ==========
 
   @Test
   fun `checkLoginState should update mainUiState when user is logged in`() = runTest {
@@ -102,8 +98,6 @@ class LoginViewModelTest {
     coVerify { getLoginStateUseCase() }
   }
 
-  // ========== onLoginButtonClicked() のテスト ==========
-
   @Test
   fun `onLoginButtonClicked should check if Amber is installed`() = runTest {
     every { loginUseCase.checkAmberInstalled() } returns true
@@ -124,8 +118,6 @@ class LoginViewModelTest {
     val state = viewModel.uiState.first()
     assertTrue("showAmberInstallDialog should be true", state.showAmberInstallDialog)
   }
-
-  // ========== onLogoutButtonClicked() のテスト ==========
 
   @Test
   fun `onLogoutButtonClicked should call logoutUseCase and update state on success`() = runTest {
@@ -152,8 +144,6 @@ class LoginViewModelTest {
     assertFalse("isLoggingOut should be false after failure", state.isLoggingOut)
   }
 
-  // ========== dismissError() のテスト ==========
-
   @Test
   fun `dismissError should clear error message`() = runTest {
 
@@ -169,8 +159,6 @@ class LoginViewModelTest {
     assertNull("errorMessage should be null", state.errorMessage)
     assertFalse("showAmberInstallDialog should be false", state.showAmberInstallDialog)
   }
-
-  // ========== onRetryLogin() のテスト ==========
 
   @Test
   fun `onRetryLogin should retry login by calling onLoginButtonClicked`() = runTest {

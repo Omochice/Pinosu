@@ -6,8 +6,6 @@ import org.junit.Test
 
 class ErrorTypesTest {
 
-  // ========== LoginError Tests ==========
-
   /** LoginError.AmberNotInstalledを作成できることをテスト */
   @Test
   fun `create LoginError AmberNotInstalled`() {
@@ -82,8 +80,6 @@ class ErrorTypesTest {
     }
   }
 
-  // ========== LogoutError Tests ==========
-
   /** LogoutError.StorageErrorを作成できることをテスト */
   @Test
   fun `create LogoutError StorageError with message`() {
@@ -107,8 +103,6 @@ class ErrorTypesTest {
 
     assertEquals("storage_error", result)
   }
-
-  // ========== StorageError Tests ==========
 
   /** StorageError.WriteErrorを作成できることをテスト */
   @Test
@@ -148,8 +142,6 @@ class ErrorTypesTest {
       assertNotNull(result)
     }
   }
-
-  // ========== AmberError Tests ==========
 
   /** AmberError.NotInstalledを作成できることをテスト */
   @Test

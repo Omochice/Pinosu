@@ -24,8 +24,6 @@ class LoginUseCaseTest {
     loginUseCase = AmberLoginUseCase(authRepository)
   }
 
-  // ========== checkAmberInstalled() Tests ==========
-
   /** Amber未インストール時のテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {

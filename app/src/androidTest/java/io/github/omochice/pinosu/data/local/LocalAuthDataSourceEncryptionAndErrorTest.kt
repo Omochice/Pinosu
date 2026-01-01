@@ -35,8 +35,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
-  // ========== Encryption/Decryption Verification Tests ==========
-
   /** データが暗号化されて保存されることを確認するテスト */
   @Test
   fun testDataIsEncryptedInStorage() = runTest {
@@ -122,8 +120,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
       assertEquals("Retrieved user should match saved user", user.pubkey, retrieved?.pubkey)
     }
   }
-
-  // ========== Error Handling Tests ==========
 
   /** 不正な形式のpubkeyが保存されている場合にnullを返すことを確認 */
   @Test

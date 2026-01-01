@@ -72,8 +72,6 @@ class PresentationDomainIntegrationTest {
     Dispatchers.resetMain()
   }
 
-  // ========== LoginViewModel + UseCases統合テスト ==========
-
   /**
    * ログインボタンタップ → Amber未インストール検出 → ダイアログ表示
    *
@@ -179,8 +177,6 @@ class PresentationDomainIntegrationTest {
     // AuthRepositoryのgetLoginState()が呼ばれることを確認
     coVerify { authRepository.getLoginState() }
   }
-
-  // ========== エラーハンドリングフロー統合テスト ==========
 
   /**
    * ユーザー拒否エラー → エラーメッセージ表示 → 再試行可能
@@ -290,8 +286,6 @@ class PresentationDomainIntegrationTest {
     assertNull("errorMessage should be null", stateAfterDismiss.errorMessage)
     assertFalse("showAmberInstallDialog should be false", stateAfterDismiss.showAmberInstallDialog)
   }
-
-  // ========== ログアウトフロー統合テスト ==========
 
   /**
    * ログアウト成功フロー → ログイン状態クリア → ログイン画面表示

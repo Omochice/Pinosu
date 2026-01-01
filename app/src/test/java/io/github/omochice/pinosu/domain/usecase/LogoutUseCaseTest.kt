@@ -27,8 +27,6 @@ class LogoutUseCaseTest {
     logoutUseCase = AmberLogoutUseCase(authRepository)
   }
 
-  // ========== invoke() Tests ==========
-
   /** ログアウト成功のテスト */
   @Test
   fun testInvoke_Success_ReturnsSuccess() = runTest {

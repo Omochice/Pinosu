@@ -17,8 +17,6 @@ import org.junit.Test
  */
 class MainActivityTest {
 
-  // ========== アプリ起動時のログイン状態確認 ==========
-
   @Test
   fun `when logged in on startup, should show main screen`() = runTest {
     val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
@@ -49,8 +47,6 @@ class MainActivityTest {
 
     assertEquals("LoginScreen", initialDestination)
   }
-
-  // ========== ヘルパー関数 ==========
 
   /**
    * ログイン状態に基づいて初期表示画面を決定する

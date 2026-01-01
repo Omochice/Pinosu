@@ -19,8 +19,6 @@ class LoginScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  // ========== ログインボタン表示のテスト ==========
-
   @Test
   fun loginScreen_displaysLoginButton() {
 
@@ -48,8 +46,6 @@ class LoginScreenTest {
     assert(clicked) { "Login button click should trigger callback" }
   }
 
-  // ========== ローディングインジケーター表示のテスト ==========
-
   @Test
   fun loginScreen_displaysLoadingIndicatorWhenLoading() {
 
@@ -73,8 +69,6 @@ class LoginScreenTest {
 
     composeTestRule.onNodeWithText("読み込み中...").assertIsNotDisplayed()
   }
-
-  // ========== ボタン無効化のテスト ==========
 
   @Test
   fun loginScreen_disablesLoginButtonWhenLoading() {

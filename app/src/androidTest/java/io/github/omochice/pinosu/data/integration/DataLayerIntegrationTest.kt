@@ -52,8 +52,6 @@ class DataLayerIntegrationTest {
     runTest { localAuthDataSource.clearLoginState() }
   }
 
-  // ========== AuthRepository + LocalAuthDataSource 統合テスト ==========
-
   /**
    * Amber未インストール検出 → AuthRepository統合
    *
@@ -71,8 +69,6 @@ class DataLayerIntegrationTest {
     assertTrue(
         "checkAmberInstalled should return boolean", isInstalled || !isInstalled) // always true
   }
-
-  // ========== EncryptedSharedPreferences実動作テスト (保存 → 取得 → 削除) ==========
 
   /**
    * EncryptedSharedPreferences実動作テスト: 保存 → 取得

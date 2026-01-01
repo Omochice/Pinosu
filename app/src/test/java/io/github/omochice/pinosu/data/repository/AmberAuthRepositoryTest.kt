@@ -40,8 +40,6 @@ class AmberAuthRepositoryTest {
     authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
   }
 
-  // ========== getLoginState() Tests ==========
-
   /** ログイン済み状態の取得が成功するテスト */
   @Test
   fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
@@ -64,8 +62,6 @@ class AmberAuthRepositoryTest {
     assertNull("Should return null when no user is stored", result)
     coVerify { localAuthDataSource.getUser() }
   }
-
-  // ========== saveLoginState() Tests ==========
 
   /** ログイン状態の保存が成功するテスト */
   @Test
@@ -94,8 +90,6 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  // ========== logout() Tests ==========
-
   /** ログアウトが成功するテスト */
   @Test
   fun testLogout_Success_ReturnsSuccess() = runTest {
@@ -121,8 +115,6 @@ class AmberAuthRepositoryTest {
         "Exception should be LogoutError.StorageError", exception is LogoutError.StorageError)
     coVerify { localAuthDataSource.clearLoginState() }
   }
-
-  // ========== processAmberResponse() Tests ==========
 
   /** Amberレスポンス処理が成功してローカル保存も成功するテスト */
   @Test
@@ -224,8 +216,6 @@ class AmberAuthRepositoryTest {
     val unknownError = exception as LoginError.UnknownError
     assertTrue("Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
   }
-
-  // ========== checkAmberInstalled() Tests ==========
 
   /** Amberがインストールされている場合のテスト */
   @Test

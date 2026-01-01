@@ -30,8 +30,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
-  // ========== saveUser Tests ==========
-
   @Test
   fun testSaveUser_Success() = runTest {
     val user = User("a".repeat(64))
@@ -65,8 +63,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val savedUser = dataSource.getUser()
     assertEquals("Should retrieve the latest user", user2.pubkey, savedUser?.pubkey)
   }
-
-  // ========== getUser Tests ==========
 
   @Test
   fun testGetUser_AfterSave() = runTest {
@@ -134,8 +130,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertEquals("Data should be consistent", firstRetrieval?.pubkey, secondRetrieval?.pubkey)
   }
 
-  // ========== clearLoginState Tests ==========
-
   @Test
   fun testClearLoginState_Success() = runTest {
     val user = User("2".repeat(64))
@@ -166,8 +160,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertFalse("login_created_at should be removed", prefs.contains("login_created_at"))
     assertFalse("login_last_accessed should be removed", prefs.contains("login_last_accessed"))
   }
-
-  // ========== Error Handling Tests ==========
 
   /** ストレージエラー時にStorageError.WriteErrorを返すことをテスト（将来拡張用） */
   @Test
