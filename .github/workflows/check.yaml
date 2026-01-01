@@ -89,8 +89,8 @@ jobs:
     needs:
       # keep-sorted start
       - check-format
-      - check-home-manager
       - check-renovate
+      - test-android
       # keep-sorted end
     permissions: {}
     if: failure()
