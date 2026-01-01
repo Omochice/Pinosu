@@ -62,7 +62,7 @@ jobs:
   test-android:
     timeout-minutes: 5
     name: Test Android code
-    needs: path-filter
+    # needs: path-filter
     # if: needs.path-filter.outputs.android == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -77,7 +77,7 @@ jobs:
   check-renovate:
     timeout-minutes: 5
     name: Check Renovate config
-    needs: path-filter
+    # needs: path-filter
     # if: needs.path-filter.outputs.renovate == 'true'
     runs-on: ubuntu-latest
     permissions:
