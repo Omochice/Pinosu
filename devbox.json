@@ -13,11 +13,13 @@
     "toml-sort@0.24.3",
     "formatjson5@0.2.6",
     "rumdl@0.0.185",
-    "biome@2.3.8"
+    "biome@2.3.8",
+    "temurin-bin@21.0.8"
   ],
   "shell": {
     "scripts": {
-      "fmt": ["treefmt"]
+      "fmt": ["treefmt"],
+      "check": ["./gradlew lint"]
     }
   }
 }

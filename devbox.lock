@@ -388,6 +388,54 @@
         }
       }
     },
+    "temurin-bin@21.0.8": {
+      "last_modified": "2025-10-22T20:59:19Z",
+      "resolved": "github:NixOS/nixpkgs/01b6809f7f9d1183a2b3e081f0a1e6f8f415cb09#temurin-bin",
+      "source": "devbox-search",
+      "version": "21.0.8",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x39311498bh7sb2ag1fjikgv7i0ll5qb-temurin-bin-21.0.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x39311498bh7sb2ag1fjikgv7i0ll5qb-temurin-bin-21.0.8"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3q60g6x4qf2wfvbalnyx1510n9gwbd5j-temurin-bin-21.0.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/3q60g6x4qf2wfvbalnyx1510n9gwbd5j-temurin-bin-21.0.8"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/q0y2plx55rmhyqbindyfg01xwjj45da6-temurin-bin-21.0.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/q0y2plx55rmhyqbindyfg01xwjj45da6-temurin-bin-21.0.8"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x1f6yd37mb7lfp61xh585vrfjs3cgw99-temurin-bin-21.0.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x1f6yd37mb7lfp61xh585vrfjs3cgw99-temurin-bin-21.0.8"
+        }
+      }
+    },
     "tombi@latest": {
       "last_modified": "2025-11-26T14:39:26Z",
       "resolved": "github:NixOS/nixpkgs/5c46f3bd98147c8d82366df95bbef2cab3a967ea#tombi",

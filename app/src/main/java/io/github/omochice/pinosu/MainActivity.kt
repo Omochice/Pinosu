@@ -1,59 +1,100 @@
 package io.github.omochice.pinosu
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.snackbar.Snackbar
-import io.github.omochice.pinosu.databinding.ActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.omochice.pinosu.data.amber.AmberSignerClient
+import io.github.omochice.pinosu.presentation.navigation.LOGIN_ROUTE
+import io.github.omochice.pinosu.presentation.navigation.MAIN_ROUTE
+import io.github.omochice.pinosu.presentation.ui.LoginScreen
+import io.github.omochice.pinosu.presentation.ui.MainScreen
+import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.ui.theme.PinosuTheme
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
 
-  private lateinit var appBarConfiguration: AppBarConfiguration
-  private lateinit var binding: ActivityMainBinding
+  private val loginViewModel: LoginViewModel by viewModels()
+
+  @Inject lateinit var amberSignerClient: AmberSignerClient
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    binding = ActivityMainBinding.inflate(layoutInflater)
-    setContentView(binding.root)
+    loginViewModel.checkLoginState()
 
-    setSupportActionBar(binding.toolbar)
-
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    appBarConfiguration = AppBarConfiguration(navController.graph)
-    setupActionBarWithNavController(navController, appBarConfiguration)
-
-    binding.fab.setOnClickListener { view ->
-      Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-          .setAction("Action", null)
-          .setAnchorView(R.id.fab)
-          .show()
+    setContent {
+      PinosuTheme { PinosuApp(viewModel = loginViewModel, amberSignerClient = amberSignerClient) }
     }
   }
+}
 
-  override fun onCreateOptionsMenu(menu: Menu): Boolean {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    menuInflater.inflate(R.menu.menu_main, menu)
-    return true
-  }
+@Composable
+fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
+  val navController = rememberNavController()
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    return when (item.itemId) {
-      R.id.action_settings -> true
-      else -> super.onOptionsItemSelected(item)
+  val mainUiState by viewModel.mainUiState.collectAsState()
+  val loginUiState by viewModel.uiState.collectAsState()
+
+  val amberLauncher =
+      rememberLauncherForActivityResult(
+          contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.processAmberResponse(result.resultCode, result.data)
+          }
+
+  val startDestination = if (mainUiState.userPubkey != null) MAIN_ROUTE else LOGIN_ROUTE
+
+  NavHost(navController = navController, startDestination = startDestination) {
+    composable(LOGIN_ROUTE) {
+      LoginScreen(
+          uiState = loginUiState,
+          onLoginButtonClick = {
+            viewModel.onLoginButtonClicked()
+            if (amberSignerClient.checkAmberInstalled()) {
+              val intent = amberSignerClient.createPublicKeyIntent()
+              amberLauncher.launch(intent)
+            }
+          },
+          onDismissDialog = { viewModel.dismissError() },
+          onInstallAmber = {
+            // TODO: Implement Play Store link
+          },
+          onRetry = {
+            viewModel.onRetryLogin()
+            if (amberSignerClient.checkAmberInstalled()) {
+              val intent = amberSignerClient.createPublicKeyIntent()
+              amberLauncher.launch(intent)
+            }
+          },
+          onNavigateToMain = {
+            navController.navigate(MAIN_ROUTE) { popUpTo(LOGIN_ROUTE) { inclusive = true } }
+            viewModel.dismissError()
+          })
     }
-  }
 
-  override fun onSupportNavigateUp(): Boolean {
-    val navController = findNavController(R.id.nav_host_fragment_content_main)
-    return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    composable(MAIN_ROUTE) {
+      LaunchedEffect(mainUiState.userPubkey) {
+        if (mainUiState.userPubkey == null) {
+          navController.navigate(LOGIN_ROUTE) { popUpTo(MAIN_ROUTE) { inclusive = true } }
+        }
+      }
+
+      MainScreen(
+          uiState = mainUiState,
+          onLogout = { viewModel.onLogoutButtonClicked() },
+          onNavigateToLogin = {})
+    }
   }
 }
