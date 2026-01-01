@@ -56,7 +56,18 @@ class PresentationDomainIntegrationtest {
  }
 
 // ========== LoginViewModel + UseCasestest ==========
-/*** Login buttontap → AmberInstalldetection → show dialog** flow:* 1. UserLogin buttontap (LoginViewModel.onLoginButtonClicked)* 2. LoginUseCaseAmberInstallverify (LoginUseCase.checkAmberInstalled)* 3. AuthRepositoryInstalldetection* 4. ViewModelUIstateupdate (showAmberInstallDialog = true)** Requirement 1.2: Amberwhen not installedshow dialog*/ @test
+/**
+ * Login button tap triggers Amber installation check and shows dialog if not installed
+ *
+ * flow:
+ * 1. User taps Login button (calls LoginViewModel.onLoginButtonClicked)
+ * 2. LoginUseCase checks Amber installation (via LoginUseCase.checkAmberInstalled)
+ * 3. AuthRepository queries AmberSignerClient for installation status
+ * 4. ViewModel updates UI state (showAmberInstallDialog = true)
+ *
+ * Requirement 1.2: Show dialog when Amber is not installed
+ */
+@test
  fun `login flow - when Amber not installed - should show install dialog`() = runtest {
 // Given: Amber is not installed every { authRepository.checkAmberInstalled() } returns false
 
@@ -71,7 +82,7 @@ class PresentationDomainIntegrationtest {
 // AuthRepositoryofcheckAmberInstalled()Verify that io.mockk.verify { authRepository.checkAmberInstalled() }
  }
 
-/*** login succeedsflow → UIstateupdate → Main screendisplay** flow:* 1. Amber (LoginViewModel.processAmberResponse)* 2. AuthRepositoryprocessing* 3. Usersavesuccess* 4. ViewModelUIstateupdate (loginSuccess = true, userPubkeyset)** Requirements: 1.3, 1.4, 3.3*/ @test
+/*** login succeedsflow → UIstateupdate → Main screendisplay** flow:* 1. Amber response is processed (via LoginViewModel.processAmberResponse)* 2. AuthRepository processes the response* 3. User data is saved successfully* 4. ViewModel updates UI state (loginSuccess = true, userPubkey is set)** Requirements: 1.3, 1.4, 3.3*/ @test
  fun `login flow - when Amber response success - should update UI state navigate to main`() =
  runtest {
 // Given: Amber responseprocessingsuccess val testPubkey = "npub1" + "a".repeat(59)
@@ -94,7 +105,7 @@ class PresentationDomainIntegrationtest {
 // AuthRepositoryofprocessAmberResponse()Verify that coVerify { authRepository.processAmberResponse(any(), any()) }
  }
 
-/*** app startsoflogin stateverify → logged in → Main screendisplay** flow:* 1. app startswhenlogin stateverify (LoginViewModel.checkLoginState)* 2. GetLoginStateUseCaselogin stateget* 3. AuthRepositorysaveUserget* 4. ViewModelMain screenUIstateupdate (userPubkeyset)** Requirements: 2.2, 2.3*/ @test
+/*** app startsoflogin stateverify → logged in → Main screendisplay** flow:* 1. App checks login state at startup (via LoginViewModel.checkLoginState)* 2. GetLoginStateUseCase retrieves login state* 3. AuthRepository fetches stored user data* 4. ViewModel updates Main screen UI state (userPubkey is set)** Requirements: 2.2, 2.3*/ @test
  fun `startup flow - when user logged in - should restore login state`() = runtest {
 // Given: Logged in usersaveing val testPubkey = "npub1" + "b".repeat(59)
  val testUser = User(testPubkey)
@@ -109,7 +120,7 @@ class PresentationDomainIntegrationtest {
 // AuthRepositoryofgetLoginState()Verify that coVerify { authRepository.getLoginState() }
  }
 
-/*** app startsoflogin stateverify → not logged in → Login screendisplay** flow:* 1. app startswhenlogin stateverify (LoginViewModel.checkLoginState)* 2. GetLoginStateUseCaselogin stateget* 3. AuthRepositorynull (not logged in)* 4. ViewModelofMain screenUIstatenullof** Requirement 2.2*/ @test
+/*** app startsoflogin stateverify → not logged in → Login screendisplay** flow:* 1. App checks login state at startup (via LoginViewModel.checkLoginState)* 2. GetLoginStateUseCase retrieves login state* 3. AuthRepository returns null (user not logged in)* 4. ViewModel Main screen UI state remains empty (userPubkey = null)** Requirement 2.2*/ @test
  fun `startup flow - when user not logged in - should keep null state`() = runtest {
 // Given: Not logged in state coEvery { authRepository.getLoginState() } returns null
 
@@ -123,7 +134,19 @@ class PresentationDomainIntegrationtest {
  }
 
 // ========== errorflowtest ==========
-/*** Usererror → errormessagedisplay → possible** flow:* 1. Amber (LoginViewModel.processAmberResponse)* 2. AuthRepositoryUsererrordetection* 3. LoginError.UserRejectederroris returned* 4. ViewModelerrormessageset* 5. Userbuttontap (onRetryLogin)** Requirements: 1.5, 5.4*/ @test
+/**
+ * User rejection during Amber flow shows error message and allows retry
+ *
+ * flow:
+ * 1. Amber response is processed (via LoginViewModel.processAmberResponse)
+ * 2. AuthRepository detects user rejected the request
+ * 3. LoginError.UserRejected error is returned
+ * 4. ViewModel sets error message in UI state
+ * 5. User can tap retry button (onRetryLogin)
+ *
+ * Requirements: 1.5, 5.4
+ */
+@test
  fun `error flow - when user rejected - should show error allow retry`() = runtest {
 // Given: UserAmber val mockIntent = mockk< roid.content.Intent>(relaxed = true)
  val error = LoginError.UserRejected
@@ -144,7 +167,7 @@ class PresentationDomainIntegrationtest {
 // Amberverifyed io.mockk.verify(atLeast = 1) { authRepository.checkAmberInstalled() }
  }
 
-/*** error → messagedisplay → possible** flow:* 1. Amber (LoginViewModel.processAmberResponse)* 2. AuthRepositoryerrordetection* 3. LoginError.Timeouterroris returned* 4. ViewModelmessageset** Requirements: 1.5, 5.4*/ @test
+/*** error → messagedisplay → possible** flow:* 1. Amber response is processed (via LoginViewModel.processAmberResponse)* 2. AuthRepository detects an error* 3. LoginError.Timeout error is returned* 4. ViewModel sets timeout message in UI state** Requirements: 1.5, 5.4*/ @test
  fun `error flow - when timeout - should show timeout error message`() = runtest {
 // Given: Amberprocessing val mockIntent = mockk< roid.content.Intent>(relaxed = true)
  val error = LoginError.Timeout
@@ -162,7 +185,7 @@ class PresentationDomainIntegrationtest {
  assertFalse("isLoading should be false", state.isLoading)
  }
 
-/*** error → errormessagedisplay** flow:* 1. Amber (LoginViewModel.processAmberResponse)* 2. AuthRepositoryerrordetection* 3. LoginError.NetworkErrorerroris returned* 4. ViewModelerrormessageset** Requirements: 1.5, 5.2*/ @test
+/*** error → errormessagedisplay** flow:* 1. Amber response is processed (via LoginViewModel.processAmberResponse)* 2. AuthRepository detects an error* 3. LoginError.NetworkError error is returned* 4. ViewModel sets network error message in UI state** Requirements: 1.5, 5.2*/ @test
  fun `error flow - when network error - should show network error message`() = runtest {
 // Given: error val mockIntent = mockk< roid.content.Intent>(relaxed = true)
  val error = LoginError.NetworkError("Connection failed")
@@ -177,7 +200,7 @@ class PresentationDomainIntegrationtest {
  assertFalse("isLoading should be false", state.isLoading)
  }
 
-/*** Error dialogClose → errorstateclear** flow:* 1. errorshow dialog* 2. UserError dialogClose (dismissError)* 3. ViewModelerrorstateclear** Requirement 1.5*/ @test
+/*** Error dialogClose → errorstateclear** flow:* 1. Error dialog is displayed* 2. User dismisses the error dialog (via dismissError)* 3. ViewModel clears error state** Requirement 1.5*/ @test
  fun `error flow - when error dismissed - should clear error state`() = runtest {
 // Given: AmberInstallerroris displayeding every { authRepository.checkAmberInstalled() } returns false
  viewModel.onLoginButtonClicked()
@@ -195,7 +218,18 @@ class PresentationDomainIntegrationtest {
  }
 
 // ========== logoutflowtest ==========
-/*** logoutsuccessflow → login stateclear → Login screendisplay** flow:* 1. UserLogout buttontap (LoginViewModel.onLogoutButtonClicked)* 2. LogoutUseCaselogoutprocessing* 3. AuthRepositorylogin stateclearsuccess* 4. ViewModelUIstateupdate (userPubkey = null)** Requirements: 2.4, 2.5*/ @test
+/**
+ * Successful logout clears login state and updates UI
+ *
+ * flow:
+ * 1. User taps Logout button (via LoginViewModel.onLogoutButtonClicked)
+ * 2. LogoutUseCase performs logout processing
+ * 3. AuthRepository successfully clears login state
+ * 4. ViewModel updates UI state (userPubkey = null)
+ *
+ * Requirements: 2.4, 2.5
+ */
+@test
  fun `logout flow - when logout success - should clear login state`() = runtest {
 // Given: Logged in state val testPubkey = "npub1" + "c".repeat(59)
  val testUser = User(testPubkey)
@@ -218,7 +252,7 @@ class PresentationDomainIntegrationtest {
 // AuthRepositoryoflogout()Verify that coVerify { authRepository.logout() }
  }
 
-/*** logoutfailureflow → error → login state** flow:* 1. UserLogout buttontap (LoginViewModel.onLogoutButtonClicked)* 2. LogoutUseCaselogoutprocessing* 3. AuthRepositoryerror* 4. ViewModelerror (isLoggingOut = false)** Requirement 2.4*/ @test
+/*** logoutfailureflow → error → login state** flow:* 1. User taps Logout button (via LoginViewModel.onLogoutButtonClicked)* 2. LogoutUseCase attempts logout processing* 3. AuthRepository encounters an error* 4. ViewModel handles error gracefully (isLoggingOut = false)** Requirement 2.4*/ @test
  fun `logout flow - when logout fails - should h le error gracefully`() = runtest {
 // Given: Logged in statelogoutfailure val testPubkey = "npub1" + "d".repeat(59)
  val testUser = User(testPubkey)

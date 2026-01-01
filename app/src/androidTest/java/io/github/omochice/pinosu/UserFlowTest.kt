@@ -54,20 +54,20 @@ class UserFlowtest {
   }
 
   /**
-   * test 1: login flow - Login screen is displayed
+   * login flow - Login screen is displayed
    *
    * Given: App startup (not logged in) When: app starts Then: Login screen is displayed ("Login with Amber" button is displayed)
    *
    * Requirement 3.1: Login screen "Login with Amber" button placement
    */
   @test
-  fun loginFlow_step1_displaysLoginScreen() {
+  fun loginFlow_displaysLoginScreen() {
     // Then: "Login with Amber" button is displayed on Login screen
     composetestRule.onNodeWithText("Login with Amber").assertIsDisplayed()
   }
 
   /**
-   * test 2: login flow - Login button tap to loading display
+   * login flow - Login button tap to loading display
    *
    * Given: Login screen is displayed When: "Login with Amber" button tap Then: Loading indicator is displayed
    *
@@ -76,7 +76,7 @@ class UserFlowtest {
    * Note: This test verifies the loading state before the Amber Intent is launched
    */
   @test
-  fun loginFlow_step2_displaysLoadingOnButtonClick() {
+  fun loginFlow_displaysLoadingOnButtonClick() {
     // Given: Amber is installed
     every { mockAmberSignerClient.checkAmberInstalled() } returns true
     every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
@@ -92,7 +92,7 @@ class UserFlowtest {
   }
 
   /**
-   * test 3: login flow - transition to Main screen after login success
+   * login flow - transition to Main screen after login success
    *
    * Given: Login screen is displayed When: login succeeds Then: transition to Main screen and "logout" button is displayed
    *
@@ -101,7 +101,7 @@ class UserFlowtest {
    * Note: Simulation of Amber Intent result is necessary
    */
   @test
-  fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
+  fun loginFlow_navigatesToMainScreenOnSuccess() {
     // Given: Amber is installed
     every { mockAmberSignerClient.checkAmberInstalled() } returns true
     every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
@@ -133,14 +133,14 @@ class UserFlowtest {
   }
 
   /**
-   * test 4: Amber not installed error flow - Error dialog display
+   * Amber not installed error flow - Error dialog display
    *
    * Given: Login screen is displayed When: Amber is not installed and Login button tap Then: Amber not installed Error dialog is displayed
    *
    * Requirement 1.2: show dialog when Amber is not installed
    */
   @test
-  fun amberNotInstalledFlow_step1_displaysErrorDialog() {
+  fun amberNotInstalledFlow_displaysErrorDialog() {
     // Given: Amber is not installed
     every { mockAmberSignerClient.checkAmberInstalled() } returns false
 
@@ -160,14 +160,14 @@ class UserFlowtest {
   }
 
   /**
-   * test 5: Amber not installed error flow - Close dialog
+   * Amber not installed error flow - Close dialog
    *
    * Given: Amber not installed Error dialog is displayed When: "Close" button tap Then: dialog is closed and stays on Login screen
    *
    * Requirement 1.2: show dialog when Amber is not installed
    */
   @test
-  fun amberNotInstalledFlow_step2_dismissDialog() {
+  fun amberNotInstalledFlow_dismissDialog() {
     // Given: Amber is not installed
     every { mockAmberSignerClient.checkAmberInstalled() } returns false
 
@@ -190,14 +190,14 @@ class UserFlowtest {
   }
 
   /**
-   * test 6: logout flow - Main screen Logout button tap
+   * logout flow - Main screen Logout button tap
    *
    * Given: Main screen is displayed (logged in state) When: Tap logout button Then: transition to Login screen and "Login with Amber" button is displayed
    *
    * Requirement 2.4: provide logout functionality
    */
   @test
-  fun logoutFlow_step1_navigatesToLoginScreenOnLogout() {
+  fun logoutFlow_navigatesToLoginScreenOnLogout() {
     // Given: App startup with logged in state
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
