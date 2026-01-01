@@ -4,11 +4,8 @@ import io.github.omochice.pinosu.domain.model.User
 
 /**
  * Login state retrieval UseCase interface
- *
  * - Delegation to AuthRepository
  * - Guarantee of read-only operation
- *
- * Requirements: 2.2, 2.3
  */
 interface GetLoginStateUseCase {
 

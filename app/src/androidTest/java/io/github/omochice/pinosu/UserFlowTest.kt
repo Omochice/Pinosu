@@ -19,16 +19,6 @@ import org.junit.test
 import org.junit.runner.RunWith
 
 /**
- *
- * Requirements:
- * - 1.1: Login button tap to start Amber integration
- * - 1.2: Amber when not installed show dialog
- * - 2.4: provide logout functionality
- * - 3.1: Login screen "Login with Amber" button placement
- * - 3.2: display loading indicator during login processing
- * - 3.3: transition to Main screen when login succeeds
- * - 3.4: Main screen Logout button placement
- *
  * test content:
  * 1. login flow (Login screen → Login button tap → loading display → Main screen transition)
  * 2. Amber not installed error flow
@@ -57,8 +47,6 @@ class UserFlowtest {
    * login flow - Login screen is displayed
    *
    * Given: App startup (not logged in) When: app starts Then: Login screen is displayed ("Login with Amber" button is displayed)
-   *
-   * Requirement 3.1: Login screen "Login with Amber" button placement
    */
   @test
   fun loginFlow_displaysLoginScreen() {
@@ -70,8 +58,6 @@ class UserFlowtest {
    * login flow - Login button tap to loading display
    *
    * Given: Login screen is displayed When: "Login with Amber" button tap Then: Loading indicator is displayed
-   *
-   * Requirement 3.2: display loading indicator during login processing
    *
    * Note: This test verifies the loading state before the Amber Intent is launched
    */
@@ -95,8 +81,6 @@ class UserFlowtest {
    * login flow - transition to Main screen after login success
    *
    * Given: Login screen is displayed When: login succeeds Then: transition to Main screen and "logout" button is displayed
-   *
-   * Requirement 3.3: transition to Main screen when login succeeds Requirement 3.4: Main screen Logout button placement
    *
    * Note: Simulation of Amber Intent result is necessary
    */
@@ -136,8 +120,6 @@ class UserFlowtest {
    * Amber not installed error flow - Error dialog display
    *
    * Given: Login screen is displayed When: Amber is not installed and Login button tap Then: Amber not installed Error dialog is displayed
-   *
-   * Requirement 1.2: show dialog when Amber is not installed
    */
   @test
   fun amberNotInstalledFlow_displaysErrorDialog() {
@@ -163,8 +145,6 @@ class UserFlowtest {
    * Amber not installed error flow - Close dialog
    *
    * Given: Amber not installed Error dialog is displayed When: "Close" button tap Then: dialog is closed and stays on Login screen
-   *
-   * Requirement 1.2: show dialog when Amber is not installed
    */
   @test
   fun amberNotInstalledFlow_dismissDialog() {
@@ -193,8 +173,6 @@ class UserFlowtest {
    * logout flow - Main screen Logout button tap
    *
    * Given: Main screen is displayed (logged in state) When: Tap logout button Then: transition to Login screen and "Login with Amber" button is displayed
-   *
-   * Requirement 2.4: provide logout functionality
    */
   @test
   fun logoutFlow_navigatesToLoginScreenOnLogout() {
@@ -226,10 +204,7 @@ class UserFlowtest {
   }
 
   /**
-   *
    * Given: Logged in state is saved When: app starts Then: Main screen is displayed (skip Login screen)
-   *
-   * Requirement 2.2: verify saved login state when app starts Requirement 2.3: display Main screen when logged in
    */
   @test
   fun appRestart_whenLoggedIn_displaysMainScreen() {
@@ -255,10 +230,7 @@ class UserFlowtest {
   }
 
   /**
-   *
    * Given: login state is not saved When: app starts Then: Login screen is displayed
-   *
-   * Requirement 2.2: verify saved login state when app starts
    */
   @test
   fun appRestart_whenNotLoggedIn_displaysLoginScreen() {

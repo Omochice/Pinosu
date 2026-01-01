@@ -5,7 +5,6 @@ import dagger.hilt.android.HiltAndroidApp
 
 /**
  * Pinosu application class
- *
  * - Hilt DI container initialization
  *
  * The @HiltAndroidApp annotation triggers Hilt's code generation, making DI available throughout

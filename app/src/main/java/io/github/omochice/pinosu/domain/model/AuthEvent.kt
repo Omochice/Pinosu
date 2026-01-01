@@ -5,7 +5,6 @@ package io.github.omochice.pinosu.domain.model
  *
  * Sealed class representing authentication-related events such as login and logout. Designed for
  * future extension to event sourcing or event-driven architecture.
- *
  */
 sealed class AuthEvent {
   /**

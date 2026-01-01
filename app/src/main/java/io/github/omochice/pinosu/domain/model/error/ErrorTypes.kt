@@ -5,7 +5,6 @@ package io.github.omochice.pinosu.domain.model.error
  *
  * Sealed class representing errors that can occur during the login process. Used by LoginUseCase
  * and AuthRepository.
- *
  */
 sealed class LoginError : Exception() {
   /** Amber app is not installed */
@@ -39,7 +38,6 @@ sealed class LoginError : Exception() {
  * Logout process errors
  *
  * Sealed class representing errors that can occur during the logout process. Used by LogoutUseCase.
- *
  */
 sealed class LogoutError : Exception() {
   /**
@@ -55,7 +53,6 @@ sealed class LogoutError : Exception() {
  *
  * Represents errors that can occur during local storage operations such as
  * EncryptedSharedPreferences. Used by LocalAuthDataSource and AuthRepository.
- *
  */
 sealed class StorageError : Exception() {
   /**

@@ -8,7 +8,6 @@ import io.github.omochice.pinosu.domain.model.User
  *
  * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
  * state management.
- *
  */
 interface AuthRepository {
 
@@ -16,7 +15,6 @@ interface AuthRepository {
    * Get login state
    *
    * Retrieves saved user information from LocalAuthDataSource.
-   *
    *
    * @return User if logged in, null if not logged in
    */
@@ -27,7 +25,6 @@ interface AuthRepository {
    *
    * Saves user information to LocalAuthDataSource.
    *
-   *
    * @param user User to save
    * @return Success on success, Failure(StorageError) on failure
    */
@@ -37,7 +34,6 @@ interface AuthRepository {
    * Logout
    *
    * Clears login state in LocalAuthDataSource.
-   *
    *
    * @return Success on success, Failure(LogoutError) on failure
    */
@@ -60,7 +56,6 @@ interface AuthRepository {
    * Check if Amber app is installed
    *
    * Delegates to AmberSignerClient to verify Amber installation status.
-   *
    *
    * @return true if Amber is installed
    */

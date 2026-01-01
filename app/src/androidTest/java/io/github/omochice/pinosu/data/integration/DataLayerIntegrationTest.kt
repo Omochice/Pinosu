@@ -44,8 +44,6 @@ class DataLayerIntegrationtest {
  * 1. AuthRepository requests Amber installation check
  * 2. AmberSignerClient performs the detection
  * 3. Result is returned
- *
- * Requirement 1.2
  */
 @test
  fun checkAmberInstalled_shouldUseAmberSignerClient() {
@@ -62,8 +60,6 @@ class DataLayerIntegrationtest {
  * 1. Save user data via LocalAuthDataSource
  * 2. Data is encrypted and stored in EncryptedSharedPreferences
  * 3. Retrieve and verify saved data
- *
- * Requirements: 2.1, 6.2
  */
 @test
  fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runtest {
@@ -78,7 +74,15 @@ class DataLayerIntegrationtest {
  assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
  }
 
-/*** EncryptedSharedPreferencestest: save → delete → get** flow:* 1. Save user data via LocalAuthDataSource* 2. Clear login state (deletion during logout)* 3. Verify that data is gone after deletion** Requirements: 2.5*/ @test
+/**
+ * EncryptedSharedPreferencestest: save → delete → get
+ *
+ * flow:
+ * 1. Save user data via LocalAuthDataSource
+ * 2. Clear login state (deletion during logout)
+ * 3. Verify that data is gone after deletion
+ */
+@test
  fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runtest {
 // Given: Usersaveingstate val testPubkey = "c".repeat(64)
  val testUser = User(testPubkey)
@@ -95,7 +99,15 @@ class DataLayerIntegrationtest {
  assertNull("User should be null after delete", userAfterDelete)
  }
 
-/*** EncryptedSharedPreferencestest: ofsavegetdelete** flow:* 1. Save, retrieve, and delete operations in sequence* 2. Verify EncryptedSharedPreferences behaves correctly* 3. Test multiple cycles of save-get-delete** Requirements: 2.1, 2.5*/ @test
+/**
+ * EncryptedSharedPreferencestest: ofsavegetdelete
+ *
+ * flow:
+ * 1. Save, retrieve, and delete operations in sequence
+ * 2. Verify EncryptedSharedPreferences behaves correctly
+ * 3. Test multiple cycles of save-get-delete
+ */
+@test
  fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runtest {
 // Given: oftestUser val users =
  listOf(
@@ -118,7 +130,16 @@ class DataLayerIntegrationtest {
  }
  }
 
-/*** logoutflow → EncryptedSharedPreferencesdatadelete** flow:* 1. User is in logged-in state* 2. Call AuthRepository.logout()* 3. LocalAuthDataSource clears login state* 4. EncryptedSharedPreferences data is deleted** Requirements: 2.4, 2.5*/ @test
+/**
+ * logoutflow → EncryptedSharedPreferencesdatadelete
+ *
+ * flow:
+ * 1. User is in logged-in state
+ * 2. Call AuthRepository.logout()
+ * 3. LocalAuthDataSource clears login state
+ * 4. EncryptedSharedPreferences data is deleted
+ */
+@test
  fun logoutFlow_shouldClearEncryptedStorage() = runtest {
 // Given: User is logged in val testPubkey = "g".repeat(64)
  val testUser = User(testPubkey)
@@ -139,7 +160,15 @@ class DataLayerIntegrationtest {
  assertNull("User should be null in storage", directRetrieve)
  }
 
-/*** restart app → login state** flow:* 1. Save user data* 2. Create new AuthRepository/LocalAuthDataSource instances (simulating app restart)* 3. Verify that saved login state is restored** Requirements: 2.2, 2.3*/ @test
+/**
+ * restart app → login state
+ *
+ * flow:
+ * 1. Save user data
+ * 2. Create new AuthRepository/LocalAuthDataSource instances (simulating app restart)
+ * 3. Verify that saved login state is restored
+ */
+@test
  fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runtest {
 // Given: User is logged in val testPubkey = "h".repeat(64)
  val testUser = User(testPubkey)
@@ -154,7 +183,16 @@ class DataLayerIntegrationtest {
  assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
  }
 
-/*** invaliddata → null** flow:* 1. Attempt to save invalid data* 2. User validation fails with an error* 3. Invalid data is rejected* 4. No data is stored** Requirement 6.1*/ @test
+/**
+ * invaliddata → null
+ *
+ * flow:
+ * 1. Attempt to save invalid data
+ * 2. User validation fails with an error
+ * 3. Invalid data is rejected
+ * 4. No data is stored
+ */
+@test
  fun invalidData_shouldBeRejectedByUserValidation() = runtest {
 // Given: Invalid val invalidPubkey = "invalid_pubkey_format"
 

@@ -1,11 +1,6 @@
 package io.github.omochice.pinosu.presentation.navigation
 
-/**
- *
- * Screen route definitions within the application
- *
- * Requirements: 2.3, 3.3
- */
+/** Screen route definitions within the application */
 
 /** Login screen route definition */
 const val LOGIN_ROUTE = "login"

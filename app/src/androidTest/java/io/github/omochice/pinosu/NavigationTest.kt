@@ -30,8 +30,6 @@ class Navigationtest {
  * not logged in state app starts Login screen is displayed
  *
  * Given: Not logged in state When: app starts Then: Login screen is displayed ("Login with Amber" button is displayed)
- *
- * Requirement 2.2: app starts when saved login state verify
  */
 @test
  fun navigation_whenNotLoggedIn_displaysLoginScreen() {
@@ -45,8 +43,6 @@ class Navigationtest {
  *
  * Given: Main screen is displayeding (logged in state) When: Tap logout button Then: Login screen transition "Login with Amber" button is displayed
  *
- * Requirement 2.4: logout functionality
- *
  * Note: login state before setup
  */
 @test
@@ -58,8 +54,6 @@ class Navigationtest {
  *
  * Given: Main screen is displayeding (logged in state) When: Back button Then: app completion (Login screen)
  *
- * Requirement: (logout Login screen)
- *
  * Note: Back Press processing Implementation after test
  */
 @test
@@ -70,8 +64,6 @@ class Navigationtest {
  * Login screen Back button app completion
  *
  * Given: Login screen is displayeding When: Back button Then: app completion
- *
- * Requirement: (Login screen)
  */
 @test
  fun navigation_onBackPressFromLoginScreen_exitsApp() {

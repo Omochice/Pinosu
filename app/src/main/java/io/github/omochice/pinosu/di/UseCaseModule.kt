@@ -13,7 +13,6 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 
 /**
  * Use case dependency injection module
- *
  * - Binding use case interfaces to their implementations
  *
  * Uses @Binds to bind interfaces to implementations
