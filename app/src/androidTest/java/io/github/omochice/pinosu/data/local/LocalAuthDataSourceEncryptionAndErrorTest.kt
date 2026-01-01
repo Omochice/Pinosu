@@ -31,7 +31,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @After
   fun tearDown() {
-    // テスト後にデータをクリア
     context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
@@ -40,24 +39,17 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testDataIsEncryptedInStorage() = runTest {
     val user = User("abcd1234".repeat(8)) // 64文字の有効なpubkey
 
-    // ユーザーを保存
     dataSource.saveUser(user)
 
-    // 通常のSharedPreferences（非暗号化）で同じファイルを読み込んでみる
-    // EncryptedSharedPreferencesを使用している場合、生のキー/値は読み取れないはず
     val regularPrefs = context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
     val allEntries = regularPrefs.all
 
-    // EncryptedSharedPreferencesを使用している場合:
-    // 1. キー名が暗号化されているため、"user_pubkey"という生のキーは存在しない
-    // 2. 値が暗号化されているため、元のpubkeyが直接読み取れない
     var foundPlaintextPubkey = false
     for ((key, value) in allEntries) {
       if (key == "user_pubkey" && value == user.pubkey) {
         foundPlaintextPubkey = true
         break
       }
-      // 値がpubkeyと一致する場合も検出
       if (value.toString() == user.pubkey) {
         foundPlaintextPubkey = true
         break
@@ -72,13 +64,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testEncryptedDataCanBeDecrypted() = runTest {
     val user = User("1234abcd".repeat(8))
 
-    // 保存
     dataSource.saveUser(user)
 
-    // 取得（復号化）
     val retrieved = dataSource.getUser()
 
-    // 復号化されたデータが元のデータと一致することを確認
     assertNotNull("Encrypted data should be decryptable", retrieved)
     assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
   }
@@ -88,13 +77,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testEncryptionKeyPersistenceAcrossInstances() = runTest {
     val user = User("fedcba98".repeat(8))
 
-    // 最初のインスタンスで保存
     dataSource.saveUser(user)
 
-    // 新しいインスタンスを作成
     val newDataSource = LocalAuthDataSource(context)
 
-    // 新しいインスタンスで取得できることを確認
     val retrieved = newDataSource.getUser()
 
     assertNotNull("New instance should be able to decrypt data", retrieved)
@@ -109,13 +95,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
             User("0".repeat(64)), User("1".repeat(64)), User("a".repeat(64)), User("f".repeat(64)))
 
     for (user in users) {
-      // 保存
       dataSource.saveUser(user)
 
-      // 取得
       val retrieved = dataSource.getUser()
 
-      // 検証
       assertNotNull("User should be retrievable", retrieved)
       assertEquals("Retrieved user should match saved user", user.pubkey, retrieved?.pubkey)
     }
@@ -126,29 +109,24 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testGetUser_InvalidPubkeyFormat_ReturnsNull() = runTest {
     val invalidPubkeys =
         listOf(
-            "invalid", // 短すぎる
-            "g".repeat(64), // 無効な16進数文字
-            "abc", // 短い＆無効な16進数
-            "ABCD1234".repeat(8), // 大文字（無効）
-            "abcd1234".repeat(7), // 63文字（1文字足りない）
-            "abcd1234".repeat(8) + "0" // 65文字（1文字多い）
-            )
+            "invalid",
+            "g".repeat(64),
+            "abc",
+            "ABCD1234".repeat(8),
+            "abcd1234".repeat(7),
+            "abcd1234".repeat(8) + "0")
 
     for (invalidPubkey in invalidPubkeys) {
-      // 不正なデータを直接保存
       context
           .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
           .edit()
           .putString("user_pubkey", invalidPubkey)
           .commit()
 
-      // 取得を試行
       val retrieved = dataSource.getUser()
 
-      // nullが返されることを確認
       assertNull("getUser should return null for invalid pubkey format: $invalidPubkey", retrieved)
 
-      // クリーンアップ
       dataSource.clearLoginState()
     }
   }
@@ -156,7 +134,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   /** pubkeyが存在しない場合にnullを返すことを確認 */
   @Test
   fun testGetUser_MissingPubkey_ReturnsNull() = runTest {
-    // タイムスタンプだけ存在する状態
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -172,14 +149,12 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   /** SharedPreferences読み込み時の例外がキャッチされることを確認 */
   @Test
   fun testGetUser_ExceptionHandling_ReturnsNull() = runTest {
-    // 不正な型のデータを保存（Stringを期待しているところにIntを保存）
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
-        .putInt("user_pubkey", 12345) // Stringではなく Int
+        .putInt("user_pubkey", 12345)
         .commit()
 
-    // 例外が発生してもnullが返されることを確認
     val retrieved = dataSource.getUser()
 
     assertNull("getUser should return null on exception", retrieved)
@@ -208,10 +183,8 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testGetUser_TimestampHandling() = runTest {
     val user = User("deadbeef".repeat(8))
 
-    // 正常に保存
     dataSource.saveUser(user)
 
-    // 正常に取得できることを確認（タイムスタンプは自動的に設定される）
     val retrieved = dataSource.getUser()
 
     assertNotNull("User should be retrievable", retrieved)
@@ -223,22 +196,17 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun testClearLoginState_RemovesAllData() = runTest {
     val user = User("cafe1234".repeat(8))
 
-    // ユーザーを保存
     dataSource.saveUser(user)
 
-    // データが保存されていることを確認
     assertNotNull("User should be saved", dataSource.getUser())
 
-    // クリア
     dataSource.clearLoginState()
 
-    // すべてのキーが削除されていることを確認
     val prefs = context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
     assertFalse("user_pubkey should be removed", prefs.contains("user_pubkey"))
     assertFalse("login_created_at should be removed", prefs.contains("login_created_at"))
     assertFalse("login_last_accessed should be removed", prefs.contains("login_last_accessed"))
 
-    // getUserでnullが返されることを確認
     assertNull("getUser should return null after clear", dataSource.getUser())
   }
 
@@ -249,17 +217,13 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
    */
   @Test
   fun testSaveUser_ValidatesErrorType() = runTest {
-    // 現在の実装では、EncryptedSharedPreferencesが例外をスローする状況を
-    // 作り出すのは難しいため、正常系の動作を確認
     val user = User("beef".repeat(16))
 
     try {
       dataSource.saveUser(user)
-      // 正常に保存できたことを確認
       val retrieved = dataSource.getUser()
       assertEquals("User should be saved successfully", user.pubkey, retrieved?.pubkey)
     } catch (e: StorageError.WriteError) {
-      // もしWriteErrorが発生した場合は、エラーメッセージが存在することを確認
       assertNotNull("Error message should be present", e.message)
     }
   }
@@ -271,14 +235,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
    */
   @Test
   fun testClearLoginState_ValidatesErrorType() = runTest {
-    // 現在の実装では、EncryptedSharedPreferencesが例外をスローする状況を
-    // 作り出すのは難しいため、正常系の動作を確認
     try {
       dataSource.clearLoginState()
-      // 正常にクリアできたことを確認
       assertNull("Data should be cleared", dataSource.getUser())
     } catch (e: StorageError.WriteError) {
-      // もしWriteErrorが発生した場合は、エラーメッセージが存在することを確認
       assertNotNull("Error message should be present", e.message)
     }
   }

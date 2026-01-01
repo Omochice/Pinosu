@@ -26,17 +26,13 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @After
   fun tearDown() {
-    // テスト後にデータをクリア
     context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
   @Test
   fun testSaveUser_Success() = runTest {
     val user = User("a".repeat(64))
-
-    // 例外がスローされないことを確認
     dataSource.saveUser(user)
-    // 成功 - 例外が発生しなかった
   }
 
   @Test
@@ -48,7 +44,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     val savedUser = dataSource.getUser()
     assertNotNull("Saved user should be retrievable", savedUser)
-    // タイムスタンプが設定されていることを確認（getUser実装後に有効化）
   }
 
   /** 既存のユーザーを上書き保存できることをテスト */
@@ -58,7 +53,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user2 = User("d".repeat(64))
 
     dataSource.saveUser(user1)
-    dataSource.saveUser(user2) // 例外がスローされないことを確認
+    dataSource.saveUser(user2)
 
     val savedUser = dataSource.getUser()
     assertEquals("Should retrieve the latest user", user2.pubkey, savedUser?.pubkey)
@@ -84,7 +79,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun testGetUser_InvalidDataReturnsNull() = runTest {
-    // 不正なデータを直接保存
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -102,10 +96,8 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user = User("f".repeat(64))
 
     dataSource.saveUser(user)
-    Thread.sleep(10) // わずかに時間を空ける
+    Thread.sleep(10)
 
-    // EncryptedSharedPreferencesを使用しているため、直接的なタイムスタンプ検証は困難
-    // 代わりに、データが正常に保存・取得できることを確認
     val retrieved = dataSource.getUser()
     assertNotNull("User should be retrievable after save", retrieved)
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
@@ -118,13 +110,10 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource.saveUser(user)
     Thread.sleep(10)
 
-    // 複数回取得してもデータが一貫していることを確認
     val firstRetrieval = dataSource.getUser()
     Thread.sleep(10)
     val secondRetrieval = dataSource.getUser()
 
-    // EncryptedSharedPreferencesを使用しているため、直接的なタイムスタンプ検証は困難
-    // 代わりに、複数回のアクセスでもデータが一貫して取得できることを確認
     assertNotNull("First retrieval should succeed", firstRetrieval)
     assertNotNull("Second retrieval should succeed", secondRetrieval)
     assertEquals("Data should be consistent", firstRetrieval?.pubkey, secondRetrieval?.pubkey)
@@ -135,7 +124,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user = User("2".repeat(64))
     dataSource.saveUser(user)
 
-    dataSource.clearLoginState() // 例外がスローされないことを確認
+    dataSource.clearLoginState()
 
     val retrieved = dataSource.getUser()
     assertNull("User should be null after clear", retrieved)
@@ -144,7 +133,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   /** データがない状態でクリアを実行しても成功することをテスト */
   @Test
   fun testClearLoginState_NoDataSucceeds() = runTest {
-    dataSource.clearLoginState() // 例外がスローされないことを確認
+    dataSource.clearLoginState()
   }
 
   /** クリア後にタイムスタンプも削除されることをテスト */
@@ -164,8 +153,5 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   /** ストレージエラー時にStorageError.WriteErrorを返すことをテスト（将来拡張用） */
   @Test
   fun testSaveUser_HandlesStorageError() = runTest {
-    // 現在の実装ではEncryptedSharedPreferencesの例外をキャッチしていない
-    // 将来的にエラーハンドリングを追加する場合のプレースホルダー
-    // エラー注入が難しいため、現時点ではスキップ
   }
 }

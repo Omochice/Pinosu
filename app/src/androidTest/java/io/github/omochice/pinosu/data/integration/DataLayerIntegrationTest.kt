@@ -36,19 +36,15 @@ class DataLayerIntegrationTest {
   fun setup() {
     context = ApplicationProvider.getApplicationContext()
 
-    // LocalAuthDataSourceは実際の実装を使用 (EncryptedSharedPreferences)
     localAuthDataSource = LocalAuthDataSource(context)
 
-    // AmberSignerClientも実際の実装を使用 (Amber通信テストは別途手動テスト推奨)
     amberSignerClient = AmberSignerClient(context)
 
-    // AuthRepositoryは実際の実装を使用
     authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
   }
 
   @After
   fun tearDown() {
-    // テスト後にデータをクリア
     runTest { localAuthDataSource.clearLoginState() }
   }
 
@@ -65,9 +61,7 @@ class DataLayerIntegrationTest {
 
     val isInstalled = authRepository.checkAmberInstalled()
 
-    // Note: 結果はデバイスのAmberインストール状態に依存するため、boolean値のみ確認
-    assertTrue(
-        "checkAmberInstalled should return boolean", isInstalled || !isInstalled) // always true
+    assertTrue("checkAmberInstalled should return boolean", isInstalled || !isInstalled)
   }
 
   /**
@@ -133,18 +127,14 @@ class DataLayerIntegrationTest {
         )
 
     users.forEach { user ->
-      // 保存
       localAuthDataSource.saveUser(user)
 
-      // 取得
       val retrievedUser = localAuthDataSource.getUser()
       assertNotNull("Retrieved user should not be null", retrievedUser)
       assertEquals("Retrieved pubkey should match", user.pubkey, retrievedUser?.pubkey)
 
-      // 削除
       localAuthDataSource.clearLoginState()
 
-      // 削除確認
       val userAfterDelete = localAuthDataSource.getUser()
       assertNull("User should be null after delete", userAfterDelete)
     }
@@ -176,7 +166,6 @@ class DataLayerIntegrationTest {
     val userAfterLogout = authRepository.getLoginState()
     assertNull("User should be null after logout", userAfterLogout)
 
-    // EncryptedSharedPreferencesから直接確認
     val directRetrieve = localAuthDataSource.getUser()
     assertNull("User should be null in storage", directRetrieve)
   }
@@ -221,12 +210,10 @@ class DataLayerIntegrationTest {
       localAuthDataSource.saveUser(invalidUser)
       fail("Should throw exception for invalid pubkey")
     } catch (e: IllegalArgumentException) {
-      // Expected exception
       assertTrue("Should contain validation error", e.message?.contains("Invalid") == true)
     }
   }
 
-  // ヘルパー関数: Coroutineの完了を待つ
   private suspend fun advanceUntilIdle() {
     kotlinx.coroutines.delay(100)
   }

@@ -147,7 +147,6 @@ class LoginViewModelTest {
   @Test
   fun `dismissError should clear error message`() = runTest {
 
-    // (これはonLoginButtonClicked等でエラーが発生した後を想定)
     every { loginUseCase.checkAmberInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
@@ -190,7 +189,6 @@ class LoginViewModelTest {
 
     viewModelWithMock.processAmberResponse(-1, mockIntent)
 
-    // Note: ローディング状態の検証は実装依存のため、呼び出しの検証のみ
     advanceUntilIdle()
 
     coVerify { authRepository.processAmberResponse(any(), any()) }

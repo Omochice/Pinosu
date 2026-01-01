@@ -28,7 +28,6 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
-    // アプリケーション名が設定されていることを確認
     assertNotNull("Application name should not be null", appName)
     assertTrue("Application name should not be empty", appName.isNotEmpty())
   }
@@ -38,23 +37,16 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appIcon = applicationInfo.icon
 
-    // アイコンが設定されていることを確認（デフォルト以外）
     assertTrue("Application icon should be set", appIcon != 0)
   }
 
   @Test
   fun testQueriesElementForAmberIntent() {
-    // nostrsigner スキームのIntentを作成
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
 
-    // このIntentを処理できるアプリがあるかクエリ可能かテスト
-    // queries要素が正しく設定されていれば、resolveActivityがnullでない、または
-    // queryIntentActivitiesが空でないはず
     val resolveInfo =
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
-    // queries要素が設定されていることを確認
-    // 実際にAmberがインストールされていなくてもクエリ自体は可能
     assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
   }
 
@@ -73,7 +65,6 @@ class ManifestConfigurationTest {
 
     assertNotNull("MainActivity should be resolvable", resolveInfo)
 
-    // Android 12 (API 31)以降ではexportedが明示的に必要
     val activityInfo = resolveInfo?.activityInfo
     assertNotNull("ActivityInfo should not be null", activityInfo)
     assertTrue(

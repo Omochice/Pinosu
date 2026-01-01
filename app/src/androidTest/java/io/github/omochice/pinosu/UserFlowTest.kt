@@ -39,7 +39,6 @@ class UserFlowTest {
   @Before
   fun setup() {
     hiltRule.inject()
-    // デフォルトで未ログイン状態
     coEvery { mockLocalAuthDataSource.getUser() } returns null
   }
 

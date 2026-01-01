@@ -40,15 +40,12 @@ class ActivityResultIntegrationTest {
 
     val isInstalled = amberSignerClient.checkAmberInstalled()
 
-    // Amberが実際にインストールされていない場合はテストをスキップ
     if (!isInstalled) {
       return
     }
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
-    // Note: 実際のIntent起動はテスト環境では検証困難なため、
-    // エラーダイアログが表示されないことを確認
     composeTestRule.waitForIdle()
     composeTestRule.onNodeWithText("Amberアプリがインストールされていません").assertDoesNotExist()
   }
@@ -58,7 +55,6 @@ class ActivityResultIntegrationTest {
 
     val isInstalled = amberSignerClient.checkAmberInstalled()
 
-    // Amberがインストールされている場合はテストをスキップ
     if (isInstalled) {
       return
     }
@@ -71,14 +67,5 @@ class ActivityResultIntegrationTest {
 
   @Test
   fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {
-
-    // Note: このテストは実際のAmberアプリとの統合が必要なため、
-    // モックされたレスポンスを使用する必要がある
-
-    // Amber統合テストは手動テスト推奨
-    // 自動化テストではモックを使用した単体テストで代替
-    // ActivityResultAPIの統合自体は MainActivity.kt lines 84-91 で実装済み
-    // - rememberLauncherForActivityResult でランチャー登録
-    // - viewModel.processAmberResponse でレスポンス処理
   }
 }

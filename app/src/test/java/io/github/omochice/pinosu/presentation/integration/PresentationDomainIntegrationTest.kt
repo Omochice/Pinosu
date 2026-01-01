@@ -55,15 +55,12 @@ class PresentationDomainIntegrationTest {
   fun setup() {
     Dispatchers.setMain(testDispatcher)
 
-    // Data層はモック
     authRepository = mockk(relaxed = true)
 
-    // Domain層は実際の実装を使用（統合テスト）
     loginUseCase = AmberLoginUseCase(authRepository)
     logoutUseCase = AmberLogoutUseCase(authRepository)
     getLoginStateUseCase = AmberGetLoginStateUseCase(authRepository)
 
-    // Presentation層は実際の実装を使用
     viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
   }
 
@@ -126,7 +123,6 @@ class PresentationDomainIntegrationTest {
         assertNull("errorMessage should be null", loginState.errorMessage)
         assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
 
-        // AuthRepositoryのprocessAmberResponse()が呼ばれることを確認
         coVerify { authRepository.processAmberResponse(any(), any()) }
       }
 
@@ -151,7 +147,6 @@ class PresentationDomainIntegrationTest {
     val state = viewModel.mainUiState.first()
     assertEquals("userPubkey should be restored", testPubkey, state.userPubkey)
 
-    // AuthRepositoryのgetLoginState()が呼ばれることを確認
     coVerify { authRepository.getLoginState() }
   }
 
@@ -174,7 +169,6 @@ class PresentationDomainIntegrationTest {
     val state = viewModel.mainUiState.first()
     assertNull("userPubkey should be null", state.userPubkey)
 
-    // AuthRepositoryのgetLoginState()が呼ばれることを確認
     coVerify { authRepository.getLoginState() }
   }
 
@@ -203,11 +197,9 @@ class PresentationDomainIntegrationTest {
     assertFalse("loginSuccess should be false", stateAfterError.loginSuccess)
     assertFalse("isLoading should be false", stateAfterError.isLoading)
 
-    // 再試行が可能であることを確認
     viewModel.onRetryLogin()
     advanceUntilIdle()
 
-    // Amberインストール確認が再度実行される
     io.mockk.verify(atLeast = 1) { authRepository.checkAmberInstalled() }
   }
 
@@ -307,7 +299,6 @@ class PresentationDomainIntegrationTest {
     val stateBeforeLogout = viewModel.mainUiState.first()
     assertEquals("userPubkey should be set", testPubkey, stateBeforeLogout.userPubkey)
 
-    // ログアウト処理が成功するようにモック設定
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     viewModel.onLogoutButtonClicked()
@@ -317,7 +308,6 @@ class PresentationDomainIntegrationTest {
     assertNull("userPubkey should be null after logout", stateAfterLogout.userPubkey)
     assertFalse("isLoggingOut should be false", stateAfterLogout.isLoggingOut)
 
-    // AuthRepositoryのlogout()が呼ばれることを確認
     coVerify { authRepository.logout() }
   }
 
@@ -347,7 +337,6 @@ class PresentationDomainIntegrationTest {
     val state = viewModel.mainUiState.first()
     assertFalse("isLoggingOut should be false after error", state.isLoggingOut)
 
-    // AuthRepositoryのlogout()が呼ばれることを確認
     coVerify { authRepository.logout() }
   }
 }
