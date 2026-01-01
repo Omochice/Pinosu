@@ -10,10 +10,10 @@ argument-hint: <feature-name>
 
 - **Mission**: Analyze the gap between requirements and existing codebase to inform implementation strategy
 - **Success Criteria**:
-  - Comprehensive understanding of existing codebase patterns and components
-  - Clear identification of missing capabilities and integration challenges
-  - Multiple viable implementation approaches evaluated
-  - Technical research needs identified for design phase
+    - Comprehensive understanding of existing codebase patterns and components
+    - Clear identification of missing capabilities and integration challenges
+    - Multiple viable implementation approaches evaluated
+    - Technical research needs identified for design phase
 </background_information>
 
 <instructions>
@@ -25,27 +25,27 @@ Analyze implementation gap for feature **$1** based on approved requirements and
 ## Execution Steps
 
 1. **Load Context**:
-   - Read `.kiro/specs/$1/spec.json` for language and metadata
-   - Read `.kiro/specs/$1/requirements.md` for requirements
-   - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
-     - Default files: `structure.md`, `tech.md`, `product.md`
-     - All custom steering files (regardless of mode settings)
-     - This provides complete project memory and context
+    - Read `.kiro/specs/$1/spec.json` for language and metadata
+    - Read `.kiro/specs/$1/requirements.md` for requirements
+    - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
+        - Default files: `structure.md`, `tech.md`, `product.md`
+        - All custom steering files (regardless of mode settings)
+        - This provides complete project memory and context
 
 2. **Read Analysis Guidelines**:
-   - Read `.kiro/settings/rules/gap-analysis.md` for comprehensive analysis framework
+    - Read `.kiro/settings/rules/gap-analysis.md` for comprehensive analysis framework
 
 3. **Execute Gap Analysis**:
-   - Follow gap-analysis.md framework for thorough investigation
-   - Analyze existing codebase using Grep and Read tools
-   - Use WebSearch/WebFetch for external dependency research if needed
-   - Evaluate multiple implementation approaches (extend/new/hybrid)
-   - Use language specified in spec.json for output
+    - Follow gap-analysis.md framework for thorough investigation
+    - Analyze existing codebase using Grep and Read tools
+    - Use WebSearch/WebFetch for external dependency research if needed
+    - Evaluate multiple implementation approaches (extend/new/hybrid)
+    - Use language specified in spec.json for output
 
 4. **Generate Analysis Document**:
-   - Create comprehensive gap analysis following the output guidelines in gap-analysis.md
-   - Present multiple viable options with trade-offs
-   - Flag areas requiring further research
+    - Create comprehensive gap analysis following the output guidelines in gap-analysis.md
+    - Present multiple viable options with trade-offs
+    - Flag areas requiring further research
 
 ## Important Constraints
 

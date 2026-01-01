@@ -16,9 +16,9 @@
 - **Feature**: `<feature-name>`
 - **Discovery Scope**: New Feature / Extension / Simple Addition / Complex Integration
 - **Key Findings**:
-  - Finding 1
-  - Finding 2
-  - Finding 3
+    - Finding 1
+    - Finding 2
+    - Finding 3
 
 ## Research Log
 

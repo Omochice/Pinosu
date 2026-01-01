@@ -10,10 +10,10 @@ argument-hint: <feature-name>
 
 - **Mission**: Conduct interactive quality review of technical design to ensure readiness for implementation
 - **Success Criteria**:
-  - Critical issues identified (maximum 3 most important concerns)
-  - Balanced assessment with strengths recognized
-  - Clear GO/NO-GO decision with rationale
-  - Actionable feedback for improvements if needed
+    - Critical issues identified (maximum 3 most important concerns)
+    - Balanced assessment with strengths recognized
+    - Clear GO/NO-GO decision with rationale
+    - Actionable feedback for improvements if needed
 </background_information>
 
 <instructions>
@@ -25,26 +25,26 @@ Interactive design quality review for feature **$1** based on approved requireme
 ## Execution Steps
 
 1. **Load Context**:
-   - Read `.kiro/specs/$1/spec.json` for language and metadata
-   - Read `.kiro/specs/$1/requirements.md` for requirements
-   - Read `.kiro/specs/$1/design.md` for design document
-   - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
-     - Default files: `structure.md`, `tech.md`, `product.md`
-     - All custom steering files (regardless of mode settings)
-     - This provides complete project memory and context
+    - Read `.kiro/specs/$1/spec.json` for language and metadata
+    - Read `.kiro/specs/$1/requirements.md` for requirements
+    - Read `.kiro/specs/$1/design.md` for design document
+    - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
+        - Default files: `structure.md`, `tech.md`, `product.md`
+        - All custom steering files (regardless of mode settings)
+        - This provides complete project memory and context
 
 2. **Read Review Guidelines**:
-   - Read `.kiro/settings/rules/design-review.md` for review criteria and process
+    - Read `.kiro/settings/rules/design-review.md` for review criteria and process
 
 3. **Execute Design Review**:
-   - Follow design-review.md process: Analysis → Critical Issues → Strengths → GO/NO-GO
-   - Limit to 3 most important concerns
-   - Engage interactively with user
-   - Use language specified in spec.json for output
+    - Follow design-review.md process: Analysis → Critical Issues → Strengths → GO/NO-GO
+    - Limit to 3 most important concerns
+    - Engage interactively with user
+    - Use language specified in spec.json for output
 
 4. **Provide Decision and Next Steps**:
-   - Clear GO/NO-GO decision with rationale
-   - Guide user on proceeding based on decision
+    - Clear GO/NO-GO decision with rationale
+    - Guide user on proceeding based on decision
 
 ## Important Constraints
 

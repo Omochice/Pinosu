@@ -36,13 +36,13 @@ Check `.kiro/steering/` status:
 
 1. Load templates from `.kiro/settings/templates/steering/`
 2. Analyze codebase (JIT):
-   - `glob_file_search` for source files
-   - `read_file` for README, package.json, etc.
-   - `grep` for patterns
+    - `glob_file_search` for source files
+    - `read_file` for README, package.json, etc.
+    - `grep` for patterns
 3. Extract patterns (not lists):
-   - Product: Purpose, value, core capabilities
-   - Tech: Frameworks, decisions, conventions
-   - Structure: Organization, naming, imports
+    - Product: Purpose, value, core capabilities
+    - Tech: Frameworks, decisions, conventions
+    - Structure: Organization, naming, imports
 4. Generate steering files (follow templates)
 5. Load principles from `.kiro/settings/rules/steering-principles.md`
 6. Present summary for review
@@ -56,9 +56,9 @@ Check `.kiro/steering/` status:
 1. Load all existing steering (`.kiro/steering/*.md`)
 2. Analyze codebase for changes (JIT)
 3. Detect drift:
-   - **Steering → Code**: Missing elements → Warning
-   - **Code → Steering**: New patterns → Update candidate
-   - **Custom files**: Check relevance
+    - **Steering → Code**: Missing elements → Warning
+    - **Code → Steering**: New patterns → Update candidate
+    - **Custom files**: Check relevance
 4. Propose updates (additive, preserve user content)
 5. Report: Updates, warnings, recommendations
 

@@ -16,7 +16,7 @@ Only mark a task as parallel-capable when **all** of the following are true:
 ## Marking Convention
 
 - Append `(P)` immediately after the numeric identifier for each qualifying task.
-  - Example: `- [ ] 2.1 (P) Build background worker for emails`
+    - Example: `- [ ] 2.1 (P) Build background worker for emails`
 - Apply `(P)` to both major tasks and sub-tasks when appropriate.
 - If sequential execution is requested (e.g. via `--sequential` flag), omit `(P)` markers entirely.
 - Keep `(P)` **outside** of checkbox brackets to avoid confusion with completion state.

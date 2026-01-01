@@ -10,9 +10,9 @@ argument-hint: <project-description>
 
 - **Mission**: Initialize the first phase of spec-driven development by creating directory structure and metadata for a new specification
 - **Success Criteria**:
-  - Generate appropriate feature name from project description
-  - Create unique spec structure without conflicts
-  - Provide clear path to next phase (requirements generation)
+    - Generate appropriate feature name from project description
+    - Create unique spec structure without conflicts
+    - Provide clear path to next phase (requirements generation)
 </background_information>
 
 <instructions>
@@ -26,13 +26,13 @@ Generate a unique feature name from the project description ($ARGUMENTS) and ini
 1. **Check Uniqueness**: Verify `.kiro/specs/` for naming conflicts (append number suffix if needed)
 2. **Create Directory**: `.kiro/specs/[feature-name]/`
 3. **Initialize Files Using Templates**:
-   - Read `.kiro/settings/templates/specs/init.json`
-   - Read `.kiro/settings/templates/specs/requirements-init.md`
-   - Replace placeholders:
-     - `{{FEATURE_NAME}}` → generated feature name
-     - `{{TIMESTAMP}}` → current ISO 8601 timestamp
-     - `{{PROJECT_DESCRIPTION}}` → $ARGUMENTS
-   - Write `spec.json` and `requirements.md` to spec directory
+    - Read `.kiro/settings/templates/specs/init.json`
+    - Read `.kiro/settings/templates/specs/requirements-init.md`
+    - Replace placeholders:
+        - `{{FEATURE_NAME}}` → generated feature name
+        - `{{TIMESTAMP}}` → current ISO 8601 timestamp
+        - `{{PROJECT_DESCRIPTION}}` → $ARGUMENTS
+    - Write `spec.json` and `requirements.md` to spec directory
 
 ## Important Constraints
 

@@ -10,10 +10,10 @@ argument-hint: <feature-name> [-y] [--sequential]
 
 - **Mission**: Generate detailed, actionable implementation tasks that translate technical design into executable work items
 - **Success Criteria**:
-  - All requirements mapped to specific tasks
-  - Tasks properly sized (1-3 hours each)
-  - Clear task progression with proper hierarchy
-  - Natural language descriptions focused on capabilities
+    - All requirements mapped to specific tasks
+    - Tasks properly sized (1-3 hours each)
+    - Clear task progression with proper hierarchy
+    - Natural language descriptions focused on capabilities
 </background_information>
 
 <instructions>
@@ -64,11 +64,11 @@ Generate implementation tasks for feature **$1** based on approved requirements 
 
 - Create/update `.kiro/specs/$1/tasks.md`
 - Update spec.json metadata:
-  - Set `phase: "tasks-generated"`
-  - Set `approvals.tasks.generated: true, approved: false`
-  - Set `approvals.requirements.approved: true`
-  - Set `approvals.design.approved: true`
-  - Update `updated_at` timestamp
+    - Set `phase: "tasks-generated"`
+    - Set `approvals.tasks.generated: true, approved: false`
+    - Set `approvals.requirements.approved: true`
+    - Set `approvals.design.approved: true`
+    - Update `updated_at` timestamp
 
 ## Critical Constraints
 
@@ -91,13 +91,13 @@ Provide brief summary in the language specified in spec.json:
 
 1. **Status**: Confirm tasks generated at `.kiro/specs/$1/tasks.md`
 2. **Task Summary**:
-   - Total: X major tasks, Y sub-tasks
-   - All Z requirements covered
-   - Average task size: 1-3 hours per sub-task
+    - Total: X major tasks, Y sub-tasks
+    - All Z requirements covered
+    - Average task size: 1-3 hours per sub-task
 3. **Quality Validation**:
-   - ✅ All requirements mapped to tasks
-   - ✅ Task dependencies verified
-   - ✅ Testing tasks included
+    - ✅ All requirements mapped to tasks
+    - ✅ Task dependencies verified
+    - ✅ Testing tasks included
 4. **Next Action**: Review tasks and proceed when ready
 
 **Format**: Concise (under 200 words)
@@ -129,7 +129,7 @@ Provide brief summary in the language specified in spec.json:
 - **Fallback**: Use inline basic structure with warning
 - **Suggested Action**: "Check repository setup or restore template files"
 - **Missing Numeric Requirement IDs**:
-  - **Stop Execution**: All requirements in requirements.md MUST have numeric IDs. If any requirement lacks a numeric ID, stop and request that requirements.md be fixed before generating tasks.
+    - **Stop Execution**: All requirements in requirements.md MUST have numeric IDs. If any requirement lacks a numeric ID, stop and request that requirements.md be fixed before generating tasks.
 
 ### Next Phase: Implementation
 
