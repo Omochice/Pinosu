@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.domain.model.error
 import org.junit.Assert.*
 import org.junit.Test
 
-/** エラー型のテスト Task 2.2: エラー型の定義 */
 class ErrorTypesTest {
 
   // ========== LoginError Tests ==========

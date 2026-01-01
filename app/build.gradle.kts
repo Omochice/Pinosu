@@ -52,7 +52,6 @@ dependencies {
   implementation(libs.androidx.navigation.fragment.ktx)
   implementation(libs.androidx.navigation.ui.ktx)
 
-  // Task 1.2: Compose dependencies
   val composeBom = platform(libs.androidx.compose.bom)
   implementation(composeBom)
   androidTestImplementation(composeBom)
@@ -64,35 +63,28 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
-  // Task 1.2: Lifecycle dependencies
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.runtime.compose)
 
-  // Task 10.1: Activity Compose
   implementation(libs.androidx.activity.compose)
 
-  // Task 10.2: Navigation Compose
   implementation(libs.androidx.navigation.compose)
 
-  // Task 1.2: Nostr library
   implementation(libs.quartz)
 
-  // Task 1.2: Security
   implementation(libs.androidx.security.crypto)
 
-  // Task 1.2: Dependency injection
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
 
-  // Task 1.2: Testing
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
-  // Task 13.1: UI Testing dependencies
+
   androidTestImplementation(libs.mockk)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")

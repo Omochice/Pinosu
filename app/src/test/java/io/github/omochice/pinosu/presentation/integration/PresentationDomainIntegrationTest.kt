@@ -30,8 +30,6 @@ import org.junit.Test
 
 /**
  * Presentation層とDomain層の統合テスト
- *
- * Task 12.1: Presentation層とDomain層の統合テスト
  * - LoginViewModel + UseCases統合テスト
  * - エラーハンドリングフロー統合テスト
  * - ログアウトフロー統合テスト

@@ -19,13 +19,9 @@ import org.junit.Test
 
 /**
  * AmberAuthRepositoryの単体テスト
- *
- * Task 5.1: AuthRepositoryの実装
  * - getLoginState(), saveLoginState(), logout()のテスト
  * - loginWithAmber()のテスト（Amber未インストール検出）
  * - AmberResponse処理とローカル保存のフローテスト
- *
- * Task 5.3: AuthRepositoryの単体テスト（オプション）
  * - Amber成功 → ローカル保存成功の正常系テスト ✓
  * - Amber失敗時のエラー分類テスト ✓
  * - ログアウト処理テスト ✓
@@ -48,11 +44,7 @@ class AmberAuthRepositoryTest {
 
   // ========== getLoginState() Tests ==========
 
-  /**
-   * ログイン済み状態の取得が成功するテスト
-   *
-   * Task 5.1: getLoginState()実装 Requirement 2.2: ログイン状態確認
-   */
+  /** ログイン済み状態の取得が成功するテスト */
   @Test
   fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
     // Given: LocalAuthDataSourceがユーザーを返す
@@ -67,11 +59,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.getUser() }
   }
 
-  /**
-   * 未ログイン状態の取得テスト
-   *
-   * Task 5.1: getLoginState()実装 Requirement 2.2: ログイン状態確認
-   */
+  /** 未ログイン状態の取得テスト */
   @Test
   fun testGetLoginState_WhenNoUser_ReturnsNull() = runTest {
     // Given: LocalAuthDataSourceがnullを返す
@@ -87,11 +75,7 @@ class AmberAuthRepositoryTest {
 
   // ========== saveLoginState() Tests ==========
 
-  /**
-   * ログイン状態の保存が成功するテスト
-   *
-   * Task 5.1: saveLoginState()実装 Requirement 1.4: ログイン状態保存
-   */
+  /** ログイン状態の保存が成功するテスト */
   @Test
   fun testSaveLoginState_Success_ReturnsSuccess() = runTest {
     // Given: LocalAuthDataSourceが正常に保存する
@@ -106,11 +90,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  /**
-   * ログイン状態の保存が失敗するテスト
-   *
-   * Task 5.1: saveLoginState()実装 Requirement 5.2: ストレージエラーハンドリング
-   */
+  /** ログイン状態の保存が失敗するテスト */
   @Test
   fun testSaveLoginState_Failure_ReturnsStorageError() = runTest {
     // Given: LocalAuthDataSourceが例外をスロー
@@ -130,11 +110,7 @@ class AmberAuthRepositoryTest {
 
   // ========== logout() Tests ==========
 
-  /**
-   * ログアウトが成功するテスト
-   *
-   * Task 5.1: logout()実装 Requirement 2.4: ログアウト機能
-   */
+  /** ログアウトが成功するテスト */
   @Test
   fun testLogout_Success_ReturnsSuccess() = runTest {
     // Given: LocalAuthDataSourceが正常にクリアする
@@ -148,11 +124,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /**
-   * ログアウトが失敗するテスト
-   *
-   * Task 5.1: logout()実装 Requirement 5.2: ストレージエラーハンドリング
-   */
+  /** ログアウトが失敗するテスト */
   @Test
   fun testLogout_Failure_ReturnsLogoutError() = runTest {
     // Given: LocalAuthDataSourceが例外をスロー
@@ -172,11 +144,7 @@ class AmberAuthRepositoryTest {
 
   // ========== processAmberResponse() Tests ==========
 
-  /**
-   * Amberレスポンス処理が成功してローカル保存も成功するテスト
-   *
-   * Task 5.1: AmberSignerClient → LocalAuthDataSourceフロー Requirement 1.3, 1.4: Amber認証とローカル保存
-   */
+  /** Amberレスポンス処理が成功してローカル保存も成功するテスト */
   @Test
   fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runTest {
     // Given: Amberが成功レスポンスを返し、ローカル保存も成功
@@ -199,11 +167,7 @@ class AmberAuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(any()) }
   }
 
-  /**
-   * Amberレスポンスが拒否された場合のテスト
-   *
-   * Task 5.1: Amberエラーハンドリング Requirement 1.5: エラーハンドリング
-   */
+  /** Amberレスポンスが拒否された場合のテスト */
   @Test
   fun testProcessAmberResponse_UserRejected_ReturnsLoginError() = runTest {
     // Given: Amberがユーザー拒否を返す
@@ -220,13 +184,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
   }
 
-  // ========== Task 5.2: Additional Error Handling Tests ==========
-
-  /**
-   * Amber未インストールエラーの分類テスト
-   *
-   * Task 5.2: エラー分類 Requirement 1.5: AmberNotInstalled
-   */
+  /** Amber未インストールエラーの分類テスト */
   @Test
   fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runTest {
     // Given: AmberがNotInstalledエラーを返す
@@ -245,11 +203,7 @@ class AmberAuthRepositoryTest {
         exception is LoginError.AmberNotInstalled)
   }
 
-  /**
-   * Amberタイムアウトエラーの分類テスト
-   *
-   * Task 5.2: エラー分類 Requirement 1.5: Timeout
-   */
+  /** Amberタイムアウトエラーの分類テスト */
   @Test
   fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runTest {
     // Given: AmberがTimeoutエラーを返す
@@ -266,11 +220,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
   }
 
-  /**
-   * Amber InvalidResponseエラーの分類テスト（NetworkErrorとして扱う）
-   *
-   * Task 5.2: エラー分類 Requirement 5.2: NetworkError
-   */
+  /** Amber InvalidResponseエラーの分類テスト（NetworkErrorとして扱う） */
   @Test
   fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runTest {
     // Given: AmberがInvalidResponseエラーを返す
@@ -288,11 +238,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
   }
 
-  /**
-   * トランザクション整合性テスト: Amber成功 → ローカル保存失敗
-   *
-   * Task 5.2: トランザクション整合性 Requirement 5.2: ローカル保存失敗時の対応
-   */
+  /** トランザクション整合性テスト: Amber成功 → ローカル保存失敗 */
   @Test
   fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
     // Given: Amberは成功するがローカル保存が失敗
@@ -319,11 +265,7 @@ class AmberAuthRepositoryTest {
 
   // ========== checkAmberInstalled() Tests ==========
 
-  /**
-   * Amberがインストールされている場合のテスト
-   *
-   * Task 5.1: Amberインストール確認 Requirement 1.2: Amber未インストール検出
-   */
+  /** Amberがインストールされている場合のテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
     // Given: AmberSignerClientがtrueを返す
@@ -336,11 +278,7 @@ class AmberAuthRepositoryTest {
     assertTrue("Should return true when Amber is installed", result)
   }
 
-  /**
-   * Amberがインストールされていない場合のテスト
-   *
-   * Task 5.1: Amberインストール確認 Requirement 1.2: Amber未インストール検出
-   */
+  /** Amberがインストールされていない場合のテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
     // Given: AmberSignerClientがfalseを返す

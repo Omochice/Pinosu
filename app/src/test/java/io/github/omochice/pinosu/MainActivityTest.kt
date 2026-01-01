@@ -10,8 +10,6 @@ import org.junit.Test
 
 /**
  * MainActivityの単体テスト
- *
- * Task 10.1: アプリ起動時のログイン状態確認
  * - GetLoginStateUseCaseを呼び出してログイン状態を確認
  * - ログイン済み → メイン画面表示
  * - 未ログイン → ログイン画面表示

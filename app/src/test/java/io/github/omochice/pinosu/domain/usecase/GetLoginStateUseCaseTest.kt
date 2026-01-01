@@ -13,8 +13,6 @@ import org.junit.Test
 /**
  * GetLoginStateUseCaseのテストクラス
  *
- * Task 6.3: GetLoginStateUseCaseの実装 Requirements: 2.2, 2.3
- *
  * テストシナリオ:
  * 1. 正常系: ログイン済みユーザーの取得
  * 2. 正常系: 未ログイン状態の取得

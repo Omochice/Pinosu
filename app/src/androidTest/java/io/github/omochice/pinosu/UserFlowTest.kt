@@ -19,8 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Task 13.1: 主要ユーザーフローのUIテスト
- *
  * Requirements:
  * - 1.1: ログインボタンタップでAmber連携開始
  * - 1.2: Amber未インストール時にダイアログ表示
@@ -126,7 +124,7 @@ class UserFlowTest {
     // UIの遷移結果を検証する
 
     // Then: メイン画面に遷移している（「ログアウト」ボタンが表示される）
-    // Note: 実際のActivityResultLauncher経由のフローは統合テストで検証済み（Task 12.1）
+
     // このテストではUI遷移の確認にとどめる
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
@@ -228,8 +226,6 @@ class UserFlowTest {
   }
 
   /**
-   * Test 7 (Task 13.2): アプリ再起動とログイン状態復元 - ログイン済み状態でアプリ起動
-   *
    * Given: ログイン済み状態が保存されている When: アプリを起動する Then: メイン画面が表示される（ログイン画面をスキップ）
    *
    * Requirement 2.2: アプリ起動時に保存されたログイン状態確認 Requirement 2.3: ログイン済み状態でメイン画面表示
@@ -258,8 +254,6 @@ class UserFlowTest {
   }
 
   /**
-   * Test 8 (Task 13.2): アプリ再起動とログイン状態復元 - 未ログイン状態でアプリ起動
-   *
    * Given: ログイン状態が保存されていない When: アプリを起動する Then: ログイン画面が表示される
    *
    * Requirement 2.2: アプリ起動時に保存されたログイン状態確認

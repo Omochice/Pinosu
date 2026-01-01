@@ -16,8 +16,6 @@ import org.junit.runner.RunWith
 
 /**
  * ActivityResultAPIとAmber Intent統合のテスト
- *
- * Task 10.3: ActivityResultAPIの統合
  * - registerForActivityResultの設定
  * - AmberSignerClientへのActivityResultLauncher渡し
  * - Amber Intent結果のハンドリング

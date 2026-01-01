@@ -10,8 +10,6 @@ import org.junit.Test
 
 /**
  * MainScreenのCompose UIテスト
- *
- * Task 9.3: MainScreenの単体テスト
  * - pubkey表示のテスト
  * - ログアウトボタン表示のテスト
  * - ナビゲーションのテスト
@@ -140,13 +138,7 @@ class MainScreenTest {
     assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
   }
 
-  /**
-   * Test 7 (Task 9.2): ログアウト完了後、ログイン画面へナビゲーションするためのコールバックが呼ばれる
-   *
-   * Requirement 2.4: ログアウト時にログイン画面へ遷移
-   *
-   * Note: この時点ではNavigation Composeは未実装（Task 10.2）のため、 ナビゲーションコールバックの存在と呼び出しのみをテストする
-   */
+  /** Requirement 2.4: ログアウト時にログイン画面へ遷移 */
   @Test
   fun mainScreen_afterLogout_callsNavigateToLogin() {
     // Arrange
@@ -170,8 +162,6 @@ class MainScreenTest {
     // ログアウト完了後（pubkey = null）、ログイン画面へナビゲーションするコールバックが呼ばれる
     assert(navigateToLoginCalled) { "ログアウト完了後、onNavigateToLoginコールバックが呼ばれるべき" }
   }
-
-  // ========== 追加テスト: ナビゲーション境界条件 (Task 9.3) ==========
 
   /**
    * Test 8: ログアウト処理中はナビゲーションが呼ばれない

@@ -12,8 +12,6 @@ import org.junit.Test
 
 /**
  * LogoutUseCaseの単体テスト
- *
- * Task 6.2: LogoutUseCaseの実装
  * - ログアウト成功のテスト
  * - ログアウト失敗のテスト
  * - 冪等性の保証
@@ -33,11 +31,7 @@ class LogoutUseCaseTest {
 
   // ========== invoke() Tests ==========
 
-  /**
-   * ログアウト成功のテスト
-   *
-   * Task 6.2: invoke()実装 Requirement 2.4: ログアウト機能
-   */
+  /** ログアウト成功のテスト */
   @Test
   fun testInvoke_Success_ReturnsSuccess() = runTest {
     // Given: AuthRepositoryが成功を返す
@@ -51,11 +45,7 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /**
-   * ログアウト失敗のテスト
-   *
-   * Task 6.2: invoke()実装 Requirement 2.5: エラーハンドリング
-   */
+  /** ログアウト失敗のテスト */
   @Test
   fun testInvoke_Failure_ReturnsLogoutError() = runTest {
     // Given: AuthRepositoryが失敗を返す
@@ -73,11 +63,7 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /**
-   * 冪等性のテスト - 複数回呼び出しても正常に動作
-   *
-   * Task 6.2: 冪等性の保証 Requirement 2.5: ログアウト処理の冪等性
-   */
+  /** 冪等性のテスト - 複数回呼び出しても正常に動作 */
   @Test
   fun testInvoke_Idempotency_MultipleCallsSucceed() = runTest {
     // Given: AuthRepositoryが常に成功を返す

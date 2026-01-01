@@ -11,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** AndroidManifest.xmlの設定をテストする Task 1.3: Androidマニフェストの基本設定 */
 @RunWith(AndroidJUnit4::class)
 class ManifestConfigurationTest {
 
@@ -24,7 +23,6 @@ class ManifestConfigurationTest {
     packageManager = context.packageManager
   }
 
-  /** アプリケーション名が正しく設定されているかテスト Task 1.3: アプリケーション名とアイコンの設定 */
   @Test
   fun testApplicationName() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
@@ -35,7 +33,6 @@ class ManifestConfigurationTest {
     assertTrue("Application name should not be empty", appName.isNotEmpty())
   }
 
-  /** アプリケーションアイコンが設定されているかテスト Task 1.3: アプリケーション名とアイコンの設定 */
   @Test
   fun testApplicationIcon() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
@@ -45,7 +42,6 @@ class ManifestConfigurationTest {
     assertTrue("Application icon should be set", appIcon != 0)
   }
 
-  /** <queries>要素でAmber Intent検出が可能かテスト Task 1.3: <queries> 要素の追加（Amber Intent検出用） */
   @Test
   fun testQueriesElementForAmberIntent() {
     // nostrsigner スキームのIntentを作成
@@ -62,7 +58,6 @@ class ManifestConfigurationTest {
     assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
   }
 
-  /** MainActivityがexportedとして正しく設定されているかテスト Task 1.3: Exported Activity設定（Android 13+対応） */
   @Test
   fun testMainActivityExported() {
     val intent =

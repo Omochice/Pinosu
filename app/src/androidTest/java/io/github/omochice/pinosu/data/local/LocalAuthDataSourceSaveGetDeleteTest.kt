@@ -11,11 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * LocalAuthDataSourceの保存・取得・削除機能のテスト
- *
- * Task 3.2: ユーザーデータの保存・取得・削除機能 Requirements: 1.4, 2.1, 2.2, 2.5
- */
+/** LocalAuthDataSourceの保存・取得・削除機能のテスト */
 @RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceSaveGetDeleteTest {
 
@@ -36,7 +32,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   // ========== saveUser Tests ==========
 
-  /** ユーザーを正常に保存できることをテスト Task 3.2: saveUser実装 */
   @Test
   fun testSaveUser_Success() = runTest {
     val user = User("a".repeat(64))
@@ -46,7 +41,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     // 成功 - 例外が発生しなかった
   }
 
-  /** ユーザー保存時にタイムスタンプが記録されることをテスト Task 3.2: created_at/last_accessedタイムスタンプ管理 */
   @Test
   fun testSaveUser_SetsTimestamps() = runTest {
     val user = User("b".repeat(64))
@@ -74,7 +68,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   // ========== getUser Tests ==========
 
-  /** 保存されたユーザーを取得できることをテスト Task 3.2: getUser実装 */
   @Test
   fun testGetUser_AfterSave() = runTest {
     val user = User("e".repeat(64))
@@ -86,7 +79,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertEquals("Retrieved pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
-  /** データが保存されていない場合はnullを返すことをテスト Task 3.2: nullチェック */
   @Test
   fun testGetUser_NoDataReturnsNull() = runTest {
     val retrieved = dataSource.getUser()
@@ -94,7 +86,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNull("getUser should return null when no data exists", retrieved)
   }
 
-  /** 不正なpubkeyデータが保存されている場合はnullを返すことをテスト Task 3.2: 検証ロジック */
   @Test
   fun testGetUser_InvalidDataReturnsNull() = runTest {
     // 不正なデータを直接保存
@@ -145,7 +136,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   // ========== clearLoginState Tests ==========
 
-  /** ログイン状態を正常にクリアできることをテスト Task 3.2: clearLoginState実装 */
   @Test
   fun testClearLoginState_Success() = runTest {
     val user = User("2".repeat(64))

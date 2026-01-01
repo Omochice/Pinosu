@@ -13,8 +13,6 @@ import org.robolectric.annotation.Config
 
 /**
  * AmberSignerClientの単体テスト
- *
- * Task 4.1: AmberSignerClientの基本実装
  * - checkAmberInstalled()のテスト
  * - AmberResponse、AmberErrorデータクラスの検証
  *
@@ -40,11 +38,7 @@ class AmberSignerClientTest {
 
   // ========== checkAmberInstalled() Tests ==========
 
-  /**
-   * Amberがインストールされている場合にtrueを返すテスト
-   *
-   * Task 4.1: checkAmberInstalled()実装 Requirement 1.2: Amber未インストール検出
-   */
+  /** Amberがインストールされている場合にtrueを返すテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
     // Given: Amberがインストールされている
@@ -60,11 +54,7 @@ class AmberSignerClientTest {
     assertTrue("Should return true when Amber is installed", result)
   }
 
-  /**
-   * Amberがインストールされていない場合にfalseを返すテスト
-   *
-   * Task 4.1: Amber未インストール検出ロジック Requirement 1.2: Amber未インストール検出
-   */
+  /** Amberがインストールされていない場合にfalseを返すテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
     // Given: Amberがインストールされていない（PackageManager.NameNotFoundException）
@@ -80,11 +70,7 @@ class AmberSignerClientTest {
     assertFalse("Should return false when Amber is not installed", result)
   }
 
-  /**
-   * PackageManager例外発生時にfalseを返すテスト
-   *
-   * Task 4.1: エラーハンドリング
-   */
+  /** PackageManager例外発生時にfalseを返すテスト */
   @Test
   fun testCheckAmberInstalled_OnException_ReturnsFalse() {
     // Given: PackageManagerが例外をスロー
@@ -102,11 +88,7 @@ class AmberSignerClientTest {
 
   // ========== AmberResponse Data Class Tests ==========
 
-  /**
-   * AmberResponseデータクラスが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberResponseデータクラスの定義
-   */
+  /** AmberResponseデータクラスが正しく構築されることをテスト */
   @Test
   fun testAmberResponse_Construction() {
     // Given: 有効なpubkeyとpackageName
@@ -121,11 +103,7 @@ class AmberSignerClientTest {
     assertEquals("PackageName should match", packageName, response.packageName)
   }
 
-  /**
-   * AmberResponseが等価性を正しく判定することをテスト
-   *
-   * Task 4.1: データクラスの検証
-   */
+  /** AmberResponseが等価性を正しく判定することをテスト */
   @Test
   fun testAmberResponse_Equality() {
     // Given: 同じ値を持つ2つのAmberResponse
@@ -138,11 +116,7 @@ class AmberSignerClientTest {
 
   // ========== AmberError Sealed Class Tests ==========
 
-  /**
-   * AmberError.NotInstalledが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberErrorの定義 Requirement 5.1: Amber未検出時のエラー
-   */
+  /** AmberError.NotInstalledが正しく構築されることをテスト */
   @Test
   fun testAmberError_NotInstalled() {
     // When: NotInstalledエラーを作成
@@ -152,11 +126,7 @@ class AmberSignerClientTest {
     assertTrue("Should be NotInstalled type", error is AmberError.NotInstalled)
   }
 
-  /**
-   * AmberError.UserRejectedが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberErrorの定義
-   */
+  /** AmberError.UserRejectedが正しく構築されることをテスト */
   @Test
   fun testAmberError_UserRejected() {
     // When: UserRejectedエラーを作成
@@ -166,11 +136,7 @@ class AmberSignerClientTest {
     assertTrue("Should be UserRejected type", error is AmberError.UserRejected)
   }
 
-  /**
-   * AmberError.Timeoutが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberErrorの定義
-   */
+  /** AmberError.Timeoutが正しく構築されることをテスト */
   @Test
   fun testAmberError_Timeout() {
     // When: Timeoutエラーを作成
@@ -180,11 +146,7 @@ class AmberSignerClientTest {
     assertTrue("Should be Timeout type", error is AmberError.Timeout)
   }
 
-  /**
-   * AmberError.InvalidResponseが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberErrorの定義
-   */
+  /** AmberError.InvalidResponseが正しく構築されることをテスト */
   @Test
   fun testAmberError_InvalidResponse() {
     // Given: エラーメッセージ
@@ -198,11 +160,7 @@ class AmberSignerClientTest {
     assertEquals("Message should match", message, (error as AmberError.InvalidResponse).message)
   }
 
-  /**
-   * AmberError.IntentResolutionErrorが正しく構築されることをテスト
-   *
-   * Task 4.1: AmberErrorの定義
-   */
+  /** AmberError.IntentResolutionErrorが正しく構築されることをテスト */
   @Test
   fun testAmberError_IntentResolutionError() {
     // Given: エラーメッセージ
@@ -219,11 +177,7 @@ class AmberSignerClientTest {
 
   // ========== createPublicKeyIntent() Tests ==========
 
-  /**
-   * createPublicKeyIntent()が正しいスキームのIntentを作成することをテスト
-   *
-   * Task 4.2: Intent構築（nostrsigner: スキーム） Requirement 4.1: NIP-55プロトコル
-   */
+  /** createPublicKeyIntent()が正しいスキームのIntentを作成することをテスト */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectScheme() {
     // When: createPublicKeyIntent()を呼び出す
@@ -237,11 +191,7 @@ class AmberSignerClientTest {
         intent.data?.scheme)
   }
 
-  /**
-   * createPublicKeyIntent()が正しいパッケージ名を設定することをテスト
-   *
-   * Task 4.2: パッケージ名明示 Requirement 1.3: Amber統合
-   */
+  /** createPublicKeyIntent()が正しいパッケージ名を設定することをテスト */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectPackage() {
     // When: createPublicKeyIntent()を呼び出す
@@ -254,11 +204,7 @@ class AmberSignerClientTest {
         intent.`package`)
   }
 
-  /**
-   * createPublicKeyIntent()がget_public_keyタイプを設定することをテスト
-   *
-   * Task 4.2: type: get_public_key設定 Requirement 4.1: NIP-55プロトコル
-   */
+  /** createPublicKeyIntent()がget_public_keyタイプを設定することをテスト */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectType() {
     // When: createPublicKeyIntent()を呼び出す
@@ -271,11 +217,7 @@ class AmberSignerClientTest {
         intent.getStringExtra("type"))
   }
 
-  /**
-   * createPublicKeyIntent()が正しいフラグを設定することをテスト
-   *
-   * Task 4.2: FLAG_ACTIVITY_SINGLE_TOPとFLAG_ACTIVITY_CLEAR_TOPの設定 Requirement 4.2: Intent設定
-   */
+  /** createPublicKeyIntent()が正しいフラグを設定することをテスト */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectFlags() {
     // When: createPublicKeyIntent()を呼び出す
@@ -292,11 +234,7 @@ class AmberSignerClientTest {
         (intent.flags and expectedFlags) == expectedFlags)
   }
 
-  /**
-   * createPublicKeyIntent()がACTION_VIEWアクションを設定することをテスト
-   *
-   * Task 4.2: Intent構築
-   */
+  /** createPublicKeyIntent()がACTION_VIEWアクションを設定することをテスト */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectAction() {
     // When: createPublicKeyIntent()を呼び出す
@@ -309,11 +247,7 @@ class AmberSignerClientTest {
 
   // ========== handleAmberResponse() Tests ==========
 
-  /**
-   * 正常なレスポンス（RESULT_OK + pubkey）を正しく処理するテスト
-   *
-   * Task 4.3: handleAmberResponse実装 Requirement 1.3: Amberレスポンス処理
-   */
+  /** 正常なレスポンス（RESULT_OK + pubkey）を正しく処理するテスト */
   @Test
   fun testHandleAmberResponse_Success_ReturnsAmberResponse() {
     // Given: RESULT_OKと有効なpubkeyを含むIntent
@@ -335,11 +269,7 @@ class AmberSignerClientTest {
         response?.packageName)
   }
 
-  /**
-   * ユーザー拒否（rejected=true）を検出するテスト
-   *
-   * Task 4.3: ユーザー拒否検出 Requirement 1.5: エラーハンドリング
-   */
+  /** ユーザー拒否（rejected=true）を検出するテスト */
   @Test
   fun testHandleAmberResponse_UserRejected_ReturnsError() {
     // Given: rejected=trueを含むIntent
@@ -357,11 +287,7 @@ class AmberSignerClientTest {
         error is AmberError.UserRejected || error.toString().contains("UserRejected"))
   }
 
-  /**
-   * RESULT_CANCELEDの場合にUserRejectedエラーを返すテスト
-   *
-   * Task 4.3: ユーザー拒否検出 Requirement 1.5: エラーハンドリング
-   */
+  /** RESULT_CANCELEDの場合にUserRejectedエラーを返すテスト */
   @Test
   fun testHandleAmberResponse_ResultCanceled_ReturnsUserRejected() {
     // Given: RESULT_CANCELED
@@ -378,11 +304,7 @@ class AmberSignerClientTest {
         error is AmberError.UserRejected || error.toString().contains("UserRejected"))
   }
 
-  /**
-   * Intentがnullの場合にInvalidResponseエラーを返すテスト
-   *
-   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
-   */
+  /** Intentがnullの場合にInvalidResponseエラーを返すテスト */
   @Test
   fun testHandleAmberResponse_NullIntent_ReturnsInvalidResponse() {
     // Given: null Intent
@@ -397,11 +319,7 @@ class AmberSignerClientTest {
         error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /**
-   * resultが空文字列の場合にInvalidResponseエラーを返すテスト
-   *
-   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
-   */
+  /** resultが空文字列の場合にInvalidResponseエラーを返すテスト */
   @Test
   fun testHandleAmberResponse_EmptyResult_ReturnsInvalidResponse() {
     // Given: 空のresult
@@ -419,11 +337,7 @@ class AmberSignerClientTest {
         error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /**
-   * resultが不正な形式（npub1で始まらない）の場合にInvalidResponseエラーを返すテスト
-   *
-   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
-   */
+  /** resultが不正な形式（npub1で始まらない）の場合にInvalidResponseエラーを返すテスト */
   @Test
   fun testHandleAmberResponse_InvalidPubkeyLength_ReturnsInvalidResponse() {
     // Given: 不正な形式のpubkey（npub1で始まらない）
@@ -441,11 +355,7 @@ class AmberSignerClientTest {
         error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /**
-   * resultが不正な形式（nsec1で始まる）の場合にInvalidResponseエラーを返すテスト
-   *
-   * Task 4.3: 不正レスポンスのエラーハンドリング Requirement 5.3: エラーログ記録
-   */
+  /** resultが不正な形式（nsec1で始まる）の場合にInvalidResponseエラーを返すテスト */
   @Test
   fun testHandleAmberResponse_InvalidPubkeyFormat_ReturnsInvalidResponse() {
     // Given: 秘密鍵形式のpubkey（nsec1で始まる）
@@ -465,11 +375,7 @@ class AmberSignerClientTest {
 
   // ========== maskPubkey() Tests ==========
 
-  /**
-   * Bech32形式のpubkeyを正しくマスキングするテスト
-   *
-   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
-   */
+  /** Bech32形式のpubkeyを正しくマスキングするテスト */
   @Test
   fun testMaskPubkey_ValidPubkey_ReturnsMaskedString() {
     // Given: Bech32形式のpubkey
@@ -482,11 +388,7 @@ class AmberSignerClientTest {
     assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
   }
 
-  /**
-   * 異なるpubkeyでもマスキング形式が一貫していることをテスト
-   *
-   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
-   */
+  /** 異なるpubkeyでもマスキング形式が一貫していることをテスト */
   @Test
   fun testMaskPubkey_DifferentPubkey_ReturnsMaskedString() {
     // Given: 別のBech32形式のpubkey
@@ -499,11 +401,7 @@ class AmberSignerClientTest {
     assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
   }
 
-  /**
-   * 短いpubkey（64文字未満）に対するマスキングのテスト
-   *
-   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
-   */
+  /** 短いpubkey（64文字未満）に対するマスキングのテスト */
   @Test
   fun testMaskPubkey_ShortPubkey_ReturnsOriginalString() {
     // Given: 16文字以下の短いpubkey
@@ -516,11 +414,7 @@ class AmberSignerClientTest {
     assertEquals("Should return original string when pubkey is too short", pubkey, masked)
   }
 
-  /**
-   * 空文字列に対するマスキングのテスト
-   *
-   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
-   */
+  /** 空文字列に対するマスキングのテスト */
   @Test
   fun testMaskPubkey_EmptyString_ReturnsEmptyString() {
     // Given: 空文字列
@@ -533,11 +427,7 @@ class AmberSignerClientTest {
     assertEquals("Should return empty string when input is empty", "", masked)
   }
 
-  /**
-   * マスキング結果の長さが正しいことをテスト
-   *
-   * Task 4.4: pubkeyマスキング関数の実装 Requirement 6.3: センシティブデータのログマスキング
-   */
+  /** マスキング結果の長さが正しいことをテスト */
   @Test
   fun testMaskPubkey_ResultLength_IsCorrect() {
     // Given: Bech32形式のpubkey

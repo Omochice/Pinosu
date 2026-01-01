@@ -9,7 +9,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** LocalAuthDataSourceの初期化テスト Task 3.1: EncryptedSharedPreferencesの初期化処理 */
 @RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceTest {
 
@@ -33,16 +32,13 @@ class LocalAuthDataSourceTest {
         .commit()
   }
 
-  /** LocalAuthDataSourceが正常に初期化できることをテスト Task 3.1: EncryptedSharedPreferencesの初期化処理 */
   @Test
   fun testInitialization() {
     // LocalAuthDataSourceのインスタンスが作成できることを確認
     assertNotNull("LocalAuthDataSource should be initialized", dataSource)
   }
 
-  /**
-   * EncryptedSharedPreferencesが正常に作成されることをテスト Task 3.1: Android Keystore経由のMasterKey生成（AES256_GCM）
-   */
+  /**  */
   @Test
   fun testEncryptedSharedPreferencesCreation() {
     // EncryptedSharedPreferencesへのアクセスが可能であることを確認
@@ -55,7 +51,6 @@ class LocalAuthDataSourceTest {
     }
   }
 
-  /** MasterKeyが正常に生成されることをテスト Task 3.1: Android Keystore経由のMasterKey生成（AES256_GCM） */
   @Test
   fun testMasterKeyGeneration() {
     // MasterKeyの生成が成功していることを確認
@@ -63,7 +58,6 @@ class LocalAuthDataSourceTest {
     assertNotNull("MasterKey should be generated", dataSource)
   }
 
-  /** 暗号化スキームが正しく設定されることをテスト Task 3.1: AES256-SIVキー暗号化、AES256-GCM値暗号化の設定 */
   @Test
   fun testEncryptionSchemes() {
     // 暗号化スキームの設定が正常であることを確認

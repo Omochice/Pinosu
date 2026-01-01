@@ -10,8 +10,6 @@ import org.junit.Test
 
 /**
  * LoginUseCaseの単体テスト
- *
- * Task 6.1: LoginUseCaseの実装
  * - Amberインストール確認のテスト
  * - エラーハンドリングのテスト
  *
@@ -30,11 +28,7 @@ class LoginUseCaseTest {
 
   // ========== checkAmberInstalled() Tests ==========
 
-  /**
-   * Amber未インストール時のテスト
-   *
-   * Task 6.1: Amberインストール確認 Requirement 1.2: Amber未インストール検出
-   */
+  /** Amber未インストール時のテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
     // Given: AuthRepositoryがfalseを返す
@@ -48,11 +42,7 @@ class LoginUseCaseTest {
     verify { authRepository.checkAmberInstalled() }
   }
 
-  /**
-   * Amberインストール済みの時のテスト
-   *
-   * Task 6.1: Amberインストール確認 Requirement 1.2: Amber未インストール検出
-   */
+  /** Amberインストール済みの時のテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
     // Given: AuthRepositoryがtrueを返す

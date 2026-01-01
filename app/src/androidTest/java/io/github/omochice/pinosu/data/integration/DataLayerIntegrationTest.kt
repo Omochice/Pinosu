@@ -16,8 +16,6 @@ import org.junit.runner.RunWith
 
 /**
  * Data層の統合テスト
- *
- * Task 12.2: Data層の統合テスト
  * - AuthRepository + AmberSignerClient + LocalAuthDataSource 統合テスト
  * - EncryptedSharedPreferences実動作テスト(保存 → 取得 → 削除)
  *

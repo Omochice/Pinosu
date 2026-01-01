@@ -14,8 +14,6 @@ import org.junit.runner.RunWith
 
 /**
  * LocalAuthDataSourceの暗号化・復号化とエラーハンドリングのテスト
- *
- * Task 3.3: LocalAuthDataSourceの単体テスト
  * - 不正データ読み込み時のエラーハンドリングテスト
  * - 暗号化・復号化の正常動作確認 Requirements: 2.1, 2.2, 2.5, 6.2
  */
@@ -39,11 +37,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   // ========== Encryption/Decryption Verification Tests ==========
 
-  /**
-   * データが暗号化されて保存されることを確認するテスト
-   *
-   * Task 3.3: 暗号化・復号化の正常動作確認 Requirement 6.2: EncryptedSharedPreferencesを使用した暗号化
-   */
+  /** データが暗号化されて保存されることを確認するテスト */
   @Test
   fun testDataIsEncryptedInStorage() = runTest {
     val user = User("abcd1234".repeat(8)) // 64文字の有効なpubkey
@@ -75,11 +69,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertFalse("Data should be encrypted, not stored in plaintext", foundPlaintextPubkey)
   }
 
-  /**
-   * 暗号化されたデータが正しく復号化されることを確認するテスト
-   *
-   * Task 3.3: 暗号化・復号化の正常動作確認
-   */
+  /** 暗号化されたデータが正しく復号化されることを確認するテスト */
   @Test
   fun testEncryptedDataCanBeDecrypted() = runTest {
     val user = User("1234abcd".repeat(8))
@@ -95,11 +85,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
   }
 
-  /**
-   * 異なるインスタンスでも同じ暗号化キーを使用して復号化できることを確認
-   *
-   * Task 3.3: 暗号化・復号化の正常動作確認 Requirement 6.2: Android Keystore経由のMasterKey生成
-   */
+  /** 異なるインスタンスでも同じ暗号化キーを使用して復号化できることを確認 */
   @Test
   fun testEncryptionKeyPersistenceAcrossInstances() = runTest {
     val user = User("fedcba98".repeat(8))
@@ -117,11 +103,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Data should be consistent across instances", user.pubkey, retrieved?.pubkey)
   }
 
-  /**
-   * 複数回の保存・取得でも暗号化・復号化が正常に動作することを確認
-   *
-   * Task 3.3: 暗号化・復号化の正常動作確認
-   */
+  /** 複数回の保存・取得でも暗号化・復号化が正常に動作することを確認 */
   @Test
   fun testMultipleEncryptionDecryptionCycles() = runTest {
     val users =
@@ -143,11 +125,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   // ========== Error Handling Tests ==========
 
-  /**
-   * 不正な形式のpubkeyが保存されている場合にnullを返すことを確認
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト Requirement 2.1: データ検証
-   */
+  /** 不正な形式のpubkeyが保存されている場合にnullを返すことを確認 */
   @Test
   fun testGetUser_InvalidPubkeyFormat_ReturnsNull() = runTest {
     val invalidPubkeys =
@@ -179,11 +157,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     }
   }
 
-  /**
-   * pubkeyが存在しない場合にnullを返すことを確認
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト
-   */
+  /** pubkeyが存在しない場合にnullを返すことを確認 */
   @Test
   fun testGetUser_MissingPubkey_ReturnsNull() = runTest {
     // タイムスタンプだけ存在する状態
@@ -199,11 +173,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null when pubkey is missing", retrieved)
   }
 
-  /**
-   * SharedPreferences読み込み時の例外がキャッチされることを確認
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト Requirement 2.2: エラーハンドリング
-   */
+  /** SharedPreferences読み込み時の例外がキャッチされることを確認 */
   @Test
   fun testGetUser_ExceptionHandling_ReturnsNull() = runTest {
     // 不正な型のデータを保存（Stringを期待しているところにIntを保存）
@@ -219,11 +189,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertNull("getUser should return null on exception", retrieved)
   }
 
-  /**
-   * 空文字列のpubkeyが保存されている場合にnullを返すことを確認
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト
-   */
+  /** 空文字列のpubkeyが保存されている場合にnullを返すことを確認 */
   @Test
   fun testGetUser_EmptyPubkey_ReturnsNull() = runTest {
     context
@@ -239,8 +205,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /**
    * タイムスタンプが不正な場合でも正しく処理されることを確認
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト
    *
    * Note: EncryptedSharedPreferencesを使用しているため、データの直接注入ができない。 このテストは将来的な参照用として残すが、現在の実装では検証が困難。
    */
@@ -258,11 +222,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
-  /**
-   * clearLoginState後に保存されたデータがすべて削除されることを確認
-   *
-   * Task 3.3: エラーハンドリングテスト Requirement 2.5: ログイン状態のクリア
-   */
+  /** clearLoginState後に保存されたデータがすべて削除されることを確認 */
   @Test
   fun testClearLoginState_RemovesAllData() = runTest {
     val user = User("cafe1234".repeat(8))
@@ -290,8 +250,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
    * saveUserが例外をStorageError.WriteErrorとしてスローすることを確認
    *
    * Note: EncryptedSharedPreferencesは非常に堅牢なため、実際にWriteErrorを 発生させるのは困難。このテストは将来的なエラーハンドリングの検証用。
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト
    */
   @Test
   fun testSaveUser_ValidatesErrorType() = runTest {
@@ -314,8 +272,6 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
    * clearLoginStateが例外をStorageError.WriteErrorとしてスローすることを確認
    *
    * Note: EncryptedSharedPreferencesは非常に堅牢なため、実際にWriteErrorを 発生させるのは困難。このテストは将来的なエラーハンドリングの検証用。
-   *
-   * Task 3.3: 不正データ読み込み時のエラーハンドリングテスト
    */
   @Test
   fun testClearLoginState_ValidatesErrorType() = runTest {

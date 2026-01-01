@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.domain.model
 import org.junit.Assert.*
 import org.junit.Test
 
-/** Userエンティティのテスト Task 2.1: ドメインモデルの実装 */
 class UserTest {
 
   /** 正常なpubkey（Bech32形式）でUserを作成できることをテスト */

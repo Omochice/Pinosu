@@ -24,8 +24,6 @@ import org.junit.Test
 
 /**
  * LoginViewModelの単体テスト
- *
- * Task 7.1: LoginViewModelの実装
  * - UI状態管理のテスト
  * - ユーザー操作ハンドリングのテスト
  * - UseCases呼び出しのテスト
@@ -212,8 +210,6 @@ class LoginViewModelTest {
     // Then: checkAmberInstalled()が呼ばれる（onLoginButtonClickedと同じ動作）
     io.mockk.verify { loginUseCase.checkAmberInstalled() }
   }
-
-  // ========== processAmberResponse() のテスト (Task 7.2) ==========
 
   @Test
   fun `processAmberResponse should set loading state during processing`() = runTest {

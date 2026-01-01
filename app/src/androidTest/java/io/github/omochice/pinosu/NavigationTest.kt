@@ -13,8 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Task 10.2: Navigation Composeの統合テスト
- *
  * Requirements:
  * - 2.3: ログイン済み状態でメイン画面表示
  * - 3.3: ログイン成功時にメイン画面への画面遷移
@@ -60,15 +58,14 @@ class NavigationTest {
    *
    * Requirement 3.3: ログイン成功時にメイン画面への画面遷移
    *
-   * Note: 実際のAmber通信のテストはTask 10.3で実装予定
    * このテストでは、LoginViewModel.mainUiState.userPubkeyがnullでない状態をシミュレート
    */
   @Test
   fun navigation_whenLoginSuccess_navigatesToMainScreen() {
-    // Note: 実際のログイン処理はTask 10.3で実装予定
+
     // このテストは、ViewModel の状態変更によるナビゲーションを検証する
     // 現時点ではスキップ（実装後に有効化）
-    // TODO: Task 10.3 完了後に実装
+
   }
 
   /**

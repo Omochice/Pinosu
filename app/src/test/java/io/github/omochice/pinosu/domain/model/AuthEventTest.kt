@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.domain.model
 import org.junit.Assert.*
 import org.junit.Test
 
-/** AuthEvent sealed classのテスト Task 2.1: ドメインモデルの実装（将来拡張用） */
 class AuthEventTest {
 
   /** UserLoggedInイベントを作成できることをテスト */

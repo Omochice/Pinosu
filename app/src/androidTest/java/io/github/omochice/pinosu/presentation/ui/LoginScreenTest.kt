@@ -11,8 +11,6 @@ import org.junit.Test
 
 /**
  * LoginScreenのCompose UIテスト
- *
- * Task 8.1: LoginScreenの基本実装
  * - ログインボタン表示のテスト
  * - ローディングインジケーター表示のテスト
  * - UI状態に応じた表示切り替えのテスト
@@ -105,8 +103,6 @@ class LoginScreenTest {
     assert(clickCount == 0) { "Login button should be disabled when loading" }
   }
 
-  // ========== エラーダイアログ表示のテスト (Task 8.2) ==========
-
   @Test
   fun loginScreen_displaysAmberInstallDialogWhenRequested() {
     // Given: showAmberInstallDialog = true のLoginUiState
@@ -196,8 +192,6 @@ class LoginScreenTest {
     assert(retryCalled) { "Retry button should trigger callback" }
   }
 
-  // ========== ログイン成功時の表示とナビゲーションのテスト (Task 8.3) ==========
-
   @Test
   fun loginScreen_displaysSuccessMessageWhenLoginSucceeds() {
     // Given: loginSuccess = true のLoginUiState
@@ -258,7 +252,6 @@ class LoginScreenTest {
     }
   }
 
-  // ========== エラーシナリオのUIテスト (Task 13.3) ==========
   // Requirements: 1.5 (認証失敗時にエラーメッセージ表示), 5.4 (タイムアウト時に再試行オプション提供)
 
   @Test
