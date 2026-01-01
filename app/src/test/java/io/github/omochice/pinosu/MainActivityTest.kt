@@ -14,8 +14,6 @@ import org.junit.Test
  * - ログイン済み → メイン画面表示
  * - 未ログイン → ログイン画面表示
  * - 不正データ検出時のログイン状態クリア
- *
- * Requirements: 2.2, 2.3
  */
 class MainActivityTest {
 

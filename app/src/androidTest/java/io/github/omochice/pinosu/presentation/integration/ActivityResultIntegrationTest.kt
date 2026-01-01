@@ -19,8 +19,6 @@ import org.junit.runner.RunWith
  * - registerForActivityResultの設定
  * - AmberSignerClientへのActivityResultLauncher渡し
  * - Amber Intent結果のハンドリング
- *
- * Requirements: 1.1, 1.3
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)

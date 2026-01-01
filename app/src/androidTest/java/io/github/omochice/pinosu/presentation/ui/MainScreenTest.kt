@@ -13,18 +13,12 @@ import org.junit.Test
  * - pubkey表示のテスト
  * - ログアウトボタン表示のテスト
  * - ナビゲーションのテスト
- *
- * Requirements: 2.3, 3.4, 3.5
  */
 class MainScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  /**
-   * Test 1: ログアウトボタンが表示される
-   *
-   * Requirement 3.4: メイン画面にログアウトボタンを配置
-   */
+  /** Test 1: ログアウトボタンが表示される */
   @Test
   fun mainScreen_logoutButtonIsDisplayed() {
     // Arrange
@@ -38,11 +32,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
   }
 
-  /**
-   * Test 2: ユーザーのpubkeyが表示される（フォーマット済み）
-   *
-   * Requirement 3.5: メイン画面にログイン中のpubkeyを表示
-   */
+  /** Test 2: ユーザーのpubkeyが表示される（フォーマット済み） */
   @Test
   fun mainScreen_userPubkeyIsDisplayed() {
     // Arrange
@@ -58,11 +48,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText(expectedFormattedPubkey).assertIsDisplayed()
   }
 
-  /**
-   * Test 3: pubkeyがnullの場合、適切なメッセージが表示される
-   *
-   * Requirement 2.3: ログイン済み状態の確認
-   */
+  /** Test 3: pubkeyがnullの場合、適切なメッセージが表示される */
   @Test
   fun mainScreen_whenPubkeyIsNull_showsNotLoggedInMessage() {
     // Arrange
@@ -75,11 +61,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText("ログインしていません").assertIsDisplayed()
   }
 
-  /**
-   * Test 4: ログアウトボタンをタップするとコールバックが呼ばれる
-   *
-   * Requirement 2.4: ログアウト機能を提供
-   */
+  /** Test 4: ログアウトボタンをタップするとコールバックが呼ばれる */
   @Test
   fun mainScreen_whenLogoutButtonClicked_callsOnLogout() {
     // Arrange
@@ -96,11 +78,7 @@ class MainScreenTest {
     assert(logoutCallbackCalled) { "onLogoutコールバックが呼ばれませんでした" }
   }
 
-  /**
-   * Test 5: ログアウト処理中はローディングインジケーターが表示される
-   *
-   * Requirement 3.2: ログイン処理中にローディングインジケーターを表示（ログアウトにも適用）
-   */
+  /** Test 5: ログアウト処理中はローディングインジケーターが表示される */
   @Test
   fun mainScreen_whenLoggingOut_showsLoadingIndicator() {
     // Arrange
@@ -138,7 +116,6 @@ class MainScreenTest {
     assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
   }
 
-  /** Requirement 2.4: ログアウト時にログイン画面へ遷移 */
   @Test
   fun mainScreen_afterLogout_callsNavigateToLogin() {
     // Arrange
@@ -163,11 +140,7 @@ class MainScreenTest {
     assert(navigateToLoginCalled) { "ログアウト完了後、onNavigateToLoginコールバックが呼ばれるべき" }
   }
 
-  /**
-   * Test 8: ログアウト処理中はナビゲーションが呼ばれない
-   *
-   * Requirement 2.4: ログアウト時の適切な状態管理
-   */
+  /** Test 8: ログアウト処理中はナビゲーションが呼ばれない */
   @Test
   fun mainScreen_doesNotNavigateWhileLoggingOut() {
     // Arrange
@@ -187,11 +160,7 @@ class MainScreenTest {
     assert(!navigateToLoginCalled) { "ログアウト処理中はナビゲーションが呼ばれてはいけません" }
   }
 
-  /**
-   * Test 9: 初期から未ログイン状態の場合はナビゲーションが呼ばれない
-   *
-   * Requirement 2.3: ログイン済み状態の確認
-   */
+  /** Test 9: 初期から未ログイン状態の場合はナビゲーションが呼ばれない */
   @Test
   fun mainScreen_doesNotNavigateWhenInitiallyNotLoggedIn() {
     // Arrange
@@ -211,11 +180,7 @@ class MainScreenTest {
     assert(!navigateToLoginCalled) { "初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません" }
   }
 
-  /**
-   * Test 10: 短いpubkey（16文字未満）はマスキングなしで表示される
-   *
-   * Requirement 3.5: pubkeyの適切な表示
-   */
+  /** Test 10: 短いpubkey（16文字未満）はマスキングなしで表示される */
   @Test
   fun mainScreen_displaysShortPubkeyWithoutMasking() {
     // Arrange
@@ -229,11 +194,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText(shortPubkey).assertIsDisplayed()
   }
 
-  /**
-   * Test 11: ログイン中テキストが表示される
-   *
-   * Requirement 2.3: ログイン済み状態の表示
-   */
+  /** Test 11: ログイン中テキストが表示される */
   @Test
   fun mainScreen_displaysLoggedInText() {
     // Arrange
@@ -247,11 +208,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText("ログイン中").assertIsDisplayed()
   }
 
-  /**
-   * Test 12: 未ログイン状態ではログアウトボタンが表示されない
-   *
-   * Requirement 3.4: 適切なUI表示制御
-   */
+  /** Test 12: 未ログイン状態ではログアウトボタンが表示されない */
   @Test
   fun mainScreen_hidesLogoutButtonWhenNotLoggedIn() {
     // Arrange

@@ -39,8 +39,6 @@ import org.junit.Test
  * - Domain層: 実際のUseCasesImplementations (AmberLoginUseCase, AmberLogoutUseCase,
  *   AmberGetLoginStateUseCase)
  * - Data層: モックされたAuthRepository
- *
- * Requirements: 1.1, 1.5, 2.4
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PresentationDomainIntegrationTest {
@@ -84,8 +82,6 @@ class PresentationDomainIntegrationTest {
    * 2. LoginUseCaseがAmberインストール確認 (LoginUseCase.checkAmberInstalled)
    * 3. AuthRepositoryで未インストール検出
    * 4. ViewModelがUI状態を更新 (showAmberInstallDialog = true)
-   *
-   * Requirement 1.2: Amber未インストール時にダイアログ表示
    */
   @Test
   fun `login flow - when Amber not installed - should show install dialog`() = runTest {
@@ -114,8 +110,6 @@ class PresentationDomainIntegrationTest {
    * 2. AuthRepositoryでレスポンス処理
    * 3. ユーザー情報保存成功
    * 4. ViewModelがUI状態を更新 (loginSuccess = true, userPubkey設定)
-   *
-   * Requirements: 1.3, 1.4, 3.3
    */
   @Test
   fun `login flow - when Amber response success - should update UI state and navigate to main`() =
@@ -152,8 +146,6 @@ class PresentationDomainIntegrationTest {
    * 2. GetLoginStateUseCaseがログイン状態取得
    * 3. AuthRepositoryから保存済みユーザー情報取得
    * 4. ViewModelがメイン画面用UI状態を更新 (userPubkey設定)
-   *
-   * Requirements: 2.2, 2.3
    */
   @Test
   fun `startup flow - when user logged in - should restore login state`() = runTest {
@@ -182,8 +174,6 @@ class PresentationDomainIntegrationTest {
    * 2. GetLoginStateUseCaseがログイン状態取得
    * 3. AuthRepositoryがnullを返す（未ログイン）
    * 4. ViewModelのメイン画面用UI状態がnullのまま
-   *
-   * Requirement 2.2
    */
   @Test
   fun `startup flow - when user not logged in - should keep null state`() = runTest {
@@ -213,8 +203,6 @@ class PresentationDomainIntegrationTest {
    * 3. LoginError.UserRejectedエラーが返される
    * 4. ViewModelがエラーメッセージを設定
    * 5. ユーザーが再試行ボタンをタップ (onRetryLogin)
-   *
-   * Requirements: 1.5, 5.4
    */
   @Test
   fun `error flow - when user rejected - should show error and allow retry`() = runTest {
@@ -250,8 +238,6 @@ class PresentationDomainIntegrationTest {
    * 2. AuthRepositoryでタイムアウトエラー検出
    * 3. LoginError.Timeoutエラーが返される
    * 4. ViewModelがタイムアウトメッセージを設定
-   *
-   * Requirements: 1.5, 5.4
    */
   @Test
   fun `error flow - when timeout - should show timeout error message`() = runTest {
@@ -282,8 +268,6 @@ class PresentationDomainIntegrationTest {
    * 2. AuthRepositoryでネットワークエラー検出
    * 3. LoginError.NetworkErrorエラーが返される
    * 4. ViewModelがエラーメッセージを設定
-   *
-   * Requirements: 1.5, 5.2
    */
   @Test
   fun `error flow - when network error - should show network error message`() = runTest {
@@ -310,8 +294,6 @@ class PresentationDomainIntegrationTest {
    * 1. エラーが発生してダイアログ表示
    * 2. ユーザーがエラーダイアログを閉じる (dismissError)
    * 3. ViewModelがエラー状態をクリア
-   *
-   * Requirement 1.5
    */
   @Test
   fun `error flow - when error dismissed - should clear error state`() = runTest {
@@ -343,8 +325,6 @@ class PresentationDomainIntegrationTest {
    * 2. LogoutUseCaseがログアウト処理実行
    * 3. AuthRepositoryでログイン状態クリア成功
    * 4. ViewModelがUI状態を更新 (userPubkey = null)
-   *
-   * Requirements: 2.4, 2.5
    */
   @Test
   fun `logout flow - when logout success - should clear login state`() = runTest {
@@ -382,8 +362,6 @@ class PresentationDomainIntegrationTest {
    * 2. LogoutUseCaseがログアウト処理実行
    * 3. AuthRepositoryでストレージエラー発生
    * 4. ViewModelがエラーをハンドリング (isLoggingOut = false)
-   *
-   * Requirement 2.4
    */
   @Test
   fun `logout flow - when logout fails - should handle error gracefully`() = runTest {

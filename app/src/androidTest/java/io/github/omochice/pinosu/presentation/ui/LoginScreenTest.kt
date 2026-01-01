@@ -14,8 +14,6 @@ import org.junit.Test
  * - ログインボタン表示のテスト
  * - ローディングインジケーター表示のテスト
  * - UI状態に応じた表示切り替えのテスト
- *
- * Requirements: 3.1, 3.2
  */
 class LoginScreenTest {
 
@@ -251,8 +249,6 @@ class LoginScreenTest {
       "Navigation should not be triggered when login is not successful"
     }
   }
-
-  // Requirements: 1.5 (認証失敗時にエラーメッセージ表示), 5.4 (タイムアウト時に再試行オプション提供)
 
   @Test
   fun loginScreen_displaysUserRejectionErrorMessage() {

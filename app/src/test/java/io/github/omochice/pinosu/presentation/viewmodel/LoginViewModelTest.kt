@@ -27,8 +27,6 @@ import org.junit.Test
  * - UI状態管理のテスト
  * - ユーザー操作ハンドリングのテスト
  * - UseCases呼び出しのテスト
- *
- * Requirements: 1.1, 1.5, 2.2, 2.3, 2.4, 3.2, 3.3, 3.5
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {

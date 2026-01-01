@@ -23,8 +23,6 @@ import org.junit.runner.RunWith
  * - Data層: 実際のAmberAuthRepository, 実際のLocalAuthDataSource, 実際のAmberSignerClient
  * - Storage: 実際のEncryptedSharedPreferences (Android runtime必要)
  * - Note: Amber通信部分は実際のAmberアプリが必要なため、ストレージ操作のみテスト
- *
- * Requirements: 1.3, 1.4, 2.1, 2.5
  */
 @RunWith(AndroidJUnit4::class)
 class DataLayerIntegrationTest {
@@ -63,8 +61,6 @@ class DataLayerIntegrationTest {
    * 1. AuthRepositoryがAmberインストール確認
    * 2. AmberSignerClientで検出処理
    * 3. 結果を返す
-   *
-   * Requirement 1.2
    */
   @Test
   fun checkAmberInstalled_shouldUseAmberSignerClient() {
@@ -86,8 +82,6 @@ class DataLayerIntegrationTest {
    * 1. LocalAuthDataSourceにユーザー情報を保存
    * 2. EncryptedSharedPreferencesで暗号化保存される
    * 3. 保存したデータを取得して検証
-   *
-   * Requirements: 2.1, 6.2
    */
   @Test
   fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runTest {
@@ -112,8 +106,6 @@ class DataLayerIntegrationTest {
    * 1. LocalAuthDataSourceにユーザー情報を保存
    * 2. ログアウト処理で削除
    * 3. 削除後は取得できないことを確認
-   *
-   * Requirements: 2.5
    */
   @Test
   fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runTest {
@@ -141,8 +133,6 @@ class DataLayerIntegrationTest {
    * 統合フロー:
    * 1. 保存 → 取得 → 削除を複数回繰り返す
    * 2. EncryptedSharedPreferencesの安定性を確認
-   *
-   * Requirements: 2.1, 2.5
    */
   @Test
   fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runTest {
@@ -181,8 +171,6 @@ class DataLayerIntegrationTest {
    * 2. AuthRepository.logout()を呼び出す
    * 3. LocalAuthDataSourceでログイン状態がクリアされる
    * 4. EncryptedSharedPreferencesからデータが削除される
-   *
-   * Requirements: 2.4, 2.5
    */
   @Test
   fun logoutFlow_shouldClearEncryptedStorage() = runTest {
@@ -216,8 +204,6 @@ class DataLayerIntegrationTest {
    * 1. ユーザー情報を保存
    * 2. AuthRepository/LocalAuthDataSourceインスタンスを再作成 (再起動シミュレーション)
    * 3. 保存されたログイン状態を復元できることを確認
-   *
-   * Requirements: 2.2, 2.3
    */
   @Test
   fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runTest {
@@ -244,8 +230,6 @@ class DataLayerIntegrationTest {
    * 1. 不正な公開鍵フォーマットのデータを保存しようとする
    * 2. Userクラスのバリデーションでエラー
    * 3. 保存されずにnullが返される
-   *
-   * Requirement 6.1
    */
   @Test
   fun invalidData_shouldBeRejectedByUserValidation() = runTest {

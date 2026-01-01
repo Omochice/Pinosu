@@ -15,8 +15,6 @@ import org.robolectric.annotation.Config
  * AmberSignerClientの単体テスト
  * - checkAmberInstalled()のテスト
  * - AmberResponse、AmberErrorデータクラスの検証
- *
- * Requirements: 1.2, 5.1
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])

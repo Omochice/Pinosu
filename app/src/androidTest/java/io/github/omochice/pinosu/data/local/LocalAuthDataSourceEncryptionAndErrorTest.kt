@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 /**
  * LocalAuthDataSourceの暗号化・復号化とエラーハンドリングのテスト
  * - 不正データ読み込み時のエラーハンドリングテスト
- * - 暗号化・復号化の正常動作確認 Requirements: 2.1, 2.2, 2.5, 6.2
+ * - 暗号化・復号化の正常動作確認
  */
 @RunWith(AndroidJUnit4::class)
 class LocalAuthDataSourceEncryptionAndErrorTest {

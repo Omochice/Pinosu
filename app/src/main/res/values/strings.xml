@@ -2,29 +2,29 @@
     <string name="app_name">Pinosu</string>
 
                              
-    <!-- Requirement 3.1: ログイン画面に「Amberでログイン」ボタン配置 -->
+
     <string name="button_login_with_amber">Amberでログイン</string>
-    <!-- Requirement 3.4: メイン画面にログアウトボタン配置 -->
+
     <string name="button_logout">ログアウト</string>
-    <!-- Requirement 3.2: ログイン処理中にローディングインジケーター表示 -->
+
     <string name="message_logging_out">ログアウト中...</string>
-    <!-- Requirement 3.3: ログイン成功時にメッセージ表示 -->
+
     <string name="message_login_success">ログインに成功しました</string>
-    <!-- Requirement 3.2: ローディング中メッセージ -->
+
     <string name="message_loading">読み込み中...</string>
 
                                        
-    <!-- Requirement 5.1: Amber未検出時にPlay Storeリンクとエラーメッセージ表示 -->
+
     <string name="error_amber_not_installed">Amberアプリがインストールされていません。Google Play Storeからインストールしてください。</string>
-    <!-- Requirement 5.1: ユーザー拒否エラー -->
+
     <string name="error_user_rejected">ログインがキャンセルされました。再度お試しください。</string>
-    <!-- Requirement 5.4: タイムアウト時に再試行オプション提供 -->
+
     <string name="error_timeout">ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。</string>
-    <!-- Requirement 5.3: Amberレスポンス不正時にエラーログ記録と汎用エラー表示 -->
+
     <string name="error_invalid_response">Amberからの応答が不正です。Amberアプリを更新してください。</string>
 
                                     
-    <!-- Requirement 5.2: ネットワークエラー時にメッセージ表示 -->
+
     <string name="error_storage_write">ログイン状態の保存に失敗しました。</string>
     <string name="error_storage_read">ログイン状態の読み込みに失敗しました。</string>
     <string name="error_generic">エラーが発生しました。しばらくしてから再試行してください。</string>

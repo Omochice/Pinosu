@@ -19,15 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Requirements:
- * - 1.1: ログインボタンタップでAmber連携開始
- * - 1.2: Amber未インストール時にダイアログ表示
- * - 2.4: ログアウト機能提供
- * - 3.1: ログイン画面に「Amberでログイン」ボタン配置
- * - 3.2: ログイン処理中にローディングインジケーター表示
- * - 3.3: ログイン成功時にメイン画面への画面遷移
- * - 3.4: メイン画面にログアウトボタン配置
- *
  * テスト内容:
  * 1. ログインフロー（ログイン画面 → ログインボタンタップ → ローディング表示 → メイン画面遷移）
  * 2. Amber未インストールエラーフロー
@@ -56,8 +47,6 @@ class UserFlowTest {
    * Test 1: ログインフロー - ログイン画面が表示されること
    *
    * Given: アプリを起動（未ログイン状態） When: アプリが起動する Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
-   *
-   * Requirement 3.1: ログイン画面に「Amberでログイン」ボタン配置
    */
   @Test
   fun loginFlow_step1_displaysLoginScreen() {
@@ -69,8 +58,6 @@ class UserFlowTest {
    * Test 2: ログインフロー - ログインボタンタップでローディング表示
    *
    * Given: ログイン画面が表示されている When: 「Amberでログイン」ボタンをタップ Then: ローディングインジケーターが表示される
-   *
-   * Requirement 3.2: ログイン処理中にローディングインジケーター表示
    *
    * Note: このテストはAmber Intentが起動される前のローディング状態を確認する
    */
@@ -94,8 +81,6 @@ class UserFlowTest {
    * Test 3: ログインフロー - ログイン成功後にメイン画面に遷移
    *
    * Given: ログイン画面が表示されている When: ログインに成功する Then: メイン画面に遷移し、「ログアウト」ボタンが表示される
-   *
-   * Requirement 3.3: ログイン成功時にメイン画面への画面遷移 Requirement 3.4: メイン画面にログアウトボタン配置
    *
    * Note: Amber Intent結果のシミュレーションが必要
    */
@@ -136,8 +121,6 @@ class UserFlowTest {
    * Test 4: Amber未インストールエラーフロー - エラーダイアログ表示
    *
    * Given: ログイン画面が表示されている When: Amberがインストールされていない状態でログインボタンをタップ Then: Amber未インストールエラーダイアログが表示される
-   *
-   * Requirement 1.2: Amber未インストール時にダイアログ表示
    */
   @Test
   fun amberNotInstalledFlow_step1_displaysErrorDialog() {
@@ -163,8 +146,6 @@ class UserFlowTest {
    * Test 5: Amber未インストールエラーフロー - ダイアログを閉じる
    *
    * Given: Amber未インストールエラーダイアログが表示されている When: 「閉じる」ボタンをタップ Then: ダイアログが閉じられ、ログイン画面に留まる
-   *
-   * Requirement 1.2: Amber未インストール時にダイアログ表示
    */
   @Test
   fun amberNotInstalledFlow_step2_dismissDialog() {
@@ -193,8 +174,6 @@ class UserFlowTest {
    * Test 6: ログアウトフロー - メイン画面でログアウトボタンをタップ
    *
    * Given: メイン画面が表示されている（ログイン済み状態） When: ログアウトボタンをタップ Then: ログイン画面に遷移し、「Amberでログイン」ボタンが表示される
-   *
-   * Requirement 2.4: ログアウト機能提供
    */
   @Test
   fun logoutFlow_step1_navigatesToLoginScreenOnLogout() {
@@ -225,11 +204,7 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
 
-  /**
-   * Given: ログイン済み状態が保存されている When: アプリを起動する Then: メイン画面が表示される（ログイン画面をスキップ）
-   *
-   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認 Requirement 2.3: ログイン済み状態でメイン画面表示
-   */
+  /** Given: ログイン済み状態が保存されている When: アプリを起動する Then: メイン画面が表示される（ログイン画面をスキップ） */
   @Test
   fun appRestart_whenLoggedIn_displaysMainScreen() {
     // Given: ログイン済み状態が保存されている
@@ -253,11 +228,7 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("Amberでログイン").assertDoesNotExist()
   }
 
-  /**
-   * Given: ログイン状態が保存されていない When: アプリを起動する Then: ログイン画面が表示される
-   *
-   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認
-   */
+  /** Given: ログイン状態が保存されていない When: アプリを起動する Then: ログイン画面が表示される */
   @Test
   fun appRestart_whenNotLoggedIn_displaysLoginScreen() {
     // Given: ログイン状態が保存されていない（デフォルト設定）

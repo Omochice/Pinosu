@@ -15,8 +15,6 @@ import org.junit.Test
  * - ログアウト成功のテスト
  * - ログアウト失敗のテスト
  * - 冪等性の保証
- *
- * Requirements: 2.4, 2.5
  */
 class LogoutUseCaseTest {
 

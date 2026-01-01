@@ -13,10 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Requirements:
- * - 2.3: ログイン済み状態でメイン画面表示
- * - 3.3: ログイン成功時にメイン画面への画面遷移
- *
  * テスト内容:
  * 1. 未ログイン状態でログイン画面が表示されること
  * 2. ログイン成功後にメイン画面に遷移すること
@@ -42,8 +38,6 @@ class NavigationTest {
    * Test 1: 未ログイン状態でアプリを起動したときにログイン画面が表示されること
    *
    * Given: 未ログイン状態 When: アプリを起動 Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
-   *
-   * Requirement 2.2: アプリ起動時に保存されたログイン状態確認
    */
   @Test
   fun navigation_whenNotLoggedIn_displaysLoginScreen() {
@@ -55,8 +49,6 @@ class NavigationTest {
    * Test 2: ログイン成功後にメイン画面に遷移すること
    *
    * Given: ログイン画面が表示されている When: ログインに成功 Then: メイン画面に遷移し「ログアウト」ボタンが表示される
-   *
-   * Requirement 3.3: ログイン成功時にメイン画面への画面遷移
    *
    * このテストでは、LoginViewModel.mainUiState.userPubkeyがnullでない状態をシミュレート
    */
@@ -73,8 +65,6 @@ class NavigationTest {
    *
    * Given: メイン画面が表示されている（ログイン済み状態） When: ログアウトボタンをタップ Then: ログイン画面に遷移し「Amberでログイン」ボタンが表示される
    *
-   * Requirement 2.4: ログアウト機能提供
-   *
    * Note: ログイン状態の事前セットアップが必要
    */
   @Test
@@ -89,8 +79,6 @@ class NavigationTest {
    * Test 4: メイン画面でBackボタンを押してもログイン画面に戻らないこと
    *
    * Given: メイン画面が表示されている（ログイン済み状態） When: デバイスのBackボタンを押す Then: アプリが終了する（ログイン画面には戻らない）
-   *
-   * Requirement: セキュリティ要件（ログアウトせずにログイン画面に戻れない）
    *
    * Note: Back Press処理の実装後にテスト
    */
