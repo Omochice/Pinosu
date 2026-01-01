@@ -58,10 +58,8 @@ class LoginViewModelTest {
 
   @Test
   fun `initial LoginUiState should have default values`() = runTest {
-    // When: ViewModelを初期化
     val state = viewModel.uiState.first()
 
-    // Then: 初期状態が正しい
     assertFalse("isLoading should be false", state.isLoading)
     assertNull("errorMessage should be null", state.errorMessage)
     assertFalse("showAmberInstallDialog should be false", state.showAmberInstallDialog)
@@ -70,10 +68,8 @@ class LoginViewModelTest {
 
   @Test
   fun `initial MainUiState should have default values`() = runTest {
-    // When: ViewModelを初期化
     val state = viewModel.mainUiState.first()
 
-    // Then: 初期状態が正しい
     assertNull("userPubkey should be null", state.userPubkey)
     assertFalse("isLoggingOut should be false", state.isLoggingOut)
   }
@@ -82,16 +78,13 @@ class LoginViewModelTest {
 
   @Test
   fun `checkLoginState should update mainUiState when user is logged in`() = runTest {
-    // Given: ログイン済みユーザー
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(testPubkey)
     coEvery { getLoginStateUseCase() } returns testUser
 
-    // When: checkLoginState()を呼び出す
     viewModel.checkLoginState()
     advanceUntilIdle()
 
-    // Then: mainUiStateが更新される
     val state = viewModel.mainUiState.first()
     assertEquals("userPubkey should be set", testPubkey, state.userPubkey)
     coVerify { getLoginStateUseCase() }
@@ -99,14 +92,11 @@ class LoginViewModelTest {
 
   @Test
   fun `checkLoginState should keep mainUiState null when user is not logged in`() = runTest {
-    // Given: 未ログイン状態
     coEvery { getLoginStateUseCase() } returns null
 
-    // When: checkLoginState()を呼び出す
     viewModel.checkLoginState()
     advanceUntilIdle()
 
-    // Then: mainUiStateはnullのまま
     val state = viewModel.mainUiState.first()
     assertNull("userPubkey should be null", state.userPubkey)
     coVerify { getLoginStateUseCase() }
@@ -116,27 +106,21 @@ class LoginViewModelTest {
 
   @Test
   fun `onLoginButtonClicked should check if Amber is installed`() = runTest {
-    // Given: Amberがインストール済み
     every { loginUseCase.checkAmberInstalled() } returns true
 
-    // When: onLoginButtonClicked()を呼び出す
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
-    // Then: checkAmberInstalled()が呼ばれる
     io.mockk.verify { loginUseCase.checkAmberInstalled() }
   }
 
   @Test
   fun `onLoginButtonClicked should show install dialog when Amber is not installed`() = runTest {
-    // Given: Amberが未インストール
     every { loginUseCase.checkAmberInstalled() } returns false
 
-    // When: onLoginButtonClicked()を呼び出す
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
-    // Then: showAmberInstallDialogがtrueになる
     val state = viewModel.uiState.first()
     assertTrue("showAmberInstallDialog should be true", state.showAmberInstallDialog)
   }
@@ -145,14 +129,11 @@ class LoginViewModelTest {
 
   @Test
   fun `onLogoutButtonClicked should call logoutUseCase and update state on success`() = runTest {
-    // Given: ログアウトが成功
     coEvery { logoutUseCase() } returns Result.success(Unit)
 
-    // When: onLogoutButtonClicked()を呼び出す
     viewModel.onLogoutButtonClicked()
     advanceUntilIdle()
 
-    // Then: logoutUseCase()が呼ばれ、mainUiStateがクリアされる
     coVerify { logoutUseCase() }
     val state = viewModel.mainUiState.first()
     assertNull("userPubkey should be null after logout", state.userPubkey)
@@ -160,15 +141,12 @@ class LoginViewModelTest {
 
   @Test
   fun `onLogoutButtonClicked should handle logout failure gracefully`() = runTest {
-    // Given: ログアウトが失敗
     val error = io.github.omochice.pinosu.domain.model.error.LogoutError.StorageError("Failed")
     coEvery { logoutUseCase() } returns Result.failure(error)
 
-    // When: onLogoutButtonClicked()を呼び出す
     viewModel.onLogoutButtonClicked()
     advanceUntilIdle()
 
-    // Then: logoutUseCase()が呼ばれ、isLoggingOutがfalseに戻る
     coVerify { logoutUseCase() }
     val state = viewModel.mainUiState.first()
     assertFalse("isLoggingOut should be false after failure", state.isLoggingOut)
@@ -178,17 +156,15 @@ class LoginViewModelTest {
 
   @Test
   fun `dismissError should clear error message`() = runTest {
-    // Given: エラーメッセージが設定されている状態
+
     // (これはonLoginButtonClicked等でエラーが発生した後を想定)
     every { loginUseCase.checkAmberInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
-    // When: dismissError()を呼び出す
     viewModel.dismissError()
     advanceUntilIdle()
 
-    // Then: エラー関連の状態がクリアされる
     val state = viewModel.uiState.first()
     assertNull("errorMessage should be null", state.errorMessage)
     assertFalse("showAmberInstallDialog should be false", state.showAmberInstallDialog)
@@ -198,20 +174,16 @@ class LoginViewModelTest {
 
   @Test
   fun `onRetryLogin should retry login by calling onLoginButtonClicked`() = runTest {
-    // Given: Amberがインストール済み
     every { loginUseCase.checkAmberInstalled() } returns true
 
-    // When: onRetryLogin()を呼び出す
     viewModel.onRetryLogin()
     advanceUntilIdle()
 
-    // Then: checkAmberInstalled()が呼ばれる（onLoginButtonClickedと同じ動作）
     io.mockk.verify { loginUseCase.checkAmberInstalled() }
   }
 
   @Test
   fun `processAmberResponse should set loading state during processing`() = runTest {
-    // Given: Amberレスポンス処理が成功
     val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
@@ -228,7 +200,6 @@ class LoginViewModelTest {
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    // When: processAmberResponse()を呼び出す
     viewModelWithMock.processAmberResponse(-1, mockIntent)
 
     // Note: ローディング状態の検証は実装依存のため、呼び出しの検証のみ
@@ -239,7 +210,6 @@ class LoginViewModelTest {
 
   @Test
   fun `processAmberResponse should set loginSuccess on success`() = runTest {
-    // Given: Amberレスポンス処理が成功
     val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
@@ -252,11 +222,9 @@ class LoginViewModelTest {
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    // When: processAmberResponse()を呼び出す
     viewModelWithMock.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: loginSuccessがtrueになり、mainUiStateが更新される
     val loginState = viewModelWithMock.uiState.first()
     val mainState = viewModelWithMock.mainUiState.first()
     assertTrue("loginSuccess should be true", loginState.loginSuccess)
@@ -266,7 +234,6 @@ class LoginViewModelTest {
 
   @Test
   fun `processAmberResponse should set error message on UserRejected error`() = runTest {
-    // Given: ユーザーが拒否
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected
@@ -278,11 +245,9 @@ class LoginViewModelTest {
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    // When: processAmberResponse()を呼び出す
     viewModelWithMock.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: エラーメッセージが設定される
     val state = viewModelWithMock.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("isLoading should be false", state.isLoading)
@@ -291,7 +256,6 @@ class LoginViewModelTest {
 
   @Test
   fun `processAmberResponse should set error message on Timeout error`() = runTest {
-    // Given: タイムアウト
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.Timeout
@@ -303,11 +267,9 @@ class LoginViewModelTest {
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    // When: processAmberResponse()を呼び出す
     viewModelWithMock.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: エラーメッセージが設定される
     val state = viewModelWithMock.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertTrue(
@@ -318,7 +280,6 @@ class LoginViewModelTest {
 
   @Test
   fun `processAmberResponse should handle NetworkError`() = runTest {
-    // Given: ネットワークエラー
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error =
@@ -331,11 +292,9 @@ class LoginViewModelTest {
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    // When: processAmberResponse()を呼び出す
     viewModelWithMock.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: エラーメッセージが設定される
     val state = viewModelWithMock.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("isLoading should be false", state.isLoading)

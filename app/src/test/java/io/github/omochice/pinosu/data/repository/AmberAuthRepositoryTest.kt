@@ -45,14 +45,11 @@ class AmberAuthRepositoryTest {
   /** ログイン済み状態の取得が成功するテスト */
   @Test
   fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
-    // Given: LocalAuthDataSourceがユーザーを返す
     val expectedUser = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.getUser() } returns expectedUser
 
-    // When: getLoginState()を呼び出す
     val result = authRepository.getLoginState()
 
-    // Then: ユーザーが返される
     assertEquals("Should return user from LocalAuthDataSource", expectedUser, result)
     coVerify { localAuthDataSource.getUser() }
   }
@@ -60,13 +57,10 @@ class AmberAuthRepositoryTest {
   /** 未ログイン状態の取得テスト */
   @Test
   fun testGetLoginState_WhenNoUser_ReturnsNull() = runTest {
-    // Given: LocalAuthDataSourceがnullを返す
     coEvery { localAuthDataSource.getUser() } returns null
 
-    // When: getLoginState()を呼び出す
     val result = authRepository.getLoginState()
 
-    // Then: nullが返される
     assertNull("Should return null when no user is stored", result)
     coVerify { localAuthDataSource.getUser() }
   }
@@ -76,14 +70,11 @@ class AmberAuthRepositoryTest {
   /** ログイン状態の保存が成功するテスト */
   @Test
   fun testSaveLoginState_Success_ReturnsSuccess() = runTest {
-    // Given: LocalAuthDataSourceが正常に保存する
     val user = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.saveUser(user) } returns Unit
 
-    // When: saveLoginState()を呼び出す
     val result = authRepository.saveLoginState(user)
 
-    // Then: Successが返される
     assertTrue("Should return success", result.isSuccess)
     coVerify { localAuthDataSource.saveUser(user) }
   }
@@ -91,15 +82,12 @@ class AmberAuthRepositoryTest {
   /** ログイン状態の保存が失敗するテスト */
   @Test
   fun testSaveLoginState_Failure_ReturnsStorageError() = runTest {
-    // Given: LocalAuthDataSourceが例外をスロー
     val user = User("npub1" + "a".repeat(59))
     val storageError = StorageError.WriteError("Failed to save")
     coEvery { localAuthDataSource.saveUser(user) } throws storageError
 
-    // When: saveLoginState()を呼び出す
     val result = authRepository.saveLoginState(user)
 
-    // Then: Failureが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be StorageError", exception is StorageError.WriteError)
@@ -111,13 +99,10 @@ class AmberAuthRepositoryTest {
   /** ログアウトが成功するテスト */
   @Test
   fun testLogout_Success_ReturnsSuccess() = runTest {
-    // Given: LocalAuthDataSourceが正常にクリアする
     coEvery { localAuthDataSource.clearLoginState() } returns Unit
 
-    // When: logout()を呼び出す
     val result = authRepository.logout()
 
-    // Then: Successが返される
     assertTrue("Should return success", result.isSuccess)
     coVerify { localAuthDataSource.clearLoginState() }
   }
@@ -125,14 +110,11 @@ class AmberAuthRepositoryTest {
   /** ログアウトが失敗するテスト */
   @Test
   fun testLogout_Failure_ReturnsLogoutError() = runTest {
-    // Given: LocalAuthDataSourceが例外をスロー
     val storageError = StorageError.WriteError("Failed to clear")
     coEvery { localAuthDataSource.clearLoginState() } throws storageError
 
-    // When: logout()を呼び出す
     val result = authRepository.logout()
 
-    // Then: Failureが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue(
@@ -145,7 +127,6 @@ class AmberAuthRepositoryTest {
   /** Amberレスポンス処理が成功してローカル保存も成功するテスト */
   @Test
   fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runTest {
-    // Given: Amberが成功レスポンスを返し、ローカル保存も成功
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
     val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
@@ -154,10 +135,8 @@ class AmberAuthRepositoryTest {
         Result.success(amberResponse)
     coEvery { localAuthDataSource.saveUser(any()) } returns Unit
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: Successが返され、ユーザーが保存される
     assertTrue("Should return success", result.isSuccess)
     val user = result.getOrNull()
     assertNotNull("User should not be null", user)
@@ -168,15 +147,12 @@ class AmberAuthRepositoryTest {
   /** Amberレスポンスが拒否された場合のテスト */
   @Test
   fun testProcessAmberResponse_UserRejected_ReturnsLoginError() = runTest {
-    // Given: Amberがユーザー拒否を返す
     val intent = Intent().apply { putExtra("rejected", true) }
     every { amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent) } returns
         Result.failure(io.github.omochice.pinosu.data.amber.AmberError.UserRejected)
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: UserRejectedエラーが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
@@ -185,15 +161,12 @@ class AmberAuthRepositoryTest {
   /** Amber未インストールエラーの分類テスト */
   @Test
   fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runTest {
-    // Given: AmberがNotInstalledエラーを返す
     val intent = Intent()
     every { amberSignerClient.handleAmberResponse(any(), any()) } returns
         Result.failure(io.github.omochice.pinosu.data.amber.AmberError.NotInstalled)
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: LoginError.AmberNotInstalledが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue(
@@ -204,15 +177,12 @@ class AmberAuthRepositoryTest {
   /** Amberタイムアウトエラーの分類テスト */
   @Test
   fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runTest {
-    // Given: AmberがTimeoutエラーを返す
     val intent = Intent()
     every { amberSignerClient.handleAmberResponse(any(), any()) } returns
         Result.failure(io.github.omochice.pinosu.data.amber.AmberError.Timeout)
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: LoginError.Timeoutが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
@@ -221,16 +191,13 @@ class AmberAuthRepositoryTest {
   /** Amber InvalidResponseエラーの分類テスト（NetworkErrorとして扱う） */
   @Test
   fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runTest {
-    // Given: AmberがInvalidResponseエラーを返す
     val intent = Intent()
     every { amberSignerClient.handleAmberResponse(any(), any()) } returns
         Result.failure(
             io.github.omochice.pinosu.data.amber.AmberError.InvalidResponse("Invalid data"))
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: LoginError.NetworkErrorが返される
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
@@ -239,7 +206,6 @@ class AmberAuthRepositoryTest {
   /** トランザクション整合性テスト: Amber成功 → ローカル保存失敗 */
   @Test
   fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
-    // Given: Amberは成功するがローカル保存が失敗
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
     val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
@@ -248,10 +214,8 @@ class AmberAuthRepositoryTest {
         Result.success(amberResponse)
     coEvery { localAuthDataSource.saveUser(any()) } throws StorageError.WriteError("Storage full")
 
-    // When: processAmberResponse()を呼び出す
     val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
 
-    // Then: LoginError.UnknownErrorが返される（StorageErrorをラップ）
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
@@ -266,26 +230,22 @@ class AmberAuthRepositoryTest {
   /** Amberがインストールされている場合のテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
-    // Given: AmberSignerClientがtrueを返す
+
     every { amberSignerClient.checkAmberInstalled() } returns true
 
-    // When: checkAmberInstalled()を呼び出す
     val result = authRepository.checkAmberInstalled()
 
-    // Then: trueが返される
     assertTrue("Should return true when Amber is installed", result)
   }
 
   /** Amberがインストールされていない場合のテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
-    // Given: AmberSignerClientがfalseを返す
+
     every { amberSignerClient.checkAmberInstalled() } returns false
 
-    // When: checkAmberInstalled()を呼び出す
     val result = authRepository.checkAmberInstalled()
 
-    // Then: falseが返される
     assertFalse("Should return false when Amber is not installed", result)
   }
 }

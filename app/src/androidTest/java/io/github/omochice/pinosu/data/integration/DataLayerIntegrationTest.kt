@@ -64,10 +64,9 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun checkAmberInstalled_shouldUseAmberSignerClient() {
-    // When: Amberインストール確認
+
     val isInstalled = authRepository.checkAmberInstalled()
 
-    // Then: AmberSignerClientの結果が返される (実際のデバイス状態に依存)
     // Note: 結果はデバイスのAmberインストール状態に依存するため、boolean値のみ確認
     assertTrue(
         "checkAmberInstalled should return boolean", isInstalled || !isInstalled) // always true
@@ -85,15 +84,12 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runTest {
-    // Given: テストユーザー
     val testPubkey = "b".repeat(64)
     val testUser = User(testPubkey)
 
-    // When: ユーザーを保存
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
 
-    // Then: 保存したデータを取得できる
     val retrievedUser = localAuthDataSource.getUser()
     assertNotNull("Retrieved user should not be null", retrievedUser)
     assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
@@ -109,7 +105,6 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runTest {
-    // Given: ユーザーが保存されている状態
     val testPubkey = "c".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
@@ -118,11 +113,9 @@ class DataLayerIntegrationTest {
     val userBeforeDelete = localAuthDataSource.getUser()
     assertNotNull("User should exist before delete", userBeforeDelete)
 
-    // When: ログイン状態をクリア
     localAuthDataSource.clearLoginState()
     advanceUntilIdle()
 
-    // Then: 削除後はデータを取得できない
     val userAfterDelete = localAuthDataSource.getUser()
     assertNull("User should be null after delete", userAfterDelete)
   }
@@ -136,7 +129,6 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runTest {
-    // Given: 複数のテストユーザー
     val users =
         listOf(
             User("d".repeat(64)),
@@ -144,7 +136,6 @@ class DataLayerIntegrationTest {
             User("f".repeat(64)),
         )
 
-    // When: 各ユーザーで保存 → 取得 → 削除サイクルを実行
     users.forEach { user ->
       // 保存
       localAuthDataSource.saveUser(user)
@@ -174,7 +165,6 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun logoutFlow_shouldClearEncryptedStorage() = runTest {
-    // Given: ユーザーがログイン済み
     val testPubkey = "g".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
@@ -184,11 +174,9 @@ class DataLayerIntegrationTest {
     assertNotNull("User should exist before logout", userBeforeLogout)
     assertEquals("Pubkey should match", testPubkey, userBeforeLogout?.pubkey)
 
-    // When: ログアウト
     authRepository.logout()
     advanceUntilIdle()
 
-    // Then: EncryptedSharedPreferencesからデータが削除される
     val userAfterLogout = authRepository.getLoginState()
     assertNull("User should be null after logout", userAfterLogout)
 
@@ -207,17 +195,14 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runTest {
-    // Given: ユーザーがログイン済み
     val testPubkey = "h".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
 
-    // When: アプリ再起動をシミュレーション (新しいインスタンスを作成)
     val newLocalAuthDataSource = LocalAuthDataSource(context)
     val newAuthRepository = AmberAuthRepository(amberSignerClient, newLocalAuthDataSource)
 
-    // Then: ログイン状態が復元される
     val restoredUser = newAuthRepository.getLoginState()
     assertNotNull("User should be restored after restart", restoredUser)
     assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
@@ -233,11 +218,8 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun invalidData_shouldBeRejectedByUserValidation() = runTest {
-    // Given: 不正な公開鍵フォーマット
     val invalidPubkey = "invalid_pubkey_format"
 
-    // When: 不正なUserを作成しようとする
-    // Then: Userクラスのrequireで例外が発生
     try {
       val invalidUser = User(invalidPubkey)
       localAuthDataSource.saveUser(invalidUser)

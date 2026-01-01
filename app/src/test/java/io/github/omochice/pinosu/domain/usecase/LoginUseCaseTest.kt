@@ -29,13 +29,11 @@ class LoginUseCaseTest {
   /** Amber未インストール時のテスト */
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
-    // Given: AuthRepositoryがfalseを返す
+
     every { authRepository.checkAmberInstalled() } returns false
 
-    // When: checkAmberInstalled()を呼び出す
     val result = loginUseCase.checkAmberInstalled()
 
-    // Then: falseが返される
     assertFalse("Should return false when Amber is not installed", result)
     verify { authRepository.checkAmberInstalled() }
   }
@@ -43,13 +41,11 @@ class LoginUseCaseTest {
   /** Amberインストール済みの時のテスト */
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
-    // Given: AuthRepositoryがtrueを返す
+
     every { authRepository.checkAmberInstalled() } returns true
 
-    // When: checkAmberInstalled()を呼び出す
     val result = loginUseCase.checkAmberInstalled()
 
-    // Then: trueが返される
     assertTrue("Should return true when Amber is installed", result)
     verify { authRepository.checkAmberInstalled() }
   }

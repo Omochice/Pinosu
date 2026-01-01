@@ -85,14 +85,11 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `login flow - when Amber not installed - should show install dialog`() = runTest {
-    // Given: Amberが未インストール
     every { authRepository.checkAmberInstalled() } returns false
 
-    // When: ログインボタンをタップ
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
-    // Then: Amber未インストールダイアログが表示される
     val state = viewModel.uiState.first()
     assertTrue("showAmberInstallDialog should be true", state.showAmberInstallDialog)
     assertFalse("isLoading should be false", state.isLoading)
@@ -114,18 +111,15 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `login flow - when Amber response success - should update UI state and navigate to main`() =
       runTest {
-        // Given: Amberレスポンス処理が成功
         val testPubkey = "npub1" + "a".repeat(59)
         val testUser = User(testPubkey)
         val mockIntent = mockk<android.content.Intent>(relaxed = true)
         coEvery { authRepository.processAmberResponse(any(), any()) } returns
             Result.success(testUser)
 
-        // When: Amberレスポンスを処理
         viewModel.processAmberResponse(-1, mockIntent)
         advanceUntilIdle()
 
-        // Then: ログイン成功状態になり、ユーザー情報が設定される
         val loginState = viewModel.uiState.first()
         val mainState = viewModel.mainUiState.first()
 
@@ -149,16 +143,13 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `startup flow - when user logged in - should restore login state`() = runTest {
-    // Given: ログイン済みユーザーが保存されている
     val testPubkey = "npub1" + "b".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
 
-    // When: アプリ起動時にログイン状態を確認
     viewModel.checkLoginState()
     advanceUntilIdle()
 
-    // Then: ログイン済み状態が復元される
     val state = viewModel.mainUiState.first()
     assertEquals("userPubkey should be restored", testPubkey, state.userPubkey)
 
@@ -177,14 +168,11 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `startup flow - when user not logged in - should keep null state`() = runTest {
-    // Given: 未ログイン状態
     coEvery { authRepository.getLoginState() } returns null
 
-    // When: アプリ起動時にログイン状態を確認
     viewModel.checkLoginState()
     advanceUntilIdle()
 
-    // Then: ログイン状態はnullのまま
     val state = viewModel.mainUiState.first()
     assertNull("userPubkey should be null", state.userPubkey)
 
@@ -206,17 +194,14 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `error flow - when user rejected - should show error and allow retry`() = runTest {
-    // Given: ユーザーがAmberで拒否
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.UserRejected
     coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
     every { authRepository.checkAmberInstalled() } returns true
 
-    // When: Amberレスポンスを処理
     viewModel.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: エラーメッセージが表示される
     val stateAfterError = viewModel.uiState.first()
     assertNotNull("errorMessage should be set", stateAfterError.errorMessage)
     assertFalse("loginSuccess should be false", stateAfterError.loginSuccess)
@@ -241,16 +226,13 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `error flow - when timeout - should show timeout error message`() = runTest {
-    // Given: Amber処理がタイムアウト
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.Timeout
     coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
 
-    // When: Amberレスポンスを処理
     viewModel.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: タイムアウトエラーメッセージが表示される
     val state = viewModel.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertTrue(
@@ -271,16 +253,13 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `error flow - when network error - should show network error message`() = runTest {
-    // Given: ネットワークエラー発生
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.NetworkError("Connection failed")
     coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
 
-    // When: Amberレスポンスを処理
     viewModel.processAmberResponse(-1, mockIntent)
     advanceUntilIdle()
 
-    // Then: ネットワークエラーメッセージが表示される
     val state = viewModel.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("loginSuccess should be false", state.loginSuccess)
@@ -297,7 +276,6 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `error flow - when error dismissed - should clear error state`() = runTest {
-    // Given: Amber未インストールエラーが表示されている
     every { authRepository.checkAmberInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
@@ -305,11 +283,9 @@ class PresentationDomainIntegrationTest {
     val stateBeforeDismiss = viewModel.uiState.first()
     assertTrue("showAmberInstallDialog should be true", stateBeforeDismiss.showAmberInstallDialog)
 
-    // When: エラーダイアログを閉じる
     viewModel.dismissError()
     advanceUntilIdle()
 
-    // Then: エラー状態がクリアされる
     val stateAfterDismiss = viewModel.uiState.first()
     assertNull("errorMessage should be null", stateAfterDismiss.errorMessage)
     assertFalse("showAmberInstallDialog should be false", stateAfterDismiss.showAmberInstallDialog)
@@ -328,7 +304,6 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `logout flow - when logout success - should clear login state`() = runTest {
-    // Given: ログイン済み状態
     val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
@@ -341,11 +316,9 @@ class PresentationDomainIntegrationTest {
     // ログアウト処理が成功するようにモック設定
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
-    // When: ログアウトボタンをタップ
     viewModel.onLogoutButtonClicked()
     advanceUntilIdle()
 
-    // Then: ログイン状態がクリアされる
     val stateAfterLogout = viewModel.mainUiState.first()
     assertNull("userPubkey should be null after logout", stateAfterLogout.userPubkey)
     assertFalse("isLoggingOut should be false", stateAfterLogout.isLoggingOut)
@@ -365,7 +338,6 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `logout flow - when logout fails - should handle error gracefully`() = runTest {
-    // Given: ログイン済み状態でログアウト失敗
     val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     coEvery { authRepository.getLoginState() } returns testUser
@@ -375,11 +347,9 @@ class PresentationDomainIntegrationTest {
     val error = LogoutError.StorageError("Failed to clear storage")
     coEvery { authRepository.logout() } returns Result.failure(error)
 
-    // When: ログアウトボタンをタップ
     viewModel.onLogoutButtonClicked()
     advanceUntilIdle()
 
-    // Then: エラーハンドリングが実行され、isLoggingOutがfalseに戻る
     val state = viewModel.mainUiState.first()
     assertFalse("isLoggingOut should be false after error", state.isLoggingOut)
 

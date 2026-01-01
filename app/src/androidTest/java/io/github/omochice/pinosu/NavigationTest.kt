@@ -34,24 +34,13 @@ class NavigationTest {
     hiltRule.inject()
   }
 
-  /**
-   * Test 1: 未ログイン状態でアプリを起動したときにログイン画面が表示されること
-   *
-   * Given: 未ログイン状態 When: アプリを起動 Then: ログイン画面が表示される（「Amberでログイン」ボタンが表示される）
-   */
   @Test
   fun navigation_whenNotLoggedIn_displaysLoginScreen() {
-    // Then: ログイン画面の「Amberでログイン」ボタンが表示されている
+
     composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
   }
 
-  /**
-   * Test 2: ログイン成功後にメイン画面に遷移すること
-   *
-   * Given: ログイン画面が表示されている When: ログインに成功 Then: メイン画面に遷移し「ログアウト」ボタンが表示される
-   *
-   * このテストでは、LoginViewModel.mainUiState.userPubkeyがnullでない状態をシミュレート
-   */
+  /** このテストでは、LoginViewModel.mainUiState.userPubkeyがnullでない状態をシミュレート */
   @Test
   fun navigation_whenLoginSuccess_navigatesToMainScreen() {
 
@@ -60,13 +49,7 @@ class NavigationTest {
 
   }
 
-  /**
-   * Test 3: メイン画面でログアウトボタンをタップしたらログイン画面に遷移すること
-   *
-   * Given: メイン画面が表示されている（ログイン済み状態） When: ログアウトボタンをタップ Then: ログイン画面に遷移し「Amberでログイン」ボタンが表示される
-   *
-   * Note: ログイン状態の事前セットアップが必要
-   */
+  /** Note: ログイン状態の事前セットアップが必要 */
   @Test
   fun navigation_whenLogout_navigatesToLoginScreen() {
     // Note: ログイン状態のセットアップが必要
@@ -75,13 +58,7 @@ class NavigationTest {
     // TODO: ログイン状態のセットアップ方法を実装後に有効化
   }
 
-  /**
-   * Test 4: メイン画面でBackボタンを押してもログイン画面に戻らないこと
-   *
-   * Given: メイン画面が表示されている（ログイン済み状態） When: デバイスのBackボタンを押す Then: アプリが終了する（ログイン画面には戻らない）
-   *
-   * Note: Back Press処理の実装後にテスト
-   */
+  /** Note: Back Press処理の実装後にテスト */
   @Test
   fun navigation_onBackPressFromMainScreen_exitsApp() {
     // Note: Back Press処理の実装が必要
@@ -90,13 +67,7 @@ class NavigationTest {
     // TODO: Back Press処理実装後に有効化
   }
 
-  /**
-   * Test 5: ログイン画面でBackボタンを押したらアプリが終了すること
-   *
-   * Given: ログイン画面が表示されている When: デバイスのBackボタンを押す Then: アプリが終了する
-   *
-   * Requirement: ユーザビリティ要件（ログイン画面はルート画面）
-   */
+  /** Requirement: ユーザビリティ要件（ログイン画面はルート画面） */
   @Test
   fun navigation_onBackPressFromLoginScreen_exitsApp() {
     // Note: Back Press処理の実装が必要
