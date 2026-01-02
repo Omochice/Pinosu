@@ -17,11 +17,12 @@
     "temurin-bin@21.0.8",
     "actionlint@1.7.9",
     "zizmor@1.19.0",
-    "ghalint@1.5.3"
+    "ghalint@1.5.3",
+    "stdenv.cc.cc.lib"
   ],
   "shell": {
     "scripts": {
-      "fmt": ["treefmt"],
+      "fmt":   ["treefmt"],
       "check": ["./gradlew lint"]
     }
   }
