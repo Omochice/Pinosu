@@ -80,6 +80,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - run: devbox run ./gradlew test
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: reports
+          path: app/build/reports/
   check-renovate:
     timeout-minutes: 5
     name: Check Renovate config
