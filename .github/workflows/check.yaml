@@ -9,42 +9,43 @@ on:
 permissions: {}
 
 jobs:
-  path-filter:
-    timeout-minutes: 5
-    outputs:
-      # keep-sorted start
-      actions: ${{steps.changes.outputs.actions}}
-      devbox: ${{steps.changes.outputs.devbox}}
-      renovate: ${{steps.changes.outputs.renovate}}
-      # keep-sorted end
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          persist-credentials: false
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        id: changes
-        with:
-          filters: |
-            actions:
-              - .github/workflows/*.yml
-              - devbox.json
-              - devbox.lock
-            android:
-              - build.gradle.kts
-              - gradle/**/*
-              - gradle.properties
-              - gradlew
-              - gradlew.bat
-              - app/**/*
-              - devbox.json
-              - devbox.lock
-            renovate:
-              - renovate.json5
-              - devbox.json
-              - devbox.lock
+  # TODO: enable path-filter after make be public this repo
+  # path-filter:
+  #   timeout-minutes: 5
+  #   outputs:
+  #     # keep-sorted start
+  #     actions: ${{steps.changes.outputs.actions}}
+  #     devbox: ${{steps.changes.outputs.devbox}}
+  #     renovate: ${{steps.changes.outputs.renovate}}
+  #     # keep-sorted end
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+  #       with:
+  #         persist-credentials: false
+  #     - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+  #       id: changes
+  #       with:
+  #         filters: |
+  #           actions:
+  #             - .github/workflows/*.yml
+  #             - devbox.json
+  #             - devbox.lock
+  #           android:
+  #             - build.gradle.kts
+  #             - gradle/**/*
+  #             - gradle.properties
+  #             - gradlew
+  #             - gradlew.bat
+  #             - app/**/*
+  #             - devbox.json
+  #             - devbox.lock
+  #           renovate:
+  #             - renovate.json5
+  #             - devbox.json
+  #             - devbox.lock
   check-format:
     timeout-minutes: 5
     name: Check code format
