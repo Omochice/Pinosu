@@ -60,7 +60,7 @@ jobs:
       - run: devbox run fmt
       - run: git diff
   test-android:
-    # timeout-minutes: 5
+    timeout-minutes: 15
     name: Test Android code
     # needs: path-filter
     # if: needs.path-filter.outputs.android == 'true'
