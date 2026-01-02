@@ -21,8 +21,11 @@
     "stdenv.cc.cc.lib"
   ],
   "shell": {
+    "init_hook": [
+      "export LD_LIBRARY_PATH=$(pwd)/.devbox/nix/profile/default/lib:$LD_LIBRARY_PATH"
+    ],
     "scripts": {
-      "fmt":   ["treefmt"],
+      "fmt": ["treefmt"],
       "check": ["./gradlew lint"]
     }
   }
