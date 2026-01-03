@@ -29,30 +29,48 @@ constructor(
   private val _uiState = MutableStateFlow(BookmarkUiState())
   val uiState: StateFlow<BookmarkUiState> = _uiState.asStateFlow()
 
+  companion object {
+    private const val TAG = "BookmarkViewModel"
+  }
+
   /** Load bookmarks for the logged-in user */
   fun loadBookmarks() {
     viewModelScope.launch {
+      android.util.Log.d(TAG, "loadBookmarks called")
       _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
       val user = getLoginStateUseCase()
       if (user == null) {
+        android.util.Log.d(TAG, "User not logged in")
         _uiState.value =
             _uiState.value.copy(isLoading = false, error = "Not logged in", bookmarks = emptyList())
         return@launch
       }
 
+      android.util.Log.d(TAG, "Fetching bookmarks for user: ${user.pubkey}")
       val result = getBookmarkListUseCase(user.pubkey)
       result.fold(
           onSuccess = { bookmarkList ->
+            val items = bookmarkList?.items ?: emptyList()
+            android.util.Log.d(
+                TAG, "Successfully loaded ${items.size} bookmarks from bookmark list")
+            items.forEachIndexed { index, item ->
+              android.util.Log.d(
+                  TAG,
+                  "Bookmark #$index: type=${item.type}, eventId=${item.eventId}, url=${item.url}, hashtag=${item.hashtag}")
+            }
             _uiState.value =
                 _uiState.value.copy(
                     isLoading = false,
-                    bookmarks = bookmarkList?.items ?: emptyList(),
+                    bookmarks = items,
                     rawEventJson = bookmarkList?.rawEventJson,
                     encryptedContent = bookmarkList?.encryptedContent,
                     error = null)
+            android.util.Log.d(
+                TAG, "UI state updated with ${_uiState.value.bookmarks.size} bookmarks")
           },
           onFailure = { e ->
+            android.util.Log.d(TAG, "Failed to load bookmarks: ${e.message}", e)
             _uiState.value =
                 _uiState.value.copy(
                     isLoading = false, error = e.message ?: "Failed to load bookmarks")
