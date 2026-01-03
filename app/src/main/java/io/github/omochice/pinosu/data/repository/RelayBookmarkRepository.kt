@@ -153,13 +153,23 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                 Log.d(TAG, "Created d tag bookmark: identifier=$identifier")
                 BookmarkItem(type = "d", identifier = identifier)
               }
+              "title" -> {
+                // Title (kind 39701)
+                val title = tag.getOrNull(1)
+                if (title == null) {
+                  Log.d(TAG, "Skipping title tag with null title")
+                  return@mapNotNull null
+                }
+                Log.d(TAG, "Created title tag bookmark: title=$title")
+                BookmarkItem(type = "title", title = title)
+              }
               else -> {
                 Log.d(TAG, "Skipping unknown tag type: $tagType")
                 null
               }
             }
           }
-      Log.d(TAG, "Parsed ${items.size} bookmark items (e/a/r/t/q/p/d tags)")
+      Log.d(TAG, "Parsed ${items.size} bookmark items (e/a/r/t/q/p/d/title tags)")
       if (items.isEmpty()) {
         Log.d(TAG, "WARNING: No bookmark items parsed from ${event.tags.size} tags")
       }

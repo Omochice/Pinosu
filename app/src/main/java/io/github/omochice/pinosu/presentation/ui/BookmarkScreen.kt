@@ -95,6 +95,7 @@ fun BookmarkScreen(
                             "q" -> "q:${bookmark.eventId}"
                             "p" -> "p:${bookmark.pubkey}"
                             "d" -> "d:${bookmark.identifier}"
+                            "title" -> "title:${bookmark.title}"
                             else -> "${bookmark.type}:${bookmark.hashCode()}"
                           }
                         }) { bookmark ->
@@ -269,6 +270,26 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                     overflow = TextOverflow.Ellipsis)
               }
             }
+            "title" -> {
+              // Title (kind 39701)
+              bookmark.title?.let { title ->
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis)
+                bookmark.identifier?.let { identifier ->
+                  Spacer(modifier = Modifier.height(4.dp))
+                  Text(
+                      text = identifier,
+                      style = MaterialTheme.typography.bodySmall,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis)
+                }
+              }
+            }
           }
 
           // Relay URL
@@ -291,7 +312,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
 /**
  * Get bookmark type description
  *
- * @param type Bookmark type (e, a, r, t, q, p, d)
+ * @param type Bookmark type (e, a, r, t, q, p, d, title)
  * @return Human-readable description
  */
 private fun getBookmarkTypeDescription(type: String): String {
@@ -303,6 +324,7 @@ private fun getBookmarkTypeDescription(type: String): String {
     "q" -> "Quote"
     "p" -> "User"
     "d" -> "Identifier"
+    "title" -> "Article"
     else -> "Unknown"
   }
 }
