@@ -1,0 +1,181 @@
+package io.github.omochice.pinosu.data.relay
+
+import android.util.Log
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import org.json.JSONArray
+import org.json.JSONObject
+
+/**
+ * Nostr event from relay
+ *
+ * @property id Event ID
+ * @property pubkey Author's public key
+ * @property createdAt Unix timestamp
+ * @property kind Event kind
+ * @property tags Event tags
+ * @property content Event content
+ */
+data class NostrEvent(
+    val id: String,
+    val pubkey: String,
+    val createdAt: Long,
+    val kind: Int,
+    val tags: List<List<String>>,
+    val content: String,
+)
+
+/**
+ * Relay client for Nostr WebSocket communication
+ *
+ * PoC: Fixed relay wss://yabu.me
+ */
+@Singleton
+class RelayClient @Inject constructor() {
+
+  private val client = OkHttpClient()
+  private val activeWebSockets = ConcurrentHashMap<String, WebSocket>()
+
+  companion object {
+    private const val TAG = "RelayClient"
+    const val RELAY_URL = "wss://yabu.me"
+  }
+
+  /**
+   * Fetch events by IDs
+   *
+   * @param eventIds List of event IDs to fetch
+   * @return Flow of events
+   */
+  fun fetchEventsByIds(eventIds: List<String>): Flow<NostrEvent> {
+    val idsFilter = eventIds.joinToString(",") { "\"$it\"" }
+    val filter = """{"ids":[$idsFilter]}"""
+    Log.d(TAG, "Fetching events by IDs: ${eventIds.size} events")
+    return subscribe(filter)
+  }
+
+  /**
+   * Subscribe to events from relay
+   *
+   * @param filter Nostr filter as JSON string
+   * @return Flow of events
+   */
+  fun subscribe(filter: String): Flow<NostrEvent> = callbackFlow {
+    val subscriptionId = UUID.randomUUID().toString()
+    val request = Request.Builder().url(RELAY_URL).build()
+
+    val listener =
+        object : WebSocketListener() {
+          override fun onOpen(webSocket: WebSocket, response: Response) {
+            Log.d(TAG, "WebSocket opened. Subscription ID: $subscriptionId")
+            val reqMessage = """["REQ","$subscriptionId",$filter]"""
+            Log.d(TAG, "Sending request: $reqMessage")
+            webSocket.send(reqMessage)
+          }
+
+          override fun onMessage(webSocket: WebSocket, text: String) {
+            Log.d(TAG, "Received message: $text")
+            try {
+              val jsonArray = JSONArray(text)
+              val messageType = jsonArray.getString(0)
+              Log.d(TAG, "Message type: $messageType")
+              when (messageType) {
+                "EVENT" -> {
+                  val eventJson = jsonArray.getJSONObject(2)
+                  Log.d(TAG, "Parsing event: $eventJson")
+                  val event = parseEvent(eventJson)
+                  if (event != null) {
+                    Log.d(TAG, "Event parsed successfully: ${event.id}, kind: ${event.kind}")
+                    trySend(event)
+                  } else {
+                    Log.d(TAG, "Event parsing returned null")
+                  }
+                }
+                "EOSE" -> {
+                  Log.d(TAG, "End of stored events (EOSE) received")
+                  // End of stored events - close connection for this PoC
+                  webSocket.close(1000, "EOSE received")
+                }
+                "CLOSED" -> {
+                  Log.d(TAG, "CLOSED message received")
+                  close()
+                }
+              }
+            } catch (e: Exception) {
+              Log.d(TAG, "Error parsing message: ${e.message}", e)
+              // Ignore parse errors for PoC
+            }
+          }
+
+          override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            Log.d(TAG, "WebSocket failure: ${t.message}", t)
+            close(t)
+          }
+
+          override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            Log.d(TAG, "WebSocket closed. Code: $code, Reason: $reason")
+            activeWebSockets.remove(subscriptionId)
+            close()
+          }
+        }
+
+    val webSocket = client.newWebSocket(request, listener)
+    activeWebSockets[subscriptionId] = webSocket
+
+    awaitClose {
+      webSocket.close(1000, "Flow cancelled")
+      activeWebSockets.remove(subscriptionId)
+    }
+  }
+
+  /**
+   * Parse JSON to NostrEvent
+   *
+   * @param json JSONObject of the event
+   * @return Parsed NostrEvent or null
+   */
+  private fun parseEvent(json: JSONObject): NostrEvent? {
+    return try {
+      val tagsArray = json.getJSONArray("tags")
+      val tags = mutableListOf<List<String>>()
+      for (i in 0 until tagsArray.length()) {
+        val tagArray = tagsArray.getJSONArray(i)
+        val tag = mutableListOf<String>()
+        for (j in 0 until tagArray.length()) {
+          tag.add(tagArray.getString(j))
+        }
+        tags.add(tag)
+      }
+
+      val event =
+          NostrEvent(
+              id = json.getString("id"),
+              pubkey = json.getString("pubkey"),
+              createdAt = json.getLong("created_at"),
+              kind = json.getInt("kind"),
+              tags = tags,
+              content = json.getString("content"))
+      Log.d(TAG, "Successfully parsed event: id=${event.id}, kind=${event.kind}, tags=${tags.size}")
+      event
+    } catch (e: Exception) {
+      Log.d(TAG, "Failed to parse event: ${e.message}", e)
+      null
+    }
+  }
+
+  /** Close all active connections */
+  fun closeAll() {
+    activeWebSockets.forEach { (_, ws) -> ws.close(1000, "Client closing") }
+    activeWebSockets.clear()
+  }
+}
