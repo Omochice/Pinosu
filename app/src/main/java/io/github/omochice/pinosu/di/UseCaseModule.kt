@@ -7,6 +7,8 @@ import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.domain.usecase.AmberGetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.AmberLoginUseCase
 import io.github.omochice.pinosu.domain.usecase.AmberLogoutUseCase
+import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
+import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -42,4 +44,12 @@ abstract class UseCaseModule {
    */
   @Binds
   abstract fun bindGetLoginStateUseCase(impl: AmberGetLoginStateUseCase): GetLoginStateUseCase
+
+  /**
+   * GetBookmarkListUseCase binding
+   *
+   * Registers GetBookmarkListUseCaseImpl as GetBookmarkListUseCase in the DI container
+   */
+  @Binds
+  abstract fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
 }

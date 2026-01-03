@@ -100,10 +100,32 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
     return "$prefix...$suffix"
   }
 
+  /**
+   * Create Intent for NIP-04 decryption request
+   *
+   * @param encryptedContent Encrypted content to decrypt
+   * @param pubkey Public key of the sender (for DM decryption)
+   * @return Constructed Intent
+   */
+  fun createDecryptIntent(encryptedContent: String, pubkey: String): android.content.Intent {
+    val intent =
+        android.content.Intent(
+            android.content.Intent.ACTION_VIEW, android.net.Uri.parse("$NOSTRSIGNER_SCHEME:"))
+    intent.`package` = AMBER_PACKAGE_NAME
+    intent.putExtra("type", TYPE_NIP04_DECRYPT)
+    intent.putExtra("data", encryptedContent)
+    intent.putExtra("pubKey", pubkey)
+    intent.addFlags(
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    return intent
+  }
+
   companion object {
     const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
+    const val TYPE_NIP04_DECRYPT = "nip04_decrypt"
   }
 }
 

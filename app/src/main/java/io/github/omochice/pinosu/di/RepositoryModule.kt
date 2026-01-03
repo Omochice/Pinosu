@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.data.repository.AuthRepository
+import io.github.omochice.pinosu.data.repository.BookmarkRepository
+import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 
 /**
  * Repository DI module
@@ -24,4 +26,11 @@ abstract class RepositoryModule {
    * interface with @Binds.
    */
   @Binds abstract fun bindAuthRepository(impl: AmberAuthRepository): AuthRepository
+
+  /**
+   * Binds BookmarkRepository implementation
+   *
+   * RelayBookmarkRepository fetches bookmarks from Nostr relay.
+   */
+  @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
 }

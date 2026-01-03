@@ -71,9 +71,13 @@ dependencies {
 
   implementation(libs.androidx.navigation.compose)
 
+  implementation(libs.androidx.hilt.navigation.compose)
+
   implementation(libs.quartz)
 
   implementation(libs.androidx.security.crypto)
+
+  implementation(libs.okhttp)
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
