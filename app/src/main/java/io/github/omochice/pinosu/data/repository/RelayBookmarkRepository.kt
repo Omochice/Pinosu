@@ -22,7 +22,7 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
-    const val KIND_BOOKMARK_LIST = 10003
+    const val KIND_BOOKMARK_LIST = 39701
     const val TIMEOUT_MS = 10000L
   }
 

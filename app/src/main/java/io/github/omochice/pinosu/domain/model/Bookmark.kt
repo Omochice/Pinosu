@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.domain.model
 
 /**
- * Bookmark item from NIP-51 kind:10003
+ * Bookmark item from kind:39701
  *
  * @property type Type of bookmark (e, a, r, t)
  * @property eventId Event ID (for e tag)
@@ -37,7 +37,7 @@ data class BookmarkedEvent(
 )
 
 /**
- * Bookmark list (kind:10003)
+ * Bookmark list (kind:39701)
  *
  * @property pubkey Author's public key
  * @property items List of bookmarked events
