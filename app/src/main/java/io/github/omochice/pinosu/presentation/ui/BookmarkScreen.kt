@@ -92,6 +92,9 @@ fun BookmarkScreen(
                             "a" -> "a:${bookmark.articleCoordinate}"
                             "r" -> "r:${bookmark.url}"
                             "t" -> "t:${bookmark.hashtag}"
+                            "q" -> "q:${bookmark.eventId}"
+                            "p" -> "p:${bookmark.pubkey}"
+                            "d" -> "d:${bookmark.identifier}"
                             else -> "${bookmark.type}:${bookmark.hashCode()}"
                           }
                         }) { bookmark ->
@@ -149,8 +152,9 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
           Spacer(modifier = Modifier.height(8.dp))
 
           when (bookmark.type) {
-            "e" -> {
-              // Event bookmark
+            "e",
+            "q" -> {
+              // Event bookmark (e tag) or Quote (q tag)
               bookmark.event?.let { event ->
                 // Event kind
                 Text(
@@ -235,6 +239,36 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                     color = MaterialTheme.colorScheme.secondary)
               }
             }
+            "p" -> {
+              // Pubkey reference
+              bookmark.pubkey?.let { pubkey ->
+                Text(
+                    text = "User",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = formatEventId(pubkey),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+              }
+            }
+            "d" -> {
+              // Identifier
+              bookmark.identifier?.let { identifier ->
+                Text(
+                    text = "Identifier",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = identifier,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis)
+              }
+            }
           }
 
           // Relay URL
@@ -257,7 +291,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
 /**
  * Get bookmark type description
  *
- * @param type Bookmark type (e, a, r, t)
+ * @param type Bookmark type (e, a, r, t, q, p, d)
  * @return Human-readable description
  */
 private fun getBookmarkTypeDescription(type: String): String {
@@ -266,6 +300,9 @@ private fun getBookmarkTypeDescription(type: String): String {
     "a" -> "Article"
     "r" -> "URL"
     "t" -> "Hashtag"
+    "q" -> "Quote"
+    "p" -> "User"
+    "d" -> "Identifier"
     else -> "Unknown"
   }
 }

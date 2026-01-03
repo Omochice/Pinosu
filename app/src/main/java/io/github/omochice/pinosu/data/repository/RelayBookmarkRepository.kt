@@ -123,20 +123,50 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                 Log.d(TAG, "Created t tag bookmark: hashtag=$hashtag")
                 BookmarkItem(type = "t", hashtag = hashtag)
               }
+              "q" -> {
+                // Quote/event reference (kind 39701)
+                val eventId = tag.getOrNull(1)
+                if (eventId == null) {
+                  Log.d(TAG, "Skipping q tag with null eventId")
+                  return@mapNotNull null
+                }
+                Log.d(TAG, "Created q tag bookmark: eventId=$eventId")
+                BookmarkItem(type = "q", eventId = eventId, relayUrl = tag.getOrNull(2))
+              }
+              "p" -> {
+                // Pubkey reference (kind 39701)
+                val pubkey = tag.getOrNull(1)
+                if (pubkey == null) {
+                  Log.d(TAG, "Skipping p tag with null pubkey")
+                  return@mapNotNull null
+                }
+                Log.d(TAG, "Created p tag bookmark: pubkey=$pubkey")
+                BookmarkItem(type = "p", pubkey = pubkey, relayUrl = tag.getOrNull(2))
+              }
+              "d" -> {
+                // Identifier (kind 39701)
+                val identifier = tag.getOrNull(1)
+                if (identifier == null) {
+                  Log.d(TAG, "Skipping d tag with null identifier")
+                  return@mapNotNull null
+                }
+                Log.d(TAG, "Created d tag bookmark: identifier=$identifier")
+                BookmarkItem(type = "d", identifier = identifier)
+              }
               else -> {
                 Log.d(TAG, "Skipping unknown tag type: $tagType")
                 null
               }
             }
           }
-      Log.d(TAG, "Parsed ${items.size} bookmark items (e/a/r/t tags)")
+      Log.d(TAG, "Parsed ${items.size} bookmark items (e/a/r/t/q/p/d tags)")
       if (items.isEmpty()) {
         Log.d(TAG, "WARNING: No bookmark items parsed from ${event.tags.size} tags")
       }
 
-      // Fetch full event data for "e" tag bookmarks only
-      val eventIds = items.mapNotNull { if (it.type == "e") it.eventId else null }
-      Log.d(TAG, "Fetching ${eventIds.size} bookmarked events (e tags)...")
+      // Fetch full event data for "e" and "q" tag bookmarks
+      val eventIds = items.mapNotNull { if (it.type == "e" || it.type == "q") it.eventId else null }
+      Log.d(TAG, "Fetching ${eventIds.size} bookmarked events (e/q tags)...")
       val bookmarkedEvents =
           if (eventIds.isNotEmpty()) {
             withTimeoutOrNull(TIMEOUT_MS) { relayClient.fetchEventsByIds(eventIds).toList() }
@@ -146,12 +176,12 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
           }
       Log.d(TAG, "Fetched ${bookmarkedEvents.size} bookmarked events")
 
-      // Map events to "e" tag items
+      // Map events to "e" and "q" tag items
       val eventMap = bookmarkedEvents.associateBy { it.id }
       val itemsWithEvents =
           items
               .map { item ->
-                if (item.type == "e" && item.eventId != null) {
+                if ((item.type == "e" || item.type == "q") && item.eventId != null) {
                   val fetchedEvent = eventMap[item.eventId]
                   if (fetchedEvent != null) {
                     item.copy(
