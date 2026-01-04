@@ -48,6 +48,8 @@ fun BookmarkScreen(
 ) {
   LaunchedEffect(Unit) { onLoad() }
 
+  val expansionState = remember { mutableStateMapOf<String, Boolean>() }
+
   Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
       paddingValues ->
     PullToRefreshBox(
@@ -82,7 +84,6 @@ fun BookmarkScreen(
                   modifier = Modifier.fillMaxSize(),
                   contentPadding = PaddingValues(16.dp),
                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Show raw event JSON if available
                     uiState.rawEventJson?.let { json -> item { RawEventCard(json = json) } }
                     items(
                         uiState.bookmarks,
@@ -99,7 +100,7 @@ fun BookmarkScreen(
                             else -> "${bookmark.type}:${bookmark.hashCode()}"
                           }
                         }) { bookmark ->
-                          BookmarkItemCard(bookmark = bookmark)
+                          BookmarkItemCard(bookmark = bookmark, expansionState = expansionState)
                         }
                   }
             }
@@ -138,14 +139,14 @@ private fun RawEventCard(json: String) {
  * Card component for a single bookmark item
  *
  * @param bookmark Bookmark item to display
+ * @param expansionState Map tracking which threads are expanded
  */
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem) {
+private fun BookmarkItemCard(bookmark: BookmarkItem, expansionState: MutableMap<String, Boolean>) {
   Card(
       modifier = Modifier.fillMaxWidth(),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
-          // Type indicator
           Text(
               text = "Type: ${getBookmarkTypeDescription(bookmark.type)}",
               style = MaterialTheme.typography.labelSmall,
@@ -155,16 +156,13 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
           when (bookmark.type) {
             "e",
             "q" -> {
-              // Event bookmark (e tag) or Quote (q tag)
               bookmark.event?.let { event ->
-                // Event kind
                 Text(
                     text = "Kind: ${event.kind} ${getKindDescription(event.kind)}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Event content
                 if (event.content.isNotEmpty()) {
                   Text(
                       text = event.content,
@@ -174,21 +172,18 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                   Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Author
                 Text(
                     text = "Author: ${formatEventId(event.author)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Timestamp
                 Text(
                     text = formatTimestamp(event.createdAt),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
               }
                   ?: run {
-                    // Fallback if event not fetched
                     bookmark.eventId?.let { eventId ->
                       Text(
                           text = "Event ID: ${formatEventId(eventId)}",
@@ -197,7 +192,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                   }
             }
             "a" -> {
-              // Article/parameterized replaceable event bookmark
               bookmark.articleCoordinate?.let { coordinate ->
                 Text(
                     text = "Article",
@@ -211,7 +205,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
               }
             }
             "r" -> {
-              // URL bookmark
               bookmark.url?.let { url ->
                 Text(
                     text = "URL",
@@ -227,7 +220,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
               }
             }
             "t" -> {
-              // Hashtag bookmark
               bookmark.hashtag?.let { hashtag ->
                 Text(
                     text = "Hashtag",
@@ -241,7 +233,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
               }
             }
             "p" -> {
-              // Pubkey reference
               bookmark.pubkey?.let { pubkey ->
                 Text(
                     text = "User",
@@ -255,7 +246,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
               }
             }
             "d" -> {
-              // Identifier
               bookmark.identifier?.let { identifier ->
                 Text(
                     text = "Identifier",
@@ -271,7 +261,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
               }
             }
             "title" -> {
-              // Title (kind 39701)
               bookmark.title?.let { title ->
                 Text(
                     text = title,
@@ -292,7 +281,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
             }
           }
 
-          // Relay URL
           bookmark.relayUrl?.let { relay ->
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -304,6 +292,130 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                 text = relay,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.secondary)
+          }
+
+          if (bookmark.threadReplies.isNotEmpty()) {
+            val eventId = bookmark.eventId ?: return@Card
+            val isExpanded = expansionState[eventId] ?: false
+
+            Spacer(modifier = Modifier.height(12.dp))
+            androidx.compose.material3.HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            androidx.compose.material3.TextButton(
+                onClick = { expansionState[eventId] = !isExpanded }) {
+                  androidx.compose.material3.Icon(
+                      imageVector =
+                          if (isExpanded) androidx.compose.material.icons.Icons.Filled.ExpandLess
+                          else androidx.compose.material.icons.Icons.Filled.ExpandMore,
+                      contentDescription = if (isExpanded) "Collapse" else "Expand")
+                  androidx.compose.foundation.layout.Spacer(
+                      modifier = androidx.compose.ui.Modifier.width(4.dp))
+                  Text(
+                      "${if (isExpanded) "Hide" else "Show"} ${bookmark.threadReplies.size} ${if (bookmark.threadReplies.size == 1) "reply" else "replies"}")
+                }
+
+            androidx.compose.animation.AnimatedVisibility(visible = isExpanded) {
+              Column(modifier = androidx.compose.ui.Modifier.padding(start = 8.dp, top = 8.dp)) {
+                bookmark.threadReplies.forEach { reply ->
+                  ThreadReplyCard(reply = reply, expansionState = expansionState)
+                  androidx.compose.foundation.layout.Spacer(
+                      modifier = androidx.compose.ui.Modifier.height(8.dp))
+                }
+              }
+            }
+          }
+        }
+      }
+}
+
+/**
+ * Card component for displaying a thread reply
+ *
+ * @param reply Thread reply to display
+ * @param expansionState Map tracking which threads are expanded
+ */
+@Composable
+private fun ThreadReplyCard(
+    reply: io.github.omochice.pinosu.domain.model.ThreadReply,
+    expansionState: MutableMap<String, Boolean>
+) {
+  Card(
+      modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(start = (reply.depth * 8).dp),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+        Column(modifier = androidx.compose.ui.Modifier.padding(12.dp)) {
+          Text(
+              text = "${"→".repeat(reply.depth)} Reply (Level ${reply.depth})",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.tertiary)
+          Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+
+          reply.event?.let { event ->
+            Text(
+                text = "Kind: ${event.kind} ${getKindDescription(event.kind)}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+
+            if (event.content.isNotEmpty()) {
+              Text(
+                  text = event.content,
+                  style = MaterialTheme.typography.bodySmall,
+                  maxLines = 3,
+                  overflow = TextOverflow.Ellipsis)
+              Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+            }
+
+            Text(
+                text = "Author: ${formatEventId(event.author)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
+
+            Text(
+                text = formatTimestamp(event.createdAt),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+          }
+              ?: run {
+                Text(
+                    text = "Reply (not loaded)",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error)
+              }
+
+          if (reply.replies.isNotEmpty()) {
+            val isExpanded = expansionState[reply.eventId] ?: false
+
+            Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+            androidx.compose.material3.HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
+            Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
+
+            androidx.compose.material3.TextButton(
+                onClick = { expansionState[reply.eventId] = !isExpanded }) {
+                  androidx.compose.material3.Icon(
+                      imageVector =
+                          if (isExpanded) androidx.compose.material.icons.Icons.Filled.ExpandLess
+                          else androidx.compose.material.icons.Icons.Filled.ExpandMore,
+                      contentDescription = if (isExpanded) "Collapse" else "Expand")
+                  androidx.compose.foundation.layout.Spacer(
+                      modifier = androidx.compose.ui.Modifier.width(4.dp))
+                  Text(
+                      "${if (isExpanded) "Hide" else "Show"} ${reply.replies.size} ${if (reply.replies.size == 1) "reply" else "replies"}",
+                      style = MaterialTheme.typography.labelSmall)
+                }
+
+            androidx.compose.animation.AnimatedVisibility(visible = isExpanded) {
+              Column(modifier = androidx.compose.ui.Modifier.padding(start = 4.dp, top = 4.dp)) {
+                reply.replies.forEach { nested ->
+                  ThreadReplyCard(reply = nested, expansionState = expansionState)
+                  androidx.compose.foundation.layout.Spacer(
+                      modifier = androidx.compose.ui.Modifier.height(4.dp))
+                }
+              }
+            }
           }
         }
       }

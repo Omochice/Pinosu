@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.data.relay.RelayClient
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.domain.model.ThreadReply
 import io.github.omochice.pinosu.domain.util.Bech32
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,6 +25,8 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
     private const val TAG = "RelayBookmarkRepository"
     const val KIND_BOOKMARK_LIST = 39701
     const val TIMEOUT_MS = 10000L
+    const val MAX_THREAD_DEPTH = 2
+    const val MAX_REPLIES_PER_LEVEL = 20
   }
 
   override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
@@ -38,9 +41,8 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
               }
       Log.d(TAG, "Converted npub to hex: $hexPubkey")
 
-      // Test: Check if any kind 10003 events exist on relay (without author filter)
       val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
-      Log.d(TAG, "Subscribing with filter: $filter (testing if kind 10003 exists on relay)")
+      Log.d(TAG, "Subscribing with filter: $filter")
 
       val events = withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() }
       Log.d(TAG, "Received ${events?.size ?: 0} events from relay")
@@ -64,7 +66,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
         }
       }
 
-      // Process all events and collect all bookmark items
       Log.d(TAG, "Processing ${events.size} events to extract bookmark items")
       val allItems = mutableListOf<BookmarkItem>()
 
@@ -84,7 +85,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
               Log.d(TAG, "Processing tag type: $tagType, full tag: ${tag.joinToString(", ")}")
               when (tagType) {
                 "e" -> {
-                  // Event reference tag
                   val eventId = tag.getOrNull(1)
                   if (eventId == null) {
                     Log.d(TAG, "Skipping e tag with null eventId")
@@ -94,7 +94,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "e", eventId = eventId, relayUrl = tag.getOrNull(2))
                 }
                 "a" -> {
-                  // Article/parameterized replaceable event reference
                   val coordinate = tag.getOrNull(1)
                   if (coordinate == null) {
                     Log.d(TAG, "Skipping a tag with null coordinate")
@@ -105,7 +104,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                       type = "a", articleCoordinate = coordinate, relayUrl = tag.getOrNull(2))
                 }
                 "r" -> {
-                  // URL reference
                   val url = tag.getOrNull(1)
                   if (url == null) {
                     Log.d(TAG, "Skipping r tag with null url")
@@ -115,7 +113,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "r", url = url)
                 }
                 "t" -> {
-                  // Hashtag
                   val hashtag = tag.getOrNull(1)
                   if (hashtag == null) {
                     Log.d(TAG, "Skipping t tag with null hashtag")
@@ -125,7 +122,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "t", hashtag = hashtag)
                 }
                 "q" -> {
-                  // Quote/event reference (kind 39701)
                   val eventId = tag.getOrNull(1)
                   if (eventId == null) {
                     Log.d(TAG, "Skipping q tag with null eventId")
@@ -135,7 +131,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "q", eventId = eventId, relayUrl = tag.getOrNull(2))
                 }
                 "p" -> {
-                  // Pubkey reference (kind 39701)
                   val pubkey = tag.getOrNull(1)
                   if (pubkey == null) {
                     Log.d(TAG, "Skipping p tag with null pubkey")
@@ -145,7 +140,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "p", pubkey = pubkey, relayUrl = tag.getOrNull(2))
                 }
                 "d" -> {
-                  // Identifier (kind 39701)
                   val identifier = tag.getOrNull(1)
                   if (identifier == null) {
                     Log.d(TAG, "Skipping d tag with null identifier")
@@ -155,7 +149,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                   BookmarkItem(type = "d", identifier = identifier)
                 }
                 "title" -> {
-                  // Title (kind 39701)
                   val title = tag.getOrNull(1)
                   if (title == null) {
                     Log.d(TAG, "Skipping title tag with null title")
@@ -183,7 +176,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
 
       Log.d(TAG, "Collected total ${allItems.size} bookmark items from ${events.size} events")
 
-      // Deduplicate items based on their unique identifier
       val uniqueItems =
           allItems.distinctBy { item ->
             when (item.type) {
@@ -200,7 +192,6 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
           }
       Log.d(TAG, "After deduplication: ${uniqueItems.size} unique bookmark items")
 
-      // Fetch full event data for "e" and "q" tag bookmarks
       val eventIds =
           uniqueItems.mapNotNull { if (it.type == "e" || it.type == "q") it.eventId else null }
       Log.d(TAG, "Fetching ${eventIds.size} bookmarked events (e/q tags)...")
@@ -213,13 +204,16 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
           }
       Log.d(TAG, "Fetched ${bookmarkedEvents.size} bookmarked events")
 
-      // Map events to "e" and "q" tag items
+      val threadRepliesMap = fetchThreadReplies(eventIds)
+      Log.d(TAG, "Fetched thread replies for ${threadRepliesMap.size} events")
+
       val eventMap = bookmarkedEvents.associateBy { it.id }
       val itemsWithEvents =
           uniqueItems
               .map { item ->
                 if ((item.type == "e" || item.type == "q") && item.eventId != null) {
                   val fetchedEvent = eventMap[item.eventId]
+                  val replies = threadRepliesMap[item.eventId] ?: emptyList()
                   if (fetchedEvent != null) {
                     item.copy(
                         event =
@@ -227,9 +221,11 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
                                 kind = fetchedEvent.kind,
                                 content = fetchedEvent.content,
                                 author = fetchedEvent.pubkey,
-                                createdAt = fetchedEvent.createdAt))
+                                createdAt = fetchedEvent.createdAt,
+                                tags = fetchedEvent.tags),
+                        threadReplies = replies)
                   } else {
-                    item
+                    item.copy(threadReplies = replies)
                   }
                 } else {
                   item
@@ -237,13 +233,10 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
               }
               .sortedByDescending { it.event?.createdAt ?: 0L }
 
-      // Use most recent event for metadata
       val event = mostRecentEvent!!
 
-      // Check if content is encrypted (NIP-04 format: base64?iv=base64)
       val encryptedContent = if (event.content.isNotEmpty()) event.content else null
 
-      // Generate JSON representation of the most recent event
       val contentDisplay =
           if (encryptedContent != null) {
             "(ENCRYPTED - NIP-04)"
@@ -292,6 +285,187 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
     } catch (e: Exception) {
       Log.d(TAG, "Error getting bookmark list: ${e.message}", e)
       Result.failure(e)
+    }
+  }
+
+  /**
+   * Fetch threaded replies for bookmarked events
+   *
+   * @param eventIds List of root event IDs (bookmarked events)
+   * @param maxDepth Maximum depth to fetch (default: MAX_THREAD_DEPTH)
+   * @return Map of eventId -> List<ThreadReply>
+   */
+  private suspend fun fetchThreadReplies(
+      eventIds: List<String>,
+      maxDepth: Int = MAX_THREAD_DEPTH
+  ): Map<String, List<ThreadReply>> {
+    if (eventIds.isEmpty()) return emptyMap()
+
+    Log.d(TAG, "Fetching thread replies for ${eventIds.size} events, max depth: $maxDepth")
+
+    try {
+      // Fetch all replies level by level (breadth-first)
+      val allReplies = mutableMapOf<String, ThreadReply>()
+      var currentLevelEventIds = eventIds
+      var currentDepth = 1
+
+      while (currentDepth <= maxDepth && currentLevelEventIds.isNotEmpty()) {
+        Log.d(TAG, "Fetching level $currentDepth replies for ${currentLevelEventIds.size} events")
+
+        val levelReplies = fetchRepliesForEvents(currentLevelEventIds)
+        val nextLevelEventIds = mutableListOf<String>()
+
+        levelReplies.forEach { (parentId, replies) ->
+          replies.forEach { reply ->
+            val threadReply =
+                ThreadReply(
+                    eventId = reply.id,
+                    event =
+                        BookmarkedEvent(
+                            kind = reply.kind,
+                            content = reply.content,
+                            author = reply.pubkey,
+                            createdAt = reply.createdAt,
+                            tags = reply.tags),
+                    depth = currentDepth,
+                    replies = emptyList())
+            allReplies[reply.id] = threadReply
+            nextLevelEventIds.add(reply.id)
+          }
+        }
+
+        currentLevelEventIds = nextLevelEventIds
+        currentDepth++
+      }
+
+      Log.d(TAG, "Fetched ${allReplies.size} total replies across all levels")
+
+      val flatReplies = mutableMapOf<String, MutableList<ThreadReply>>()
+      allReplies.values.forEach { reply ->
+        val parentId = parseParentEventId(reply.event?.tags ?: emptyList())
+        if (parentId != null) {
+          flatReplies.getOrPut(parentId) { mutableListOf() }.add(reply)
+        }
+      }
+
+      val result = mutableMapOf<String, List<ThreadReply>>()
+      eventIds.forEach { rootId ->
+        val nestedReplies = buildNestedThreads(rootId, flatReplies)
+        if (nestedReplies.isNotEmpty()) {
+          result[rootId] = nestedReplies
+        }
+      }
+
+      Log.d(TAG, "Built nested threads for ${result.size} root events")
+      return result
+    } catch (e: Exception) {
+      Log.w(TAG, "Error fetching thread replies: ${e.message}", e)
+      return emptyMap()
+    }
+  }
+
+  /**
+   * Build nested thread structure from flat reply map
+   *
+   * @param rootEventId Root event ID
+   * @param flatReplies Flat map of eventId -> List<ThreadReply>
+   * @param currentDepth Current depth level
+   * @return List of ThreadReply with nested structure
+   */
+  private fun buildNestedThreads(
+      rootEventId: String,
+      flatReplies: Map<String, List<ThreadReply>>,
+      currentDepth: Int = 1
+  ): List<ThreadReply> {
+    if (currentDepth > MAX_THREAD_DEPTH) {
+      Log.d(TAG, "Reached max depth $MAX_THREAD_DEPTH for event $rootEventId")
+      return emptyList()
+    }
+
+    val directReplies = flatReplies[rootEventId] ?: emptyList()
+    Log.d(
+        TAG,
+        "Building nested threads for $rootEventId at depth $currentDepth: ${directReplies.size} replies")
+
+    return directReplies.map { reply ->
+      val nestedReplies = buildNestedThreads(reply.eventId, flatReplies, currentDepth + 1)
+      reply.copy(replies = nestedReplies)
+    }
+  }
+
+  /**
+   * Fetch replies for given events using NIP-10
+   *
+   * @param eventIds Events to find replies for
+   * @return Map of parentId -> List<NostrEvent> replies
+   */
+  private suspend fun fetchRepliesForEvents(
+      eventIds: List<String>
+  ): Map<String, List<RelayClient.NostrEvent>> {
+    if (eventIds.isEmpty()) return emptyMap()
+
+    try {
+      val idsFilter = eventIds.joinToString(",") { "\"$it\"" }
+      val filter = """{"kinds":[1],"#e":[$idsFilter],"limit":$MAX_REPLIES_PER_LEVEL}"""
+      Log.d(TAG, "Fetching replies with filter: $filter")
+
+      val replies =
+          withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() } ?: emptyList()
+
+      Log.d(TAG, "Fetched ${replies.size} potential replies")
+
+      val replyMap = mutableMapOf<String, MutableList<RelayClient.NostrEvent>>()
+      replies.forEach { reply ->
+        val parentId = parseParentEventId(reply.tags)
+        if (parentId != null && eventIds.contains(parentId)) {
+          replyMap.getOrPut(parentId) { mutableListOf() }.add(reply)
+        }
+      }
+
+      Log.d(TAG, "Grouped replies: ${replyMap.size} parents with replies")
+      return replyMap
+    } catch (e: Exception) {
+      Log.w(TAG, "Error fetching replies: ${e.message}", e)
+      return emptyMap()
+    }
+  }
+
+  /**
+   * Parse NIP-10 tags to find parent event ID
+   *
+   * Priority:
+   * 1. "e" tag with "reply" marker
+   * 2. Last "e" tag (positional)
+   * 3. "e" tag with "root" marker (if only one)
+   *
+   * @param tags Event tags
+   * @return Parent event ID or null if not a reply
+   */
+  private fun parseParentEventId(tags: List<List<String>>): String? {
+    try {
+      val eTags = tags.filter { it.isNotEmpty() && it[0] == "e" }
+      if (eTags.isEmpty()) return null
+
+      // Priority 1: Look for "reply" marker
+      val replyTag = eTags.firstOrNull { it.size >= 4 && it[3] == "reply" }
+      if (replyTag != null && replyTag.size >= 2) {
+        return replyTag[1]
+      }
+
+      // Priority 2: If multiple e tags, last one is parent (positional)
+      if (eTags.size > 1 && eTags.last().size >= 2) {
+        return eTags.last()[1]
+      }
+
+      // Priority 3: Single e tag (could be root or parent)
+      if (eTags.size == 1 && eTags[0].size >= 2) {
+        return eTags[0][1]
+      }
+
+      return null
+    } catch (e: Exception) {
+      Log.w(TAG, "Failed to parse parent event ID: ${e.message}")
+      return null
     }
   }
 }
