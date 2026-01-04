@@ -64,118 +64,145 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
         }
       }
 
-      // Get the most recent event
-      val event =
-          events.maxByOrNull { it.createdAt }
-              ?: run {
-                Log.d(TAG, "No event found after filtering, returning null")
-                return Result.success(null)
-              }
-      Log.d(TAG, "Selected event: id=${event.id}, kind=${event.kind}, tags=${event.tags.size}")
+      // Process all events and collect all bookmark items
+      Log.d(TAG, "Processing ${events.size} events to extract bookmark items")
+      val allItems = mutableListOf<BookmarkItem>()
 
-      val items =
-          event.tags.mapNotNull { tag ->
-            if (tag.isEmpty()) {
-              Log.d(TAG, "Skipping empty tag")
-              return@mapNotNull null
+      // Track the most recent event for metadata
+      val mostRecentEvent = events.maxByOrNull { it.createdAt }
+
+      events.forEach { event ->
+        Log.d(TAG, "Processing event: id=${event.id}, kind=${event.kind}, tags=${event.tags.size}")
+
+        val items =
+            event.tags.mapNotNull { tag ->
+              if (tag.isEmpty()) {
+                Log.d(TAG, "Skipping empty tag")
+                return@mapNotNull null
+              }
+              val tagType = tag[0]
+              Log.d(TAG, "Processing tag type: $tagType, full tag: ${tag.joinToString(", ")}")
+              when (tagType) {
+                "e" -> {
+                  // Event reference tag
+                  val eventId = tag.getOrNull(1)
+                  if (eventId == null) {
+                    Log.d(TAG, "Skipping e tag with null eventId")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created e tag bookmark: eventId=$eventId")
+                  BookmarkItem(type = "e", eventId = eventId, relayUrl = tag.getOrNull(2))
+                }
+                "a" -> {
+                  // Article/parameterized replaceable event reference
+                  val coordinate = tag.getOrNull(1)
+                  if (coordinate == null) {
+                    Log.d(TAG, "Skipping a tag with null coordinate")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created a tag bookmark: coordinate=$coordinate")
+                  BookmarkItem(
+                      type = "a", articleCoordinate = coordinate, relayUrl = tag.getOrNull(2))
+                }
+                "r" -> {
+                  // URL reference
+                  val url = tag.getOrNull(1)
+                  if (url == null) {
+                    Log.d(TAG, "Skipping r tag with null url")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created r tag bookmark: url=$url")
+                  BookmarkItem(type = "r", url = url)
+                }
+                "t" -> {
+                  // Hashtag
+                  val hashtag = tag.getOrNull(1)
+                  if (hashtag == null) {
+                    Log.d(TAG, "Skipping t tag with null hashtag")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created t tag bookmark: hashtag=$hashtag")
+                  BookmarkItem(type = "t", hashtag = hashtag)
+                }
+                "q" -> {
+                  // Quote/event reference (kind 39701)
+                  val eventId = tag.getOrNull(1)
+                  if (eventId == null) {
+                    Log.d(TAG, "Skipping q tag with null eventId")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created q tag bookmark: eventId=$eventId")
+                  BookmarkItem(type = "q", eventId = eventId, relayUrl = tag.getOrNull(2))
+                }
+                "p" -> {
+                  // Pubkey reference (kind 39701)
+                  val pubkey = tag.getOrNull(1)
+                  if (pubkey == null) {
+                    Log.d(TAG, "Skipping p tag with null pubkey")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created p tag bookmark: pubkey=$pubkey")
+                  BookmarkItem(type = "p", pubkey = pubkey, relayUrl = tag.getOrNull(2))
+                }
+                "d" -> {
+                  // Identifier (kind 39701)
+                  val identifier = tag.getOrNull(1)
+                  if (identifier == null) {
+                    Log.d(TAG, "Skipping d tag with null identifier")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created d tag bookmark: identifier=$identifier")
+                  BookmarkItem(type = "d", identifier = identifier)
+                }
+                "title" -> {
+                  // Title (kind 39701)
+                  val title = tag.getOrNull(1)
+                  if (title == null) {
+                    Log.d(TAG, "Skipping title tag with null title")
+                    return@mapNotNull null
+                  }
+                  Log.d(TAG, "Created title tag bookmark: title=$title")
+                  BookmarkItem(type = "title", title = title)
+                }
+                else -> {
+                  Log.d(TAG, "Skipping unknown tag type: $tagType")
+                  null
+                }
+              }
             }
-            val tagType = tag[0]
-            Log.d(TAG, "Processing tag type: $tagType, full tag: ${tag.joinToString(", ")}")
-            when (tagType) {
-              "e" -> {
-                // Event reference tag
-                val eventId = tag.getOrNull(1)
-                if (eventId == null) {
-                  Log.d(TAG, "Skipping e tag with null eventId")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created e tag bookmark: eventId=$eventId")
-                BookmarkItem(type = "e", eventId = eventId, relayUrl = tag.getOrNull(2))
-              }
-              "a" -> {
-                // Article/parameterized replaceable event reference
-                val coordinate = tag.getOrNull(1)
-                if (coordinate == null) {
-                  Log.d(TAG, "Skipping a tag with null coordinate")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created a tag bookmark: coordinate=$coordinate")
-                BookmarkItem(
-                    type = "a", articleCoordinate = coordinate, relayUrl = tag.getOrNull(2))
-              }
-              "r" -> {
-                // URL reference
-                val url = tag.getOrNull(1)
-                if (url == null) {
-                  Log.d(TAG, "Skipping r tag with null url")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created r tag bookmark: url=$url")
-                BookmarkItem(type = "r", url = url)
-              }
-              "t" -> {
-                // Hashtag
-                val hashtag = tag.getOrNull(1)
-                if (hashtag == null) {
-                  Log.d(TAG, "Skipping t tag with null hashtag")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created t tag bookmark: hashtag=$hashtag")
-                BookmarkItem(type = "t", hashtag = hashtag)
-              }
-              "q" -> {
-                // Quote/event reference (kind 39701)
-                val eventId = tag.getOrNull(1)
-                if (eventId == null) {
-                  Log.d(TAG, "Skipping q tag with null eventId")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created q tag bookmark: eventId=$eventId")
-                BookmarkItem(type = "q", eventId = eventId, relayUrl = tag.getOrNull(2))
-              }
-              "p" -> {
-                // Pubkey reference (kind 39701)
-                val pubkey = tag.getOrNull(1)
-                if (pubkey == null) {
-                  Log.d(TAG, "Skipping p tag with null pubkey")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created p tag bookmark: pubkey=$pubkey")
-                BookmarkItem(type = "p", pubkey = pubkey, relayUrl = tag.getOrNull(2))
-              }
-              "d" -> {
-                // Identifier (kind 39701)
-                val identifier = tag.getOrNull(1)
-                if (identifier == null) {
-                  Log.d(TAG, "Skipping d tag with null identifier")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created d tag bookmark: identifier=$identifier")
-                BookmarkItem(type = "d", identifier = identifier)
-              }
-              "title" -> {
-                // Title (kind 39701)
-                val title = tag.getOrNull(1)
-                if (title == null) {
-                  Log.d(TAG, "Skipping title tag with null title")
-                  return@mapNotNull null
-                }
-                Log.d(TAG, "Created title tag bookmark: title=$title")
-                BookmarkItem(type = "title", title = title)
-              }
-              else -> {
-                Log.d(TAG, "Skipping unknown tag type: $tagType")
-                null
-              }
-            }
-          }
-      Log.d(TAG, "Parsed ${items.size} bookmark items (e/a/r/t/q/p/d/title tags)")
-      if (items.isEmpty()) {
-        Log.d(TAG, "WARNING: No bookmark items parsed from ${event.tags.size} tags")
+        Log.d(
+            TAG,
+            "Parsed ${items.size} bookmark items from event ${event.id} (e/a/r/t/q/p/d/title tags)")
+        if (items.isEmpty()) {
+          Log.d(
+              TAG,
+              "WARNING: No bookmark items parsed from ${event.tags.size} tags in event ${event.id}")
+        }
+        allItems.addAll(items)
       }
 
+      Log.d(TAG, "Collected total ${allItems.size} bookmark items from ${events.size} events")
+
+      // Deduplicate items based on their unique identifier
+      val uniqueItems =
+          allItems.distinctBy { item ->
+            when (item.type) {
+              "e" -> "e:${item.eventId}"
+              "a" -> "a:${item.articleCoordinate}"
+              "r" -> "r:${item.url}"
+              "t" -> "t:${item.hashtag}"
+              "q" -> "q:${item.eventId}"
+              "p" -> "p:${item.pubkey}"
+              "d" -> "d:${item.identifier}"
+              "title" -> "title:${item.title}"
+              else -> item.hashCode().toString()
+            }
+          }
+      Log.d(TAG, "After deduplication: ${uniqueItems.size} unique bookmark items")
+
       // Fetch full event data for "e" and "q" tag bookmarks
-      val eventIds = items.mapNotNull { if (it.type == "e" || it.type == "q") it.eventId else null }
+      val eventIds =
+          uniqueItems.mapNotNull { if (it.type == "e" || it.type == "q") it.eventId else null }
       Log.d(TAG, "Fetching ${eventIds.size} bookmarked events (e/q tags)...")
       val bookmarkedEvents =
           if (eventIds.isNotEmpty()) {
@@ -189,7 +216,7 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
       // Map events to "e" and "q" tag items
       val eventMap = bookmarkedEvents.associateBy { it.id }
       val itemsWithEvents =
-          items
+          uniqueItems
               .map { item ->
                 if ((item.type == "e" || item.type == "q") && item.eventId != null) {
                   val fetchedEvent = eventMap[item.eventId]
@@ -210,10 +237,13 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
               }
               .sortedByDescending { it.event?.createdAt ?: 0L }
 
+      // Use most recent event for metadata
+      val event = mostRecentEvent!!
+
       // Check if content is encrypted (NIP-04 format: base64?iv=base64)
       val encryptedContent = if (event.content.isNotEmpty()) event.content else null
 
-      // Generate JSON representation of the event
+      // Generate JSON representation of the most recent event
       val contentDisplay =
           if (encryptedContent != null) {
             "(ENCRYPTED - NIP-04)"
