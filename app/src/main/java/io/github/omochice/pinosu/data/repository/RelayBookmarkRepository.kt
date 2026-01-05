@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.data.relay.NostrEvent
 import io.github.omochice.pinosu.data.relay.RelayClient
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
@@ -399,9 +400,7 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
    * @param eventIds Events to find replies for
    * @return Map of parentId -> List<NostrEvent> replies
    */
-  private suspend fun fetchRepliesForEvents(
-      eventIds: List<String>
-  ): Map<String, List<RelayClient.NostrEvent>> {
+  private suspend fun fetchRepliesForEvents(eventIds: List<String>): Map<String, List<NostrEvent>> {
     if (eventIds.isEmpty()) return emptyMap()
 
     try {
@@ -414,7 +413,7 @@ class RelayBookmarkRepository @Inject constructor(private val relayClient: Relay
 
       Log.d(TAG, "Fetched ${replies.size} potential replies")
 
-      val replyMap = mutableMapOf<String, MutableList<RelayClient.NostrEvent>>()
+      val replyMap = mutableMapOf<String, MutableList<NostrEvent>>()
       replies.forEach { reply ->
         val parentId = parseParentEventId(reply.tags)
         if (parentId != null && eventIds.contains(parentId)) {
