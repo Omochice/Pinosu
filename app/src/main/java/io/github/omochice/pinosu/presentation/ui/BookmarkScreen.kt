@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -153,298 +149,68 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, expansionState: MutableMap<
       modifier = Modifier.fillMaxWidth(),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
-          Text(
-              text = "Type: ${getBookmarkTypeDescription(bookmark.type)}",
-              style = MaterialTheme.typography.labelSmall,
-              color = MaterialTheme.colorScheme.tertiary)
-          Spacer(modifier = Modifier.height(8.dp))
-
-          when (bookmark.type) {
-            "e",
-            "q" -> {
-              bookmark.event?.let { event ->
-                Text(
-                    text = "Kind: ${event.kind} ${getKindDescription(event.kind)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (event.content.isNotEmpty()) {
-                  Text(
-                      text = event.content,
-                      style = MaterialTheme.typography.bodyMedium,
-                      maxLines = 3,
-                      overflow = TextOverflow.Ellipsis)
-                  Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                Text(
-                    text = "Author: ${formatEventId(event.author)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = formatTimestamp(event.createdAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-              }
-                  ?: run {
-                    bookmark.eventId?.let { eventId ->
-                      Text(
-                          text = "Event ID: ${formatEventId(eventId)}",
-                          style = MaterialTheme.typography.bodyMedium)
-                    }
-                  }
-            }
-            "a" -> {
-              bookmark.articleCoordinate?.let { coordinate ->
-                Text(
-                    text = "Article",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = coordinate,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-              }
-            }
-            "r" -> {
-              bookmark.url?.let { url ->
-                Text(
-                    text = "URL",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = url,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis)
-              }
-            }
-            "t" -> {
-              bookmark.hashtag?.let { hashtag ->
-                Text(
-                    text = "Hashtag",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "#$hashtag",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary)
-              }
-            }
-            "p" -> {
-              bookmark.pubkey?.let { pubkey ->
-                Text(
-                    text = "User",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatEventId(pubkey),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-              }
-            }
-            "d" -> {
-              bookmark.identifier?.let { identifier ->
-                Text(
-                    text = "Identifier",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = identifier,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis)
-              }
-            }
-            "title" -> {
-              bookmark.title?.let { title ->
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis)
-                bookmark.identifier?.let { identifier ->
-                  Spacer(modifier = Modifier.height(4.dp))
-                  Text(
-                      text = identifier,
-                      style = MaterialTheme.typography.bodySmall,
-                      color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      maxLines = 1,
-                      overflow = TextOverflow.Ellipsis)
-                }
-              }
-            }
-          }
-
-          bookmark.relayUrl?.let { relay ->
+          // Title display
+          bookmark.title?.let { title ->
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.label_relay),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = relay,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary)
           }
 
-          if (bookmark.threadReplies.isNotEmpty()) {
-            val eventId = bookmark.eventId ?: return@Card
-            val isExpanded = expansionState[eventId] ?: false
-
-            Spacer(modifier = Modifier.height(12.dp))
-            androidx.compose.material3.HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            androidx.compose.material3.TextButton(
-                onClick = { expansionState[eventId] = !isExpanded }) {
-                  androidx.compose.material3.Icon(
-                      imageVector =
-                          if (isExpanded) androidx.compose.material.icons.Icons.Filled.ExpandLess
-                          else androidx.compose.material.icons.Icons.Filled.ExpandMore,
-                      contentDescription = if (isExpanded) "Collapse" else "Expand")
-                  androidx.compose.foundation.layout.Spacer(
-                      modifier = androidx.compose.ui.Modifier.width(4.dp))
-                  Text(
-                      "${if (isExpanded) "Hide" else "Show"} ${bookmark.threadReplies.size} ${if (bookmark.threadReplies.size == 1) "reply" else "replies"}")
-                }
-
-            androidx.compose.animation.AnimatedVisibility(visible = isExpanded) {
-              Column(modifier = androidx.compose.ui.Modifier.padding(start = 8.dp, top = 8.dp)) {
-                bookmark.threadReplies.forEach { reply ->
-                  ThreadReplyCard(reply = reply, expansionState = expansionState)
-                  androidx.compose.foundation.layout.Spacer(
-                      modifier = androidx.compose.ui.Modifier.height(8.dp))
-                }
-              }
-            }
-          }
-        }
-      }
-}
-
-/**
- * Card component for displaying a thread reply
- *
- * @param reply Thread reply to display
- * @param expansionState Map tracking which threads are expanded
- */
-@Composable
-private fun ThreadReplyCard(
-    reply: io.github.omochice.pinosu.domain.model.ThreadReply,
-    expansionState: MutableMap<String, Boolean>
-) {
-  Card(
-      modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(start = (reply.depth * 8).dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-        Column(modifier = androidx.compose.ui.Modifier.padding(12.dp)) {
-          Text(
-              text = "${"→".repeat(reply.depth)} Reply (Level ${reply.depth})",
-              style = MaterialTheme.typography.labelSmall,
-              color = MaterialTheme.colorScheme.tertiary)
-          Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
-
-          reply.event?.let { event ->
-            Text(
-                text = "Kind: ${event.kind} ${getKindDescription(event.kind)}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
-
-            if (event.content.isNotEmpty()) {
+          // Description display (content)
+          bookmark.event?.content?.let { description ->
+            if (description.isNotEmpty()) {
               Text(
-                  text = event.content,
-                  style = MaterialTheme.typography.bodySmall,
+                  text = description,
+                  style = MaterialTheme.typography.bodyMedium,
                   maxLines = 3,
                   overflow = TextOverflow.Ellipsis)
-              Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+              Spacer(modifier = Modifier.height(12.dp))
+            }
+          }
+
+          // URL list display
+          if (bookmark.urls.isNotEmpty()) {
+            Text(
+                text = "URLs (${bookmark.urls.size})",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.tertiary)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            bookmark.urls.forEach { url ->
+              Text(
+                  text = url,
+                  style = MaterialTheme.typography.bodySmall,
+                  color = MaterialTheme.colorScheme.secondary,
+                  modifier = Modifier.padding(vertical = 2.dp),
+                  maxLines = 1,
+                  overflow = TextOverflow.Ellipsis)
             }
 
-            Text(
-                text = "Author: ${formatEventId(event.author)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+          }
 
+          // Timestamp
+          bookmark.event?.let { event ->
             Text(
                 text = formatTimestamp(event.createdAt),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
-              ?: run {
-                Text(
-                    text = "Reply (not loaded)",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error)
-              }
 
-          if (reply.replies.isNotEmpty()) {
-            val isExpanded = expansionState[reply.eventId] ?: false
-
-            Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
-            androidx.compose.material3.HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
-            Spacer(modifier = androidx.compose.ui.Modifier.height(4.dp))
-
-            androidx.compose.material3.TextButton(
-                onClick = { expansionState[reply.eventId] = !isExpanded }) {
-                  androidx.compose.material3.Icon(
-                      imageVector =
-                          if (isExpanded) androidx.compose.material.icons.Icons.Filled.ExpandLess
-                          else androidx.compose.material.icons.Icons.Filled.ExpandMore,
-                      contentDescription = if (isExpanded) "Collapse" else "Expand")
-                  androidx.compose.foundation.layout.Spacer(
-                      modifier = androidx.compose.ui.Modifier.width(4.dp))
-                  Text(
-                      "${if (isExpanded) "Hide" else "Show"} ${reply.replies.size} ${if (reply.replies.size == 1) "reply" else "replies"}",
-                      style = MaterialTheme.typography.labelSmall)
-                }
-
-            androidx.compose.animation.AnimatedVisibility(visible = isExpanded) {
-              Column(modifier = androidx.compose.ui.Modifier.padding(start = 4.dp, top = 4.dp)) {
-                reply.replies.forEach { nested ->
-                  ThreadReplyCard(reply = nested, expansionState = expansionState)
-                  androidx.compose.foundation.layout.Spacer(
-                      modifier = androidx.compose.ui.Modifier.height(4.dp))
-                }
-              }
-            }
+          // Debug: title source
+          if (bookmark.titleSource == "metadata") {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "(Title from OG metadata)",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.tertiary)
           }
         }
       }
-}
-
-/**
- * Get bookmark type description
- *
- * @param type Bookmark type (e, a, r, t, q, p, d, title)
- * @return Human-readable description
- */
-private fun getBookmarkTypeDescription(type: String): String {
-  return when (type) {
-    "e" -> "Event"
-    "a" -> "Article"
-    "r" -> "URL"
-    "t" -> "Hashtag"
-    "q" -> "Quote"
-    "p" -> "User"
-    "d" -> "Identifier"
-    "title" -> "Article"
-    else -> "Unknown"
-  }
 }
 
 /**
@@ -522,12 +288,33 @@ private fun BookmarkScreenWithDataPreview() {
   val sampleBookmarks =
       listOf(
           BookmarkItem(
-              type = "e",
+              type = "event",
               eventId = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-              relayUrl = "wss://relay.example.com"),
-          BookmarkItem(type = "r", url = "https://example.com/article"),
-          BookmarkItem(type = "t", hashtag = "nostr"),
-          BookmarkItem(type = "a", articleCoordinate = "30023:pubkey:d-identifier"),
+              title = "Example Article Title",
+              url = "https://example.com/article",
+              urls = listOf("https://example.com/article", "https://example.com/related"),
+              titleSource = "tag",
+              event =
+                  io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+                      kind = 39701,
+                      content = "This is a sample bookmark description from the event content.",
+                      author = "abcd1234abcd1234",
+                      createdAt = System.currentTimeMillis() / 1000,
+                      tags = emptyList())),
+          BookmarkItem(
+              type = "event",
+              eventId = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+              title = "Another Bookmark",
+              url = "https://example.com/another",
+              urls = listOf("https://example.com/another"),
+              titleSource = "metadata",
+              event =
+                  io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+                      kind = 39701,
+                      content = "Fetched title from OG metadata.",
+                      author = "efgh5678efgh5678",
+                      createdAt = System.currentTimeMillis() / 1000 - 3600,
+                      tags = emptyList())),
       )
   BookmarkScreen(
       uiState = BookmarkUiState(isLoading = false, bookmarks = sampleBookmarks),

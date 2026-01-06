@@ -79,6 +79,7 @@ dependencies {
   implementation(libs.androidx.security.crypto)
 
   implementation(libs.okhttp)
+  implementation(libs.jsoup)
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)

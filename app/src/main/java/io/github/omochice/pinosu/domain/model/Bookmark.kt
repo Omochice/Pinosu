@@ -3,17 +3,19 @@ package io.github.omochice.pinosu.domain.model
 /**
  * Bookmark item from kind:39701
  *
- * @property type Type of bookmark (e, a, r, t, q, p, d, title)
- * @property eventId Event ID (for e/q tag)
- * @property articleCoordinate Article coordinate (for a tag, format: kind:pubkey:d-tag)
- * @property url URL reference (for r tag)
- * @property hashtag Hashtag (for t tag)
- * @property pubkey Public key reference (for p tag)
- * @property identifier Identifier (for d tag)
- * @property title Title (for title tag in kind 39701)
+ * @property type Type of bookmark (event for event-based display)
+ * @property eventId Event ID (kind 39701 event ID)
+ * @property articleCoordinate Article coordinate (deprecated, for backward compatibility)
+ * @property url URL reference (first r tag URL, for backward compatibility)
+ * @property hashtag Hashtag (deprecated, for backward compatibility)
+ * @property pubkey Public key reference (deprecated, for backward compatibility)
+ * @property identifier Identifier (deprecated, for backward compatibility)
+ * @property title Title (from title tag or og:title)
  * @property relayUrl Relay URL hint (optional)
- * @property event Full event data if fetched (optional)
- * @property threadReplies Thread replies for e/q type bookmarks (optional)
+ * @property event Full event data (contains content as description)
+ * @property threadReplies Thread replies (deprecated, not used for r tags)
+ * @property urls List of all r tag URLs in the event
+ * @property titleSource Source of title ("tag" or "metadata")
  */
 data class BookmarkItem(
     val type: String,
@@ -27,6 +29,8 @@ data class BookmarkItem(
     val relayUrl: String? = null,
     val event: BookmarkedEvent? = null,
     val threadReplies: List<ThreadReply> = emptyList(),
+    val urls: List<String> = emptyList(),
+    val titleSource: String = "tag",
 )
 
 /**

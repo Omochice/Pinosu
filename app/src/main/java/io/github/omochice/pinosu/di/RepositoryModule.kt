@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
+import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
@@ -33,4 +35,11 @@ abstract class RepositoryModule {
    * RelayBookmarkRepository fetches bookmarks from Nostr relay.
    */
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
+
+  /**
+   * Binds UrlMetadataFetcher implementation
+   *
+   * OkHttpUrlMetadataFetcher fetches URL metadata (og:title) using OkHttp and Jsoup.
+   */
+  @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
 }
