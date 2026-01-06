@@ -44,7 +44,7 @@ constructor(
               }
       Log.d(TAG, "Converted npub to hex: $hexPubkey")
 
-      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
+      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":100}"""
       Log.d(TAG, "Subscribing with filter: $filter")
 
       val events = withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() }
