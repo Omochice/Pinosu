@@ -30,6 +30,21 @@ constructor(
     private const val TAG = "RelayBookmarkRepository"
     const val KIND_BOOKMARK_LIST = 39701
     const val TIMEOUT_MS = 10000L
+
+    /**
+     * Validates if a string is a valid URL
+     *
+     * @param url URL string to validate
+     * @return true if valid URL, false otherwise
+     */
+    private fun isValidUrl(url: String): Boolean {
+      return try {
+        val uri = java.net.URI(url)
+        uri.scheme in listOf("http", "https") && uri.host != null
+      } catch (e: Exception) {
+        false
+      }
+    }
   }
 
   override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
@@ -79,26 +94,40 @@ constructor(
       events.forEach { event ->
         Log.d(TAG, "Processing event: id=${event.id}, kind=${event.kind}, tags=${event.tags.size}")
 
+        // Extract d tags and convert to https URLs
+        val dTags =
+            event.tags
+                .filter { it.isNotEmpty() && it[0] == "d" }
+                .mapNotNull { it.getOrNull(1) }
+                .map { "https://$it" }
+                .filter { isValidUrl(it) }
+
         // Extract r tags
         val rTags =
             event.tags.filter { it.isNotEmpty() && it[0] == "r" }.mapNotNull { it.getOrNull(1) }
 
-        if (rTags.isEmpty()) {
-          Log.d(TAG, "Skipping event ${event.id}: no r tags")
-          Log.d(TAG, "  Event details:")
-          Log.d(TAG, "    id: ${event.id}")
-          Log.d(TAG, "    pubkey: ${event.pubkey}")
-          Log.d(TAG, "    created_at: ${event.createdAt}")
-          Log.d(TAG, "    kind: ${event.kind}")
-          Log.d(TAG, "    content: ${event.content}")
-          Log.d(TAG, "    tags (${event.tags.size}):")
-          event.tags.forEachIndexed { tagIndex, tag ->
-            Log.d(TAG, "      [$tagIndex]: ${tag.joinToString(", ")}")
-          }
-          return@forEach
-        }
-
-        Log.d(TAG, "Event ${event.id} has ${rTags.size} r tags")
+        // Determine which URLs to use (prioritize d tags)
+        val urls =
+            if (dTags.isNotEmpty()) {
+              Log.d(TAG, "Event ${event.id} has ${dTags.size} valid d tags (as https URLs)")
+              dTags
+            } else if (rTags.isNotEmpty()) {
+              Log.d(TAG, "Event ${event.id} has ${rTags.size} r tags")
+              rTags
+            } else {
+              Log.d(TAG, "Skipping event ${event.id}: no valid d or r tags")
+              Log.d(TAG, "  Event details:")
+              Log.d(TAG, "    id: ${event.id}")
+              Log.d(TAG, "    pubkey: ${event.pubkey}")
+              Log.d(TAG, "    created_at: ${event.createdAt}")
+              Log.d(TAG, "    kind: ${event.kind}")
+              Log.d(TAG, "    content: ${event.content}")
+              Log.d(TAG, "    tags (${event.tags.size}):")
+              event.tags.forEachIndexed { tagIndex, tag ->
+                Log.d(TAG, "      [$tagIndex]: ${tag.joinToString(", ")}")
+              }
+              return@forEach
+            }
 
         // Extract title tag
         val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == "title" }?.get(1)
@@ -109,8 +138,8 @@ constructor(
               Log.d(TAG, "Using title tag: $titleTag")
               titleTag to "tag"
             } else {
-              Log.d(TAG, "No title tag, fetching og:title from ${rTags.first()}")
-              val fetchedTitle = urlMetadataFetcher.fetchTitle(rTags.first()).getOrNull()
+              Log.d(TAG, "No title tag, fetching og:title from ${urls.first()}")
+              val fetchedTitle = urlMetadataFetcher.fetchTitle(urls.first()).getOrNull()
               if (fetchedTitle != null) {
                 Log.d(TAG, "Fetched og:title: $fetchedTitle")
               } else {
@@ -124,8 +153,8 @@ constructor(
             BookmarkItem(
                 type = "event",
                 eventId = event.id,
-                url = rTags.first(), // For backward compatibility
-                urls = rTags,
+                url = urls.first(), // For backward compatibility
+                urls = urls,
                 title = title,
                 titleSource = titleSource,
                 event =
