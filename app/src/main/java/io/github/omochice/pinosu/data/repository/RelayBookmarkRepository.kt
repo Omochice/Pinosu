@@ -85,6 +85,16 @@ constructor(
 
         if (rTags.isEmpty()) {
           Log.d(TAG, "Skipping event ${event.id}: no r tags")
+          Log.d(TAG, "  Event details:")
+          Log.d(TAG, "    id: ${event.id}")
+          Log.d(TAG, "    pubkey: ${event.pubkey}")
+          Log.d(TAG, "    created_at: ${event.createdAt}")
+          Log.d(TAG, "    kind: ${event.kind}")
+          Log.d(TAG, "    content: ${event.content}")
+          Log.d(TAG, "    tags (${event.tags.size}):")
+          event.tags.forEachIndexed { tagIndex, tag ->
+            Log.d(TAG, "      [$tagIndex]: ${tag.joinToString(", ")}")
+          }
           return@forEach
         }
 
