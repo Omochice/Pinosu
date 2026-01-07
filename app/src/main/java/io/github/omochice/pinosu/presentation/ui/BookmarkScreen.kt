@@ -22,8 +22,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,10 +34,6 @@ import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
 
 /**
  * Bookmark list screen
- *
- * @param uiState Current UI state
- * @param onRefresh Callback when pull-to-refresh is triggered
- * @param onLoad Callback to load initial data
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,11 +93,6 @@ fun BookmarkScreen(
   }
 }
 
-/**
- * Card component for displaying raw event JSON
- *
- * @param json Raw event JSON string
- */
 @Composable
 private fun RawEventCard(json: String) {
   Card(
@@ -125,18 +114,12 @@ private fun RawEventCard(json: String) {
       }
 }
 
-/**
- * Card component for a single bookmark item
- *
- * @param bookmark Bookmark item to display
- */
 @Composable
 private fun BookmarkItemCard(bookmark: BookmarkItem) {
   Card(
       modifier = Modifier.fillMaxWidth(),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
-          // Title display
           bookmark.title?.let { title ->
             Text(
                 text = title,
@@ -147,7 +130,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
             Spacer(modifier = Modifier.height(8.dp))
           }
 
-          // Description display (content)
           bookmark.event?.content?.let { description ->
             if (description.isNotEmpty()) {
               Text(
@@ -159,7 +141,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
             }
           }
 
-          // URL list display
           if (bookmark.urls.isNotEmpty()) {
             Text(
                 text = "URLs (${bookmark.urls.size})",
@@ -180,7 +161,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
             Spacer(modifier = Modifier.height(8.dp))
           }
 
-          // Timestamp
           bookmark.event?.let { event ->
             Text(
                 text = formatTimestamp(event.createdAt),
@@ -188,7 +168,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
 
-          // Debug: title source
           if (bookmark.titleSource == "metadata") {
             Spacer(modifier = Modifier.height(4.dp))
             Text(

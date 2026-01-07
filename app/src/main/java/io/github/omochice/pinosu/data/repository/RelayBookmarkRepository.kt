@@ -12,12 +12,6 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withTimeoutOrNull
 
-/**
- * Implementation of BookmarkRepository using RelayClient
- *
- * @property relayClient Relay client for WebSocket communication
- * @property urlMetadataFetcher Fetches URL metadata (og:title) from URLs
- */
 @Singleton
 class RelayBookmarkRepository
 @Inject
@@ -31,12 +25,6 @@ constructor(
     const val KIND_BOOKMARK_LIST = 39701
     const val TIMEOUT_MS = 10000L
 
-    /**
-     * Validates if a string is a valid URL
-     *
-     * @param url URL string to validate
-     * @return true if valid URL, false otherwise
-     */
     private fun isValidUrl(url: String): Boolean {
       return try {
         val uri = java.net.URI(url)

@@ -8,20 +8,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 
-/**
- * Network DI module
- *
- * Provides network-related dependencies such as OkHttpClient.
- */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-  /**
-   * Provides OkHttpClient instance
-   *
-   * Singleton instance shared across the application for HTTP requests.
-   */
   @Provides
   @Singleton
   fun provideOkHttpClient(): OkHttpClient {
