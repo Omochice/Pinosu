@@ -78,7 +78,6 @@ fun BookmarkScreen(
                   modifier = Modifier.fillMaxSize(),
                   contentPadding = PaddingValues(16.dp),
                   verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    uiState.rawEventJson?.let { json -> item { RawEventCard(json = json) } }
                     items(
                         uiState.bookmarks,
                         key = { bookmark ->
@@ -91,27 +90,6 @@ fun BookmarkScreen(
           }
         }
   }
-}
-
-@Composable
-private fun RawEventCard(json: String) {
-  Card(
-      modifier = Modifier.fillMaxWidth(),
-      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-          Text(
-              text = "Raw Event JSON",
-              style = MaterialTheme.typography.titleMedium,
-              color = MaterialTheme.colorScheme.primary)
-          Spacer(modifier = Modifier.height(8.dp))
-          Text(
-              text = json,
-              style =
-                  MaterialTheme.typography.bodySmall.copy(
-                      fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace),
-              modifier = Modifier.fillMaxWidth())
-        }
-      }
 }
 
 @Composable

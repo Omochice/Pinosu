@@ -44,13 +44,11 @@ data class BookmarkedEvent(
  * @property pubkey Author's public key
  * @property items List of bookmarked events
  * @property createdAt Unix timestamp
- * @property rawEventJson Raw event JSON for debugging (optional)
  * @property encryptedContent Encrypted content (NIP-04) if present
  */
 data class BookmarkList(
     val pubkey: String,
     val items: List<BookmarkItem>,
     val createdAt: Long,
-    val rawEventJson: String? = null,
     val encryptedContent: String? = null,
 )
