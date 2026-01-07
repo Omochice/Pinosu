@@ -35,13 +35,12 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
   override suspend fun fetchTitle(url: String): Result<String?> {
     // Check cache first
     cache.get(url)?.let {
-      Log.d(TAG, "Cache hit for URL: $url")
       return Result.success(it)
     }
 
     return withContext(Dispatchers.IO) {
       try {
-        Log.d(TAG, "Fetching metadata for URL: $url")
+
         val request =
             Request.Builder().url(url).header("User-Agent", "Pinosu/1.0 (Android)").build()
 
@@ -63,9 +62,6 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         if (title != null) {
           // Cache if found
           cache.put(url, title)
-          Log.d(TAG, "Successfully fetched and cached title: $title")
-        } else {
-          Log.d(TAG, "No title found for URL: $url")
         }
 
         Result.success(title)
@@ -95,7 +91,6 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
           ?.attr("content")
           ?.takeIf { it.isNotBlank() }
           ?.let {
-            Log.d(TAG, "Found og:title: $it")
             return it
           }
 
@@ -104,11 +99,9 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
           ?.text()
           ?.takeIf { it.isNotBlank() }
           ?.let {
-            Log.d(TAG, "Found title tag: $it")
             return it
           }
 
-      Log.d(TAG, "No og:title or title tag found")
       return null
     } catch (e: Exception) {
       Log.w(TAG, "Failed to parse HTML: ${e.message}")

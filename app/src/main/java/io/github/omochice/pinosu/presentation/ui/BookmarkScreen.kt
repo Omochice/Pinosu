@@ -32,9 +32,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
 
-/**
- * Bookmark list screen
- */
+/** Bookmark list screen */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(

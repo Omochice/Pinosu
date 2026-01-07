@@ -3,10 +3,10 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.data.relay.RelayClient
+import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
-import io.github.omochice.pinosu.data.util.Bech32
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.toList

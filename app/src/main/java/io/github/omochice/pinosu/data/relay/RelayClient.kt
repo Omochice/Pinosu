@@ -1,6 +1,5 @@
 package io.github.omochice.pinosu.data.relay
 
-import android.util.Log
 import io.github.omochice.pinosu.data.model.NostrEvent
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -24,7 +23,6 @@ class RelayClient @Inject constructor() {
   private val activeWebSockets = ConcurrentHashMap<String, WebSocket>()
 
   companion object {
-    private const val TAG = "RelayClient"
     const val RELAY_URL = "wss://yabu.me"
   }
 
@@ -41,53 +39,40 @@ class RelayClient @Inject constructor() {
     val listener =
         object : WebSocketListener() {
           override fun onOpen(webSocket: WebSocket, response: Response) {
-            Log.d(TAG, "WebSocket opened. Subscription ID: $subscriptionId")
             val reqMessage = """["REQ","$subscriptionId",$filter]"""
-            Log.d(TAG, "Sending request: $reqMessage")
             webSocket.send(reqMessage)
           }
 
           override fun onMessage(webSocket: WebSocket, text: String) {
-            Log.d(TAG, "Received message: $text")
             try {
               val jsonArray = JSONArray(text)
               val messageType = jsonArray.getString(0)
-              Log.d(TAG, "Message type: $messageType")
               when (messageType) {
                 "EVENT" -> {
                   val eventJson = jsonArray.getJSONObject(2)
-                  Log.d(TAG, "Parsing event: $eventJson")
                   val event = parseEvent(eventJson)
                   if (event != null) {
-                    Log.d(TAG, "Event parsed successfully: ${event.id}, kind: ${event.kind}")
                     trySend(event)
-                  } else {
-                    Log.d(TAG, "Event parsing returned null")
                   }
                 }
                 "EOSE" -> {
-                  Log.d(TAG, "End of stored events (EOSE) received")
                   // End of stored events - close connection for this PoC
                   webSocket.close(1000, "EOSE received")
                 }
                 "CLOSED" -> {
-                  Log.d(TAG, "CLOSED message received")
                   close()
                 }
               }
-            } catch (e: Exception) {
-              Log.d(TAG, "Error parsing message: ${e.message}", e)
+            } catch (_: Exception) {
               // Ignore parse errors for PoC
             }
           }
 
           override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            Log.d(TAG, "WebSocket failure: ${t.message}", t)
             close(t)
           }
 
           override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            Log.d(TAG, "WebSocket closed. Code: $code, Reason: $reason")
             activeWebSockets.remove(subscriptionId)
             close()
           }
@@ -121,18 +106,14 @@ class RelayClient @Inject constructor() {
         tags.add(tag)
       }
 
-      val event =
-          NostrEvent(
-              id = json.getString("id"),
-              pubkey = json.getString("pubkey"),
-              createdAt = json.getLong("created_at"),
-              kind = json.getInt("kind"),
-              tags = tags,
-              content = json.getString("content"))
-      Log.d(TAG, "Successfully parsed event: id=${event.id}, kind=${event.kind}, tags=${tags.size}")
-      event
-    } catch (e: Exception) {
-      Log.d(TAG, "Failed to parse event: ${e.message}", e)
+      NostrEvent(
+          id = json.getString("id"),
+          pubkey = json.getString("pubkey"),
+          createdAt = json.getLong("created_at"),
+          kind = json.getInt("kind"),
+          tags = tags,
+          content = json.getString("content"))
+    } catch (_: Exception) {
       null
     }
   }
