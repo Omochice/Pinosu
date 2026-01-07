@@ -58,6 +58,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
       - run: devbox run actionlint
       - run: devbox run ghalint run
       - run: devbox run zizmor .github/
@@ -73,6 +75,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
       - run: devbox run fmt
       - run: git diff
   test-android:
@@ -89,6 +93,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
       - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/.gradle/caches
@@ -114,6 +120,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
       - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/.gradle/caches
@@ -140,6 +148,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
       - run: devbox run renovate-config-validator --strict
   status-check:
     timeout-minutes: 5
