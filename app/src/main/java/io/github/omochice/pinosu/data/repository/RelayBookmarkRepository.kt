@@ -218,7 +218,7 @@ constructor(
       result.items.forEachIndexed { index, item ->
         Log.d(
             TAG,
-            "Item #$index: type=${item.type}, eventId=${item.eventId}, url=${item.url}, hashtag=${item.hashtag}, hasEvent=${item.event != null}")
+            "Item #$index: type=${item.type}, eventId=${item.eventId}, url=${item.url}, hasEvent=${item.event != null}")
       }
       if (encryptedContent != null) {
         Log.d(TAG, "Content is encrypted, needs decryption")

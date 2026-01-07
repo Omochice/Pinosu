@@ -52,19 +52,6 @@ class RelayClient @Inject constructor() {
   }
 
   /**
-   * Fetch events by IDs
-   *
-   * @param eventIds List of event IDs to fetch
-   * @return Flow of events
-   */
-  fun fetchEventsByIds(eventIds: List<String>): Flow<NostrEvent> {
-    val idsFilter = eventIds.joinToString(",") { "\"$it\"" }
-    val filter = """{"ids":[$idsFilter]}"""
-    Log.d(TAG, "Fetching events by IDs: ${eventIds.size} events")
-    return subscribe(filter)
-  }
-
-  /**
    * Subscribe to events from relay
    *
    * @param filter Nostr filter as JSON string

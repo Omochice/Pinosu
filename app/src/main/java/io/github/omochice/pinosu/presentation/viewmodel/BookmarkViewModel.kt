@@ -57,7 +57,7 @@ constructor(
             items.forEachIndexed { index, item ->
               android.util.Log.d(
                   TAG,
-                  "Bookmark #$index: type=${item.type}, eventId=${item.eventId}, url=${item.url}, hashtag=${item.hashtag}, pubkey=${item.pubkey}, identifier=${item.identifier}, title=${item.title}")
+                  "Bookmark #$index: type=${item.type}, eventId=${item.eventId}, url=${item.url}, title=${item.title}")
             }
             _uiState.value =
                 _uiState.value.copy(

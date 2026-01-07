@@ -22,7 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateMapOf
+
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +49,6 @@ fun BookmarkScreen(
     onLoad: () -> Unit,
 ) {
   LaunchedEffect(Unit) { onLoad() }
-
-  val expansionState = remember { mutableStateMapOf<String, Boolean>() }
 
   Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
       paddingValues ->
@@ -90,19 +88,9 @@ fun BookmarkScreen(
                     items(
                         uiState.bookmarks,
                         key = { bookmark ->
-                          when (bookmark.type) {
-                            "e" -> "e:${bookmark.eventId}"
-                            "a" -> "a:${bookmark.articleCoordinate}"
-                            "r" -> "r:${bookmark.url}"
-                            "t" -> "t:${bookmark.hashtag}"
-                            "q" -> "q:${bookmark.eventId}"
-                            "p" -> "p:${bookmark.pubkey}"
-                            "d" -> "d:${bookmark.identifier}"
-                            "title" -> "title:${bookmark.title}"
-                            else -> "${bookmark.type}:${bookmark.hashCode()}"
-                          }
+                          "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
                         }) { bookmark ->
-                          BookmarkItemCard(bookmark = bookmark, expansionState = expansionState)
+                          BookmarkItemCard(bookmark = bookmark)
                         }
                   }
             }
@@ -141,10 +129,9 @@ private fun RawEventCard(json: String) {
  * Card component for a single bookmark item
  *
  * @param bookmark Bookmark item to display
- * @param expansionState Map tracking which threads are expanded
  */
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem, expansionState: MutableMap<String, Boolean>) {
+private fun BookmarkItemCard(bookmark: BookmarkItem) {
   Card(
       modifier = Modifier.fillMaxWidth(),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
@@ -213,54 +200,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, expansionState: MutableMap<
       }
 }
 
-/**
- * Format event ID for display
- *
- * @param eventId Full event ID
- * @return Formatted event ID (truncated)
- */
-private fun formatEventId(eventId: String): String {
-  return if (eventId.length > 16) {
-    "${eventId.take(8)}...${eventId.takeLast(8)}"
-  } else {
-    eventId
-  }
-}
-
-/**
- * Get human-readable description for event kind
- *
- * @param kind Event kind number
- * @return Description string
- */
-private fun getKindDescription(kind: Int): String {
-  return when (kind) {
-    0 -> "(Metadata)"
-    1 -> "(Text Note)"
-    2 -> "(Recommend Relay)"
-    3 -> "(Contacts)"
-    4 -> "(Encrypted DM)"
-    5 -> "(Event Deletion)"
-    6 -> "(Repost)"
-    7 -> "(Reaction)"
-    40 -> "(Channel Creation)"
-    41 -> "(Channel Metadata)"
-    42 -> "(Channel Message)"
-    43 -> "(Channel Hide Message)"
-    44 -> "(Channel Mute User)"
-    in 10000..19999 -> "(Replaceable)"
-    in 20000..29999 -> "(Ephemeral)"
-    in 30000..39999 -> "(Parameterized Replaceable)"
-    else -> ""
-  }
-}
-
-/**
- * Format Unix timestamp to readable date/time
- *
- * @param timestamp Unix timestamp in seconds
- * @return Formatted date/time string
- */
 private fun formatTimestamp(timestamp: Long): String {
   val date = java.util.Date(timestamp * 1000)
   val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
