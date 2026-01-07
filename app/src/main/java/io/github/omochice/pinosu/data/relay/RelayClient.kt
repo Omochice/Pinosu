@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.data.relay
 
 import android.util.Log
+import io.github.omochice.pinosu.data.model.NostrEvent
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -16,30 +17,6 @@ import okhttp3.WebSocketListener
 import org.json.JSONArray
 import org.json.JSONObject
 
-/**
- * Nostr event from relay
- *
- * @property id Event ID
- * @property pubkey Author's public key
- * @property createdAt Unix timestamp
- * @property kind Event kind
- * @property tags Event tags
- * @property content Event content
- */
-data class NostrEvent(
-    val id: String,
-    val pubkey: String,
-    val createdAt: Long,
-    val kind: Int,
-    val tags: List<List<String>>,
-    val content: String,
-)
-
-/**
- * Relay client for Nostr WebSocket communication
- *
- * PoC: Fixed relay wss://yabu.me
- */
 @Singleton
 class RelayClient @Inject constructor() {
 
