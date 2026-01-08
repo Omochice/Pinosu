@@ -3,10 +3,10 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.data.relay.RelayClient
+import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
-import io.github.omochice.pinosu.data.util.Bech32
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.toList
@@ -15,8 +15,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * Relay-based implementation of BookmarkRepository
  *
- * Fetches kind:39701 bookmark events from Nostr relays and enriches them
- * with URL metadata (og:title) when title tags are not present.
+ * Fetches kind:39701 bookmark events from Nostr relays and enriches them with URL metadata
+ * (og:title) when title tags are not present.
  *
  * @property relayClient Client for Nostr relay WebSocket communication
  * @property urlMetadataFetcher Fetcher for URL Open Graph metadata
@@ -114,7 +114,7 @@ constructor(
       }
 
       val itemsWithEvents = allItems.sortedByDescending { it.event?.createdAt ?: 0L }
-      val event = mostRecentEvent!!
+      val event = mostRecentEvent ?: return Result.success(null)
       val encryptedContent = if (event.content.isNotEmpty()) event.content else null
 
       Result.success(
