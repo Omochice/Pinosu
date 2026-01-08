@@ -30,8 +30,8 @@ import javax.inject.Inject
 /**
  * Main Activity for Pinosu application
  *
- * Entry point of the app that sets up Hilt dependency injection and Compose UI.
- * Handles Amber signer integration for Nostr authentication.
+ * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles Amber
+ * signer integration for Nostr authentication.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -54,8 +54,8 @@ class MainActivity : ComponentActivity() {
 /**
  * Root composable for Pinosu application
  *
- * Sets up navigation and handles authentication state transitions between
- * login, main, and bookmark screens.
+ * Sets up navigation and handles authentication state transitions between login, main, and bookmark
+ * screens.
  *
  * @param viewModel ViewModel managing login/logout state
  * @param amberSignerClient Client for Amber NIP-55 communication

@@ -51,9 +51,7 @@ constructor(
           onSuccess = { bookmarkList ->
             _uiState.value =
                 _uiState.value.copy(
-                    isLoading = false,
-                    bookmarks = bookmarkList?.items ?: emptyList(),
-                    error = null)
+                    isLoading = false, bookmarks = bookmarkList?.items ?: emptyList(), error = null)
           },
           onFailure = { e ->
             _uiState.value =
