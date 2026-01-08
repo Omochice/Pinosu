@@ -3,15 +3,24 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.data.relay.RelayClient
-import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.data.util.Bech32
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withTimeoutOrNull
 
+/**
+ * Relay-based implementation of BookmarkRepository
+ *
+ * Fetches kind:39701 bookmark events from Nostr relays and enriches them
+ * with URL metadata (og:title) when title tags are not present.
+ *
+ * @property relayClient Client for Nostr relay WebSocket communication
+ * @property urlMetadataFetcher Fetcher for URL Open Graph metadata
+ */
 @Singleton
 class RelayBookmarkRepository
 @Inject
@@ -35,13 +44,19 @@ constructor(
     }
   }
 
+  /**
+   * Retrieve bookmark list for the specified public key
+   *
+   * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
+   */
   override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
     return try {
       val hexPubkey =
           Bech32.npubToHex(pubkey)
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
+      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":100}"""
       val events = withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() }
 
       if (events.isNullOrEmpty()) {

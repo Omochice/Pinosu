@@ -11,6 +11,11 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 
+/**
+ * Hilt module for Repository dependency injection
+ *
+ * Binds Repository interfaces to their concrete implementations.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {

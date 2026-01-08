@@ -9,6 +9,12 @@ object Bech32 {
 
   private const val CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
+  /**
+   * Convert npub (Bech32-encoded public key) to hex format
+   *
+   * @param npub Bech32-encoded public key (starts with npub1)
+   * @return 64-character hex string, or null if conversion fails
+   */
   fun npubToHex(npub: String): String? {
     if (!npub.startsWith("npub1")) {
       return null

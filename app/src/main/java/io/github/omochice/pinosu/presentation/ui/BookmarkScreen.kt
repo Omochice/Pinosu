@@ -32,7 +32,15 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
 
-/** Bookmark list screen */
+/**
+ * Composable function for bookmark list screen
+ *
+ * Displays a list of bookmarked items with pull-to-refresh support.
+ *
+ * @param uiState Bookmark screen UI state
+ * @param onRefresh Callback when pull-to-refresh is triggered
+ * @param onLoad Callback to load bookmarks on initial display
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(

@@ -11,6 +11,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for bookmark list screen
+ *
+ * Manages bookmark data loading and UI state for the bookmark list display.
+ *
+ * @property getBookmarkListUseCase UseCase for fetching bookmark list
+ * @property getLoginStateUseCase UseCase for retrieving current login state
+ */
 @HiltViewModel
 class BookmarkViewModel
 @Inject
@@ -22,6 +30,11 @@ constructor(
   private val _uiState = MutableStateFlow(BookmarkUiState())
   val uiState: StateFlow<BookmarkUiState> = _uiState.asStateFlow()
 
+  /**
+   * Load bookmarks for the current logged-in user
+   *
+   * Fetches bookmark list from relays and updates UI state accordingly.
+   */
   fun loadBookmarks() {
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -38,7 +51,9 @@ constructor(
           onSuccess = { bookmarkList ->
             _uiState.value =
                 _uiState.value.copy(
-                    isLoading = false, bookmarks = bookmarkList?.items ?: emptyList(), error = null)
+                    isLoading = false,
+                    bookmarks = bookmarkList?.items ?: emptyList(),
+                    error = null)
           },
           onFailure = { e ->
             _uiState.value =
@@ -48,6 +63,7 @@ constructor(
     }
   }
 
+  /** Refresh bookmark list by reloading from relays */
   fun refresh() {
     loadBookmarks()
   }

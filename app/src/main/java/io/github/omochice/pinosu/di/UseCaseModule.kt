@@ -13,6 +13,11 @@ import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 
+/**
+ * Hilt module for UseCase dependency injection
+ *
+ * Binds UseCase interfaces to their concrete implementations.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UseCaseModule {
