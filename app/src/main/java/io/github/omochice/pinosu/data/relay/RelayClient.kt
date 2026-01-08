@@ -20,13 +20,12 @@ import org.json.JSONObject
 /**
  * WebSocket client for Nostr relay communication
  *
- * Manages WebSocket connections to Nostr relays and handles
- * subscription requests and event streaming.
+ * Manages WebSocket connections to Nostr relays and handles subscription requests and event
+ * streaming.
  */
 @Singleton
-class RelayClient @Inject constructor() {
+class RelayClient @Inject constructor(private val client: OkHttpClient) {
 
-  private val client = OkHttpClient()
   private val activeWebSockets = ConcurrentHashMap<String, WebSocket>()
 
   companion object {
