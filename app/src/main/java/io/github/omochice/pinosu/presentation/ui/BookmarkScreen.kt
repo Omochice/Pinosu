@@ -31,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
  * Composable function for bookmark list screen
@@ -164,9 +167,9 @@ private fun BookmarkItemCard(bookmark: BookmarkItem) {
 }
 
 private fun formatTimestamp(timestamp: Long): String {
-  val date = java.util.Date(timestamp * 1000)
-  val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
-  return formatter.format(date)
+  val instant = Instant.ofEpochSecond(timestamp)
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
+  return formatter.format(instant)
 }
 
 @Preview(showBackground = true)
