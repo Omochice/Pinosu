@@ -56,7 +56,7 @@ constructor(
           Bech32.npubToHex(pubkey)
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":100}"""
+      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
       val events = withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() }
 
       if (events.isNullOrEmpty()) {
