@@ -1,57 +1,20 @@
 package io.github.omochice.pinosu.data.util
 
+import com.vitorpamplona.quartz.nip19Bech32.decodePublicKeyAsHexOrNull
+
 /**
  * Bech32 encoding/decoding utility for Nostr public keys
  *
- * Converts between npub (Bech32) format and hex format
+ * Delegates to quartz library for proper Bech32 handling with checksum validation
  */
 object Bech32 {
-
-  private const val CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
-
   /**
    * Convert npub (Bech32-encoded public key) to hex format
    *
    * @param npub Bech32-encoded public key (starts with npub1)
-   * @return 64-character hex string, or null if conversion fails
+   * @return 64-character hex string, or null if conversion fails or checksum invalid
    */
   fun npubToHex(npub: String): String? {
-    if (!npub.startsWith("npub1")) {
-      return null
-    }
-
-    return try {
-      val data = npub.substring(5)
-      val decoded = decode(data)
-      if (decoded == null || decoded.size != 32) {
-        return null
-      }
-      decoded.joinToString("") { "%02x".format(it) }
-    } catch (e: Exception) {
-      null
-    }
-  }
-
-  private fun decode(data: String): ByteArray? {
-    val values = data.map { char -> CHARSET.indexOf(char) }
-    if (values.any { it == -1 }) {
-      return null
-    }
-
-    val bits = mutableListOf<Int>()
-    var accumulator = 0
-    var bitsCount = 0
-
-    for (value in values.dropLast(6)) {
-      accumulator = (accumulator shl 5) or value
-      bitsCount += 5
-      while (bitsCount >= 8) {
-        bitsCount -= 8
-        bits.add((accumulator shr bitsCount) and 0xFF)
-        accumulator = accumulator and ((1 shl bitsCount) - 1)
-      }
-    }
-
-    return bits.map { it.toByte() }.toByteArray()
+    return decodePublicKeyAsHexOrNull(npub)
   }
 }
