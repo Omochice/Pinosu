@@ -81,8 +81,8 @@ class RelayClient @Inject constructor(private val client: OkHttpClient) {
                 }
               }
             } catch (e: Exception) {
-              Log.d(TAG, "Error parsing message: ${e.message}", e)
-              // Ignore parse errors for PoC
+              Log.e(TAG, "Error parsing message: $text", e)
+              close(e)
             }
           }
 
