@@ -177,6 +177,7 @@ class BookmarkViewModelTest {
         }
 
     viewModel.loadBookmarks()
+    testScheduler.runCurrent()
 
     val state = viewModel.uiState.first()
     assertTrue("isLoading should be true during loading", state.isLoading)
