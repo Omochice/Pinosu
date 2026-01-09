@@ -1,6 +1,6 @@
 # Product Overview
 
-Pinosu is a decentralized memo/note-taking app for Android that uses Nostr events for storing and syncing notes, similar to Google Keep but with Nostr's decentralized infrastructure.
+Pinosu is a decentralized memo/note-taking app for Android that uses Nostr Kind 39701 events for storing and syncing notes, similar to Google Keep but with Nostr's decentralized infrastructure.
 
 ## Core Capabilities
 
