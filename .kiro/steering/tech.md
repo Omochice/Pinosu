@@ -52,7 +52,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **NIP-55**: External signer integration via Amber
 - **Amber Package**: com.greenart7c3.nostrsigner
 - **WebSocket Client**: OkHttp 4.12.0 for relay connections
-- **Event Types**: Kind 10003 (bookmarks), Kind 39701 (bookmark lists)
+- **Event Types**: Kind 39701 (bookmark lists)
 
 ### Network & HTTP
 
