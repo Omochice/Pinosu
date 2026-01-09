@@ -4,7 +4,7 @@ Pinosu is a decentralized memo/note-taking app for Android that uses Nostr Kind 
 
 ## Core Capabilities
 
-- **Decentralized Note Storage**: Notes stored as Nostr events, accessible across relays
+- **Decentralized Note Storage**: Notes stored as Nostr Kind 39701 (bookmark list) events, accessible across relays
 - **Secure Authentication**: Integration with Amber external signer (NIP-55) for key management without exposing private keys
 - **Cross-Device Sync**: Notes automatically sync across devices via Nostr relays
 - **Rich Note Features**: Create, edit, organize, and search notes with tags and metadata
