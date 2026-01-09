@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,13 +25,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
+import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
+import io.github.omochice.pinosu.presentation.ui.component.UrlSelectionDialog
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -43,6 +48,7 @@ import java.time.format.DateTimeFormatter
  * @param uiState Bookmark screen UI state
  * @param onRefresh Callback when pull-to-refresh is triggered
  * @param onLoad Callback to load bookmarks on initial display
+ * @param viewModel ViewModel for bookmark screen (null for previews)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,8 +56,12 @@ fun BookmarkScreen(
     uiState: BookmarkUiState,
     onRefresh: () -> Unit,
     onLoad: () -> Unit,
+    viewModel: BookmarkViewModel? = null,
 ) {
   LaunchedEffect(Unit) { onLoad() }
+
+  val uriHandler = LocalUriHandler.current
+  val urlOpenErrorText = stringResource(R.string.error_url_open_failed)
 
   Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
       paddingValues ->
@@ -92,20 +102,63 @@ fun BookmarkScreen(
                         key = { bookmark ->
                           "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
                         }) { bookmark ->
-                          BookmarkItemCard(bookmark = bookmark)
+                          BookmarkItemCard(
+                              bookmark = bookmark,
+                              onClick = { clickedBookmark ->
+                                viewModel?.let { vm ->
+                                  if (clickedBookmark.urls.size == 1) {
+                                    try {
+                                      uriHandler.openUri(clickedBookmark.urls.first())
+                                    } catch (e: Exception) {
+                                      vm.setUrlOpenError(e.message ?: urlOpenErrorText)
+                                    }
+                                  } else {
+                                    vm.onBookmarkCardClicked(clickedBookmark)
+                                  }
+                                }
+                              })
                         }
                   }
             }
           }
         }
+
+    viewModel?.let { vm ->
+      uiState.selectedBookmarkForUrlDialog?.let { bookmark ->
+        UrlSelectionDialog(
+            urls = bookmark.urls,
+            onUrlSelected = { url ->
+              vm.dismissUrlDialog()
+              try {
+                uriHandler.openUri(url)
+              } catch (e: Exception) {
+                vm.setUrlOpenError(e.message ?: urlOpenErrorText)
+              }
+            },
+            onDismiss = { vm.dismissUrlDialog() })
+      }
+
+      uiState.urlOpenError?.let { error ->
+        ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
+      }
+    }
   }
 }
 
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem) {
+private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> Unit) {
+  val hasUrls = bookmark.urls.isNotEmpty()
+
   Card(
-      modifier = Modifier.fillMaxWidth(),
-      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+      modifier =
+          Modifier.fillMaxWidth()
+              .then(if (hasUrls) Modifier.clickable { onClick(bookmark) } else Modifier),
+      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+      colors =
+          CardDefaults.cardColors(
+              containerColor =
+                  if (hasUrls) MaterialTheme.colorScheme.surface
+                  else MaterialTheme.colorScheme.surfaceVariant)) {
         Column(modifier = Modifier.padding(16.dp)) {
           bookmark.title?.let { title ->
             Text(

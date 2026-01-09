@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import javax.inject.Inject
@@ -64,5 +65,33 @@ constructor(
   /** Refresh bookmark list by reloading from relays */
   fun refresh() {
     loadBookmarks()
+  }
+
+  /**
+   * Handle bookmark card click
+   *
+   * Shows URL selection dialog for bookmarks with multiple URLs
+   */
+  fun onBookmarkCardClicked(bookmark: BookmarkItem) {
+    _uiState.value = _uiState.value.copy(selectedBookmarkForUrlDialog = bookmark)
+  }
+
+  /** Dismiss URL selection dialog */
+  fun dismissUrlDialog() {
+    _uiState.value = _uiState.value.copy(selectedBookmarkForUrlDialog = null)
+  }
+
+  /**
+   * Set URL opening error message
+   *
+   * @param error Error message to display
+   */
+  fun setUrlOpenError(error: String) {
+    _uiState.value = _uiState.value.copy(urlOpenError = error)
+  }
+
+  /** Dismiss error dialog */
+  fun dismissErrorDialog() {
+    _uiState.value = _uiState.value.copy(urlOpenError = null)
   }
 }

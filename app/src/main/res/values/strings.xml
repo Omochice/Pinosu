@@ -28,8 +28,9 @@
     <string name="error_storage_write">ログイン状態の保存に失敗しました。</string>
     <string name="error_storage_read">ログイン状態の読み込みに失敗しました。</string>
     <string name="error_generic">エラーが発生しました。しばらくしてから再試行してください。</string>
+    <string name="error_url_open_failed">URLを開けませんでした</string>
 
-                                        
+
     <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
 
     <!-- Amber未インストールダイアログ -->
@@ -53,4 +54,8 @@
     <string name="label_event_id">イベントID</string>
     <string name="label_relay">リレー</string>
     <string name="message_no_bookmarks">ブックマークがありません</string>
+
+    <!-- URL選択ダイアログ -->
+    <string name="dialog_title_select_url">URLを選択</string>
+    <string name="button_open">開く</string>
 </resources>
