@@ -73,15 +73,7 @@ constructor(
    * Shows URL selection dialog for bookmarks with multiple URLs
    */
   fun onBookmarkCardClicked(bookmark: BookmarkItem) {
-    when {
-      bookmark.urls.isEmpty() -> {}
-      bookmark.urls.size == 1 -> {
-        // Will be handled in UI layer directly via LocalUriHandler
-      }
-      else -> {
-        _uiState.value = _uiState.value.copy(selectedBookmarkForUrlDialog = bookmark)
-      }
-    }
+    _uiState.value = _uiState.value.copy(selectedBookmarkForUrlDialog = bookmark)
   }
 
   /** Dismiss URL selection dialog */
