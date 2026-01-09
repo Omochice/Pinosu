@@ -61,6 +61,7 @@ fun BookmarkScreen(
   LaunchedEffect(Unit) { onLoad() }
 
   val uriHandler = LocalUriHandler.current
+  val urlOpenErrorText = stringResource(R.string.error_url_open_failed)
 
   Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
       paddingValues ->
@@ -109,7 +110,7 @@ fun BookmarkScreen(
                                     try {
                                       uriHandler.openUri(clickedBookmark.urls.first())
                                     } catch (e: Exception) {
-                                      vm.setUrlOpenError(e.message ?: "URLを開けませんでした")
+                                      vm.setUrlOpenError(e.message ?: urlOpenErrorText)
                                     }
                                   } else {
                                     vm.onBookmarkCardClicked(clickedBookmark)
@@ -131,7 +132,7 @@ fun BookmarkScreen(
               try {
                 uriHandler.openUri(url)
               } catch (e: Exception) {
-                vm.setUrlOpenError(e.message ?: "URLを開けませんでした")
+                vm.setUrlOpenError(e.message ?: urlOpenErrorText)
               }
             },
             onDismiss = { vm.dismissUrlDialog() })
