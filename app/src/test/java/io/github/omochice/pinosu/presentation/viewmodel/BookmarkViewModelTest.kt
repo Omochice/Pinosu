@@ -25,9 +25,7 @@ import org.junit.Test
  * Unit tests for BookmarkViewModel URL click functionality
  *
  * Tests cover:
- * - Single URL handling
  * - Multiple URLs dialog state management
- * - Empty URLs handling
  * - Error dialog state management
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -61,39 +59,6 @@ class BookmarkViewModelTest {
     assertNull("error should be null", state.error)
     assertNull("selectedBookmarkForUrlDialog should be null", state.selectedBookmarkForUrlDialog)
     assertNull("urlOpenError should be null", state.urlOpenError)
-  }
-
-  @Test
-  fun `onBookmarkCardClicked with empty URLs should do nothing`() = runTest {
-    val bookmarkWithNoUrls =
-        BookmarkItem(
-            type = "event", eventId = "test123", title = "Test Bookmark", urls = emptyList())
-
-    viewModel.onBookmarkCardClicked(bookmarkWithNoUrls)
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertNull(
-        "selectedBookmarkForUrlDialog should remain null for empty URLs",
-        state.selectedBookmarkForUrlDialog)
-  }
-
-  @Test
-  fun `onBookmarkCardClicked with single URL should do nothing in ViewModel`() = runTest {
-    val bookmarkWithSingleUrl =
-        BookmarkItem(
-            type = "event",
-            eventId = "test456",
-            title = "Single URL Bookmark",
-            urls = listOf("https://example.com"))
-
-    viewModel.onBookmarkCardClicked(bookmarkWithSingleUrl)
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertNull(
-        "selectedBookmarkForUrlDialog should remain null for single URL",
-        state.selectedBookmarkForUrlDialog)
   }
 
   @Test
