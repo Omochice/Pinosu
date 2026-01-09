@@ -106,14 +106,12 @@ fun BookmarkScreen(
                               onClick = { clickedBookmark ->
                                 viewModel?.let { vm ->
                                   if (clickedBookmark.urls.size == 1) {
-                                    // Handle single URL directly
                                     try {
                                       uriHandler.openUri(clickedBookmark.urls.first())
                                     } catch (e: Exception) {
                                       vm.setUrlOpenError(e.message ?: "URLを開けませんでした")
                                     }
                                   } else {
-                                    // Show dialog for multiple URLs
                                     vm.onBookmarkCardClicked(clickedBookmark)
                                   }
                                 }
@@ -124,7 +122,6 @@ fun BookmarkScreen(
           }
         }
 
-    // URL selection dialog
     viewModel?.let { vm ->
       uiState.selectedBookmarkForUrlDialog?.let { bookmark ->
         UrlSelectionDialog(
@@ -140,7 +137,6 @@ fun BookmarkScreen(
             onDismiss = { vm.dismissUrlDialog() })
       }
 
-      // Error dialog
       uiState.urlOpenError?.let { error ->
         ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
       }

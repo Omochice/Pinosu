@@ -74,14 +74,11 @@ constructor(
    */
   fun onBookmarkCardClicked(bookmark: BookmarkItem) {
     when {
-      bookmark.urls.isEmpty() -> {
-        // Do nothing - card should be non-clickable
-      }
+      bookmark.urls.isEmpty() -> {}
       bookmark.urls.size == 1 -> {
         // Will be handled in UI layer directly via LocalUriHandler
       }
       else -> {
-        // Show URL selection dialog
         _uiState.value = _uiState.value.copy(selectedBookmarkForUrlDialog = bookmark)
       }
     }
