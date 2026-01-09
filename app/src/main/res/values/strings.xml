@@ -53,4 +53,13 @@
     <string name="label_event_id">イベントID</string>
     <string name="label_relay">リレー</string>
     <string name="message_no_bookmarks">ブックマークがありません</string>
+
+    <!-- URL選択ダイアログ -->
+    <string name="dialog_title_select_url">URLを選択</string>
+    <string name="button_open">開く</string>
+
+    <!-- URLエラー -->
+    <string name="error_invalid_url">無効なURLです</string>
+    <string name="error_no_browser">ブラウザアプリがインストールされていません</string>
+    <string name="error_url_open_failed">URLを開けませんでした</string>
 </resources>

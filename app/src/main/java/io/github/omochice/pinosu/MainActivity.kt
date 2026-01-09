@@ -129,7 +129,8 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
       BookmarkScreen(
           uiState = bookmarkUiState,
           onRefresh = { bookmarkViewModel.refresh() },
-          onLoad = { bookmarkViewModel.loadBookmarks() })
+          onLoad = { bookmarkViewModel.loadBookmarks() },
+          viewModel = bookmarkViewModel)
     }
   }
 }

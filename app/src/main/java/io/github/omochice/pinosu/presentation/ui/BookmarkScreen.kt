@@ -1,9 +1,11 @@
 package io.github.omochice.pinosu.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,19 +13,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -43,6 +57,7 @@ import java.time.format.DateTimeFormatter
  * @param uiState Bookmark screen UI state
  * @param onRefresh Callback when pull-to-refresh is triggered
  * @param onLoad Callback to load bookmarks on initial display
+ * @param viewModel ViewModel for bookmark screen (null for previews)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,8 +65,11 @@ fun BookmarkScreen(
     uiState: BookmarkUiState,
     onRefresh: () -> Unit,
     onLoad: () -> Unit,
+    viewModel: BookmarkViewModel? = null,
 ) {
   LaunchedEffect(Unit) { onLoad() }
+
+  val uriHandler = LocalUriHandler.current
 
   Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
       paddingValues ->
@@ -92,20 +110,67 @@ fun BookmarkScreen(
                         key = { bookmark ->
                           "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
                         }) { bookmark ->
-                          BookmarkItemCard(bookmark = bookmark)
+                          BookmarkItemCard(
+                              bookmark = bookmark,
+                              onClick = { clickedBookmark ->
+                                viewModel?.let { vm ->
+                                  if (clickedBookmark.urls.size == 1) {
+                                    // Handle single URL directly
+                                    try {
+                                      uriHandler.openUri(clickedBookmark.urls.first())
+                                    } catch (e: Exception) {
+                                      vm.setUrlOpenError(e.message ?: "URLを開けませんでした")
+                                    }
+                                  } else {
+                                    // Show dialog for multiple URLs
+                                    vm.onBookmarkCardClicked(clickedBookmark)
+                                  }
+                                }
+                              })
                         }
                   }
             }
           }
         }
+
+    // URL selection dialog
+    viewModel?.let { vm ->
+      uiState.selectedBookmarkForUrlDialog?.let { bookmark ->
+        UrlSelectionDialog(
+            urls = bookmark.urls,
+            onUrlSelected = { url ->
+              vm.dismissUrlDialog()
+              try {
+                uriHandler.openUri(url)
+              } catch (e: Exception) {
+                vm.setUrlOpenError(e.message ?: "URLを開けませんでした")
+              }
+            },
+            onDismiss = { vm.dismissUrlDialog() })
+      }
+
+      // Error dialog
+      uiState.urlOpenError?.let { error ->
+        ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
+      }
+    }
   }
 }
 
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem) {
+private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> Unit) {
+  val hasUrls = bookmark.urls.isNotEmpty()
+
   Card(
-      modifier = Modifier.fillMaxWidth(),
-      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+      modifier =
+          Modifier.fillMaxWidth()
+              .then(if (hasUrls) Modifier.clickable { onClick(bookmark) } else Modifier),
+      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+      colors =
+          CardDefaults.cardColors(
+              containerColor =
+                  if (hasUrls) MaterialTheme.colorScheme.surface
+                  else MaterialTheme.colorScheme.surfaceVariant)) {
         Column(modifier = Modifier.padding(16.dp)) {
           bookmark.title?.let { title ->
             Text(
@@ -170,6 +235,72 @@ private fun formatTimestamp(timestamp: Long): String {
   val instant = Instant.ofEpochSecond(timestamp)
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
   return formatter.format(instant)
+}
+
+/**
+ * Dialog for selecting URL from multiple URLs
+ *
+ * @param urls List of URLs to select from
+ * @param onUrlSelected Callback when URL is selected
+ * @param onDismiss Callback when dialog is dismissed
+ */
+@Composable
+private fun UrlSelectionDialog(
+    urls: List<String>,
+    onUrlSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+  var selectedUrl by remember { mutableStateOf(urls.firstOrNull()) }
+
+  AlertDialog(
+      onDismissRequest = onDismiss,
+      title = { Text(stringResource(R.string.dialog_title_select_url)) },
+      text = {
+        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+          urls.forEach { url ->
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .clickable { selectedUrl = url }
+                        .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                  RadioButton(selected = selectedUrl == url, onClick = { selectedUrl = url })
+                  Text(
+                      text = url,
+                      modifier = Modifier.padding(start = 8.dp),
+                      style = MaterialTheme.typography.bodyMedium,
+                      maxLines = 2,
+                      overflow = TextOverflow.Ellipsis)
+                }
+          }
+        }
+      },
+      confirmButton = {
+        Button(onClick = { selectedUrl?.let(onUrlSelected) }, enabled = selectedUrl != null) {
+          Text(stringResource(R.string.button_open))
+        }
+      },
+      dismissButton = {
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.button_cancel)) }
+      })
+}
+
+/**
+ * Dialog for displaying error message
+ *
+ * @param message Error message to display
+ * @param onDismiss Callback when dialog is dismissed
+ */
+@Composable
+private fun ErrorDialog(
+    message: String,
+    onDismiss: () -> Unit,
+) {
+  AlertDialog(
+      onDismissRequest = onDismiss,
+      title = { Text(stringResource(R.string.dialog_title_error)) },
+      text = { Text(message) },
+      confirmButton = { Button(onClick = onDismiss) { Text(stringResource(R.string.button_ok)) } })
 }
 
 @Preview(showBackground = true)
