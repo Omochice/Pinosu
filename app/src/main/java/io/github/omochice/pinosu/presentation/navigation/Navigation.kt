@@ -7,3 +7,6 @@ const val LOGIN_ROUTE = "login"
 
 /** Main screen route definition */
 const val MAIN_ROUTE = "main"
+
+/** Bookmark list screen route definition */
+const val BOOKMARK_ROUTE = "bookmark"

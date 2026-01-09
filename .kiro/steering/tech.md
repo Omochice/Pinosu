@@ -48,9 +48,18 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Nostr Integration
 
-- **Amethyst Quartz**: com.vitorpamplona:quartz-android
+- **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.03.0)
 - **NIP-55**: External signer integration via Amber
 - **Amber Package**: com.greenart7c3.nostrsigner
+- **WebSocket Client**: OkHttp 4.12.0 for relay connections
+- **Event Types**: Kind 10003 (bookmarks), Kind 39701 (bookmark lists)
+
+### Network & HTTP
+
+- **OkHttp**: 4.12.0 with Hilt singleton injection
+- **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
+- **HTML Parsing**: Jsoup 1.18.1 for Open Graph metadata extraction
+- **Caching**: LruCache for URL metadata (max 100 entries)
 
 ### Testing
 
@@ -58,3 +67,27 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Coroutine Testing**: kotlinx-coroutines-test
 - **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test
 - **DI Testing**: Hilt Android Testing
+
+## Technical Conventions
+
+### Dependency Injection Pattern
+
+- **Singleton Pattern**: Network clients (OkHttpClient, RelayClient) are @Singleton scoped
+- **Constructor Injection**: Prefer @Inject constructor over field injection
+- **Interface Binding**: Repositories and use cases defined as interfaces, bound in Hilt modules
+- **Module Organization**: Separate modules by technical concern (Network, Repository, UseCase)
+
+### Network & Async Patterns
+
+- **Flow for Streaming**: WebSocket events exposed as Kotlin Flow for reactive handling
+- **Timeout Handling**: Use `withTimeoutOrNull` for network operations (typically 10s)
+- **Error Propagation**: Wrap operations in Result<T> for explicit error handling
+- **Coroutine Contexts**: IO operations use `Dispatchers.IO`, safe time API (java.time) instead of Date
+- **Resource Cleanup**: Flow cleanup with `awaitClose {}` for WebSocket connections
+
+### Code Quality
+
+- **Documentation**: Public APIs documented with KDoc comments
+- **Null Safety**: Prefer elvis operator (?:) over !! assertion
+- **Thread Safety**: Use java.time API instead of SimpleDateFormat for thread safety
+- **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations

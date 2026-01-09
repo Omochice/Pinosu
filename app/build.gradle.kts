@@ -59,6 +59,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.material.icons.extended)
   debugImplementation(libs.androidx.compose.ui.tooling)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -71,9 +72,14 @@ dependencies {
 
   implementation(libs.androidx.navigation.compose)
 
+  implementation(libs.androidx.hilt.navigation.compose)
+
   implementation(libs.quartz)
 
   implementation(libs.androidx.security.crypto)
+
+  implementation(libs.okhttp)
+  implementation(libs.jsoup)
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)

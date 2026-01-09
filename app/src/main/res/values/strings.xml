@@ -47,4 +47,10 @@
     <!-- メイン画面テキスト -->
     <string name="text_logged_in">ログイン済み</string>
     <string name="text_not_logged_in">未ログイン</string>
+
+    <!-- ブックマーク画面 -->
+    <string name="title_bookmarks">ブックマーク</string>
+    <string name="label_event_id">イベントID</string>
+    <string name="label_relay">リレー</string>
+    <string name="message_no_bookmarks">ブックマークがありません</string>
 </resources>

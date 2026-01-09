@@ -37,6 +37,7 @@ constructor(
   private val _mainUiState = MutableStateFlow(MainUiState())
   val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
+  /** Check and restore login state from local storage */
   fun checkLoginState() {
     viewModelScope.launch {
       val user = getLoginStateUseCase()
@@ -44,6 +45,7 @@ constructor(
     }
   }
 
+  /** Handle login button click, checking Amber installation status */
   fun onLoginButtonClicked() {
     val isAmberInstalled = loginUseCase.checkAmberInstalled()
     if (!isAmberInstalled) {
@@ -52,6 +54,7 @@ constructor(
     }
   }
 
+  /** Handle logout button click, clearing login state */
   fun onLogoutButtonClicked() {
     viewModelScope.launch {
       _mainUiState.value = _mainUiState.value.copy(isLoggingOut = true)
@@ -64,12 +67,14 @@ constructor(
     }
   }
 
+  /** Dismiss error dialog and reset error state */
   fun dismissError() {
     _uiState.value =
         _uiState.value.copy(
             errorMessage = null, showAmberInstallDialog = false, loginSuccess = false)
   }
 
+  /** Retry login after an error occurred */
   fun onRetryLogin() {
     dismissError()
     onLoginButtonClicked()

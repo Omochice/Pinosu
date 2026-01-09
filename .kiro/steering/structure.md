@@ -104,6 +104,16 @@ graph TB
 
 **Pattern**: Repository pattern with separate local/remote data sources
 
+**Subpackages**:
+
+- `repository/`: Repository implementations (Auth, Bookmark)
+- `local/`: EncryptedSharedPreferences data sources
+- `amber/`: Amber signer client (NIP-55)
+- `relay/`: WebSocket relay client for Nostr events
+- `metadata/`: URL metadata fetching (Open Graph)
+- `model/`: Data transfer objects (NostrEvent)
+- `util/`: Utilities (Bech32 encoding via Quartz)
+
 ### Presentation Layer (`presentation/`)
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/`
@@ -124,9 +134,13 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/di/`
 **Purpose**: Hilt modules for dependency provision
-**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`
+**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`
 
-**Pattern**: Separate modules per layer (Repository, UseCase)
+**Pattern**: Separate modules per layer (Repository, UseCase, Network)
+
+- `NetworkModule`: Provides singleton OkHttpClient with timeout configuration
+- `RepositoryModule`: Binds repository interfaces to implementations
+- `UseCaseModule`: Binds use case interfaces to implementations
 
 ## Naming Conventions
 
@@ -140,17 +154,21 @@ graph TB
 ```kotlin
 io.github.omochice.pinosu/
 ├── domain/          // Core business logic
-│   ├── model/       // Entities and value objects
-│   └── usecase/     // Business use cases
+│   ├── model/       // Entities and value objects (User, Bookmark, AuthEvent)
+│   └── usecase/     // Business use cases (Login, Logout, GetBookmarkList)
 ├── data/            // Data access implementations
-│   ├── repository/  // Repository implementations
+│   ├── repository/  // Repository implementations (Auth, Bookmark)
 │   ├── local/       // Local storage (EncryptedSharedPreferences)
-│   └── amber/       // External service clients
+│   ├── amber/       // Amber signer client (NIP-55)
+│   ├── relay/       // WebSocket relay client
+│   ├── metadata/    // URL metadata fetcher (Open Graph)
+│   ├── model/       // Data transfer objects (NostrEvent)
+│   └── util/        // Utilities (Bech32)
 ├── presentation/    // UI layer
-│   ├── viewmodel/   // State management
-│   ├── ui/          // Compose screens
+│   ├── viewmodel/   // State management (Login, Bookmark ViewModels)
+│   ├── ui/          // Compose screens (Login, Main, Bookmark)
 │   └── navigation/  // Navigation graphs
-├── di/              // Dependency injection
+├── di/              // Dependency injection (Network, Repository, UseCase)
 └── ui/              // Theme and design system
 ```
 
