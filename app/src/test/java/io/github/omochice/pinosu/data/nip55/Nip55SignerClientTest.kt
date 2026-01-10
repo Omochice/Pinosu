@@ -34,9 +34,9 @@ class Nip55SignerClientTest {
     nip55SignerClient = Nip55SignerClient(context)
   }
 
-  /** Test that returns true when Amber is installed */
+  /** Test that returns true when NIP-55 signer is installed */
   @Test
-  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
+  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
 
     every {
       packageManager.getPackageInfo(
@@ -45,12 +45,12 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when Amber is installed", result)
+    assertTrue("Should return true when NIP-55 signer is installed", result)
   }
 
-  /** Test that returns false when Amber is not installed */
+  /** Test that returns false when NIP-55 signer is not installed */
   @Test
-  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
+  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
 
     every {
       packageManager.getPackageInfo(
@@ -59,12 +59,12 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when Amber is not installed", result)
+    assertFalse("Should return false when NIP-55 signer is not installed", result)
   }
 
   /** Test that returns false when PackageManager throws exception */
   @Test
-  fun testCheckAmberInstalled_OnException_ReturnsFalse() {
+  fun testCheckNip55SignerInstalled_OnException_ReturnsFalse() {
 
     every {
       packageManager.getPackageInfo(
@@ -171,7 +171,7 @@ class Nip55SignerClientTest {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
-        "Package should be Amber package name",
+        "Package should be NIP-55 signer package name",
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
         intent.`package`)
   }
@@ -229,7 +229,7 @@ class Nip55SignerClientTest {
     assertNotNull("Response should not be null", response)
     assertEquals("Pubkey should match", pubkey, response?.pubkey)
     assertEquals(
-        "PackageName should be Amber package",
+        "PackageName should be NIP-55 signer package",
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
         response?.packageName)
   }

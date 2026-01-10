@@ -4,12 +4,12 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
-import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
-import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -70,16 +70,16 @@ class PresentationDomainIntegrationTest {
   }
 
   /**
-   * Login button tap → Amber not installed detection → dialog display
+   * Login button tap → NIP-55 signer not installed detection → dialog display
    *
    * Integration flow:
    * 1. User taps login button (LoginViewModel.onLoginButtonClicked)
-   * 2. LoginUseCase verifies Amber installation (LoginUseCase.checkNip55SignerInstalled)
-   * 3. Amber not installed detected in AuthRepository
+   * 2. LoginUseCase verifies NIP-55 signer installation (LoginUseCase.checkNip55SignerInstalled)
+   * 3. NIP-55 signer not installed detected in AuthRepository
    * 4. ViewModel updates UI state (showNip55InstallDialog = true)
    */
   @Test
-  fun `login flow - when Amber not installed - should show install dialog`() = runTest {
+  fun `login flow - when NIP-55 signer not installed - should show install dialog`() = runTest {
     every { authRepository.checkNip55SignerInstalled() } returns false
 
     viewModel.onLoginButtonClicked()
@@ -99,13 +99,13 @@ class PresentationDomainIntegrationTest {
    * Login success flow → UI state update → display main screen
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processNip55Response)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. AuthRepository response handling
    * 3. User info save success
    * 4. ViewModel updates UI state (loginSuccess = true, set userPubkey)
    */
   @Test
-  fun `login flow - when Amber response success - should update UI state and navigate to main`() =
+  fun `login flow - when NIP-55 signer response success - should update UI state and navigate to main`() =
       runTest {
         val testPubkey = "npub1" + "a".repeat(59)
         val testUser = User(testPubkey)
@@ -177,7 +177,7 @@ class PresentationDomainIntegrationTest {
    * User rejection error → display error message → retry available
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processNip55Response)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. User rejection error detected in AuthRepository
    * 3. LoginError.UserRejected error is returned
    * 4. ViewModel sets error message
@@ -208,7 +208,7 @@ class PresentationDomainIntegrationTest {
    * Timeout error → display timeout message → retry available
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processNip55Response)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. Timeout error detected in AuthRepository
    * 3. LoginError.Timeout error is returned
    * 4. ViewModel sets timeout message
@@ -235,7 +235,7 @@ class PresentationDomainIntegrationTest {
    * Network error → display error message
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processNip55Response)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. Network error detected in AuthRepository
    * 3. LoginError.NetworkError error is returned
    * 4. ViewModel sets error message

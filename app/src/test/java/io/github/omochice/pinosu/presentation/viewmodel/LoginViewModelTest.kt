@@ -99,7 +99,7 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `onLoginButtonClicked should check if Amber is installed`() = runTest {
+  fun `onLoginButtonClicked should check if NIP-55 signer is installed`() = runTest {
     every { loginUseCase.checkNip55SignerInstalled() } returns true
 
     viewModel.onLoginButtonClicked()
@@ -109,15 +109,16 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `onLoginButtonClicked should show install dialog when Amber is not installed`() = runTest {
-    every { loginUseCase.checkNip55SignerInstalled() } returns false
+  fun `onLoginButtonClicked should show install dialog when NIP-55 signer is not installed`() =
+      runTest {
+        every { loginUseCase.checkNip55SignerInstalled() } returns false
 
-    viewModel.onLoginButtonClicked()
-    advanceUntilIdle()
+        viewModel.onLoginButtonClicked()
+        advanceUntilIdle()
 
-    val state = viewModel.uiState.first()
-    assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
-  }
+        val state = viewModel.uiState.first()
+        assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
+      }
 
   @Test
   fun `onLogoutButtonClicked should call logoutUseCase and update state on success`() = runTest {

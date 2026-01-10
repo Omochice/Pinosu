@@ -10,7 +10,7 @@ import org.junit.Test
 
 /**
  * Unit tests for LoginUseCase
- * - Amber installation verification test
+ * - NIP-55 signer installation verification test
  * - Error handling test
  */
 class LoginUseCaseTest {
@@ -24,27 +24,27 @@ class LoginUseCaseTest {
     loginUseCase = Nip55LoginUseCase(authRepository)
   }
 
-  /** Test when Amber is not installed */
+  /** Test when NIP-55 signer is not installed */
   @Test
-  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
+  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
 
     every { authRepository.checkNip55SignerInstalled() } returns false
 
     val result = loginUseCase.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when Amber is not installed", result)
+    assertFalse("Should return false when NIP-55 signer is not installed", result)
     verify { authRepository.checkNip55SignerInstalled() }
   }
 
-  /** Test when Amber is installed */
+  /** Test when NIP-55 signer is installed */
   @Test
-  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
+  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
 
     every { authRepository.checkNip55SignerInstalled() } returns true
 
     val result = loginUseCase.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when Amber is installed", result)
+    assertTrue("Should return true when NIP-55 signer is installed", result)
     verify { authRepository.checkNip55SignerInstalled() }
   }
 }

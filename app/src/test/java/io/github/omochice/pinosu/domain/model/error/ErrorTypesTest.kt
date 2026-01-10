@@ -69,7 +69,7 @@ class ErrorTypesTest {
     errors.forEach { error ->
       val result =
           when (error) {
-            is LoginError.Nip55SignerNotInstalled -> "amber_not_installed"
+            is LoginError.Nip55SignerNotInstalled -> "nip55_signer_not_installed"
             is LoginError.UserRejected -> "user_rejected"
             is LoginError.Timeout -> "timeout"
             is LoginError.NetworkError -> "network_error"

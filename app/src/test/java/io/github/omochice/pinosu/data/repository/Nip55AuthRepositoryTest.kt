@@ -20,10 +20,10 @@ import org.junit.Test
 /**
  * Unit tests for Nip55AuthRepository
  * - getLoginState(), saveLoginState(), logout() test
- * - loginWithAmber() test (Amber not installed detection)
+ * - loginWithNip55() test (NIP-55 signer not installed detection)
  * - Nip55Response processing and local save flow test
- * - Amber success → local save success happy path test ✓
- * - Amber failure error classification test ✓
+ * - NIP-55 signer success → local save success happy path test ✓
+ * - NIP-55 signer failure error classification test ✓
  * - Logout handling test ✓
  * - Transaction consistency test ✓
  */
@@ -116,15 +116,15 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /** Test Amber response success and local save success */
+  /** Test NIP-55 signer response success and local save success */
   @Test
   fun testProcessNip55Response_Success_SavesUserAndReturnsSuccess() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
-    val amberResponse = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
+    val nip55Response = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
 
     every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
-        Result.success(amberResponse)
+        Result.success(nip55Response)
     coEvery { localAuthDataSource.saveUser(any()) } returns Unit
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
@@ -136,7 +136,7 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(any()) }
   }
 
-  /** Test Amber response rejection */
+  /** Test NIP-55 signer response rejection */
   @Test
   fun testProcessNip55Response_UserRejected_ReturnsLoginError() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
@@ -150,7 +150,7 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
   }
 
-  /** Test Amber not installed error classification */
+  /** Test NIP-55 signer not installed error classification */
   @Test
   fun testProcessNip55Response_Nip55SignerNotInstalled_ReturnsNip55SignerNotInstalledError() =
       runTest {
@@ -167,7 +167,7 @@ class Nip55AuthRepositoryTest {
             exception is LoginError.Nip55SignerNotInstalled)
       }
 
-  /** Test Amber timeout error classification */
+  /** Test NIP-55 signer timeout error classification */
   @Test
   fun testProcessNip55Response_Timeout_ReturnsTimeoutError() = runTest {
     val intent = Intent()
@@ -181,7 +181,7 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
   }
 
-  /** Test Amber InvalidResponse error classification（treated as NetworkError） */
+  /** Test NIP-55 signer InvalidResponse error classification（treated as NetworkError） */
   @Test
   fun testProcessNip55Response_InvalidResponse_ReturnsNetworkError() = runTest {
     val intent = Intent()
@@ -196,15 +196,15 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
   }
 
-  /** Transaction consistency test: Amber success → local save failure */
+  /** Transaction consistency test: NIP-55 signer success → local save failure */
   @Test
-  fun testProcessNip55Response_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
+  fun testProcessNip55Response_Nip55SignerSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
-    val amberResponse = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
+    val nip55Response = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
 
     every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
-        Result.success(amberResponse)
+        Result.success(nip55Response)
     coEvery { localAuthDataSource.saveUser(any()) } throws StorageError.WriteError("Storage full")
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
@@ -218,25 +218,25 @@ class Nip55AuthRepositoryTest {
     assertTrue("Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
   }
 
-  /** Test when Amber is installed */
+  /** Test when NIP-55 signer is installed */
   @Test
-  fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
+  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
 
     every { nip55SignerClient.checkNip55SignerInstalled() } returns true
 
     val result = authRepository.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when Amber is installed", result)
+    assertTrue("Should return true when NIP-55 signer is installed", result)
   }
 
-  /** Test when Amber is not installed */
+  /** Test when NIP-55 signer is not installed */
   @Test
-  fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
+  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
 
     every { nip55SignerClient.checkNip55SignerInstalled() } returns false
 
     val result = authRepository.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when Amber is not installed", result)
+    assertFalse("Should return false when NIP-55 signer is not installed", result)
   }
 }
