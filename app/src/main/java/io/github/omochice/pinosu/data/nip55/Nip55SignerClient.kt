@@ -18,7 +18,8 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
    */
   fun checkNip55SignerInstalled(): Boolean {
     return try {
-      context.packageManager.getPackageInfo(AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+      context.packageManager.getPackageInfo(
+          NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
       true
     } catch (e: PackageManager.NameNotFoundException) {
       false
@@ -36,7 +37,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     val intent =
         android.content.Intent(
             android.content.Intent.ACTION_VIEW, android.net.Uri.parse("$NOSTRSIGNER_SCHEME:"))
-    intent.`package` = AMBER_PACKAGE_NAME
+    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
     intent.putExtra("type", TYPE_GET_PUBLIC_KEY)
     intent.addFlags(
         android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
@@ -75,7 +76,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
           Nip55Error.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
     }
 
-    return Result.success(Nip55Response(pubkey, AMBER_PACKAGE_NAME))
+    return Result.success(Nip55Response(pubkey, NIP55_SIGNER_PACKAGE_NAME))
   }
 
   /**
@@ -111,7 +112,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     val intent =
         android.content.Intent(
             android.content.Intent.ACTION_VIEW, android.net.Uri.parse("$NOSTRSIGNER_SCHEME:"))
-    intent.`package` = AMBER_PACKAGE_NAME
+    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
     intent.putExtra("type", TYPE_NIP04_DECRYPT)
     intent.putExtra("data", encryptedContent)
     intent.putExtra("pubKey", pubkey)
@@ -122,7 +123,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
   }
 
   companion object {
-    const val AMBER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
+    const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
     const val TYPE_NIP04_DECRYPT = "nip04_decrypt"

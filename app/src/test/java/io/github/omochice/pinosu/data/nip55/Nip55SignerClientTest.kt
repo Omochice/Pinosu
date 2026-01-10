@@ -40,7 +40,7 @@ class Nip55SignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } returns android.content.pm.PackageInfo()
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
@@ -54,7 +54,7 @@ class Nip55SignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws PackageManager.NameNotFoundException()
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
@@ -68,7 +68,7 @@ class Nip55SignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws RuntimeException("Unexpected error")
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
@@ -172,7 +172,7 @@ class Nip55SignerClientTest {
 
     assertEquals(
         "Package should be Amber package name",
-        Nip55SignerClient.AMBER_PACKAGE_NAME,
+        Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
         intent.`package`)
   }
 
@@ -230,7 +230,7 @@ class Nip55SignerClientTest {
     assertEquals("Pubkey should match", pubkey, response?.pubkey)
     assertEquals(
         "PackageName should be Amber package",
-        Nip55SignerClient.AMBER_PACKAGE_NAME,
+        Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
         response?.packageName)
   }
 
