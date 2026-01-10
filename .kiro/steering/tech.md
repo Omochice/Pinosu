@@ -49,8 +49,8 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 ### Nostr Integration
 
 - **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.03.0)
-- **NIP-55**: External signer integration via Amber
-- **Amber Package**: com.greenart7c3.nostrsigner
+- **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
+- **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp 4.12.0 for relay connections
 - **Event Types**: Kind 39701 (bookmark lists)
 

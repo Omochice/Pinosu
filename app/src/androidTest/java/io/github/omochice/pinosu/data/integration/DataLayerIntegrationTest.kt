@@ -3,9 +3,9 @@ package io.github.omochice.pinosu.data.integration
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.repository.AmberAuthRepository
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -16,21 +16,22 @@ import org.junit.runner.RunWith
 
 /**
  * Integration tests for data layer
- * - AuthRepository + AmberSignerClient + LocalAuthDataSource integration test
+ * - AuthRepository + Nip55SignerClient + LocalAuthDataSource integration test
  * - EncryptedSharedPreferences runtime test (save → retrieve → delete)
  *
  * Test strategy:
- * - Data layer: Using actual AmberAuthRepository, LocalAuthDataSource, AmberSignerClient
+ * - Data layer: Using actual Nip55AuthRepository, LocalAuthDataSource, Nip55SignerClient
  * - Storage: Using actual EncryptedSharedPreferences (Android runtime required)
- * - Note: Amber communication requires actual Amber app, testing storage operations only
+ * - Note: NIP-55 signer communication requires actual NIP-55 signer app, testing storage operations
+ *   only
  */
 @RunWith(AndroidJUnit4::class)
 class DataLayerIntegrationTest {
 
   private lateinit var context: Context
   private lateinit var localAuthDataSource: LocalAuthDataSource
-  private lateinit var amberSignerClient: AmberSignerClient
-  private lateinit var authRepository: AmberAuthRepository
+  private lateinit var nip55SignerClient: Nip55SignerClient
+  private lateinit var authRepository: Nip55AuthRepository
 
   @Before
   fun setup() {
@@ -38,9 +39,9 @@ class DataLayerIntegrationTest {
 
     localAuthDataSource = LocalAuthDataSource(context)
 
-    amberSignerClient = AmberSignerClient(context)
+    nip55SignerClient = Nip55SignerClient(context)
 
-    authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
+    authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
   @After
@@ -49,19 +50,19 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * Amber not installed detection → AuthRepository integration
+   * NIP-55 signer not installed detection → AuthRepository integration
    *
    * Integration flow:
-   * 1. AuthRepository checks for Amber installation
-   * 2. AmberSignerClient detects
+   * 1. AuthRepository checks for NIP-55 signer installation
+   * 2. Nip55SignerClient detects
    * 3. Return result
    */
   @Test
-  fun checkAmberInstalled_shouldUseAmberSignerClient() {
+  fun checkNip55SignerInstalled_shouldUseNip55SignerClient() {
 
-    val isInstalled = authRepository.checkAmberInstalled()
+    val isInstalled = authRepository.checkNip55SignerInstalled()
 
-    assertTrue("checkAmberInstalled should return boolean", isInstalled || !isInstalled)
+    assertTrue("checkNip55SignerInstalled should return boolean", isInstalled || !isInstalled)
   }
 
   /**
@@ -186,7 +187,7 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val newLocalAuthDataSource = LocalAuthDataSource(context)
-    val newAuthRepository = AmberAuthRepository(amberSignerClient, newLocalAuthDataSource)
+    val newAuthRepository = Nip55AuthRepository(nip55SignerClient, newLocalAuthDataSource)
 
     val restoredUser = newAuthRepository.getLoginState()
     assertNotNull("User should be restored after restart", restoredUser)

@@ -22,27 +22,27 @@ graph TB
         UC_GetState[GetLoginStateUseCase<br/>Interface]
         Model[User, AuthEvent<br/>ErrorTypes]
 
-        UC_Login -.implements.- UC_Login_Impl[AmberLoginUseCase]
-        UC_Logout -.implements.- UC_Logout_Impl[AmberLogoutUseCase]
-        UC_GetState -.implements.- UC_GetState_Impl[AmberGetLoginStateUseCase]
+        UC_Login -.implements.- UC_Login_Impl[Nip55LoginUseCase]
+        UC_Logout -.implements.- UC_Logout_Impl[Nip55LogoutUseCase]
+        UC_GetState -.implements.- UC_GetState_Impl[Nip55GetLoginStateUseCase]
     end
 
     subgraph "Data Layer"
         Repo[AuthRepository<br/>Interface]
-        RepoImpl[AmberAuthRepository]
+        RepoImpl[Nip55AuthRepository]
         LocalDS[LocalAuthDataSource<br/>EncryptedSharedPreferences]
-        AmberClient[AmberSignerClient<br/>NIP-55]
+        Nip55Client[Nip55SignerClient<br/>NIP-55]
 
         Repo -.implements.- RepoImpl
         RepoImpl --> LocalDS
-        RepoImpl --> AmberClient
+        RepoImpl --> Nip55Client
     end
 
     subgraph "External Dependencies"
-        Amber[Amber Signer App<br/>com.greenart7c3.nostrsigner]
+        Nip55Signer[NIP-55 Signer App<br/>com.greenart7c3.nostrsigner]
         Keystore[Android Keystore<br/>AES256-GCM]
 
-        AmberClient -->|Intent/ActivityResult| Amber
+        Nip55Client -->|Intent/ActivityResult| Nip55Signer
         LocalDS -->|encrypted storage| Keystore
     end
 
@@ -77,8 +77,8 @@ graph TB
 
     class UI,VM presentation
     class UC_Login,UC_Logout,UC_GetState,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,Model domain
-    class Repo,RepoImpl,LocalDS,AmberClient data
-    class Amber,Keystore external
+    class Repo,RepoImpl,LocalDS,Nip55Client data
+    class Nip55Signer,Keystore external
     class Hilt,RepoModule,UCModule di
 ```
 
@@ -92,7 +92,7 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/domain/`
 **Purpose**: Business logic, entities, and use case interfaces
-**Example**: `usecase/AmberLoginUseCase.kt`, `model/User.kt`, `model/error/ErrorTypes.kt`
+**Example**: `usecase/Nip55LoginUseCase.kt`, `model/User.kt`, `model/error/ErrorTypes.kt`
 
 **Pattern**: Interface-based design, no Android/framework dependencies
 
@@ -100,7 +100,7 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/data/`
 **Purpose**: Repository implementations, data sources, external service clients
-**Example**: `repository/AmberAuthRepository.kt`, `local/LocalAuthDataSource.kt`, `amber/AmberSignerClient.kt`
+**Example**: `repository/Nip55AuthRepository.kt`, `local/LocalAuthDataSource.kt`, `nip55/Nip55SignerClient.kt`
 
 **Pattern**: Repository pattern with separate local/remote data sources
 
@@ -108,7 +108,7 @@ graph TB
 
 - `repository/`: Repository implementations (Auth, Bookmark)
 - `local/`: EncryptedSharedPreferences data sources
-- `amber/`: Amber signer client (NIP-55)
+- `nip55/`: NIP-55 signer client
 - `relay/`: WebSocket relay client for Nostr events
 - `metadata/`: URL metadata fetching (Open Graph)
 - `model/`: Data transfer objects (NostrEvent)
@@ -159,7 +159,7 @@ io.github.omochice.pinosu/
 ├── data/            // Data access implementations
 │   ├── repository/  // Repository implementations (Auth, Bookmark)
 │   ├── local/       // Local storage (EncryptedSharedPreferences)
-│   ├── amber/       // Amber signer client (NIP-55)
+│   ├── nip55/       // NIP-55 signer client
 │   ├── relay/       // WebSocket relay client
 │   ├── metadata/    // URL metadata fetcher (Open Graph)
 │   ├── model/       // Data transfer objects (NostrEvent)

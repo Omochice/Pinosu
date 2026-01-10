@@ -3,7 +3,7 @@
 
                              
 
-    <string name="button_login_with_amber">Amberでログイン</string>
+    <string name="button_login_with_nip55">NIP-55対応アプリでログイン</string>
 
     <string name="button_logout">ログアウト</string>
 
@@ -15,13 +15,13 @@
 
                                        
 
-    <string name="error_amber_not_installed">Amberアプリがインストールされていません。Google Play Storeからインストールしてください。</string>
+    <string name="error_nip55_signer_not_installed">NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。</string>
 
     <string name="error_user_rejected">ログインがキャンセルされました。再度お試しください。</string>
 
-    <string name="error_timeout">ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。</string>
+    <string name="error_timeout">ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。</string>
 
-    <string name="error_invalid_response">Amberからの応答が不正です。Amberアプリを更新してください。</string>
+    <string name="error_invalid_response">NIP-55対応アプリからの応答が不正です。アプリを更新してください。</string>
 
                                     
 
@@ -33,9 +33,9 @@
 
     <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
 
-    <!-- Amber未インストールダイアログ -->
-    <string name="dialog_title_amber_required">Amberアプリが必要です</string>
-    <string name="dialog_message_amber_required">このアプリを使用するにはAmberアプリのインストールが必要です。</string>
+    <!-- NIP-55対応アプリ未インストールダイアログ -->
+    <string name="dialog_title_nip55_signer_required">NIP-55対応アプリが必要です</string>
+    <string name="dialog_message_nip55_signer_required">このアプリを使用するにはNIP-55対応アプリのインストールが必要です。</string>
     <string name="button_install">インストール</string>
     <string name="button_close">閉じる</string>
     <string name="button_retry">再試行</string>

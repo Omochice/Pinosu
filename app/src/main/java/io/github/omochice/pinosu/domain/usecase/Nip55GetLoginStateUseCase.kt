@@ -5,11 +5,11 @@ import io.github.omochice.pinosu.domain.model.User
 import javax.inject.Inject
 
 /**
- * Amber-based GetLoginStateUseCase implementation class
+ * NIP-55 based GetLoginStateUseCase implementation class
  *
  * @property authRepository Authentication repository
  */
-class AmberGetLoginStateUseCase @Inject constructor(private val authRepository: AuthRepository) :
+class Nip55GetLoginStateUseCase @Inject constructor(private val authRepository: AuthRepository) :
     GetLoginStateUseCase {
 
   /**

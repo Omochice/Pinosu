@@ -6,7 +6,7 @@ import io.github.omochice.pinosu.domain.model.User
 /**
  * Authentication repository interface
  *
- * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
+ * Integrates Nip55SignerClient and LocalAuthDataSource to provide authentication flow and local
  * state management.
  */
 interface AuthRepository {
@@ -40,9 +40,9 @@ interface AuthRepository {
   suspend fun logout(): Result<Unit>
 
   /**
-   * Process Amber response and set user to logged-in state
+   * Process NIP-55 signer response and set user to logged-in state
    *
-   * Parses response with AmberSignerClient and saves to LocalAuthDataSource on success.
+   * Parses response with Nip55SignerClient and saves to LocalAuthDataSource on success.
    *
    * local storage
    *
@@ -50,14 +50,14 @@ interface AuthRepository {
    * @param data Intent data
    * @return Success(User) on success, Failure(LoginError) on failure
    */
-  suspend fun processAmberResponse(resultCode: Int, data: Intent?): Result<User>
+  suspend fun processNip55Response(resultCode: Int, data: Intent?): Result<User>
 
   /**
-   * Check if Amber app is installed
+   * Check if NIP-55 signer app is installed
    *
-   * Delegates to AmberSignerClient to verify Amber installation status.
+   * Delegates to Nip55SignerClient to verify NIP-55 signer installation status.
    *
-   * @return true if Amber is installed
+   * @return true if NIP-55 signer is installed
    */
-  fun checkAmberInstalled(): Boolean
+  fun checkNip55SignerInstalled(): Boolean
 }

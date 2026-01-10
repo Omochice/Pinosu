@@ -4,12 +4,12 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
-import io.github.omochice.pinosu.domain.usecase.AmberGetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.AmberLoginUseCase
-import io.github.omochice.pinosu.domain.usecase.AmberLogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
+import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -36,8 +36,8 @@ import org.junit.Test
  *
  * Test strategy:
  * - Presentation layer: actual LoginViewModel
- * - Domain layer: actual UseCases implementations (AmberLoginUseCase, AmberLogoutUseCase,
- *   AmberGetLoginStateUseCase)
+ * - Domain layer: actual UseCases implementations (Nip55LoginUseCase, Nip55LogoutUseCase,
+ *   Nip55GetLoginStateUseCase)
  * - Data layer: mocked AuthRepository
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,9 +57,9 @@ class PresentationDomainIntegrationTest {
 
     authRepository = mockk(relaxed = true)
 
-    loginUseCase = AmberLoginUseCase(authRepository)
-    logoutUseCase = AmberLogoutUseCase(authRepository)
-    getLoginStateUseCase = AmberGetLoginStateUseCase(authRepository)
+    loginUseCase = Nip55LoginUseCase(authRepository)
+    logoutUseCase = Nip55LogoutUseCase(authRepository)
+    getLoginStateUseCase = Nip55GetLoginStateUseCase(authRepository)
 
     viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
   }
@@ -70,50 +70,50 @@ class PresentationDomainIntegrationTest {
   }
 
   /**
-   * Login button tap → Amber not installed detection → dialog display
+   * Login button tap → NIP-55 signer not installed detection → dialog display
    *
    * Integration flow:
    * 1. User taps login button (LoginViewModel.onLoginButtonClicked)
-   * 2. LoginUseCase verifies Amber installation (LoginUseCase.checkAmberInstalled)
-   * 3. Amber not installed detected in AuthRepository
-   * 4. ViewModel updates UI state (showAmberInstallDialog = true)
+   * 2. LoginUseCase verifies NIP-55 signer installation (LoginUseCase.checkNip55SignerInstalled)
+   * 3. NIP-55 signer not installed detected in AuthRepository
+   * 4. ViewModel updates UI state (showNip55InstallDialog = true)
    */
   @Test
-  fun `login flow - when Amber not installed - should show install dialog`() = runTest {
-    every { authRepository.checkAmberInstalled() } returns false
+  fun `login flow - when NIP-55 signer not installed - should show install dialog`() = runTest {
+    every { authRepository.checkNip55SignerInstalled() } returns false
 
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("showAmberInstallDialog should be true", state.showAmberInstallDialog)
+    assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
     assertFalse("isLoading should be false", state.isLoading)
     assertNull("errorMessage should be null", state.errorMessage)
 
-    // AuthRepositoryのcheckAmberInstalled()が呼ばれることを確認
-    // Verify AuthRepository.checkAmberInstalled() is called
-    io.mockk.verify { authRepository.checkAmberInstalled() }
+    // AuthRepositoryのcheckNip55SignerInstalled()が呼ばれることを確認
+    // Verify AuthRepository.checkNip55SignerInstalled() is called
+    io.mockk.verify { authRepository.checkNip55SignerInstalled() }
   }
 
   /**
    * Login success flow → UI state update → display main screen
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processAmberResponse)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. AuthRepository response handling
    * 3. User info save success
    * 4. ViewModel updates UI state (loginSuccess = true, set userPubkey)
    */
   @Test
-  fun `login flow - when Amber response success - should update UI state and navigate to main`() =
+  fun `login flow - when NIP-55 signer response success - should update UI state and navigate to main`() =
       runTest {
         val testPubkey = "npub1" + "a".repeat(59)
         val testUser = User(testPubkey)
         val mockIntent = mockk<android.content.Intent>(relaxed = true)
-        coEvery { authRepository.processAmberResponse(any(), any()) } returns
+        coEvery { authRepository.processNip55Response(any(), any()) } returns
             Result.success(testUser)
 
-        viewModel.processAmberResponse(-1, mockIntent)
+        viewModel.processNip55Response(-1, mockIntent)
         advanceUntilIdle()
 
         val loginState = viewModel.uiState.first()
@@ -124,7 +124,7 @@ class PresentationDomainIntegrationTest {
         assertNull("errorMessage should be null", loginState.errorMessage)
         assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
 
-        coVerify { authRepository.processAmberResponse(any(), any()) }
+        coVerify { authRepository.processNip55Response(any(), any()) }
       }
 
   /**
@@ -177,7 +177,7 @@ class PresentationDomainIntegrationTest {
    * User rejection error → display error message → retry available
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processAmberResponse)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. User rejection error detected in AuthRepository
    * 3. LoginError.UserRejected error is returned
    * 4. ViewModel sets error message
@@ -187,10 +187,10 @@ class PresentationDomainIntegrationTest {
   fun `error flow - when user rejected - should show error and allow retry`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.UserRejected
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
-    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkNip55SignerInstalled() } returns true
 
-    viewModel.processAmberResponse(-1, mockIntent)
+    viewModel.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val stateAfterError = viewModel.uiState.first()
@@ -201,14 +201,14 @@ class PresentationDomainIntegrationTest {
     viewModel.onRetryLogin()
     advanceUntilIdle()
 
-    io.mockk.verify(atLeast = 1) { authRepository.checkAmberInstalled() }
+    io.mockk.verify(atLeast = 1) { authRepository.checkNip55SignerInstalled() }
   }
 
   /**
    * Timeout error → display timeout message → retry available
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processAmberResponse)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. Timeout error detected in AuthRepository
    * 3. LoginError.Timeout error is returned
    * 4. ViewModel sets timeout message
@@ -217,9 +217,9 @@ class PresentationDomainIntegrationTest {
   fun `error flow - when timeout - should show timeout error message`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.Timeout
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
 
-    viewModel.processAmberResponse(-1, mockIntent)
+    viewModel.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
@@ -235,7 +235,7 @@ class PresentationDomainIntegrationTest {
    * Network error → display error message
    *
    * Integration flow:
-   * 1. Receive Amber response (LoginViewModel.processAmberResponse)
+   * 1. Receive NIP-55 signer response (LoginViewModel.processNip55Response)
    * 2. Network error detected in AuthRepository
    * 3. LoginError.NetworkError error is returned
    * 4. ViewModel sets error message
@@ -244,9 +244,9 @@ class PresentationDomainIntegrationTest {
   fun `error flow - when network error - should show network error message`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.NetworkError("Connection failed")
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
 
-    viewModel.processAmberResponse(-1, mockIntent)
+    viewModel.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
@@ -265,19 +265,19 @@ class PresentationDomainIntegrationTest {
    */
   @Test
   fun `error flow - when error dismissed - should clear error state`() = runTest {
-    every { authRepository.checkAmberInstalled() } returns false
+    every { authRepository.checkNip55SignerInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
     val stateBeforeDismiss = viewModel.uiState.first()
-    assertTrue("showAmberInstallDialog should be true", stateBeforeDismiss.showAmberInstallDialog)
+    assertTrue("showNip55InstallDialog should be true", stateBeforeDismiss.showNip55InstallDialog)
 
     viewModel.dismissError()
     advanceUntilIdle()
 
     val stateAfterDismiss = viewModel.uiState.first()
     assertNull("errorMessage should be null", stateAfterDismiss.errorMessage)
-    assertFalse("showAmberInstallDialog should be false", stateAfterDismiss.showAmberInstallDialog)
+    assertFalse("showNip55InstallDialog should be false", stateAfterDismiss.showNip55InstallDialog)
   }
 
   /**

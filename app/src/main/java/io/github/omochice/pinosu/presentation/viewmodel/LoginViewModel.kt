@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
  * @property loginUseCase UseCase for login processing
  * @property logoutUseCase UseCase for logout processing
  * @property getLoginStateUseCase UseCase for retrieving login state
- * @property authRepository Authentication repository (for Amber response processing)
+ * @property authRepository Authentication repository (for NIP-55 signer response processing)
  */
 @HiltViewModel
 class LoginViewModel
@@ -45,12 +45,12 @@ constructor(
     }
   }
 
-  /** Handle login button click, checking Amber installation status */
+  /** Handle login button click, checking NIP-55 signer installation status */
   fun onLoginButtonClicked() {
-    val isAmberInstalled = loginUseCase.checkAmberInstalled()
-    if (!isAmberInstalled) {
+    val isNip55SignerInstalled = loginUseCase.checkNip55SignerInstalled()
+    if (!isNip55SignerInstalled) {
       _uiState.value =
-          _uiState.value.copy(showAmberInstallDialog = true, errorMessage = null, isLoading = false)
+          _uiState.value.copy(showNip55InstallDialog = true, errorMessage = null, isLoading = false)
     }
   }
 
@@ -71,7 +71,7 @@ constructor(
   fun dismissError() {
     _uiState.value =
         _uiState.value.copy(
-            errorMessage = null, showAmberInstallDialog = false, loginSuccess = false)
+            errorMessage = null, showNip55InstallDialog = false, loginSuccess = false)
   }
 
   /** Retry login after an error occurred */
@@ -81,17 +81,17 @@ constructor(
   }
 
   /**
-   * Process response after receiving ActivityResult from Amber
+   * Process response after receiving ActivityResult from NIP-55 signer
    *
    * @param resultCode ActivityResult resultCode
    * @param data Intent data
    */
-  fun processAmberResponse(resultCode: Int, data: android.content.Intent?) {
+  fun processNip55Response(resultCode: Int, data: android.content.Intent?) {
     viewModelScope.launch {
       _uiState.value =
           _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
 
-      val result = authRepository.processAmberResponse(resultCode, data)
+      val result = authRepository.processNip55Response(resultCode, data)
 
       if (result.isSuccess) {
         val user = result.getOrNull()
@@ -105,7 +105,7 @@ constructor(
               is io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected ->
                   "Login was cancelled. Please try again."
               is io.github.omochice.pinosu.domain.model.error.LoginError.Timeout ->
-                  "Login process timed out. Please check the Amber app and retry."
+                  "Login process timed out. Please check the NIP-55 signer app and retry."
               is io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError ->
                   "A network error occurred. Please check your connection."
               is io.github.omochice.pinosu.domain.model.error.LoginError.UnknownError ->
@@ -125,13 +125,13 @@ constructor(
  *
  * @property isLoading Whether currently loading
  * @property errorMessage Error message
- * @property showAmberInstallDialog Whether to show Amber not installed dialog
+ * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
  * @property loginSuccess Whether login was successful
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val showAmberInstallDialog: Boolean = false,
+    val showNip55InstallDialog: Boolean = false,
     val loginSuccess: Boolean = false,
 )
 

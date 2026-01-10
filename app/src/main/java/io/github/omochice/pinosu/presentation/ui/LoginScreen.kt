@@ -30,7 +30,7 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
  * @param uiState Login screen UI state
  * @param onLoginButtonClick Callback when login button is clicked
  * @param onDismissDialog Callback to dismiss dialog
- * @param onInstallAmber Callback when Amber install button is clicked
+ * @param onInstallNip55Signer Callback when NIP-55 signer install button is clicked
  * @param onRetry Callback when retry button is clicked
  * @param onNavigateToMain Callback to navigate to main screen
  */
@@ -39,7 +39,7 @@ fun LoginScreen(
     uiState: LoginUiState,
     onLoginButtonClick: () -> Unit,
     onDismissDialog: () -> Unit = {},
-    onInstallAmber: () -> Unit = {},
+    onInstallNip55Signer: () -> Unit = {},
     onRetry: () -> Unit = {},
     onNavigateToMain: () -> Unit = {}
 ) {
@@ -73,18 +73,18 @@ fun LoginScreen(
             }
 
             Button(onClick = onLoginButtonClick, enabled = !uiState.isLoading) {
-              Text(stringResource(R.string.button_login_with_amber))
+              Text(stringResource(R.string.button_login_with_nip55))
             }
           }
     }
 
-    if (uiState.showAmberInstallDialog) {
+    if (uiState.showNip55InstallDialog) {
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text(stringResource(R.string.dialog_title_amber_required)) },
-          text = { Text(stringResource(R.string.dialog_message_amber_required)) },
+          title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
+          text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
           confirmButton = {
-            Button(onClick = onInstallAmber) { Text(stringResource(R.string.button_install)) }
+            Button(onClick = onInstallNip55Signer) { Text(stringResource(R.string.button_install)) }
           },
           dismissButton = {
             TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
@@ -130,9 +130,9 @@ fun LoginScreenLoadingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenAmberInstallDialogPreview() {
+fun LoginScreenNip55InstallDialogPreview() {
   MaterialTheme {
-    LoginScreen(uiState = LoginUiState(showAmberInstallDialog = true), onLoginButtonClick = {})
+    LoginScreen(uiState = LoginUiState(showNip55InstallDialog = true), onLoginButtonClick = {})
   }
 }
 
@@ -153,7 +153,8 @@ fun LoginScreenTimeoutDialogPreview() {
     LoginScreen(
         uiState =
             LoginUiState(
-                errorMessage = "Login process timed out. Please check the Amber app and retry."),
+                errorMessage =
+                    "Login process timed out. Please check the NIP-55 signer app and retry."),
         onLoginButtonClick = {})
   }
 }

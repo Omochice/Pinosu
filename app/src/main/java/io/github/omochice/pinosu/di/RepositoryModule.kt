@@ -6,9 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.data.repository.AmberAuthRepository
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
+import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 
 /**
@@ -20,7 +20,7 @@ import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
-  @Binds abstract fun bindAuthRepository(impl: AmberAuthRepository): AuthRepository
+  @Binds abstract fun bindAuthRepository(impl: Nip55AuthRepository): AuthRepository
 
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
 

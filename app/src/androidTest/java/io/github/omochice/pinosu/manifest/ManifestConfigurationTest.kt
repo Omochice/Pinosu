@@ -41,7 +41,7 @@ class ManifestConfigurationTest {
   }
 
   @Test
-  fun testQueriesElementForAmberIntent() {
+  fun testQueriesElementForNip55SignerIntent() {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
 
     val resolveInfo =
