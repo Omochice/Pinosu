@@ -130,7 +130,7 @@ fun LoginScreenLoadingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenAmberInstallDialogPreview() {
+fun LoginScreenNip55InstallDialogPreview() {
   MaterialTheme {
     LoginScreen(uiState = LoginUiState(showNip55InstallDialog = true), onLoginButtonClick = {})
   }
