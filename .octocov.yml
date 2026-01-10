@@ -8,6 +8,7 @@ codeToTestRatio:
     - "!app/src/main/**/*Module.kt"
   test:
     - "app/src/test/**/*.kt"
+    - "app/src/androidTest/**/*.kt"
 
 comment:
   hideFooterLink: false
