@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.amber
+package io.github.omochice.pinosu.data.nip55
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -12,26 +12,26 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Unit tests for AmberSignerClient
- * - checkAmberInstalled() test
- * - AmberResponse, AmberError data class validation
+ * Unit tests for Nip55SignerClient
+ * - checkNip55SignerInstalled() test
+ * - Nip55Response, Nip55Error data class validation
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
-class AmberSignerClientTest {
+class Nip55SignerClientTest {
 
   private lateinit var context: Context
 
   private lateinit var packageManager: PackageManager
 
-  private lateinit var amberSignerClient: AmberSignerClient
+  private lateinit var nip55SignerClient: Nip55SignerClient
 
   @Before
   fun setup() {
     context = mockk(relaxed = true)
     packageManager = mockk(relaxed = true)
     every { context.packageManager } returns packageManager
-    amberSignerClient = AmberSignerClient(context)
+    nip55SignerClient = Nip55SignerClient(context)
   }
 
   /** Test that returns true when Amber is installed */
@@ -40,10 +40,10 @@ class AmberSignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } returns android.content.pm.PackageInfo()
 
-    val result = amberSignerClient.checkAmberInstalled()
+    val result = nip55SignerClient.checkNip55SignerInstalled()
 
     assertTrue("Should return true when Amber is installed", result)
   }
@@ -54,10 +54,10 @@ class AmberSignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws PackageManager.NameNotFoundException()
 
-    val result = amberSignerClient.checkAmberInstalled()
+    val result = nip55SignerClient.checkNip55SignerInstalled()
 
     assertFalse("Should return false when Amber is not installed", result)
   }
@@ -68,99 +68,99 @@ class AmberSignerClientTest {
 
     every {
       packageManager.getPackageInfo(
-          AmberSignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
+          Nip55SignerClient.AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
     } throws RuntimeException("Unexpected error")
 
-    val result = amberSignerClient.checkAmberInstalled()
+    val result = nip55SignerClient.checkNip55SignerInstalled()
 
     assertFalse("Should return false on exception", result)
   }
 
-  /** Test that AmberResponse data class is constructed correctly */
+  /** Test that Nip55Response data class is constructed correctly */
   @Test
-  fun testAmberResponse_Construction() {
+  fun testNip55Response_Construction() {
 
     val pubkey = "npub1" + "a".repeat(59)
     val packageName = "com.greenart7c3.nostrsigner"
 
-    val response = AmberResponse(pubkey, packageName)
+    val response = Nip55Response(pubkey, packageName)
 
     assertEquals("Pubkey should match", pubkey, response.pubkey)
     assertEquals("PackageName should match", packageName, response.packageName)
   }
 
-  /** Test that AmberResponse equality is determined correctly */
+  /** Test that Nip55Response equality is determined correctly */
   @Test
-  fun testAmberResponse_Equality() {
+  fun testNip55Response_Equality() {
 
-    val response1 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
-    val response2 = AmberResponse("npub1" + "abc".repeat(19) + "ab", "com.test.app")
+    val response1 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
+    val response2 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
 
     assertEquals("Responses with same values should be equal", response1, response2)
   }
 
-  /** Test AmberError.NotInstalled is constructed correctly */
+  /** Test Nip55Error.NotInstalled is constructed correctly */
   @Test
-  fun testAmberError_NotInstalled() {
+  fun testNip55Error_NotInstalled() {
 
-    val error: AmberError = AmberError.NotInstalled
+    val error: Nip55Error = Nip55Error.NotInstalled
 
-    assertTrue("Should be NotInstalled type", error is AmberError.NotInstalled)
+    assertTrue("Should be NotInstalled type", error is Nip55Error.NotInstalled)
   }
 
-  /** Test AmberError.UserRejected is constructed correctly */
+  /** Test Nip55Error.UserRejected is constructed correctly */
   @Test
-  fun testAmberError_UserRejected() {
+  fun testNip55Error_UserRejected() {
 
-    val error: AmberError = AmberError.UserRejected
+    val error: Nip55Error = Nip55Error.UserRejected
 
-    assertTrue("Should be UserRejected type", error is AmberError.UserRejected)
+    assertTrue("Should be UserRejected type", error is Nip55Error.UserRejected)
   }
 
-  /** Test AmberError.Timeout is constructed correctly */
+  /** Test Nip55Error.Timeout is constructed correctly */
   @Test
-  fun testAmberError_Timeout() {
+  fun testNip55Error_Timeout() {
 
-    val error: AmberError = AmberError.Timeout
+    val error: Nip55Error = Nip55Error.Timeout
 
-    assertTrue("Should be Timeout type", error is AmberError.Timeout)
+    assertTrue("Should be Timeout type", error is Nip55Error.Timeout)
   }
 
-  /** Test AmberError.InvalidResponse is constructed correctly */
+  /** Test Nip55Error.InvalidResponse is constructed correctly */
   @Test
-  fun testAmberError_InvalidResponse() {
+  fun testNip55Error_InvalidResponse() {
 
     val message = "Invalid response format"
 
-    val error: AmberError = AmberError.InvalidResponse(message)
+    val error: Nip55Error = Nip55Error.InvalidResponse(message)
 
-    assertTrue("Should be InvalidResponse type", error is AmberError.InvalidResponse)
-    assertEquals("Message should match", message, (error as AmberError.InvalidResponse).message)
+    assertTrue("Should be InvalidResponse type", error is Nip55Error.InvalidResponse)
+    assertEquals("Message should match", message, (error as Nip55Error.InvalidResponse).message)
   }
 
-  /** Test AmberError.IntentResolutionError is constructed correctly */
+  /** Test Nip55Error.IntentResolutionError is constructed correctly */
   @Test
-  fun testAmberError_IntentResolutionError() {
+  fun testNip55Error_IntentResolutionError() {
 
     val message = "Cannot resolve intent"
 
-    val error: AmberError = AmberError.IntentResolutionError(message)
+    val error: Nip55Error = Nip55Error.IntentResolutionError(message)
 
-    assertTrue("Should be IntentResolutionError type", error is AmberError.IntentResolutionError)
+    assertTrue("Should be IntentResolutionError type", error is Nip55Error.IntentResolutionError)
     assertEquals(
-        "Message should match", message, (error as AmberError.IntentResolutionError).message)
+        "Message should match", message, (error as Nip55Error.IntentResolutionError).message)
   }
 
   /** Test createPublicKeyIntent() creates Intent with correct scheme */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectScheme() {
 
-    val intent = amberSignerClient.createPublicKeyIntent()
+    val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertNotNull("Intent should have data URI", intent.data)
     assertEquals(
         "URI scheme should be nostrsigner",
-        AmberSignerClient.NOSTRSIGNER_SCHEME,
+        Nip55SignerClient.NOSTRSIGNER_SCHEME,
         intent.data?.scheme)
   }
 
@@ -168,11 +168,11 @@ class AmberSignerClientTest {
   @Test
   fun testCreatePublicKeyIntent_HasCorrectPackage() {
 
-    val intent = amberSignerClient.createPublicKeyIntent()
+    val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
         "Package should be Amber package name",
-        AmberSignerClient.AMBER_PACKAGE_NAME,
+        Nip55SignerClient.AMBER_PACKAGE_NAME,
         intent.`package`)
   }
 
@@ -180,11 +180,11 @@ class AmberSignerClientTest {
   @Test
   fun testCreatePublicKeyIntent_HasCorrectType() {
 
-    val intent = amberSignerClient.createPublicKeyIntent()
+    val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
         "Type extra should be get_public_key",
-        AmberSignerClient.TYPE_GET_PUBLIC_KEY,
+        Nip55SignerClient.TYPE_GET_PUBLIC_KEY,
         intent.getStringExtra("type"))
   }
 
@@ -192,7 +192,7 @@ class AmberSignerClientTest {
   @Test
   fun testCreatePublicKeyIntent_HasCorrectFlags() {
 
-    val intent = amberSignerClient.createPublicKeyIntent()
+    val intent = nip55SignerClient.createPublicKeyIntent()
 
     val expectedFlags =
         android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
@@ -208,7 +208,7 @@ class AmberSignerClientTest {
   @Test
   fun testCreatePublicKeyIntent_HasCorrectAction() {
 
-    val intent = amberSignerClient.createPublicKeyIntent()
+    val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
         "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
@@ -216,13 +216,13 @@ class AmberSignerClientTest {
 
   /** Valid response（RESULT_OK + pubkey）correct processing test */
   @Test
-  fun testHandleAmberResponse_Success_ReturnsAmberResponse() {
+  fun testHandleNip55Response_Success_ReturnsNip55Response() {
 
     val pubkey = "npub1" + "a".repeat(59)
     val intent = android.content.Intent()
     intent.putExtra("result", pubkey)
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return success", result.isSuccess)
     val response = result.getOrNull()
@@ -230,100 +230,100 @@ class AmberSignerClientTest {
     assertEquals("Pubkey should match", pubkey, response?.pubkey)
     assertEquals(
         "PackageName should be Amber package",
-        AmberSignerClient.AMBER_PACKAGE_NAME,
+        Nip55SignerClient.AMBER_PACKAGE_NAME,
         response?.packageName)
   }
 
   /** User rejection（rejected=true）detection test */
   @Test
-  fun testHandleAmberResponse_UserRejected_ReturnsError() {
+  fun testHandleNip55Response_UserRejected_ReturnsError() {
 
     val intent = android.content.Intent()
     intent.putExtra("rejected", true)
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be UserRejected",
-        error is AmberError.UserRejected || error.toString().contains("UserRejected"))
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 
   /** Test RESULT_CANCELED returns UserRejected error */
   @Test
-  fun testHandleAmberResponse_ResultCanceled_ReturnsUserRejected() {
+  fun testHandleNip55Response_ResultCanceled_ReturnsUserRejected() {
 
     val intent = android.content.Intent()
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_CANCELED, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_CANCELED, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be UserRejected",
-        error is AmberError.UserRejected || error.toString().contains("UserRejected"))
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 
   /** Test null Intent returns InvalidResponse error */
   @Test
-  fun testHandleAmberResponse_NullIntent_ReturnsInvalidResponse() {
+  fun testHandleNip55Response_NullIntent_ReturnsInvalidResponse() {
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, null)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, null)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be InvalidResponse",
-        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
   /** Test empty result returns InvalidResponse error */
   @Test
-  fun testHandleAmberResponse_EmptyResult_ReturnsInvalidResponse() {
+  fun testHandleNip55Response_EmptyResult_ReturnsInvalidResponse() {
 
     val intent = android.content.Intent()
     intent.putExtra("result", "")
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be InvalidResponse",
-        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
   /** Test invalid format (not starting with npub1) returns InvalidResponse error */
   @Test
-  fun testHandleAmberResponse_InvalidPubkeyLength_ReturnsInvalidResponse() {
+  fun testHandleNip55Response_InvalidPubkeyLength_ReturnsInvalidResponse() {
 
     val intent = android.content.Intent()
     intent.putExtra("result", "a".repeat(64))
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be InvalidResponse",
-        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
   /** Test invalid format (starting with nsec1) returns InvalidResponse error */
   @Test
-  fun testHandleAmberResponse_InvalidPubkeyFormat_ReturnsInvalidResponse() {
+  fun testHandleNip55Response_InvalidPubkeyFormat_ReturnsInvalidResponse() {
 
     val intent = android.content.Intent()
     intent.putExtra("result", "nsec1" + "a".repeat(59))
 
-    val result = amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue(
         "Error should be InvalidResponse",
-        error is AmberError.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
   /** Test Bech32 format pubkey is masked correctly */
@@ -332,7 +332,7 @@ class AmberSignerClientTest {
 
     val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 
-    val masked = amberSignerClient.maskPubkey(pubkey)
+    val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
   }
@@ -343,7 +343,7 @@ class AmberSignerClientTest {
 
     val pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a"
 
-    val masked = amberSignerClient.maskPubkey(pubkey)
+    val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
   }
@@ -354,7 +354,7 @@ class AmberSignerClientTest {
 
     val pubkey = "abcdef0123456789"
 
-    val masked = amberSignerClient.maskPubkey(pubkey)
+    val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should return original string when pubkey is too short", pubkey, masked)
   }
@@ -365,7 +365,7 @@ class AmberSignerClientTest {
 
     val pubkey = ""
 
-    val masked = amberSignerClient.maskPubkey(pubkey)
+    val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should return empty string when input is empty", "", masked)
   }
@@ -376,7 +376,7 @@ class AmberSignerClientTest {
 
     val pubkey = "npub1" + "a".repeat(59)
 
-    val masked = amberSignerClient.maskPubkey(pubkey)
+    val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
   }

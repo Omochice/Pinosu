@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.amber
+package io.github.omochice.pinosu.data.nip55
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -7,16 +7,16 @@ import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Encapsulation of Amber NIP-55 Intent communication */
+/** Encapsulation of NIP-55 Intent communication */
 @Singleton
-class AmberSignerClient @Inject constructor(@ApplicationContext private val context: Context) {
+class Nip55SignerClient @Inject constructor(@ApplicationContext private val context: Context) {
 
   /**
-   * Check if Amber app is installed
+   * Check if NIP-55 signer app is installed
    *
-   * @return true if Amber is installed, false otherwise
+   * @return true if NIP-55 signer is installed, false otherwise
    */
-  fun checkAmberInstalled(): Boolean {
+  fun checkNip55SignerInstalled(): Boolean {
     return try {
       context.packageManager.getPackageInfo(AMBER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
       true
@@ -45,37 +45,37 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
   }
 
   /**
-   * Handle ActivityResult response from Amber
+   * Handle ActivityResult response from NIP-55 signer
    *
    * @param resultCode ActivityResult's resultCode (RESULT_OK or RESULT_CANCELED)
    * @param data Intent data (containing result and rejected)
-   * @return Success(AmberResponse) or Failure(AmberError)
+   * @return Success(Nip55Response) or Failure(Nip55Error)
    */
-  fun handleAmberResponse(resultCode: Int, data: android.content.Intent?): Result<AmberResponse> {
+  fun handleNip55Response(resultCode: Int, data: android.content.Intent?): Result<Nip55Response> {
     if (resultCode == android.app.Activity.RESULT_CANCELED) {
-      return Result.failure(AmberError.UserRejected)
+      return Result.failure(Nip55Error.UserRejected)
     }
 
     if (data == null) {
-      return Result.failure(AmberError.InvalidResponse("Intent data is null"))
+      return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
     }
 
     val rejected = data.getBooleanExtra("rejected", false)
     if (rejected) {
-      return Result.failure(AmberError.UserRejected)
+      return Result.failure(Nip55Error.UserRejected)
     }
 
     val pubkey = data.getStringExtra("result")
     if (pubkey.isNullOrEmpty()) {
-      return Result.failure(AmberError.InvalidResponse("Result is null or empty"))
+      return Result.failure(Nip55Error.InvalidResponse("Result is null or empty"))
     }
 
     if (!pubkey.isValidNostrPubkey()) {
       return Result.failure(
-          AmberError.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
+          Nip55Error.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
     }
 
-    return Result.success(AmberResponse(pubkey, AMBER_PACKAGE_NAME))
+    return Result.success(Nip55Response(pubkey, AMBER_PACKAGE_NAME))
   }
 
   /**
@@ -130,35 +130,35 @@ class AmberSignerClient @Inject constructor(@ApplicationContext private val cont
 }
 
 /**
- * Response from Amber
+ * Response from NIP-55 signer
  *
  * @property pubkey User's public key (64-character hex string)
- * @property packageName Amber app package name
+ * @property packageName NIP-55 signer app package name
  */
-data class AmberResponse(val pubkey: String, val packageName: String)
+data class Nip55Response(val pubkey: String, val packageName: String)
 
-/** Amber communication errors */
-sealed class AmberError : Exception() {
-  /** Amber app is not installed */
-  data object NotInstalled : AmberError()
+/** NIP-55 signer communication errors */
+sealed class Nip55Error : Exception() {
+  /** NIP-55 signer app is not installed */
+  data object NotInstalled : Nip55Error()
 
-  /** User rejected operation in Amber */
-  data object UserRejected : AmberError()
+  /** User rejected operation in NIP-55 signer */
+  data object UserRejected : Nip55Error()
 
-  /** Response from Amber timed out */
-  data object Timeout : AmberError()
+  /** Response from NIP-55 signer timed out */
+  data object Timeout : Nip55Error()
 
   /**
-   * Response from Amber was in invalid format
+   * Response from NIP-55 signer was in invalid format
    *
    * @property message Error message
    */
-  data class InvalidResponse(override val message: String) : AmberError()
+  data class InvalidResponse(override val message: String) : Nip55Error()
 
   /**
    * Intent resolution failed
    *
    * @property message Error message
    */
-  data class IntentResolutionError(override val message: String) : AmberError()
+  data class IntentResolutionError(override val message: String) : Nip55Error()
 }

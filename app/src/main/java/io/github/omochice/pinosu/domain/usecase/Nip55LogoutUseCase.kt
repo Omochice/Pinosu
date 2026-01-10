@@ -4,11 +4,11 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * Amber-based LogoutUseCase implementation
+ * NIP-55 based LogoutUseCase implementation
  *
  * @property authRepository Authentication repository
  */
-class AmberLogoutUseCase @Inject constructor(private val authRepository: AuthRepository) :
+class Nip55LogoutUseCase @Inject constructor(private val authRepository: AuthRepository) :
     LogoutUseCase {
 
   /**
