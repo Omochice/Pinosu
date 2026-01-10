@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.presentation.navigation.BOOKMARK_ROUTE
 import io.github.omochice.pinosu.presentation.navigation.LOGIN_ROUTE
 import io.github.omochice.pinosu.presentation.navigation.MAIN_ROUTE
@@ -30,7 +30,7 @@ import javax.inject.Inject
 /**
  * Main Activity for Pinosu application
  *
- * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles Amber
+ * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles NIP-55
  * signer integration for Nostr authentication.
  */
 @AndroidEntryPoint
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
   private val loginViewModel: LoginViewModel by viewModels()
 
-  @Inject lateinit var amberSignerClient: AmberSignerClient
+  @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
     loginViewModel.checkLoginState()
 
     setContent {
-      PinosuTheme { PinosuApp(viewModel = loginViewModel, amberSignerClient = amberSignerClient) }
+      PinosuTheme { PinosuApp(viewModel = loginViewModel, nip55SignerClient = nip55SignerClient) }
     }
   }
 }
@@ -58,19 +58,19 @@ class MainActivity : ComponentActivity() {
  * screens.
  *
  * @param viewModel ViewModel managing login/logout state
- * @param amberSignerClient Client for Amber NIP-55 communication
+ * @param nip55SignerClient Client for NIP-55 communication
  */
 @Composable
-fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
+fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
   val navController = rememberNavController()
 
   val mainUiState by viewModel.mainUiState.collectAsState()
   val loginUiState by viewModel.uiState.collectAsState()
 
-  val amberLauncher =
+  val nip55Launcher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.processAmberResponse(result.resultCode, result.data)
+            viewModel.processNip55Response(result.resultCode, result.data)
           }
 
   val startDestination = if (mainUiState.userPubkey != null) BOOKMARK_ROUTE else LOGIN_ROUTE
@@ -81,20 +81,20 @@ fun PinosuApp(viewModel: LoginViewModel, amberSignerClient: AmberSignerClient) {
           uiState = loginUiState,
           onLoginButtonClick = {
             viewModel.onLoginButtonClicked()
-            if (amberSignerClient.checkAmberInstalled()) {
-              val intent = amberSignerClient.createPublicKeyIntent()
-              amberLauncher.launch(intent)
+            if (nip55SignerClient.checkNip55SignerInstalled()) {
+              val intent = nip55SignerClient.createPublicKeyIntent()
+              nip55Launcher.launch(intent)
             }
           },
           onDismissDialog = { viewModel.dismissError() },
-          onInstallAmber = {
+          onInstallNip55Signer = {
             // TODO: Implement Play Store link
           },
           onRetry = {
             viewModel.onRetryLogin()
-            if (amberSignerClient.checkAmberInstalled()) {
-              val intent = amberSignerClient.createPublicKeyIntent()
-              amberLauncher.launch(intent)
+            if (nip55SignerClient.checkNip55SignerInstalled()) {
+              val intent = nip55SignerClient.createPublicKeyIntent()
+              nip55Launcher.launch(intent)
             }
           },
           onNavigateToMain = {
