@@ -28,7 +28,7 @@ class LoginScreenTest {
       LoginScreen(uiState = initialState, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
   @Test
@@ -41,7 +41,7 @@ class LoginScreenTest {
       LoginScreen(
           uiState = initialState, onLoginButtonClick = { clicked = true }, onDismissDialog = {})
     }
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     assert(clicked) { "Login button click should trigger callback" }
   }
@@ -80,13 +80,13 @@ class LoginScreenTest {
       LoginScreen(
           uiState = loadingState, onLoginButtonClick = { clickCount++ }, onDismissDialog = {})
     }
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     assert(clickCount == 0) { "Login button should be disabled when loading" }
   }
 
   @Test
-  fun loginScreen_displaysAmberInstallDialogWhenRequested() {
+  fun loginScreen_displaysNip55SignerInstallDialogWhenRequested() {
 
     val dialogState = LoginUiState(showNip55InstallDialog = true)
 
@@ -94,8 +94,8 @@ class LoginScreenTest {
       LoginScreen(uiState = dialogState, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("Amberアプリが必要です").assertIsDisplayed()
-    composeTestRule.onNodeWithText("このアプリを使用するにはAmberアプリのインストールが必要です。").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
+    composeTestRule.onNodeWithText("このアプリを使用するにはNIP-55対応アプリのインストールが必要です。").assertIsDisplayed()
   }
 
   @Test
@@ -235,13 +235,15 @@ class LoginScreenTest {
   @Test
   fun loginScreen_displaysTimeoutErrorWithRetryOption() {
 
-    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。")
+    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
 
     composeTestRule.setContent {
       LoginScreen(uiState = errorState, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("ログイン処理がタイムアウトしました。Amberアプリを確認して再試行してください。").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText("ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
+        .assertIsDisplayed()
 
     composeTestRule.onNodeWithText("再試行").assertIsDisplayed()
 

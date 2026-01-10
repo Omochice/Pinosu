@@ -7,8 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.model.User
 import io.mockk.coEvery
 import io.mockk.every
@@ -21,7 +21,7 @@ import org.junit.runner.RunWith
 /**
  * Test scenarios:
  * 1. Login flow (login screen → login button tap → loading display → main screen navigate)
- * 2. Amber not installed error flow
+ * 2. NIP-55 signer not installed error flow
  * 3. Logout flow (main screen → logout button tap → login screen navigate)
  */
 @HiltAndroidTest
@@ -45,24 +45,24 @@ class UserFlowTest {
   @Test
   fun loginFlow_step1_displaysLoginScreen() {
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
-  /** Note: This test verifies loading state before Amber Intent is launched */
+  /** Note: This test verifies loading state before NIP-55 signer Intent is launched */
   @Test
   fun loginFlow_step2_displaysLoadingOnButtonClick() {
 
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
     every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     composeTestRule.onNodeWithTag("LoadingIndicator").assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsNotEnabled()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsNotEnabled()
   }
 
-  /** Note: Amber Intent result simulation is required */
+  /** Note: NIP-55 signer Intent result simulation is required */
   @Test
   fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
 
@@ -77,9 +77,9 @@ class UserFlowTest {
             io.github.omochice.pinosu.data.nip55.Nip55Response(
                 pubkey = testUser.pubkey, packageName = "com.greenart7c3.nostrsigner"))
 
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    // Note: Actual Intent result is handled in MainActivity's amberLauncher、
+    // Note: Actual Intent result is handled in MainActivity's nip55SignerLauncher、
     // Here we verify UI transitions instead of ViewModel state changes directly、
     // verify UI transition results
 
@@ -91,14 +91,14 @@ class UserFlowTest {
   }
 
   @Test
-  fun amberNotInstalledFlow_step1_displaysErrorDialog() {
+  fun nip55SignerNotInstalledFlow_step1_displaysErrorDialog() {
 
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     composeTestRule
-        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
+        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertIsDisplayed()
 
     composeTestRule.onNodeWithText("インストール").assertIsDisplayed()
@@ -107,22 +107,22 @@ class UserFlowTest {
   }
 
   @Test
-  fun amberNotInstalledFlow_step2_dismissDialog() {
+  fun nip55SignerNotInstalledFlow_step2_dismissDialog() {
 
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
-    composeTestRule.onNodeWithText("Amberでログイン").performClick()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
     composeTestRule
-        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
+        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertIsDisplayed()
 
     composeTestRule.onNodeWithText("閉じる").performClick()
 
     composeTestRule
-        .onNodeWithText("Amberアプリがインストールされていません。Google Play Storeからインストールしてください。")
+        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
         .assertDoesNotExist()
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
   @Test
@@ -142,9 +142,9 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("ログアウト").performClick()
 
     composeTestRule.waitUntil(timeoutMillis = 3000) {
-      composeTestRule.onAllNodesWithText("Amberでログイン").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
@@ -165,7 +165,7 @@ class UserFlowTest {
     val maskedPubkey = "1234abcd...5678efgh" // masking format first 8 chars...last 8 chars
     composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertDoesNotExist()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertDoesNotExist()
   }
 
   @Test
@@ -176,9 +176,9 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 3000) {
-      composeTestRule.onAllNodesWithText("Amberでログイン").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }

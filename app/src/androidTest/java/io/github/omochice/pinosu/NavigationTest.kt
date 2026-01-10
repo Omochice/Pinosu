@@ -37,7 +37,7 @@ class NavigationTest {
   @Test
   fun navigation_whenNotLoggedIn_displaysLoginScreen() {
 
-    composeTestRule.onNodeWithText("Amberでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
   /** This test simulates the state where LoginViewModel.mainUiState.userPubkey is not null */

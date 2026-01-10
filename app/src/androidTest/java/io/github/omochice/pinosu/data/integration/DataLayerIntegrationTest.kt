@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.data.integration
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import kotlinx.coroutines.test.runTest
@@ -22,7 +22,8 @@ import org.junit.runner.RunWith
  * Test strategy:
  * - Data layer: Using actual Nip55AuthRepository, LocalAuthDataSource, Nip55SignerClient
  * - Storage: Using actual EncryptedSharedPreferences (Android runtime required)
- * - Note: Amber communication requires actual Amber app, testing storage operations only
+ * - Note: NIP-55 signer communication requires actual NIP-55 signer app, testing storage operations
+ *   only
  */
 @RunWith(AndroidJUnit4::class)
 class DataLayerIntegrationTest {
@@ -49,10 +50,10 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * Amber not installed detection → AuthRepository integration
+   * NIP-55 signer not installed detection → AuthRepository integration
    *
    * Integration flow:
-   * 1. AuthRepository checks for Amber installation
+   * 1. AuthRepository checks for NIP-55 signer installation
    * 2. Nip55SignerClient detects
    * 3. Return result
    */
