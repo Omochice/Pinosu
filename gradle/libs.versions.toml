@@ -39,6 +39,7 @@ kotlin-android = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 kotlin-compose = {id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin"}
 ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
+kover = {id = "org.jetbrains.kotlinx.kover", version.ref = "kover"}
 
 [versions]
 agp = "8.13.2"
@@ -66,3 +67,4 @@ jsoup = "1.18.1"
 mockk = "1.13.13"
 robolectric = "4.14.1"
 coroutines = "1.9.0"
+kover = "0.9.1"
