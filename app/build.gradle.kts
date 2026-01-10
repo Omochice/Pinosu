@@ -97,17 +97,4 @@ dependencies {
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
 }
 
-kover {
-  reports {
-    variant("debug") {
-      xml {
-        onCheck = false
-        xmlFile = layout.buildDirectory.file("reports/kover/coverage.xml")
-      }
-      html {
-        onCheck = false
-        htmlDir = layout.buildDirectory.dir("reports/kover/html")
-      }
-    }
-  }
-}
+kover { reports { variant("debug") {} } }
