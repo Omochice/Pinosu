@@ -2,17 +2,17 @@ package io.github.omochice.pinosu.domain.usecase
 
 /**
  * Login process UseCase interface
- * - Amber installation verification
+ * - NIP-55 signer installation verification
  * - Delegation to AuthRepository
  */
 interface LoginUseCase {
 
   /**
-   * Check if the Amber app is installed
+   * Check if the NIP-55 signer app is installed
    *
-   * Delegates to AuthRepository to verify Amber installation status.
+   * Delegates to AuthRepository to verify NIP-55 signer installation status.
    *
-   * @return true if Amber is installed
+   * @return true if NIP-55 signer is installed
    */
-  fun checkAmberInstalled(): Boolean
+  fun checkNip55SignerInstalled(): Boolean
 }

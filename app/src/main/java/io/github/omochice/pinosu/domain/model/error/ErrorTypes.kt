@@ -7,13 +7,13 @@ package io.github.omochice.pinosu.domain.model.error
  * and AuthRepository.
  */
 sealed class LoginError : Exception() {
-  /** Amber app is not installed */
-  data object AmberNotInstalled : LoginError()
+  /** NIP-55 signer app is not installed */
+  data object Nip55SignerNotInstalled : LoginError()
 
-  /** User rejected login in Amber */
+  /** User rejected login in NIP-55 signer */
   data object UserRejected : LoginError()
 
-  /** Response from Amber timed out */
+  /** Response from NIP-55 signer timed out */
   data object Timeout : LoginError()
 
   /**
