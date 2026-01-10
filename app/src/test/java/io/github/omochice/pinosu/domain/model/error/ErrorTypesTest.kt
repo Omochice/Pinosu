@@ -1,18 +1,18 @@
 package io.github.omochice.pinosu.domain.model.error
 
-import io.github.omochice.pinosu.data.amber.AmberError
+import io.github.omochice.pinosu.data.nip55.Nip55Error
 import org.junit.Assert.*
 import org.junit.Test
 
 class ErrorTypesTest {
 
-  /** Test that LoginError.AmberNotInstalled can be created */
+  /** Test that LoginError.Nip55SignerNotInstalled can be created */
   @Test
-  fun `create LoginError AmberNotInstalled`() {
-    val error = LoginError.AmberNotInstalled
+  fun `create LoginError Nip55SignerNotInstalled`() {
+    val error = LoginError.Nip55SignerNotInstalled
 
     assertTrue(error is LoginError)
-    assertTrue(error is LoginError.AmberNotInstalled)
+    assertTrue(error is LoginError.Nip55SignerNotInstalled)
   }
 
   /** Test that LoginError.UserRejected can be created */
@@ -60,7 +60,7 @@ class ErrorTypesTest {
   fun `LoginError sealed class allows exhaustive when`() {
     val errors: List<LoginError> =
         listOf(
-            LoginError.AmberNotInstalled,
+            LoginError.Nip55SignerNotInstalled,
             LoginError.UserRejected,
             LoginError.Timeout,
             LoginError.NetworkError("test"),
@@ -69,7 +69,7 @@ class ErrorTypesTest {
     errors.forEach { error ->
       val result =
           when (error) {
-            is LoginError.AmberNotInstalled -> "amber_not_installed"
+            is LoginError.Nip55SignerNotInstalled -> "amber_not_installed"
             is LoginError.UserRejected -> "user_rejected"
             is LoginError.Timeout -> "timeout"
             is LoginError.NetworkError -> "network_error"
@@ -143,74 +143,74 @@ class ErrorTypesTest {
     }
   }
 
-  /** Test AmberError.NotInstalled can be created */
+  /** Test Nip55Error.NotInstalled can be created */
   @Test
-  fun `create AmberError NotInstalled`() {
-    val error = AmberError.NotInstalled
+  fun `create Nip55Error NotInstalled`() {
+    val error = Nip55Error.NotInstalled
 
-    assertTrue(error is AmberError)
-    assertTrue(error is AmberError.NotInstalled)
+    assertTrue(error is Nip55Error)
+    assertTrue(error is Nip55Error.NotInstalled)
   }
 
-  /** Test AmberError.UserRejected can be created */
+  /** Test Nip55Error.UserRejected can be created */
   @Test
-  fun `create AmberError UserRejected`() {
-    val error = AmberError.UserRejected
+  fun `create Nip55Error UserRejected`() {
+    val error = Nip55Error.UserRejected
 
-    assertTrue(error is AmberError)
-    assertTrue(error is AmberError.UserRejected)
+    assertTrue(error is Nip55Error)
+    assertTrue(error is Nip55Error.UserRejected)
   }
 
-  /** Test AmberError.Timeout can be created */
+  /** Test Nip55Error.Timeout can be created */
   @Test
-  fun `create AmberError Timeout`() {
-    val error = AmberError.Timeout
+  fun `create Nip55Error Timeout`() {
+    val error = Nip55Error.Timeout
 
-    assertTrue(error is AmberError)
-    assertTrue(error is AmberError.Timeout)
+    assertTrue(error is Nip55Error)
+    assertTrue(error is Nip55Error.Timeout)
   }
 
-  /** Test AmberError.InvalidResponse can be created */
+  /** Test Nip55Error.InvalidResponse can be created */
   @Test
-  fun `create AmberError InvalidResponse with message`() {
+  fun `create Nip55Error InvalidResponse with message`() {
     val message = "Invalid response format"
-    val error = AmberError.InvalidResponse(message)
+    val error = Nip55Error.InvalidResponse(message)
 
-    assertTrue(error is AmberError)
-    assertTrue(error is AmberError.InvalidResponse)
+    assertTrue(error is Nip55Error)
+    assertTrue(error is Nip55Error.InvalidResponse)
     assertEquals(message, error.message)
   }
 
-  /** Test AmberError.IntentResolutionError can be created */
+  /** Test Nip55Error.IntentResolutionError can be created */
   @Test
-  fun `create AmberError IntentResolutionError with message`() {
+  fun `create Nip55Error IntentResolutionError with message`() {
     val message = "Intent resolution failed"
-    val error = AmberError.IntentResolutionError(message)
+    val error = Nip55Error.IntentResolutionError(message)
 
-    assertTrue(error is AmberError)
-    assertTrue(error is AmberError.IntentResolutionError)
+    assertTrue(error is Nip55Error)
+    assertTrue(error is Nip55Error.IntentResolutionError)
     assertEquals(message, error.message)
   }
 
-  /** Test AmberError when expression exhaustiveness */
+  /** Test Nip55Error when expression exhaustiveness */
   @Test
-  fun `AmberError sealed class allows exhaustive when`() {
-    val errors: List<AmberError> =
+  fun `Nip55Error sealed class allows exhaustive when`() {
+    val errors: List<Nip55Error> =
         listOf(
-            AmberError.NotInstalled,
-            AmberError.UserRejected,
-            AmberError.Timeout,
-            AmberError.InvalidResponse("test"),
-            AmberError.IntentResolutionError("test"))
+            Nip55Error.NotInstalled,
+            Nip55Error.UserRejected,
+            Nip55Error.Timeout,
+            Nip55Error.InvalidResponse("test"),
+            Nip55Error.IntentResolutionError("test"))
 
     errors.forEach { error ->
       val result =
           when (error) {
-            is AmberError.NotInstalled -> "not_installed"
-            is AmberError.UserRejected -> "user_rejected"
-            is AmberError.Timeout -> "timeout"
-            is AmberError.InvalidResponse -> "invalid_response"
-            is AmberError.IntentResolutionError -> "intent_resolution_error"
+            is Nip55Error.NotInstalled -> "not_installed"
+            is Nip55Error.UserRejected -> "user_rejected"
+            is Nip55Error.Timeout -> "timeout"
+            is Nip55Error.InvalidResponse -> "invalid_response"
+            is Nip55Error.IntentResolutionError -> "intent_resolution_error"
           }
 
       assertNotNull(result)

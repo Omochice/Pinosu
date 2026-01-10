@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.content.Intent
-import io.github.omochice.pinosu.data.amber.AmberError
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.data.nip55.Nip55Error
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
@@ -11,18 +11,18 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
- * Amber-based AuthRepository implementation
+ * NIP-55 based AuthRepository implementation
  *
- * Integrates AmberSignerClient and LocalAuthDataSource to provide authentication flow and local
+ * Integrates Nip55SignerClient and LocalAuthDataSource to provide authentication flow and local
  * state management.
  *
- * @property amberSignerClient Amber communication client
+ * @property nip55SignerClient NIP-55 signer communication client
  * @property localAuthDataSource Local storage data source
  */
-class AmberAuthRepository
+class Nip55AuthRepository
 @Inject
 constructor(
-    private val amberSignerClient: AmberSignerClient,
+    private val nip55SignerClient: Nip55SignerClient,
     private val localAuthDataSource: LocalAuthDataSource
 ) : AuthRepository {
 
@@ -65,18 +65,18 @@ constructor(
   }
 
   /**
-   * Process Amber response and set user to logged-in state
+   * Process NIP-55 signer response and set user to logged-in state
    *
    * @param resultCode ActivityResult's resultCode
    * @param data Intent data
    * @return Success(User) on success, Failure(LoginError) on failure
    */
-  override suspend fun processAmberResponse(resultCode: Int, data: Intent?): Result<User> {
-    val amberResult = amberSignerClient.handleAmberResponse(resultCode, data)
+  override suspend fun processNip55Response(resultCode: Int, data: Intent?): Result<User> {
+    val nip55Result = nip55SignerClient.handleNip55Response(resultCode, data)
 
-    return if (amberResult.isSuccess) {
-      val amberResponse = amberResult.getOrNull()!!
-      val user = User(amberResponse.pubkey)
+    return if (nip55Result.isSuccess) {
+      val nip55Response = nip55Result.getOrNull()!!
+      val user = User(nip55Response.pubkey)
 
       try {
         localAuthDataSource.saveUser(user)
@@ -85,27 +85,27 @@ constructor(
         Result.failure(LoginError.UnknownError(e))
       }
     } else {
-      val amberError = amberResult.exceptionOrNull() as? AmberError
+      val nip55Error = nip55Result.exceptionOrNull() as? Nip55Error
       val loginError =
-          when (amberError) {
-            is AmberError.NotInstalled -> LoginError.AmberNotInstalled
-            is AmberError.UserRejected -> LoginError.UserRejected
-            is AmberError.Timeout -> LoginError.Timeout
-            is AmberError.InvalidResponse,
-            is AmberError.IntentResolutionError ->
-                LoginError.NetworkError(amberError?.toString() ?: "Unknown Amber error")
-            null -> LoginError.UnknownError(Exception("Unknown Amber error"))
+          when (nip55Error) {
+            is Nip55Error.NotInstalled -> LoginError.Nip55SignerNotInstalled
+            is Nip55Error.UserRejected -> LoginError.UserRejected
+            is Nip55Error.Timeout -> LoginError.Timeout
+            is Nip55Error.InvalidResponse,
+            is Nip55Error.IntentResolutionError ->
+                LoginError.NetworkError(nip55Error?.toString() ?: "Unknown NIP-55 signer error")
+            null -> LoginError.UnknownError(Exception("Unknown NIP-55 signer error"))
           }
       Result.failure(loginError)
     }
   }
 
   /**
-   * Check if Amber app is installed
+   * Check if NIP-55 signer app is installed
    *
-   * @return true if Amber is installed
+   * @return true if NIP-55 signer is installed
    */
-  override fun checkAmberInstalled(): Boolean {
-    return amberSignerClient.checkAmberInstalled()
+  override fun checkNip55SignerInstalled(): Boolean {
+    return nip55SignerClient.checkNip55SignerInstalled()
   }
 }

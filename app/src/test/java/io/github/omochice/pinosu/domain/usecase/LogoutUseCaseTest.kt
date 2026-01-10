@@ -24,7 +24,7 @@ class LogoutUseCaseTest {
   @Before
   fun setup() {
     authRepository = mockk(relaxed = true)
-    logoutUseCase = AmberLogoutUseCase(authRepository)
+    logoutUseCase = Nip55LogoutUseCase(authRepository)
   }
 
   /** Test successful logout */

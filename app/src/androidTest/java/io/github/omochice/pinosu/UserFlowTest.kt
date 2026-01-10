@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.domain.model.User
 import io.mockk.coEvery
@@ -32,7 +32,7 @@ class UserFlowTest {
 
   @get:Rule(order = 1) val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-  @BindValue @JvmField val mockAmberSignerClient: AmberSignerClient = mockk(relaxed = true)
+  @BindValue @JvmField val mockNip55SignerClient: Nip55SignerClient = mockk(relaxed = true)
 
   @BindValue @JvmField val mockLocalAuthDataSource: LocalAuthDataSource = mockk(relaxed = true)
 
@@ -52,8 +52,8 @@ class UserFlowTest {
   @Test
   fun loginFlow_step2_displaysLoadingOnButtonClick() {
 
-    every { mockAmberSignerClient.checkAmberInstalled() } returns true
-    every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
+    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
+    every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
@@ -66,15 +66,15 @@ class UserFlowTest {
   @Test
   fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
 
-    every { mockAmberSignerClient.checkAmberInstalled() } returns true
-    every { mockAmberSignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
+    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
+    every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.saveUser(any()) } returns Unit
 
-    every { mockAmberSignerClient.handleAmberResponse(Activity.RESULT_OK, any()) } returns
+    every { mockNip55SignerClient.handleNip55Response(Activity.RESULT_OK, any()) } returns
         Result.success(
-            io.github.omochice.pinosu.data.amber.AmberResponse(
+            io.github.omochice.pinosu.data.nip55.Nip55Response(
                 pubkey = testUser.pubkey, packageName = "com.greenart7c3.nostrsigner"))
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
@@ -93,7 +93,7 @@ class UserFlowTest {
   @Test
   fun amberNotInstalledFlow_step1_displaysErrorDialog() {
 
-    every { mockAmberSignerClient.checkAmberInstalled() } returns false
+    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
 
@@ -109,7 +109,7 @@ class UserFlowTest {
   @Test
   fun amberNotInstalledFlow_step2_dismissDialog() {
 
-    every { mockAmberSignerClient.checkAmberInstalled() } returns false
+    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
     composeTestRule.onNodeWithText("Amberでログイン").performClick()
     composeTestRule

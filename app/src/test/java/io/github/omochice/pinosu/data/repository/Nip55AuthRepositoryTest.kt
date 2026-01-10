@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.content.Intent
-import io.github.omochice.pinosu.data.amber.AmberResponse
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
+import io.github.omochice.pinosu.data.nip55.Nip55Response
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
@@ -18,26 +18,26 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * Unit tests for AmberAuthRepository
+ * Unit tests for Nip55AuthRepository
  * - getLoginState(), saveLoginState(), logout() test
  * - loginWithAmber() test (Amber not installed detection)
- * - AmberResponse processing and local save flow test
+ * - Nip55Response processing and local save flow test
  * - Amber success → local save success happy path test ✓
  * - Amber failure error classification test ✓
  * - Logout handling test ✓
  * - Transaction consistency test ✓
  */
-class AmberAuthRepositoryTest {
+class Nip55AuthRepositoryTest {
 
-  private lateinit var amberSignerClient: AmberSignerClient
+  private lateinit var nip55SignerClient: Nip55SignerClient
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var authRepository: AuthRepository
 
   @Before
   fun setup() {
-    amberSignerClient = mockk(relaxed = true)
+    nip55SignerClient = mockk(relaxed = true)
     localAuthDataSource = mockk(relaxed = true)
-    authRepository = AmberAuthRepository(amberSignerClient, localAuthDataSource)
+    authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
   /** Test successful retrieval of logged-in state */
@@ -118,16 +118,16 @@ class AmberAuthRepositoryTest {
 
   /** Test Amber response success and local save success */
   @Test
-  fun testProcessAmberResponse_Success_SavesUserAndReturnsSuccess() = runTest {
+  fun testProcessNip55Response_Success_SavesUserAndReturnsSuccess() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
-    val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
+    val amberResponse = Nip55Response(pubkey, Nip55SignerClient.AMBER_PACKAGE_NAME)
 
-    every { amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent) } returns
+    every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
         Result.success(amberResponse)
     coEvery { localAuthDataSource.saveUser(any()) } returns Unit
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return success", result.isSuccess)
     val user = result.getOrNull()
@@ -138,12 +138,12 @@ class AmberAuthRepositoryTest {
 
   /** Test Amber response rejection */
   @Test
-  fun testProcessAmberResponse_UserRejected_ReturnsLoginError() = runTest {
+  fun testProcessNip55Response_UserRejected_ReturnsLoginError() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
-    every { amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent) } returns
-        Result.failure(io.github.omochice.pinosu.data.amber.AmberError.UserRejected)
+    every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
+        Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.UserRejected)
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
@@ -152,28 +152,28 @@ class AmberAuthRepositoryTest {
 
   /** Test Amber not installed error classification */
   @Test
-  fun testProcessAmberResponse_AmberNotInstalled_ReturnsAmberNotInstalledError() = runTest {
+  fun testProcessNip55Response_Nip55SignerNotInstalled_ReturnsNip55SignerNotInstalledError() = runTest {
     val intent = Intent()
-    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
-        Result.failure(io.github.omochice.pinosu.data.amber.AmberError.NotInstalled)
+    every { nip55SignerClient.handleNip55Response(any(), any()) } returns
+        Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.NotInstalled)
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue(
-        "Exception should be LoginError.AmberNotInstalled",
-        exception is LoginError.AmberNotInstalled)
+        "Exception should be LoginError.Nip55SignerNotInstalled",
+        exception is LoginError.Nip55SignerNotInstalled)
   }
 
   /** Test Amber timeout error classification */
   @Test
-  fun testProcessAmberResponse_Timeout_ReturnsTimeoutError() = runTest {
+  fun testProcessNip55Response_Timeout_ReturnsTimeoutError() = runTest {
     val intent = Intent()
-    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
-        Result.failure(io.github.omochice.pinosu.data.amber.AmberError.Timeout)
+    every { nip55SignerClient.handleNip55Response(any(), any()) } returns
+        Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.Timeout)
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
@@ -182,13 +182,13 @@ class AmberAuthRepositoryTest {
 
   /** Test Amber InvalidResponse error classification（treated as NetworkError） */
   @Test
-  fun testProcessAmberResponse_InvalidResponse_ReturnsNetworkError() = runTest {
+  fun testProcessNip55Response_InvalidResponse_ReturnsNetworkError() = runTest {
     val intent = Intent()
-    every { amberSignerClient.handleAmberResponse(any(), any()) } returns
+    every { nip55SignerClient.handleNip55Response(any(), any()) } returns
         Result.failure(
-            io.github.omochice.pinosu.data.amber.AmberError.InvalidResponse("Invalid data"))
+            io.github.omochice.pinosu.data.nip55.Nip55Error.InvalidResponse("Invalid data"))
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
@@ -197,16 +197,16 @@ class AmberAuthRepositoryTest {
 
   /** Transaction consistency test: Amber success → local save failure */
   @Test
-  fun testProcessAmberResponse_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
+  fun testProcessNip55Response_AmberSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
-    val amberResponse = AmberResponse(pubkey, AmberSignerClient.AMBER_PACKAGE_NAME)
+    val amberResponse = Nip55Response(pubkey, Nip55SignerClient.AMBER_PACKAGE_NAME)
 
-    every { amberSignerClient.handleAmberResponse(android.app.Activity.RESULT_OK, intent) } returns
+    every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
         Result.success(amberResponse)
     coEvery { localAuthDataSource.saveUser(any()) } throws StorageError.WriteError("Storage full")
 
-    val result = authRepository.processAmberResponse(android.app.Activity.RESULT_OK, intent)
+    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
@@ -221,9 +221,9 @@ class AmberAuthRepositoryTest {
   @Test
   fun testCheckAmberInstalled_WhenInstalled_ReturnsTrue() {
 
-    every { amberSignerClient.checkAmberInstalled() } returns true
+    every { nip55SignerClient.checkNip55SignerInstalled() } returns true
 
-    val result = authRepository.checkAmberInstalled()
+    val result = authRepository.checkNip55SignerInstalled()
 
     assertTrue("Should return true when Amber is installed", result)
   }
@@ -232,9 +232,9 @@ class AmberAuthRepositoryTest {
   @Test
   fun testCheckAmberInstalled_WhenNotInstalled_ReturnsFalse() {
 
-    every { amberSignerClient.checkAmberInstalled() } returns false
+    every { nip55SignerClient.checkNip55SignerInstalled() } returns false
 
-    val result = authRepository.checkAmberInstalled()
+    val result = authRepository.checkNip55SignerInstalled()
 
     assertFalse("Should return false when Amber is not installed", result)
   }

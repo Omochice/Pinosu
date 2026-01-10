@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.MainActivity
-import io.github.omochice.pinosu.data.amber.AmberSignerClient
+import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import javax.inject.Inject
 import org.junit.Before
 import org.junit.Rule
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 /**
  * Tests for ActivityResultAPI and Amber Intent integration
  * - registerForActivityResult configuration
- * - ActivityResultLauncher passing to AmberSignerClient
+ * - ActivityResultLauncher passing to Nip55SignerClient
  * - Amber Intent result handling
  */
 @HiltAndroidTest
@@ -28,7 +28,7 @@ class ActivityResultIntegrationTest {
 
   @get:Rule(order = 1) val composeTestRule = createAndroidComposeRule<MainActivity>()
 
-  @Inject lateinit var amberSignerClient: AmberSignerClient
+  @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
   @Before
   fun setup() {
@@ -38,7 +38,7 @@ class ActivityResultIntegrationTest {
   @Test
   fun whenAmberInstalled_loginButtonClick_shouldLaunchAmberIntent() {
 
-    val isInstalled = amberSignerClient.checkAmberInstalled()
+    val isInstalled = nip55SignerClient.checkNip55SignerInstalled()
 
     if (!isInstalled) {
       return
@@ -51,9 +51,9 @@ class ActivityResultIntegrationTest {
   }
 
   @Test
-  fun whenAmberNotInstalled_loginButtonClick_shouldShowErrorDialog() {
+  fun whenNip55SignerNotInstalled_loginButtonClick_shouldShowErrorDialog() {
 
-    val isInstalled = amberSignerClient.checkAmberInstalled()
+    val isInstalled = nip55SignerClient.checkNip55SignerInstalled()
 
     if (isInstalled) {
       return
@@ -65,5 +65,5 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("Amberアプリがインストールされていません").assertExists()
   }
 
-  @Test fun whenAmberResponseSuccess_shouldNavigateToMainScreen() {}
+  @Test fun whenNip55ResponseSuccess_shouldNavigateToMainScreen() {}
 }

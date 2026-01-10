@@ -60,7 +60,7 @@ class LoginViewModelTest {
 
     assertFalse("isLoading should be false", state.isLoading)
     assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("showAmberInstallDialog should be false", state.showAmberInstallDialog)
+    assertFalse("showNip55InstallDialog should be false", state.showNip55InstallDialog)
     assertFalse("loginSuccess should be false", state.loginSuccess)
   }
 
@@ -100,23 +100,23 @@ class LoginViewModelTest {
 
   @Test
   fun `onLoginButtonClicked should check if Amber is installed`() = runTest {
-    every { loginUseCase.checkAmberInstalled() } returns true
+    every { loginUseCase.checkNip55SignerInstalled() } returns true
 
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
-    io.mockk.verify { loginUseCase.checkAmberInstalled() }
+    io.mockk.verify { loginUseCase.checkNip55SignerInstalled() }
   }
 
   @Test
   fun `onLoginButtonClicked should show install dialog when Amber is not installed`() = runTest {
-    every { loginUseCase.checkAmberInstalled() } returns false
+    every { loginUseCase.checkNip55SignerInstalled() } returns false
 
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("showAmberInstallDialog should be true", state.showAmberInstallDialog)
+    assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
   }
 
   @Test
@@ -146,7 +146,7 @@ class LoginViewModelTest {
 
   @Test
   fun `dismissError should clear error message`() = runTest {
-    every { loginUseCase.checkAmberInstalled() } returns false
+    every { loginUseCase.checkNip55SignerInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
@@ -155,59 +155,59 @@ class LoginViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("showAmberInstallDialog should be false", state.showAmberInstallDialog)
+    assertFalse("showNip55InstallDialog should be false", state.showNip55InstallDialog)
   }
 
   @Test
   fun `onRetryLogin should retry login by calling onLoginButtonClicked`() = runTest {
-    every { loginUseCase.checkAmberInstalled() } returns true
+    every { loginUseCase.checkNip55SignerInstalled() } returns true
 
     viewModel.onRetryLogin()
     advanceUntilIdle()
 
-    io.mockk.verify { loginUseCase.checkAmberInstalled() }
+    io.mockk.verify { loginUseCase.checkNip55SignerInstalled() }
   }
 
   @Test
-  fun `processAmberResponse should set loading state during processing`() = runTest {
+  fun `processNip55Response should set loading state during processing`() = runTest {
     val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
-    coEvery { authRepository.processAmberResponse(any(), any()) } coAnswers
+    coEvery { authRepository.processNip55Response(any(), any()) } coAnswers
         {
           kotlinx.coroutines.delay(100)
           Result.success(testUser)
         }
-    every { authRepository.checkAmberInstalled() } returns true
+    every { authRepository.checkNip55SignerInstalled() } returns true
     coEvery { authRepository.getLoginState() } returns null
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    viewModelWithMock.processNip55Response(-1, mockIntent)
 
     advanceUntilIdle()
 
-    coVerify { authRepository.processAmberResponse(any(), any()) }
+    coVerify { authRepository.processNip55Response(any(), any()) }
   }
 
   @Test
-  fun `processAmberResponse should set loginSuccess on success`() = runTest {
+  fun `processNip55Response should set loginSuccess on success`() = runTest {
     val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.success(testUser)
-    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.success(testUser)
+    every { authRepository.checkNip55SignerInstalled() } returns true
     coEvery { authRepository.getLoginState() } returns null
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val loginState = viewModelWithMock.uiState.first()
@@ -218,19 +218,19 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `processAmberResponse should set error message on UserRejected error`() = runTest {
+  fun `processNip55Response should set error message on UserRejected error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
-    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkNip55SignerInstalled() } returns true
     coEvery { authRepository.getLoginState() } returns null
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
@@ -240,19 +240,19 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `processAmberResponse should set error message on Timeout error`() = runTest {
+  fun `processNip55Response should set error message on Timeout error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.Timeout
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
-    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkNip55SignerInstalled() } returns true
     coEvery { authRepository.getLoginState() } returns null
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
@@ -264,20 +264,20 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `processAmberResponse should handle NetworkError`() = runTest {
+  fun `processNip55Response should handle NetworkError`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error =
         io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError("Connection failed")
-    coEvery { authRepository.processAmberResponse(any(), any()) } returns Result.failure(error)
-    every { authRepository.checkAmberInstalled() } returns true
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
+    every { authRepository.checkNip55SignerInstalled() } returns true
     coEvery { authRepository.getLoginState() } returns null
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
         LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
 
-    viewModelWithMock.processAmberResponse(-1, mockIntent)
+    viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()

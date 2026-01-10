@@ -88,7 +88,7 @@ class LoginScreenTest {
   @Test
   fun loginScreen_displaysAmberInstallDialogWhenRequested() {
 
-    val dialogState = LoginUiState(showAmberInstallDialog = true)
+    val dialogState = LoginUiState(showNip55InstallDialog = true)
 
     composeTestRule.setContent {
       LoginScreen(uiState = dialogState, onLoginButtonClick = {}, onDismissDialog = {})
@@ -114,7 +114,7 @@ class LoginScreenTest {
   @Test
   fun loginScreen_dismissDialogCallsCallback() {
 
-    val dialogState = LoginUiState(showAmberInstallDialog = true)
+    val dialogState = LoginUiState(showNip55InstallDialog = true)
     var dismissCalled = false
 
     composeTestRule.setContent {
@@ -131,7 +131,7 @@ class LoginScreenTest {
   @Test
   fun loginScreen_installButtonOpensPlayStore() {
 
-    val dialogState = LoginUiState(showAmberInstallDialog = true)
+    val dialogState = LoginUiState(showNip55InstallDialog = true)
     var installCalled = false
 
     composeTestRule.setContent {
@@ -139,7 +139,7 @@ class LoginScreenTest {
           uiState = dialogState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onInstallAmber = { installCalled = true })
+          onInstallNip55Signer = { installCalled = true })
     }
     composeTestRule.onNodeWithText("インストール").performClick()
 
