@@ -73,7 +73,7 @@ fun LoginScreen(
             }
 
             Button(onClick = onLoginButtonClick, enabled = !uiState.isLoading) {
-              Text(stringResource(R.string.button_login_with_amber))
+              Text(stringResource(R.string.button_login_with_nip55))
             }
           }
     }
@@ -81,8 +81,8 @@ fun LoginScreen(
     if (uiState.showNip55InstallDialog) {
       AlertDialog(
           onDismissRequest = onDismissDialog,
-          title = { Text(stringResource(R.string.dialog_title_amber_required)) },
-          text = { Text(stringResource(R.string.dialog_message_amber_required)) },
+          title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
+          text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
           confirmButton = {
             Button(onClick = onInstallNip55Signer) { Text(stringResource(R.string.button_install)) }
           },
