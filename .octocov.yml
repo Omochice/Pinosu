@@ -1,0 +1,22 @@
+coverage:
+  paths:
+    - app/build/reports/kover/coverage.xml
+
+codeToTestRatio:
+  code:
+    - "app/src/main/**/*.kt"
+    - "!app/src/main/**/*Module.kt"
+  test:
+    - "app/src/test/**/*.kt"
+
+comment:
+  hideFooterLink: false
+
+diff:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+
+report:
+  if: is_default_branch
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
