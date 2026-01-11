@@ -62,6 +62,25 @@ class BookmarkViewModelTest {
   }
 
   @Test
+  fun `initial BookmarkUiState should have selectedTab as Local`() = runTest {
+    val state = viewModel.uiState.first()
+    assertEquals(
+        "selectedTab should be Local by default", BookmarkFilterMode.Local, state.selectedTab)
+  }
+
+  @Test
+  fun `initial BookmarkUiState should have allBookmarks empty`() = runTest {
+    val state = viewModel.uiState.first()
+    assertTrue("allBookmarks should be empty", state.allBookmarks.isEmpty())
+  }
+
+  @Test
+  fun `initial BookmarkUiState should have userHexPubkey null`() = runTest {
+    val state = viewModel.uiState.first()
+    assertNull("userHexPubkey should be null", state.userHexPubkey)
+  }
+
+  @Test
   fun `onBookmarkCardClicked with multiple URLs should set selectedBookmarkForUrlDialog`() =
       runTest {
         val bookmarkWithMultipleUrls =
