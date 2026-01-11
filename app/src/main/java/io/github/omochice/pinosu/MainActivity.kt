@@ -25,6 +25,14 @@ import io.github.omochice.pinosu.presentation.navigation.BOOKMARK_ROUTE
 import io.github.omochice.pinosu.presentation.navigation.LICENSE_ROUTE
 import io.github.omochice.pinosu.presentation.navigation.LOGIN_ROUTE
 import io.github.omochice.pinosu.presentation.navigation.MAIN_ROUTE
+import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
+import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
+import io.github.omochice.pinosu.presentation.navigation.defaultPopEnterTransition
+import io.github.omochice.pinosu.presentation.navigation.defaultPopExitTransition
+import io.github.omochice.pinosu.presentation.navigation.modalEnterTransition
+import io.github.omochice.pinosu.presentation.navigation.modalExitTransition
+import io.github.omochice.pinosu.presentation.navigation.modalPopEnterTransition
+import io.github.omochice.pinosu.presentation.navigation.modalPopExitTransition
 import io.github.omochice.pinosu.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
@@ -97,72 +105,101 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             onCloseDrawer = { scope.launch { drawerState.close() } })
       }) {
         NavHost(navController = navController, startDestination = startDestination) {
-          composable(LOGIN_ROUTE) {
-            LoginScreen(
-                uiState = loginUiState,
-                onLoginButtonClick = {
-                  viewModel.onLoginButtonClicked()
-                  if (nip55SignerClient.checkNip55SignerInstalled()) {
-                    val intent = nip55SignerClient.createPublicKeyIntent()
-                    nip55Launcher.launch(intent)
-                  }
-                },
-                onDismissDialog = { viewModel.dismissError() },
-                onInstallNip55Signer = {
-                  // TODO: Implement Play Store link
-                },
-                onRetry = {
-                  viewModel.onRetryLogin()
-                  if (nip55SignerClient.checkNip55SignerInstalled()) {
-                    val intent = nip55SignerClient.createPublicKeyIntent()
-                    nip55Launcher.launch(intent)
-                  }
-                },
-                onNavigateToMain = {
-                  navController.navigate(BOOKMARK_ROUTE) {
-                    popUpTo(LOGIN_ROUTE) { inclusive = true }
-                  }
-                  viewModel.dismissError()
-                })
-          }
-
-          composable(MAIN_ROUTE) {
-            LaunchedEffect(mainUiState.userPubkey) {
-              if (mainUiState.userPubkey == null) {
-                navController.navigate(LOGIN_ROUTE) { popUpTo(MAIN_ROUTE) { inclusive = true } }
+          composable(
+              LOGIN_ROUTE,
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                LoginScreen(
+                    uiState = loginUiState,
+                    onLoginButtonClick = {
+                      viewModel.onLoginButtonClicked()
+                      if (nip55SignerClient.checkNip55SignerInstalled()) {
+                        val intent = nip55SignerClient.createPublicKeyIntent()
+                        nip55Launcher.launch(intent)
+                      }
+                    },
+                    onDismissDialog = { viewModel.dismissError() },
+                    onInstallNip55Signer = {
+                      // TODO: Implement Play Store link
+                    },
+                    onRetry = {
+                      viewModel.onRetryLogin()
+                      if (nip55SignerClient.checkNip55SignerInstalled()) {
+                        val intent = nip55SignerClient.createPublicKeyIntent()
+                        nip55Launcher.launch(intent)
+                      }
+                    },
+                    onNavigateToMain = {
+                      navController.navigate(BOOKMARK_ROUTE) {
+                        popUpTo(LOGIN_ROUTE) { inclusive = true }
+                      }
+                      viewModel.dismissError()
+                    })
               }
-            }
 
-            MainScreen(
-                uiState = mainUiState,
-                onLogout = { viewModel.onLogoutButtonClicked() },
-                onOpenDrawer = { scope.launch { drawerState.open() } },
-                onNavigateToLogin = {})
-          }
+          composable(
+              MAIN_ROUTE,
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                LaunchedEffect(mainUiState.userPubkey) {
+                  if (mainUiState.userPubkey == null) {
+                    navController.navigate(LOGIN_ROUTE) { popUpTo(MAIN_ROUTE) { inclusive = true } }
+                  }
+                }
 
-          composable(BOOKMARK_ROUTE) {
-            val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
-            val bookmarkUiState by bookmarkViewModel.uiState.collectAsState()
-
-            LaunchedEffect(mainUiState.userPubkey) {
-              if (mainUiState.userPubkey == null) {
-                navController.navigate(LOGIN_ROUTE) { popUpTo(BOOKMARK_ROUTE) { inclusive = true } }
+                MainScreen(
+                    uiState = mainUiState,
+                    onLogout = { viewModel.onLogoutButtonClicked() },
+                    onOpenDrawer = { scope.launch { drawerState.open() } },
+                    onNavigateToLogin = {})
               }
-            }
 
-            BookmarkScreen(
-                uiState = bookmarkUiState,
-                onRefresh = { bookmarkViewModel.refresh() },
-                onLoad = { bookmarkViewModel.loadBookmarks() },
-                onOpenDrawer = { scope.launch { drawerState.open() } },
-                viewModel = bookmarkViewModel)
-          }
+          composable(
+              BOOKMARK_ROUTE,
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
+                val bookmarkUiState by bookmarkViewModel.uiState.collectAsState()
 
-          composable(LICENSE_ROUTE) { LicenseScreen(onNavigateUp = { navController.navigateUp() }) }
+                LaunchedEffect(mainUiState.userPubkey) {
+                  if (mainUiState.userPubkey == null) {
+                    navController.navigate(LOGIN_ROUTE) {
+                      popUpTo(BOOKMARK_ROUTE) { inclusive = true }
+                    }
+                  }
+                }
 
-          composable(APP_INFO_ROUTE) {
-            AppInfoScreen(onNavigateUp = { navController.navigateUp() })
-          }
+                BookmarkScreen(
+                    uiState = bookmarkUiState,
+                    onRefresh = { bookmarkViewModel.refresh() },
+                    onLoad = { bookmarkViewModel.loadBookmarks() },
+                    onOpenDrawer = { scope.launch { drawerState.open() } },
+                    viewModel = bookmarkViewModel)
+              }
+
+          composable(
+              LICENSE_ROUTE,
+              enterTransition = { modalEnterTransition },
+              exitTransition = { modalExitTransition },
+              popEnterTransition = { modalPopEnterTransition },
+              popExitTransition = { modalPopExitTransition }) {
+                LicenseScreen(onNavigateUp = { navController.navigateUp() })
+              }
+
+          composable(
+              APP_INFO_ROUTE,
+              enterTransition = { modalEnterTransition },
+              exitTransition = { modalExitTransition },
+              popEnterTransition = { modalPopEnterTransition },
+              popExitTransition = { modalPopExitTransition }) {
+                AppInfoScreen(onNavigateUp = { navController.navigateUp() })
+              }
         }
       }
 }
