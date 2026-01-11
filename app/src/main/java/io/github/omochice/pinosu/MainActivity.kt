@@ -6,6 +6,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
@@ -29,10 +31,6 @@ import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultPopEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultPopExitTransition
-import io.github.omochice.pinosu.presentation.navigation.modalEnterTransition
-import io.github.omochice.pinosu.presentation.navigation.modalExitTransition
-import io.github.omochice.pinosu.presentation.navigation.modalPopEnterTransition
-import io.github.omochice.pinosu.presentation.navigation.modalPopExitTransition
 import io.github.omochice.pinosu.presentation.ui.AppInfoScreen
 import io.github.omochice.pinosu.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.LicenseScreen
@@ -185,19 +183,19 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
 
           composable(
               LICENSE_ROUTE,
-              enterTransition = { modalEnterTransition },
-              exitTransition = { modalExitTransition },
-              popEnterTransition = { modalPopEnterTransition },
-              popExitTransition = { modalPopExitTransition }) {
+              enterTransition = { EnterTransition.None },
+              exitTransition = { ExitTransition.None },
+              popEnterTransition = { EnterTransition.None },
+              popExitTransition = { ExitTransition.None }) {
                 LicenseScreen(onNavigateUp = { navController.navigateUp() })
               }
 
           composable(
               APP_INFO_ROUTE,
-              enterTransition = { modalEnterTransition },
-              exitTransition = { modalExitTransition },
-              popEnterTransition = { modalPopEnterTransition },
-              popExitTransition = { modalPopExitTransition }) {
+              enterTransition = { EnterTransition.None },
+              exitTransition = { ExitTransition.None },
+              popEnterTransition = { EnterTransition.None },
+              popExitTransition = { ExitTransition.None }) {
                 AppInfoScreen(onNavigateUp = { navController.navigateUp() })
               }
         }
