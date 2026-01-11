@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -54,7 +54,7 @@ fun AppDrawer(
       HorizontalDivider()
 
       DrawerMenuItem(
-          icon = Icons.Default.List,
+          icon = Icons.AutoMirrored.Filled.List,
           text = stringResource(R.string.menu_licenses),
           onClick = {
             onCloseDrawer()
@@ -72,7 +72,7 @@ fun AppDrawer(
       HorizontalDivider()
 
       DrawerMenuItem(
-          icon = Icons.Default.KeyboardArrowRight,
+          icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
           text = stringResource(R.string.menu_logout),
           onClick = {
             onCloseDrawer()
