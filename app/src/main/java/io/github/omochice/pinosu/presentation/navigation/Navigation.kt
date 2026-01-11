@@ -10,3 +10,9 @@ const val MAIN_ROUTE = "main"
 
 /** Bookmark list screen route definition */
 const val BOOKMARK_ROUTE = "bookmark"
+
+/** License screen route definition */
+const val LICENSE_ROUTE = "license"
+
+/** App info screen route definition */
+const val APP_INFO_ROUTE = "appinfo"
