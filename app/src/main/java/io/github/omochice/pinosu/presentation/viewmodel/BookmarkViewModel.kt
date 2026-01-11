@@ -11,6 +11,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -59,13 +60,15 @@ constructor(
       result.fold(
           onSuccess = { bookmarkList ->
             val allItems = bookmarkList?.items ?: emptyList()
-            _uiState.value =
-                _uiState.value.copy(
-                    isLoading = false,
-                    allBookmarks = allItems,
-                    userHexPubkey = userHexPubkey,
-                    error = null)
-            applyFilter()
+            _uiState.update { state ->
+              val updatedState =
+                  state.copy(
+                      isLoading = false,
+                      allBookmarks = allItems,
+                      userHexPubkey = userHexPubkey,
+                      error = null)
+              updatedState.copy(bookmarks = filterBookmarks(updatedState))
+            }
           },
           onFailure = { e ->
             _uiState.value =
@@ -83,32 +86,33 @@ constructor(
    * @param tab The filter mode to select (Local or Global)
    */
   fun selectTab(tab: BookmarkFilterMode) {
-    if (_uiState.value.selectedTab != tab) {
-      _uiState.value = _uiState.value.copy(selectedTab = tab)
-      applyFilter()
+    _uiState.update { state ->
+      if (state.selectedTab != tab) {
+        val newState = state.copy(selectedTab = tab)
+        newState.copy(bookmarks = filterBookmarks(newState))
+      } else {
+        state
+      }
     }
   }
 
   /**
-   * Apply filter to bookmarks based on selected tab
+   * Filter bookmarks based on selected tab
    *
    * Local tab shows only bookmarks authored by the logged-in user. Global tab shows all bookmarks.
+   *
+   * @param state Current UI state to filter from
+   * @return Filtered list of bookmarks
    */
-  private fun applyFilter() {
-    val state = _uiState.value
-    val filtered =
-        when (state.selectedTab) {
-          BookmarkFilterMode.Local -> {
-            val hexPubkey = state.userHexPubkey
-            if (hexPubkey != null) {
-              state.allBookmarks.filter { it.event?.author == hexPubkey }
-            } else {
-              emptyList()
-            }
-          }
-          BookmarkFilterMode.Global -> state.allBookmarks
-        }
-    _uiState.value = state.copy(bookmarks = filtered)
+  private fun filterBookmarks(state: BookmarkUiState): List<BookmarkItem> {
+    return when (state.selectedTab) {
+      BookmarkFilterMode.Local -> {
+        state.userHexPubkey?.let { hexPubkey ->
+          state.allBookmarks.filter { it.event?.author == hexPubkey }
+        } ?: emptyList()
+      }
+      BookmarkFilterMode.Global -> state.allBookmarks
+    }
   }
 
   /** Refresh bookmark list by reloading from relays */
