@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,6 +52,7 @@ import java.time.format.DateTimeFormatter
  * @param uiState Bookmark screen UI state
  * @param onRefresh Callback when pull-to-refresh is triggered
  * @param onLoad Callback to load bookmarks on initial display
+ * @param onOpenDrawer Callback when hamburger menu is clicked to open drawer
  * @param viewModel ViewModel for bookmark screen (null for previews)
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +61,7 @@ fun BookmarkScreen(
     uiState: BookmarkUiState,
     onRefresh: () -> Unit,
     onLoad: () -> Unit,
+    onOpenDrawer: () -> Unit = {},
     viewModel: BookmarkViewModel? = null,
 ) {
   LaunchedEffect(Unit) { onLoad() }
@@ -63,86 +69,94 @@ fun BookmarkScreen(
   val uriHandler = LocalUriHandler.current
   val urlOpenErrorText = stringResource(R.string.error_url_open_failed)
 
-  Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_bookmarks)) }) }) {
-      paddingValues ->
-    PullToRefreshBox(
-        isRefreshing = uiState.isLoading,
-        onRefresh = onRefresh,
-        modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-          when {
-            uiState.isLoading && uiState.bookmarks.isEmpty() -> {
-              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+  Scaffold(
+      topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.title_bookmarks)) },
+            navigationIcon = {
+              IconButton(onClick = onOpenDrawer) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
               }
-            }
-            uiState.error != null && uiState.bookmarks.isEmpty() -> {
-              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                  Text(
-                      text = uiState.error,
-                      style = MaterialTheme.typography.bodyLarge,
-                      color = MaterialTheme.colorScheme.error)
+            })
+      }) { paddingValues ->
+        PullToRefreshBox(
+            isRefreshing = uiState.isLoading,
+            onRefresh = onRefresh,
+            modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+              when {
+                uiState.isLoading && uiState.bookmarks.isEmpty() -> {
+                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                  }
+                }
+                uiState.error != null && uiState.bookmarks.isEmpty() -> {
+                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                      Text(
+                          text = uiState.error,
+                          style = MaterialTheme.typography.bodyLarge,
+                          color = MaterialTheme.colorScheme.error)
+                    }
+                  }
+                }
+                uiState.bookmarks.isEmpty() -> {
+                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = stringResource(R.string.message_no_bookmarks),
+                        style = MaterialTheme.typography.bodyLarge)
+                  }
+                }
+                else -> {
+                  LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      contentPadding = PaddingValues(16.dp),
+                      verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(
+                            uiState.bookmarks,
+                            key = { bookmark ->
+                              "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
+                            }) { bookmark ->
+                              BookmarkItemCard(
+                                  bookmark = bookmark,
+                                  onClick = { clickedBookmark ->
+                                    viewModel?.let { vm ->
+                                      if (clickedBookmark.urls.size == 1) {
+                                        try {
+                                          uriHandler.openUri(clickedBookmark.urls.first())
+                                        } catch (e: Exception) {
+                                          vm.setUrlOpenError(e.message ?: urlOpenErrorText)
+                                        }
+                                      } else {
+                                        vm.onBookmarkCardClicked(clickedBookmark)
+                                      }
+                                    }
+                                  })
+                            }
+                      }
                 }
               }
             }
-            uiState.bookmarks.isEmpty() -> {
-              Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = stringResource(R.string.message_no_bookmarks),
-                    style = MaterialTheme.typography.bodyLarge)
-              }
-            }
-            else -> {
-              LazyColumn(
-                  modifier = Modifier.fillMaxSize(),
-                  contentPadding = PaddingValues(16.dp),
-                  verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(
-                        uiState.bookmarks,
-                        key = { bookmark ->
-                          "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
-                        }) { bookmark ->
-                          BookmarkItemCard(
-                              bookmark = bookmark,
-                              onClick = { clickedBookmark ->
-                                viewModel?.let { vm ->
-                                  if (clickedBookmark.urls.size == 1) {
-                                    try {
-                                      uriHandler.openUri(clickedBookmark.urls.first())
-                                    } catch (e: Exception) {
-                                      vm.setUrlOpenError(e.message ?: urlOpenErrorText)
-                                    }
-                                  } else {
-                                    vm.onBookmarkCardClicked(clickedBookmark)
-                                  }
-                                }
-                              })
-                        }
+
+        viewModel?.let { vm ->
+          uiState.selectedBookmarkForUrlDialog?.let { bookmark ->
+            UrlSelectionDialog(
+                urls = bookmark.urls,
+                onUrlSelected = { url ->
+                  vm.dismissUrlDialog()
+                  try {
+                    uriHandler.openUri(url)
+                  } catch (e: Exception) {
+                    vm.setUrlOpenError(e.message ?: urlOpenErrorText)
                   }
-            }
+                },
+                onDismiss = { vm.dismissUrlDialog() })
+          }
+
+          uiState.urlOpenError?.let { error ->
+            ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
           }
         }
-
-    viewModel?.let { vm ->
-      uiState.selectedBookmarkForUrlDialog?.let { bookmark ->
-        UrlSelectionDialog(
-            urls = bookmark.urls,
-            onUrlSelected = { url ->
-              vm.dismissUrlDialog()
-              try {
-                uriHandler.openUri(url)
-              } catch (e: Exception) {
-                vm.setUrlOpenError(e.message ?: urlOpenErrorText)
-              }
-            },
-            onDismiss = { vm.dismissUrlDialog() })
       }
-
-      uiState.urlOpenError?.let { error ->
-        ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
-      }
-    }
-  }
 }
 
 @Composable
