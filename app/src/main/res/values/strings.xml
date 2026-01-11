@@ -58,4 +58,7 @@
     <!-- URL選択ダイアログ -->
     <string name="dialog_title_select_url">URLを選択</string>
     <string name="button_open">開く</string>
+
+    <!-- ライセンス画面 -->
+    <string name="title_licenses">オープンソースライセンス</string>
 </resources>
