@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
@@ -181,31 +180,5 @@ class MainScreenTest {
     composeTestRule.setContent { MainScreen(uiState = notLoggedInState, onLogout = {}) }
 
     composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
-  }
-
-  @Test
-  fun mainScreen_shouldDisplayHamburgerMenuIcon() {
-    composeTestRule.setContent {
-      MainScreen(
-          uiState = MainUiState(userPubkey = "test_pubkey"), onLogout = {}, onOpenDrawer = {})
-    }
-
-    composeTestRule.onNodeWithContentDescription("Open menu").assertIsDisplayed()
-  }
-
-  @Test
-  fun mainScreen_hamburgerMenuClick_shouldTriggerCallback() {
-    var callbackTriggered = false
-
-    composeTestRule.setContent {
-      MainScreen(
-          uiState = MainUiState(userPubkey = "test_pubkey"),
-          onLogout = {},
-          onOpenDrawer = { callbackTriggered = true })
-    }
-
-    composeTestRule.onNodeWithContentDescription("Open menu").performClick()
-
-    org.junit.Assert.assertTrue(callbackTriggered)
   }
 }

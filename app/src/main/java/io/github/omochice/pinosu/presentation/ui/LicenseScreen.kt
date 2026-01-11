@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui.license
+package io.github.omochice.pinosu.presentation.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

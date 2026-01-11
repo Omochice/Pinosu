@@ -33,12 +33,12 @@ import io.github.omochice.pinosu.presentation.navigation.modalEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.modalExitTransition
 import io.github.omochice.pinosu.presentation.navigation.modalPopEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.modalPopExitTransition
+import io.github.omochice.pinosu.presentation.ui.AppInfoScreen
 import io.github.omochice.pinosu.presentation.ui.BookmarkScreen
+import io.github.omochice.pinosu.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
-import io.github.omochice.pinosu.presentation.ui.appinfo.AppInfoScreen
 import io.github.omochice.pinosu.presentation.ui.drawer.AppDrawer
-import io.github.omochice.pinosu.presentation.ui.license.LicenseScreen
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
