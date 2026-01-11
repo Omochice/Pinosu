@@ -58,4 +58,16 @@
     <!-- URL選択ダイアログ -->
     <string name="dialog_title_select_url">URLを選択</string>
     <string name="button_open">開く</string>
+
+    <!-- ライセンス画面 -->
+    <string name="title_licenses">オープンソースライセンス</string>
+
+    <!-- ドロワーメニュー -->
+    <string name="menu_licenses">ライセンス</string>
+    <string name="menu_app_info">アプリ情報</string>
+    <string name="menu_logout">ログアウト</string>
+
+    <!-- アプリ情報画面 -->
+    <string name="title_app_info">アプリ情報</string>
+    <string name="label_version">バージョン</string>
 </resources>

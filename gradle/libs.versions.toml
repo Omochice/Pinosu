@@ -32,6 +32,8 @@ jsoup = {group = "org.jsoup", name = "jsoup", version.ref = "jsoup"}
 mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
 robolectric = {group = "org.robolectric", name = "robolectric", version.ref = "robolectric"}
 kotlinx-coroutines-test = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines"}
+aboutlibraries-core = {group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries"}
+aboutlibraries-compose-m3 = {group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutlibraries"}
 
 [plugins]
 android-application = {id = "com.android.application", version.ref = "agp"}
@@ -40,6 +42,7 @@ kotlin-compose = {id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kot
 ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 kover = {id = "org.jetbrains.kotlinx.kover", version.ref = "kover"}
+aboutlibraries = {id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries"}
 
 [versions]
 agp = "8.13.2"
@@ -68,3 +71,4 @@ mockk = "1.13.13"
 robolectric = "4.14.1"
 coroutines = "1.9.0"
 kover = "0.9.1"
+aboutlibraries = "11.2.0"
