@@ -126,9 +126,14 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/ui/`
 **Purpose**: Jetpack Compose screens and components
-**Example**: `LoginScreen.kt`
+**Example**: `LoginScreen.kt`, `MainScreen.kt`, `BookmarkScreen.kt`
 
 **Pattern**: Composable functions observing ViewModel state
+
+**Subdirectories**:
+
+- `component/`: Reusable Compose dialogs and widgets (ErrorDialog, UrlSelectionDialog)
+- `drawer/`: Navigation drawer components (AppDrawer, DrawerMenuItem)
 
 ### Dependency Injection (`di/`)
 
@@ -167,6 +172,8 @@ io.github.omochice.pinosu/
 ├── presentation/    // UI layer
 │   ├── viewmodel/   // State management (Login, Bookmark ViewModels)
 │   ├── ui/          // Compose screens (Login, Main, Bookmark)
+│   │   ├── component/   // Reusable dialogs (ErrorDialog, UrlSelectionDialog)
+│   │   └── drawer/      // Navigation drawer UI
 │   └── navigation/  // Navigation graphs
 ├── di/              // Dependency injection (Network, Repository, UseCase)
 └── ui/              // Theme and design system
