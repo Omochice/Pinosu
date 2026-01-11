@@ -54,6 +54,8 @@
     <string name="label_event_id">イベントID</string>
     <string name="label_relay">リレー</string>
     <string name="message_no_bookmarks">ブックマークがありません</string>
+    <string name="tab_local">Local</string>
+    <string name="tab_global">Global</string>
 
     <!-- URL選択ダイアログ -->
     <string name="dialog_title_select_url">URLを選択</string>
