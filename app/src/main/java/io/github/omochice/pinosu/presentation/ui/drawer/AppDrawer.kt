@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.HorizontalDivider
@@ -72,7 +72,7 @@ fun AppDrawer(
       HorizontalDivider()
 
       DrawerMenuItem(
-          icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+          icon = Icons.AutoMirrored.Filled.ExitToApp,
           text = stringResource(R.string.menu_logout),
           onClick = {
             onCloseDrawer()
