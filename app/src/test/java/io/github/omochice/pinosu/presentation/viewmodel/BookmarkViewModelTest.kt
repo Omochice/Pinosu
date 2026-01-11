@@ -62,6 +62,108 @@ class BookmarkViewModelTest {
   }
 
   @Test
+  fun `selectTab to Global should update selectedTab`() = runTest {
+    viewModel.selectTab(BookmarkFilterMode.Global)
+
+    val state = viewModel.uiState.first()
+    assertEquals(
+        "selectedTab should be Global after selecting",
+        BookmarkFilterMode.Global,
+        state.selectedTab)
+  }
+
+  @Test
+  fun `selectTab with same tab should not trigger state update`() = runTest {
+    val initialState = viewModel.uiState.first()
+    viewModel.selectTab(BookmarkFilterMode.Local)
+    val newState = viewModel.uiState.first()
+
+    assertSame("State should be same reference when selecting same tab", initialState, newState)
+  }
+
+  @Test
+  fun `Global tab should show all bookmarks from allBookmarks`() = runTest {
+    val testBookmarks =
+        listOf(
+            createTestBookmarkItem("id1", "author1"),
+            createTestBookmarkItem("id2", "author2"),
+            createTestBookmarkItem("id3", "author1"))
+
+    setViewModelState(allBookmarks = testBookmarks, userHexPubkey = "author1")
+
+    viewModel.selectTab(BookmarkFilterMode.Global)
+
+    val state = viewModel.uiState.first()
+    assertEquals("Global tab should show all bookmarks", testBookmarks, state.bookmarks)
+  }
+
+  @Test
+  fun `Local tab should filter bookmarks by userHexPubkey`() = runTest {
+    val testBookmarks =
+        listOf(
+            createTestBookmarkItem("id1", "author1"),
+            createTestBookmarkItem("id2", "author2"),
+            createTestBookmarkItem("id3", "author1"))
+
+    setViewModelState(
+        allBookmarks = testBookmarks,
+        userHexPubkey = "author1",
+        selectedTab = BookmarkFilterMode.Global)
+
+    viewModel.selectTab(BookmarkFilterMode.Local)
+
+    val state = viewModel.uiState.first()
+    assertEquals("Local tab should show only user's bookmarks", 2, state.bookmarks.size)
+    assertTrue(
+        "All bookmarks should have matching author",
+        state.bookmarks.all { it.event?.author == "author1" })
+  }
+
+  @Test
+  fun `Local tab with null userHexPubkey should show empty list`() = runTest {
+    val testBookmarks =
+        listOf(createTestBookmarkItem("id1", "author1"), createTestBookmarkItem("id2", "author2"))
+
+    setViewModelState(allBookmarks = testBookmarks, userHexPubkey = null)
+
+    viewModel.selectTab(BookmarkFilterMode.Local)
+
+    val state = viewModel.uiState.first()
+    assertTrue("Local tab with null userHexPubkey should be empty", state.bookmarks.isEmpty())
+  }
+
+  private fun createTestBookmarkItem(eventId: String, author: String): BookmarkItem {
+    return BookmarkItem(
+        type = "event",
+        eventId = eventId,
+        title = "Test $eventId",
+        urls = listOf("https://example.com/$eventId"),
+        event =
+            io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+                kind = 39701,
+                content = "content",
+                author = author,
+                createdAt = System.currentTimeMillis() / 1000,
+                tags = emptyList()))
+  }
+
+  private fun setViewModelState(
+      allBookmarks: List<BookmarkItem> = emptyList(),
+      userHexPubkey: String? = null,
+      selectedTab: BookmarkFilterMode = BookmarkFilterMode.Local
+  ) {
+    val currentState = viewModel.uiState.value
+    val field = viewModel::class.java.getDeclaredField("_uiState")
+    field.isAccessible = true
+    @Suppress("UNCHECKED_CAST")
+    val mutableStateFlow =
+        field.get(viewModel) as kotlinx.coroutines.flow.MutableStateFlow<BookmarkUiState>
+    mutableStateFlow.value =
+        currentState.copy(
+            allBookmarks = allBookmarks, userHexPubkey = userHexPubkey, selectedTab = selectedTab)
+  }
+
+  @Test
   fun `onBookmarkCardClicked with multiple URLs should set selectedBookmarkForUrlDialog`() =
       runTest {
         val bookmarkWithMultipleUrls =
@@ -149,7 +251,7 @@ class BookmarkViewModelTest {
   }
 
   @Test
-  fun `loadBookmarks should set bookmarks on success`() = runTest {
+  fun `loadBookmarks should store bookmarks in allBookmarks`() = runTest {
     val testUser = User("npub1test")
     val testBookmarks =
         listOf(
@@ -168,7 +270,7 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertFalse("isLoading should be false after loading", state.isLoading)
-    assertEquals("bookmarks should be set", testBookmarks, state.bookmarks)
+    assertEquals("allBookmarks should be set", testBookmarks, state.allBookmarks)
     assertNull("error should be null on success", state.error)
   }
 

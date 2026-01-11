@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
@@ -10,6 +11,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -34,7 +36,8 @@ constructor(
   /**
    * Load bookmarks for the current logged-in user
    *
-   * Fetches bookmark list from relays and updates UI state accordingly.
+   * Fetches all bookmarks from relays, stores in shared data pool, and applies filter based on
+   * selected tab.
    */
   fun loadBookmarks() {
     viewModelScope.launch {
@@ -43,22 +46,72 @@ constructor(
       val user = getLoginStateUseCase()
       if (user == null) {
         _uiState.value =
-            _uiState.value.copy(isLoading = false, error = "Not logged in", bookmarks = emptyList())
+            _uiState.value.copy(
+                isLoading = false,
+                error = "Not logged in",
+                allBookmarks = emptyList(),
+                bookmarks = emptyList())
         return@launch
       }
+
+      val userHexPubkey = Bech32.npubToHex(user.pubkey)
 
       val result = getBookmarkListUseCase(user.pubkey)
       result.fold(
           onSuccess = { bookmarkList ->
-            _uiState.value =
-                _uiState.value.copy(
-                    isLoading = false, bookmarks = bookmarkList?.items ?: emptyList(), error = null)
+            val allItems = bookmarkList?.items ?: emptyList()
+            _uiState.update { state ->
+              val updatedState =
+                  state.copy(
+                      isLoading = false,
+                      allBookmarks = allItems,
+                      userHexPubkey = userHexPubkey,
+                      error = null)
+              updatedState.copy(bookmarks = filterBookmarks(updatedState))
+            }
           },
           onFailure = { e ->
             _uiState.value =
                 _uiState.value.copy(
                     isLoading = false, error = e.message ?: "Failed to load bookmarks")
           })
+    }
+  }
+
+  /**
+   * Select bookmark filter tab
+   *
+   * Applies filter based on selected tab without re-fetching data from relay.
+   *
+   * @param tab The filter mode to select (Local or Global)
+   */
+  fun selectTab(tab: BookmarkFilterMode) {
+    _uiState.update { state ->
+      if (state.selectedTab != tab) {
+        val newState = state.copy(selectedTab = tab)
+        newState.copy(bookmarks = filterBookmarks(newState))
+      } else {
+        state
+      }
+    }
+  }
+
+  /**
+   * Filter bookmarks based on selected tab
+   *
+   * Local tab shows only bookmarks authored by the logged-in user. Global tab shows all bookmarks.
+   *
+   * @param state Current UI state to filter from
+   * @return Filtered list of bookmarks
+   */
+  private fun filterBookmarks(state: BookmarkUiState): List<BookmarkItem> {
+    return when (state.selectedTab) {
+      BookmarkFilterMode.Local -> {
+        state.userHexPubkey?.let { hexPubkey ->
+          state.allBookmarks.filter { it.event?.author == hexPubkey }
+        } ?: emptyList()
+      }
+      BookmarkFilterMode.Global -> state.allBookmarks
     }
   }
 

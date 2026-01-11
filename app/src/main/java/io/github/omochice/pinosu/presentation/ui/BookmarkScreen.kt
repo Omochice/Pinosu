@@ -21,7 +21,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -38,6 +40,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
 import io.github.omochice.pinosu.presentation.ui.component.UrlSelectionDialog
+import io.github.omochice.pinosu.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import java.time.Instant
@@ -47,12 +50,13 @@ import java.time.format.DateTimeFormatter
 /**
  * Composable function for bookmark list screen
  *
- * Displays a list of bookmarked items with pull-to-refresh support.
+ * Displays a list of bookmarked items with pull-to-refresh support and tab-based filtering.
  *
  * @param uiState Bookmark screen UI state
  * @param onRefresh Callback when pull-to-refresh is triggered
  * @param onLoad Callback to load bookmarks on initial display
  * @param onOpenDrawer Callback when hamburger menu is clicked to open drawer
+ * @param onTabSelected Callback when a filter tab is selected
  * @param viewModel ViewModel for bookmark screen (null for previews)
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +66,7 @@ fun BookmarkScreen(
     onRefresh: () -> Unit,
     onLoad: () -> Unit,
     onOpenDrawer: () -> Unit = {},
+    onTabSelected: (BookmarkFilterMode) -> Unit = {},
     viewModel: BookmarkViewModel? = null,
 ) {
   LaunchedEffect(Unit) { onLoad() }
@@ -71,13 +76,26 @@ fun BookmarkScreen(
 
   Scaffold(
       topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_bookmarks)) },
-            navigationIcon = {
-              IconButton(onClick = onOpenDrawer) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
+        Column {
+          TopAppBar(
+              title = { Text(stringResource(R.string.title_bookmarks)) },
+              navigationIcon = {
+                IconButton(onClick = onOpenDrawer) {
+                  Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
+                }
+              })
+          PrimaryTabRow(
+              selectedTabIndex = if (uiState.selectedTab == BookmarkFilterMode.Local) 0 else 1) {
+                Tab(
+                    selected = uiState.selectedTab == BookmarkFilterMode.Local,
+                    onClick = { onTabSelected(BookmarkFilterMode.Local) },
+                    text = { Text(stringResource(R.string.tab_local)) })
+                Tab(
+                    selected = uiState.selectedTab == BookmarkFilterMode.Global,
+                    onClick = { onTabSelected(BookmarkFilterMode.Global) },
+                    text = { Text(stringResource(R.string.tab_global)) })
               }
-            })
+        }
       }) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = uiState.isLoading,
