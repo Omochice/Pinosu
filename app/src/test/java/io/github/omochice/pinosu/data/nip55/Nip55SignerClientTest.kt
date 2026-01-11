@@ -380,4 +380,66 @@ class Nip55SignerClientTest {
 
     assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
   }
+
+  /** Test createGetRelaysIntent() creates Intent with correct type */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectType() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Type extra should be get_relays",
+        Nip55SignerClient.TYPE_GET_RELAYS,
+        intent.getStringExtra("type"))
+  }
+
+  /** Test createGetRelaysIntent() creates Intent with correct scheme */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectScheme() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertNotNull("Intent should have data URI", intent.data)
+    assertEquals(
+        "URI scheme should be nostrsigner",
+        Nip55SignerClient.NOSTRSIGNER_SCHEME,
+        intent.data?.scheme)
+  }
+
+  /** Test createGetRelaysIntent() sets correct package name */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectPackage() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Package should be NIP-55 signer package name",
+        Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
+        intent.`package`)
+  }
+
+  /** Test createGetRelaysIntent() sets correct flags */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectFlags() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    val expectedFlags =
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+    assertTrue(
+        "Intent should have SINGLE_TOP and CLEAR_TOP flags",
+        (intent.flags and expectedFlags) == expectedFlags)
+  }
+
+  /** Test createGetRelaysIntent() sets ACTION_VIEW action */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectAction() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
+  }
 }

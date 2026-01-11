@@ -122,11 +122,29 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     return intent
   }
 
+  /**
+   * Create Intent for NIP-55 relay list retrieval request
+   *
+   * @return Constructed Intent for requesting user's relay list
+   */
+  fun createGetRelaysIntent(): android.content.Intent {
+    val intent =
+        android.content.Intent(
+            android.content.Intent.ACTION_VIEW, android.net.Uri.parse("$NOSTRSIGNER_SCHEME:"))
+    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
+    intent.putExtra("type", TYPE_GET_RELAYS)
+    intent.addFlags(
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    return intent
+  }
+
   companion object {
     const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
     const val TYPE_NIP04_DECRYPT = "nip04_decrypt"
+    const val TYPE_GET_RELAYS = "get_relays"
   }
 }
 
