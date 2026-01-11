@@ -6,10 +6,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,12 +37,15 @@ import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
  *
  * @param uiState Main screen UI state
  * @param onLogout Callback when logout button is tapped
+ * @param onOpenDrawer Callback when hamburger menu is clicked to open drawer
  * @param onNavigateToLogin Callback to navigate to login screen after logout completes
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     uiState: MainUiState,
     onLogout: () -> Unit,
+    onOpenDrawer: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
 ) {
   var previousPubkey by remember { mutableStateOf(uiState.userPubkey) }
@@ -47,42 +57,55 @@ fun MainScreen(
     previousPubkey = uiState.userPubkey
   }
 
-  Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-          if (uiState.userPubkey != null) {
-            Text(
-                text = stringResource(R.string.text_logged_in),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center)
+  Scaffold(
+      topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.app_name)) },
+            navigationIcon = {
+              IconButton(onClick = onOpenDrawer) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
+              }
+            })
+      }) { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues).fillMaxSize(),
+            color = MaterialTheme.colorScheme.background) {
+              Column(
+                  modifier = Modifier.fillMaxSize().padding(16.dp),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center) {
+                    if (uiState.userPubkey != null) {
+                      Text(
+                          text = stringResource(R.string.text_logged_in),
+                          style = MaterialTheme.typography.headlineMedium,
+                          textAlign = TextAlign.Center)
 
-            Spacer(modifier = Modifier.height(16.dp))
+                      Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = formatPubkey(uiState.userPubkey),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center)
+                      Text(
+                          text = formatPubkey(uiState.userPubkey),
+                          style = MaterialTheme.typography.bodyMedium,
+                          textAlign = TextAlign.Center)
 
-            Spacer(modifier = Modifier.height(32.dp))
+                      Spacer(modifier = Modifier.height(32.dp))
 
-            if (uiState.isLoggingOut) {
-              Text(
-                  text = stringResource(R.string.message_logging_out),
-                  style = MaterialTheme.typography.bodyLarge,
-                  textAlign = TextAlign.Center)
-            } else {
-              Button(onClick = onLogout) { Text(stringResource(R.string.button_logout)) }
+                      if (uiState.isLoggingOut) {
+                        Text(
+                            text = stringResource(R.string.message_logging_out),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center)
+                      } else {
+                        Button(onClick = onLogout) { Text(stringResource(R.string.button_logout)) }
+                      }
+                    } else {
+                      Text(
+                          text = stringResource(R.string.text_not_logged_in),
+                          style = MaterialTheme.typography.headlineMedium,
+                          textAlign = TextAlign.Center)
+                    }
+                  }
             }
-          } else {
-            Text(
-                text = stringResource(R.string.text_not_logged_in),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center)
-          }
-        }
-  }
+      }
 }
 
 /**

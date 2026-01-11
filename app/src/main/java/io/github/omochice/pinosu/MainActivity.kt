@@ -136,6 +136,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             MainScreen(
                 uiState = mainUiState,
                 onLogout = { viewModel.onLogoutButtonClicked() },
+                onOpenDrawer = { scope.launch { drawerState.open() } },
                 onNavigateToLogin = {})
           }
 
