@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.ksp)
   alias(libs.plugins.hilt)
   alias(libs.plugins.kover)
+  alias(libs.plugins.aboutlibraries)
 }
 
 android {
@@ -81,6 +82,9 @@ dependencies {
 
   implementation(libs.okhttp)
   implementation(libs.jsoup)
+
+  implementation(libs.aboutlibraries.core)
+  implementation(libs.aboutlibraries.compose.m3)
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
