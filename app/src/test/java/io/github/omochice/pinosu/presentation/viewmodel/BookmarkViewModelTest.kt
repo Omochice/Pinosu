@@ -270,7 +270,7 @@ class BookmarkViewModelTest {
   }
 
   @Test
-  fun `loadBookmarks should set bookmarks on success`() = runTest {
+  fun `loadBookmarks should store bookmarks in allBookmarks`() = runTest {
     val testUser = User("npub1test")
     val testBookmarks =
         listOf(
@@ -289,7 +289,7 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertFalse("isLoading should be false after loading", state.isLoading)
-    assertEquals("bookmarks should be set", testBookmarks, state.bookmarks)
+    assertEquals("allBookmarks should be set", testBookmarks, state.allBookmarks)
     assertNull("error should be null on success", state.error)
   }
 
