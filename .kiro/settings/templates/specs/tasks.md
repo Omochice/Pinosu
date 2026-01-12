@@ -7,7 +7,7 @@ Use whichever pattern fits the work breakdown:
 ### Major task only
 
 - [ ] {{NUMBER}}. {{TASK_DESCRIPTION}}{{PARALLEL_MARK}}
-    - {{DETAIL_ITEM_1}} *(Include details only when needed. If the task stands alone, omit bullet items.)*
+    - {{DETAIL_ITEM_1}} _(Include details only when needed. If the task stands alone, omit bullet items.)_
     - _Requirements: {{REQUIREMENT_IDS}}_
 
 ### Major + Sub-task structure
@@ -16,7 +16,7 @@ Use whichever pattern fits the work breakdown:
 - [ ] {{MAJOR_NUMBER}}.{{SUB_NUMBER}} {{SUB_TASK_DESCRIPTION}}{{SUB_PARALLEL_MARK}}
     - {{DETAIL_ITEM_1}}
     - {{DETAIL_ITEM_2}}
-    - _Requirements: {{REQUIREMENT_IDS}}_ *(IDs only; do not add descriptions or parentheses.)*
+    - _Requirements: {{REQUIREMENT_IDS}}_ _(IDs only; do not add descriptions or parentheses.)_
 
 > **Parallel marker**: Append `(P)` only to tasks that can be executed in parallel. Omit the marker when running in `--sequential` mode.
 >
