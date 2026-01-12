@@ -7,7 +7,7 @@
     "mado@0.3.0",
     "treefmt@2.4.0",
     "renovate@42.57.1",
-    "yamlfmt@0.17.2",
+    "yamlfmt@0.20.0",
     "typos@1.40.0",
     "toml-sort@0.24.3",
     "formatjson5@0.2.6",
