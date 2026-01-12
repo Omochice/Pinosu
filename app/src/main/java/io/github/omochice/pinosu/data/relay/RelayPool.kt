@@ -171,7 +171,7 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
           tags = tags,
           content = json.getString("content"))
     } catch (e: Exception) {
-      Log.e(TAG, "Error parsing event: ${e.message}")
+      Log.e(TAG, "Error parsing event", e)
       null
     }
   }
