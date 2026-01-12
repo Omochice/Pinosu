@@ -245,51 +245,51 @@
         }
       }
     },
-    "ktlint@1.7.1": {
-      "last_modified": "2025-11-23T21:50:36Z",
-      "resolved": "github:NixOS/nixpkgs/ee09932cedcef15aaf476f9343d1dea2cb77e261#ktlint",
+    "ktlint@1.8.0": {
+      "last_modified": "2025-12-31T03:27:36Z",
+      "resolved": "github:NixOS/nixpkgs/f665af0cdb70ed27e1bd8f9fdfecaf451260fc55#ktlint",
       "source": "devbox-search",
-      "version": "1.7.1",
+      "version": "1.8.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xsh6bdx5vvb8wbnr9g4f709rk4djgz44-ktlint-1.7.1",
+              "path": "/nix/store/03q9n62w4wanp3hy72fsqsrxkp1gfm6i-ktlint-1.8.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/xsh6bdx5vvb8wbnr9g4f709rk4djgz44-ktlint-1.7.1"
+          "store_path": "/nix/store/03q9n62w4wanp3hy72fsqsrxkp1gfm6i-ktlint-1.8.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/267awjpfvwjm9p600y40gbndjy4jqlqw-ktlint-1.7.1",
+              "path": "/nix/store/smlks6p6xva5m9fcl1l6lrqmcqq8054y-ktlint-1.8.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/267awjpfvwjm9p600y40gbndjy4jqlqw-ktlint-1.7.1"
+          "store_path": "/nix/store/smlks6p6xva5m9fcl1l6lrqmcqq8054y-ktlint-1.8.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/qhmpa5i8hicgwppdyxagvkiqxblpfgzg-ktlint-1.7.1",
+              "path": "/nix/store/knm13shinm6jlhb0qhv720s835jfhid2-ktlint-1.8.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/qhmpa5i8hicgwppdyxagvkiqxblpfgzg-ktlint-1.7.1"
+          "store_path": "/nix/store/knm13shinm6jlhb0qhv720s835jfhid2-ktlint-1.8.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1f8v1h4cb4gi91v1c1c87aaw3m1bajww-ktlint-1.7.1",
+              "path": "/nix/store/dbcyxyzyw8w10y1433fkfqrg1153ad1d-ktlint-1.8.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/1f8v1h4cb4gi91v1c1c87aaw3m1bajww-ktlint-1.7.1"
+          "store_path": "/nix/store/dbcyxyzyw8w10y1433fkfqrg1153ad1d-ktlint-1.8.0"
         }
       }
     },
