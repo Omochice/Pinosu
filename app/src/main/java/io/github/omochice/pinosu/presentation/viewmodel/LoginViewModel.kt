@@ -1,9 +1,12 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.repository.AuthRepository
+import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -30,6 +33,10 @@ constructor(
     private val getLoginStateUseCase: GetLoginStateUseCase,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
+
+  companion object {
+    private const val TAG = "LoginViewModel"
+  }
 
   private val _uiState = MutableStateFlow(LoginUiState())
   val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -86,7 +93,7 @@ constructor(
    * @param resultCode ActivityResult resultCode
    * @param data Intent data
    */
-  fun processNip55Response(resultCode: Int, data: android.content.Intent?) {
+  fun processNip55Response(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
       _uiState.value =
           _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
@@ -96,20 +103,22 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
         _uiState.value =
-            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
+            _uiState.value.copy(
+                isLoading = false,
+                loginSuccess = true,
+                errorMessage = null,
+                needsRelayListRequest = true)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
       } else {
         val error = result.exceptionOrNull()
         val errorMessage =
             when (error) {
-              is io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected ->
-                  "Login was cancelled. Please try again."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.Timeout ->
+              is LoginError.UserRejected -> "Login was cancelled. Please try again."
+              is LoginError.Timeout ->
                   "Login process timed out. Please check the NIP-55 signer app and retry."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError ->
+              is LoginError.NetworkError ->
                   "A network error occurred. Please check your connection."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.UnknownError ->
-                  "An error occurred. Please try again later."
+              is LoginError.UnknownError -> "An error occurred. Please try again later."
               else -> "An error occurred. Please try again later."
             }
         _uiState.value =
@@ -117,6 +126,30 @@ constructor(
                 isLoading = false, errorMessage = errorMessage, loginSuccess = false)
       }
     }
+  }
+
+  /**
+   * Process relay list response from NIP-55 signer
+   *
+   * Caches the relay list locally for use when fetching bookmarks. Failures are non-fatal - default
+   * relay will be used as fallback.
+   *
+   * @param resultCode ActivityResult resultCode
+   * @param data Intent data
+   */
+  fun processRelayListResponse(resultCode: Int, data: Intent?) {
+    viewModelScope.launch {
+      val result = authRepository.processRelayListResponse(resultCode, data)
+      if (result.isFailure) {
+        Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
+      }
+      _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
+    }
+  }
+
+  /** Mark relay list request as handled (used when request is launched) */
+  fun onRelayListRequestHandled() {
+    _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
   }
 }
 
@@ -127,12 +160,14 @@ constructor(
  * @property errorMessage Error message
  * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
  * @property loginSuccess Whether login was successful
+ * @property needsRelayListRequest Whether relay list needs to be requested from NIP-55 signer
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showNip55InstallDialog: Boolean = false,
     val loginSuccess: Boolean = false,
+    val needsRelayListRequest: Boolean = false,
 )
 
 /**

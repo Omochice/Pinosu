@@ -72,7 +72,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Dependency Injection Pattern
 
-- **Singleton Pattern**: Network clients (OkHttpClient, RelayClient) are @Singleton scoped
+- **Singleton Pattern**: Network clients (OkHttpClient, RelayPool) are @Singleton scoped
 - **Constructor Injection**: Prefer @Inject constructor over field injection
 - **Interface Binding**: Repositories and use cases defined as interfaces, bound in Hilt modules
 - **Module Organization**: Separate modules by technical concern (Network, Repository, UseCase)

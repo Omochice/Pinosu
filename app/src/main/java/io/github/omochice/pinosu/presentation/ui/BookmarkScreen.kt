@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkItem
+import io.github.omochice.pinosu.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
 import io.github.omochice.pinosu.presentation.ui.component.UrlSelectionDialog
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkFilterMode
@@ -285,7 +286,7 @@ private fun BookmarkScreenWithDataPreview() {
               urls = listOf("https://example.com/article", "https://example.com/related"),
               titleSource = "tag",
               event =
-                  io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+                  BookmarkedEvent(
                       kind = 39701,
                       content = "This is a sample bookmark description from the event content.",
                       author = "abcd1234abcd1234",
@@ -299,7 +300,7 @@ private fun BookmarkScreenWithDataPreview() {
               urls = listOf("https://example.com/another"),
               titleSource = "metadata",
               event =
-                  io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+                  BookmarkedEvent(
                       kind = 39701,
                       content = "Fetched title from OG metadata.",
                       author = "efgh5678efgh5678",

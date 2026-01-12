@@ -1,42 +1,46 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.data.relay.RelayClient
+import io.github.omochice.pinosu.data.relay.RelayConfig
+import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
+import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Relay-based implementation of BookmarkRepository
  *
- * Fetches kind:39701 bookmark events from Nostr relays and enriches them with URL metadata
- * (og:title) when title tags are not present.
+ * Fetches kind:39701 bookmark events from multiple Nostr relays in parallel, deduplicates results,
+ * and enriches them with URL metadata (og:title) when title tags are not present.
  *
- * @property relayClient Client for Nostr relay WebSocket communication
+ * @property relayPool Pool for parallel relay queries
+ * @property localAuthDataSource Local data source for cached relay list
  * @property urlMetadataFetcher Fetcher for URL Open Graph metadata
  */
 @Singleton
 class RelayBookmarkRepository
 @Inject
 constructor(
-    private val relayClient: RelayClient,
+    private val relayPool: RelayPool,
+    private val localAuthDataSource: LocalAuthDataSource,
     private val urlMetadataFetcher: UrlMetadataFetcher
 ) : BookmarkRepository {
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
     const val KIND_BOOKMARK_LIST = 39701
-    const val TIMEOUT_MS = 10000L
+    const val PER_RELAY_TIMEOUT_MS = 10000L
+    const val DEFAULT_RELAY_URL = "wss://yabu.me"
 
     private fun isValidUrl(url: String): Boolean {
       return try {
-        val uri = java.net.URI(url)
+        val uri = URI(url)
         uri.scheme in listOf("http", "https") && uri.host != null
       } catch (e: Exception) {
         false
@@ -56,10 +60,11 @@ constructor(
           Bech32.npubToHex(pubkey)
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
+      val relays = getRelaysForQuery()
       val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
-      val events = withTimeoutOrNull(TIMEOUT_MS) { relayClient.subscribe(filter).toList() }
+      val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
 
-      if (events.isNullOrEmpty()) {
+      if (events.isEmpty()) {
         return Result.success(null)
       }
 
@@ -126,6 +131,24 @@ constructor(
     } catch (e: Exception) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)
+    }
+  }
+
+  /**
+   * Get relay list for querying bookmarks
+   *
+   * Returns cached relay list from LocalAuthDataSource, or default relay if not available.
+   *
+   * @return List of relay configurations for querying
+   */
+  private suspend fun getRelaysForQuery(): List<RelayConfig> {
+    val cachedRelays = localAuthDataSource.getRelayList()
+    return if (cachedRelays.isNullOrEmpty()) {
+      Log.d(TAG, "No cached relay list, using default relay: $DEFAULT_RELAY_URL")
+      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+    } else {
+      Log.d(TAG, "Using ${cachedRelays.size} cached relays")
+      cachedRelays
     }
   }
 }

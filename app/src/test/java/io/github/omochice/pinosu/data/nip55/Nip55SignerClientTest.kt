@@ -76,81 +76,6 @@ class Nip55SignerClientTest {
     assertFalse("Should return false on exception", result)
   }
 
-  /** Test that Nip55Response data class is constructed correctly */
-  @Test
-  fun testNip55Response_Construction() {
-
-    val pubkey = "npub1" + "a".repeat(59)
-    val packageName = "com.greenart7c3.nostrsigner"
-
-    val response = Nip55Response(pubkey, packageName)
-
-    assertEquals("Pubkey should match", pubkey, response.pubkey)
-    assertEquals("PackageName should match", packageName, response.packageName)
-  }
-
-  /** Test that Nip55Response equality is determined correctly */
-  @Test
-  fun testNip55Response_Equality() {
-
-    val response1 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
-    val response2 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
-
-    assertEquals("Responses with same values should be equal", response1, response2)
-  }
-
-  /** Test Nip55Error.NotInstalled is constructed correctly */
-  @Test
-  fun testNip55Error_NotInstalled() {
-
-    val error: Nip55Error = Nip55Error.NotInstalled
-
-    assertTrue("Should be NotInstalled type", error is Nip55Error.NotInstalled)
-  }
-
-  /** Test Nip55Error.UserRejected is constructed correctly */
-  @Test
-  fun testNip55Error_UserRejected() {
-
-    val error: Nip55Error = Nip55Error.UserRejected
-
-    assertTrue("Should be UserRejected type", error is Nip55Error.UserRejected)
-  }
-
-  /** Test Nip55Error.Timeout is constructed correctly */
-  @Test
-  fun testNip55Error_Timeout() {
-
-    val error: Nip55Error = Nip55Error.Timeout
-
-    assertTrue("Should be Timeout type", error is Nip55Error.Timeout)
-  }
-
-  /** Test Nip55Error.InvalidResponse is constructed correctly */
-  @Test
-  fun testNip55Error_InvalidResponse() {
-
-    val message = "Invalid response format"
-
-    val error: Nip55Error = Nip55Error.InvalidResponse(message)
-
-    assertTrue("Should be InvalidResponse type", error is Nip55Error.InvalidResponse)
-    assertEquals("Message should match", message, (error as Nip55Error.InvalidResponse).message)
-  }
-
-  /** Test Nip55Error.IntentResolutionError is constructed correctly */
-  @Test
-  fun testNip55Error_IntentResolutionError() {
-
-    val message = "Cannot resolve intent"
-
-    val error: Nip55Error = Nip55Error.IntentResolutionError(message)
-
-    assertTrue("Should be IntentResolutionError type", error is Nip55Error.IntentResolutionError)
-    assertEquals(
-        "Message should match", message, (error as Nip55Error.IntentResolutionError).message)
-  }
-
   /** Test createPublicKeyIntent() creates Intent with correct scheme */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectScheme() {
@@ -379,5 +304,212 @@ class Nip55SignerClientTest {
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
+  }
+
+  /** Test createGetRelaysIntent() creates Intent with correct type */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectType() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Type extra should be get_relays",
+        Nip55SignerClient.TYPE_GET_RELAYS,
+        intent.getStringExtra("type"))
+  }
+
+  /** Test createGetRelaysIntent() creates Intent with correct scheme */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectScheme() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertNotNull("Intent should have data URI", intent.data)
+    assertEquals(
+        "URI scheme should be nostrsigner",
+        Nip55SignerClient.NOSTRSIGNER_SCHEME,
+        intent.data?.scheme)
+  }
+
+  /** Test createGetRelaysIntent() sets correct package name */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectPackage() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Package should be NIP-55 signer package name",
+        Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
+        intent.`package`)
+  }
+
+  /** Test createGetRelaysIntent() sets correct flags */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectFlags() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    val expectedFlags =
+        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
+            android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+    assertTrue(
+        "Intent should have SINGLE_TOP and CLEAR_TOP flags",
+        (intent.flags and expectedFlags) == expectedFlags)
+  }
+
+  /** Test createGetRelaysIntent() sets ACTION_VIEW action */
+  @Test
+  fun testCreateGetRelaysIntent_HasCorrectAction() {
+
+    val intent = nip55SignerClient.createGetRelaysIntent()
+
+    assertEquals(
+        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
+  }
+
+  /** Test handleRelayListResponse() parses valid JSON response */
+  @Test
+  fun testHandleRelayListResponse_ValidJson_ReturnsRelayConfigList() {
+
+    val json =
+        """{"wss://relay1.example.com": {"read": true, "write": true}, "wss://relay2.example.com": {"read": true, "write": false}}"""
+    val intent = android.content.Intent()
+    intent.putExtra("result", json)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    val relays = result.getOrNull()
+    assertNotNull("Relays should not be null", relays)
+    assertEquals("Should have 2 relays", 2, relays?.size)
+
+    val relay1 = relays?.find { it.url == "wss://relay1.example.com" }
+    assertNotNull("Should contain relay1", relay1)
+    assertTrue("relay1 should have read=true", relay1?.read == true)
+    assertTrue("relay1 should have write=true", relay1?.write == true)
+
+    val relay2 = relays?.find { it.url == "wss://relay2.example.com" }
+    assertNotNull("Should contain relay2", relay2)
+    assertTrue("relay2 should have read=true", relay2?.read == true)
+    assertFalse("relay2 should have write=false", relay2?.write == true)
+  }
+
+  /** Test handleRelayListResponse() handles empty relay list */
+  @Test
+  fun testHandleRelayListResponse_EmptyJson_ReturnsEmptyList() {
+
+    val json = "{}"
+    val intent = android.content.Intent()
+    intent.putExtra("result", json)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    val relays = result.getOrNull()
+    assertNotNull("Relays should not be null", relays)
+    assertTrue("Should have empty relay list", relays?.isEmpty() == true)
+  }
+
+  /** Test handleRelayListResponse() filters read-only relays */
+  @Test
+  fun testHandleRelayListResponse_FiltersReadOnlyRelays() {
+
+    val json =
+        """{"wss://read-relay.example.com": {"read": true, "write": false}, "wss://write-only.example.com": {"read": false, "write": true}}"""
+    val intent = android.content.Intent()
+    intent.putExtra("result", json)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    val relays = result.getOrNull()
+    assertNotNull("Relays should not be null", relays)
+    assertEquals("Should have 1 relay (only read=true)", 1, relays?.size)
+    assertEquals(
+        "Should only contain read-enabled relay",
+        "wss://read-relay.example.com",
+        relays?.first()?.url)
+  }
+
+  /** Test handleRelayListResponse() returns error on invalid JSON */
+  @Test
+  fun testHandleRelayListResponse_InvalidJson_ReturnsError() {
+
+    val invalidJson = "not a json"
+    val intent = android.content.Intent()
+    intent.putExtra("result", invalidJson)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
+
+  /** Test handleRelayListResponse() returns error on RESULT_CANCELED */
+  @Test
+  fun testHandleRelayListResponse_ResultCanceled_ReturnsUserRejected() {
+
+    val intent = android.content.Intent()
+
+    val result =
+        nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_CANCELED, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be UserRejected",
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
+  }
+
+  /** Test handleRelayListResponse() returns error on null intent */
+  @Test
+  fun testHandleRelayListResponse_NullIntent_ReturnsError() {
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, null)
+
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be InvalidResponse",
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+  }
+
+  /** Test handleRelayListResponse() handles missing read/write fields with defaults */
+  @Test
+  fun testHandleRelayListResponse_MissingFields_UsesDefaults() {
+
+    val json = """{"wss://relay.example.com": {}}"""
+    val intent = android.content.Intent()
+    intent.putExtra("result", json)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    val relays = result.getOrNull()
+    assertNotNull("Relays should not be null", relays)
+    assertEquals("Should have 1 relay", 1, relays?.size)
+    val relay = relays?.first()
+    assertTrue("read should default to true", relay?.read == true)
+    assertTrue("write should default to true", relay?.write == true)
+  }
+
+  /** Test handleRelayListResponse() handles rejected extra */
+  @Test
+  fun testHandleRelayListResponse_RejectedExtra_ReturnsUserRejected() {
+
+    val intent = android.content.Intent()
+    intent.putExtra("rejected", true)
+
+    val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    val error = result.exceptionOrNull()
+    assertTrue(
+        "Error should be UserRejected",
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 }

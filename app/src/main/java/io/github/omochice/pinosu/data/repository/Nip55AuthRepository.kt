@@ -108,4 +108,27 @@ constructor(
   override fun checkNip55SignerInstalled(): Boolean {
     return nip55SignerClient.checkNip55SignerInstalled()
   }
+
+  /**
+   * Process relay list response from NIP-55 signer and cache locally
+   *
+   * @param resultCode ActivityResult's resultCode
+   * @param data Intent data containing relay list JSON
+   * @return Success(Unit) on success, Failure on error (errors are non-fatal)
+   */
+  override suspend fun processRelayListResponse(resultCode: Int, data: Intent?): Result<Unit> {
+    val relayResult = nip55SignerClient.handleRelayListResponse(resultCode, data)
+
+    return if (relayResult.isSuccess) {
+      val relays = relayResult.getOrThrow()
+      try {
+        localAuthDataSource.saveRelayList(relays)
+        Result.success(Unit)
+      } catch (e: StorageError) {
+        Result.failure(e)
+      }
+    } else {
+      Result.failure(relayResult.exceptionOrNull() ?: Exception("Unknown error"))
+    }
+  }
 }
