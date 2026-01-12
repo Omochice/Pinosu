@@ -14,6 +14,7 @@ jobs:
     outputs:
       # keep-sorted start
       actions: ${{steps.changes.outputs.actions}}
+      android: ${{steps.changes.outputs.android}}
       devbox: ${{steps.changes.outputs.devbox}}
       renovate: ${{steps.changes.outputs.renovate}}
       # keep-sorted end
