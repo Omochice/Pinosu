@@ -1,6 +1,6 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    "github>Omochice/personal-renovate-config@v1.11.0",
+    "github>Omochice/personal-renovate-config@v1.11.1",
   ],
 }
