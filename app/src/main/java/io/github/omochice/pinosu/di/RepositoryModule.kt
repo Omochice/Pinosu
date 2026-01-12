@@ -25,4 +25,9 @@ abstract class RepositoryModule {
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
 
   @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
+
+  @Binds
+  abstract fun bindRelayPool(
+      impl: io.github.omochice.pinosu.data.relay.RelayPoolImpl
+  ): io.github.omochice.pinosu.data.relay.RelayPool
 }
