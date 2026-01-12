@@ -16,7 +16,7 @@
     "temurin-bin@21.0.8",
     "actionlint@1.7.10",
     "zizmor@1.19.0",
-    "ghalint@1.5.3",
+    "ghalint@1.5.4",
     "stdenv.cc.cc.lib"
   ],
   "shell": {
