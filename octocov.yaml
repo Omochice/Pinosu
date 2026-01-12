@@ -1,6 +1,6 @@
 coverage:
   paths:
-    - app/build/reports/kover/coverage.xml
+    - app/build/reports/kover/reportDebug.xml
 
 codeToTestRatio:
   code:
