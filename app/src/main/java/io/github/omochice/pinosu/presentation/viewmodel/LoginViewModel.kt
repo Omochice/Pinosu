@@ -31,6 +31,10 @@ constructor(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
+  companion object {
+    private const val TAG = "LoginViewModel"
+  }
+
   private val _uiState = MutableStateFlow(LoginUiState())
   val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -134,7 +138,10 @@ constructor(
    */
   fun processRelayListResponse(resultCode: Int, data: android.content.Intent?) {
     viewModelScope.launch {
-      authRepository.processRelayListResponse(resultCode, data)
+      val result = authRepository.processRelayListResponse(resultCode, data)
+      if (result.isFailure) {
+        android.util.Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
+      }
       _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
     }
   }
