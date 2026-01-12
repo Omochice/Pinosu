@@ -38,7 +38,7 @@ _Repeat the subsection for each major topic._
 List candidate patterns or approaches that were considered. Use the table format where helpful.
 
 | Option | Description | Strengths | Risks / Limitations | Notes |
-|--------|-------------|-----------|---------------------|-------|
+| -------- | ------------- | ----------- | --------------------- | ------- |
 | Hexagonal | Ports & adapters abstraction around core domain | Clear boundaries, testable core | Requires adapter layer build-out | Aligns with existing steering principle X |
 
 ## Design Decisions

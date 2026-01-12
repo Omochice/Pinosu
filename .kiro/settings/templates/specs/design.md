@@ -62,13 +62,13 @@ When modifying existing systems:
 
 ### Technology Stack
 
-| Layer | Choice / Version | Role in Feature | Notes |
-|-------|------------------|-----------------|-------|
-| Frontend / CLI | | | |
-| Backend / Services | | | |
-| Data / Storage | | | |
-| Messaging / Events | | | |
-| Infrastructure / Runtime | | | |
+| Layer                    | Choice / Version | Role in Feature | Notes |
+| ------------------------ | ---------------- | --------------- | ----- |
+| Frontend / CLI           |                  |                 |       |
+| Backend / Services       |                  |                 |       |
+| Data / Storage           |                  |                 |       |
+| Messaging / Events       |                  |                 |       |
+| Infrastructure / Runtime |                  |                 |       |
 
 > Keep rationale concise here and, when more depth is required (trade-offs, benchmarks), add a short summary plus pointer to the Supporting References section and `research.md` for raw investigation notes.
 
@@ -90,9 +90,9 @@ Use this section for complex or compliance-sensitive features where requirements
 Map each requirement ID (e.g., `2.1`) to the design elements that realize it.
 
 | Requirement | Summary | Components | Interfaces | Flows |
-|-------------|---------|------------|------------|-------|
-| 1.1 | | | | |
-| 1.2 | | | | |
+| ----------- | ------- | ---------- | ---------- | ----- |
+| 1.1         |         |            |            |       |
+| 1.2         |         |            |            |       |
 
 > Omit this section only when a single component satisfies a single requirement without cross-cutting concerns.
 
@@ -102,9 +102,9 @@ Provide a quick reference before diving into per-component details.
 
 - Summaries can be a table or compact list. Example table:
 
-  | Component | Domain/Layer | Intent | Req Coverage | Key Dependencies (P0/P1) | Contracts |
-  |-----------|--------------|--------|--------------|--------------------------|-----------|
-  | ExampleComponent | UI | Displays XYZ | 1, 2 | GameProvider (P0), MapPanel (P1) | Service, State |
+| Component | Domain/Layer | Intent | Req Coverage | Key Dependencies (P0/P1) | Contracts |
+| ----------- | -------------- | -------- | -------------- | -------------------------- | ----------- |
+| ExampleComponent | UI | Displays XYZ | 1, 2 | GameProvider (P0), MapPanel (P1) | Service, State |
 
 - Only components introducing new boundaries (e.g., logic hooks, external integrations, persistence) require full detail blocks. Simple presentation components can rely on the summary row plus a short Implementation Note.
 
@@ -114,11 +114,11 @@ Group detailed blocks by domain or architectural layer. For each detailed compon
 
 #### [Component Name]
 
-| Field | Detail |
-|-------|--------|
-| Intent | 1-line description of the responsibility |
-| Requirements | 2.1, 2.3 |
-| Owner / Reviewers | (optional) |
+| Field             | Detail                                   |
+| ----------------- | ---------------------------------------- |
+| Intent            | 1-line description of the responsibility |
+| Requirements      | 2.1, 2.3                                 |
+| Owner / Reviewers | (optional)                               |
 
 **Responsibilities & Constraints**
 
@@ -150,9 +150,9 @@ interface [ComponentName]Service {
 
 ##### API Contract
 
-| Method | Endpoint | Request | Response | Errors |
-|--------|----------|---------|----------|--------|
-| POST | /api/resource | CreateRequest | Resource | 400, 409, 500 |
+| Method | Endpoint      | Request       | Response | Errors        |
+| ------ | ------------- | ------------- | -------- | ------------- |
+| POST   | /api/resource | CreateRequest | Resource | 400, 409, 500 |
 
 ##### Event Contract
 
