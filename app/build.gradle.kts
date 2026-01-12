@@ -101,4 +101,25 @@ dependencies {
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
 }
 
-kover { reports { variant("debug") {} } }
+kover {
+  reports {
+    filters {
+      excludes {
+        classes(
+            // Hilt generated
+            "*_Hilt*",
+            "Hilt_*",
+            "*_HiltModules*",
+            "*_Factory",
+            "*_MembersInjector",
+            "*_Provide*Factory",
+            // BuildConfig
+            "*.BuildConfig",
+            // Jetpack Compose generated
+            "ComposableSingletons*",
+        )
+      }
+    }
+    variant("debug") { xml { onCheck = true } }
+  }
+}
