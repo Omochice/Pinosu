@@ -145,51 +145,51 @@
         }
       }
     },
-    "ghalint@1.5.3": {
-      "last_modified": "2025-11-25T14:41:04Z",
-      "resolved": "github:NixOS/nixpkgs/dc205f7b4fdb04c8b7877b43edb7b73be7730081#ghalint",
+    "ghalint@1.5.4": {
+      "last_modified": "2026-01-02T14:39:32Z",
+      "resolved": "github:NixOS/nixpkgs/16c7794d0a28b5a37904d55bcca36003b9109aaa#ghalint",
       "source": "devbox-search",
-      "version": "1.5.3",
+      "version": "1.5.4",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/bxrpwglqnbzz7kjrw7cdngdr01j6d6jl-ghalint-1.5.3",
+              "path": "/nix/store/r7ic6xcz45akksima8y4r95nh6dviqyc-ghalint-1.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/bxrpwglqnbzz7kjrw7cdngdr01j6d6jl-ghalint-1.5.3"
+          "store_path": "/nix/store/r7ic6xcz45akksima8y4r95nh6dviqyc-ghalint-1.5.4"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wz40wc74q80k96qrm7gig01xgy5238sp-ghalint-1.5.3",
+              "path": "/nix/store/k0q3mfpqd58g9s0gz9ir2crliavzy929-ghalint-1.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wz40wc74q80k96qrm7gig01xgy5238sp-ghalint-1.5.3"
+          "store_path": "/nix/store/k0q3mfpqd58g9s0gz9ir2crliavzy929-ghalint-1.5.4"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/rb9bdz5fq62cikcj4ak9y7l6plldyl54-ghalint-1.5.3",
+              "path": "/nix/store/iwgk40mrq91c1j8szlqcxndv2wlg9jyk-ghalint-1.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/rb9bdz5fq62cikcj4ak9y7l6plldyl54-ghalint-1.5.3"
+          "store_path": "/nix/store/iwgk40mrq91c1j8szlqcxndv2wlg9jyk-ghalint-1.5.4"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/qx30pfdkjlnsnkljf61zb4czl7dk1drz-ghalint-1.5.3",
+              "path": "/nix/store/dgsl1k60k8mw6l5fmdx7nyy2xzaf9zin-ghalint-1.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/qx30pfdkjlnsnkljf61zb4czl7dk1drz-ghalint-1.5.3"
+          "store_path": "/nix/store/dgsl1k60k8mw6l5fmdx7nyy2xzaf9zin-ghalint-1.5.4"
         }
       }
     },
