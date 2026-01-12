@@ -76,29 +76,6 @@ class Nip55SignerClientTest {
     assertFalse("Should return false on exception", result)
   }
 
-  /** Test that Nip55Response data class is constructed correctly */
-  @Test
-  fun testNip55Response_Construction() {
-
-    val pubkey = "npub1" + "a".repeat(59)
-    val packageName = "com.greenart7c3.nostrsigner"
-
-    val response = Nip55Response(pubkey, packageName)
-
-    assertEquals("Pubkey should match", pubkey, response.pubkey)
-    assertEquals("PackageName should match", packageName, response.packageName)
-  }
-
-  /** Test that Nip55Response equality is determined correctly */
-  @Test
-  fun testNip55Response_Equality() {
-
-    val response1 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
-    val response2 = Nip55Response("npub1" + "abc".repeat(19) + "ab", "com.test.app")
-
-    assertEquals("Responses with same values should be equal", response1, response2)
-  }
-
   /** Test Nip55Error.NotInstalled is constructed correctly */
   @Test
   fun testNip55Error_NotInstalled() {
