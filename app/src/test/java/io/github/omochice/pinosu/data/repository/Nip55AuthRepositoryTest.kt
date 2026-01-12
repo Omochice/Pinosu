@@ -239,4 +239,63 @@ class Nip55AuthRepositoryTest {
 
     assertFalse("Should return false when NIP-55 signer is not installed", result)
   }
+
+  /** Test successful relay list response processing and caching */
+  @Test
+  fun testProcessRelayListResponse_Success_SavesRelayListAndReturnsSuccess() = runTest {
+    val relays =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay.example.com", read = true, write = true))
+    val intent =
+        Intent().apply {
+          putExtra("result", """{"wss://relay.example.com":{"read":true,"write":true}}""")
+        }
+
+    every {
+      nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+    } returns Result.success(relays)
+    coEvery { localAuthDataSource.saveRelayList(relays) } returns Unit
+
+    val result = authRepository.processRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    coVerify { localAuthDataSource.saveRelayList(relays) }
+  }
+
+  /** Test relay list response processing when NIP-55 signer returns error */
+  @Test
+  fun testProcessRelayListResponse_Nip55Error_ReturnsFailure() = runTest {
+    val intent = Intent().apply { putExtra("rejected", true) }
+
+    every {
+      nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+    } returns Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.UserRejected)
+
+    val result = authRepository.processRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+  }
+
+  /** Test relay list response processing when local storage fails */
+  @Test
+  fun testProcessRelayListResponse_StorageError_ReturnsFailure() = runTest {
+    val relays =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay.example.com", read = true, write = true))
+    val intent = Intent()
+
+    every {
+      nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, intent)
+    } returns Result.success(relays)
+    coEvery { localAuthDataSource.saveRelayList(relays) } throws
+        StorageError.WriteError("Storage full")
+
+    val result = authRepository.processRelayListResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    val exception = result.exceptionOrNull()
+    assertTrue("Exception should be StorageError", exception is StorageError.WriteError)
+  }
 }
