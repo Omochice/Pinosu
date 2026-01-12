@@ -30,6 +30,11 @@ class RelayPoolTest {
     relayPool = RelayPoolImpl(okHttpClient)
   }
 
+  @org.junit.After
+  fun tearDown() {
+    executor.shutdown()
+  }
+
   private fun createMockEvent(id: String, pubkey: String = "testpubkey"): NostrEvent {
     return NostrEvent(
         id = id,
