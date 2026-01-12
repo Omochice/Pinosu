@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
@@ -139,11 +140,11 @@ constructor(
    *
    * @return List of relay configurations for querying
    */
-  private suspend fun getRelaysForQuery(): List<io.github.omochice.pinosu.data.relay.RelayConfig> {
+  private suspend fun getRelaysForQuery(): List<RelayConfig> {
     val cachedRelays = localAuthDataSource.getRelayList()
     return if (cachedRelays.isNullOrEmpty()) {
       Log.d(TAG, "No cached relay list, using default relay: $DEFAULT_RELAY_URL")
-      listOf(io.github.omochice.pinosu.data.relay.RelayConfig(url = DEFAULT_RELAY_URL))
+      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
     } else {
       Log.d(TAG, "Using ${cachedRelays.size} cached relays")
       cachedRelays

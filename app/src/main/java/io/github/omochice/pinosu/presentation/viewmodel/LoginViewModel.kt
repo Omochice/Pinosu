@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.repository.AuthRepository
+import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -110,14 +111,12 @@ constructor(
         val error = result.exceptionOrNull()
         val errorMessage =
             when (error) {
-              is io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected ->
-                  "Login was cancelled. Please try again."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.Timeout ->
+              is LoginError.UserRejected -> "Login was cancelled. Please try again."
+              is LoginError.Timeout ->
                   "Login process timed out. Please check the NIP-55 signer app and retry."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.NetworkError ->
+              is LoginError.NetworkError ->
                   "A network error occurred. Please check your connection."
-              is io.github.omochice.pinosu.domain.model.error.LoginError.UnknownError ->
-                  "An error occurred. Please try again later."
+              is LoginError.UnknownError -> "An error occurred. Please try again later."
               else -> "An error occurred. Please try again later."
             }
         _uiState.value =

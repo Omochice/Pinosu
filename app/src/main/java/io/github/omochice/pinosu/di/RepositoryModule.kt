@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.data.relay.RelayPool
+import io.github.omochice.pinosu.data.relay.RelayPoolImpl
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
@@ -26,8 +28,5 @@ abstract class RepositoryModule {
 
   @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
 
-  @Binds
-  abstract fun bindRelayPool(
-      impl: io.github.omochice.pinosu.data.relay.RelayPoolImpl
-  ): io.github.omochice.pinosu.data.relay.RelayPool
+  @Binds abstract fun bindRelayPool(impl: RelayPoolImpl): RelayPool
 }

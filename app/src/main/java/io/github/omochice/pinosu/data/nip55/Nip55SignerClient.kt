@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.data.nip55
 import android.content.Context
 import android.content.pm.PackageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -151,7 +152,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
   fun handleRelayListResponse(
       resultCode: Int,
       data: android.content.Intent?
-  ): Result<List<io.github.omochice.pinosu.data.relay.RelayConfig>> {
+  ): Result<List<RelayConfig>> {
     if (resultCode == android.app.Activity.RESULT_CANCELED) {
       return Result.failure(Nip55Error.UserRejected)
     }
@@ -171,7 +172,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     }
 
     return try {
-      val relays = mutableListOf<io.github.omochice.pinosu.data.relay.RelayConfig>()
+      val relays = mutableListOf<RelayConfig>()
       val jsonObject = org.json.JSONObject(jsonString)
       val keys = jsonObject.keys()
 
@@ -182,9 +183,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
         val write = relayObj.optBoolean("write", true)
 
         if (read) {
-          relays.add(
-              io.github.omochice.pinosu.data.relay.RelayConfig(
-                  url = url, read = read, write = write))
+          relays.add(RelayConfig(url = url, read = read, write = write))
         }
       }
 
