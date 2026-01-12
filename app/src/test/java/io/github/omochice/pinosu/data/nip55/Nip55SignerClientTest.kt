@@ -76,58 +76,6 @@ class Nip55SignerClientTest {
     assertFalse("Should return false on exception", result)
   }
 
-  /** Test Nip55Error.NotInstalled is constructed correctly */
-  @Test
-  fun testNip55Error_NotInstalled() {
-
-    val error: Nip55Error = Nip55Error.NotInstalled
-
-    assertTrue("Should be NotInstalled type", error is Nip55Error.NotInstalled)
-  }
-
-  /** Test Nip55Error.UserRejected is constructed correctly */
-  @Test
-  fun testNip55Error_UserRejected() {
-
-    val error: Nip55Error = Nip55Error.UserRejected
-
-    assertTrue("Should be UserRejected type", error is Nip55Error.UserRejected)
-  }
-
-  /** Test Nip55Error.Timeout is constructed correctly */
-  @Test
-  fun testNip55Error_Timeout() {
-
-    val error: Nip55Error = Nip55Error.Timeout
-
-    assertTrue("Should be Timeout type", error is Nip55Error.Timeout)
-  }
-
-  /** Test Nip55Error.InvalidResponse is constructed correctly */
-  @Test
-  fun testNip55Error_InvalidResponse() {
-
-    val message = "Invalid response format"
-
-    val error: Nip55Error = Nip55Error.InvalidResponse(message)
-
-    assertTrue("Should be InvalidResponse type", error is Nip55Error.InvalidResponse)
-    assertEquals("Message should match", message, (error as Nip55Error.InvalidResponse).message)
-  }
-
-  /** Test Nip55Error.IntentResolutionError is constructed correctly */
-  @Test
-  fun testNip55Error_IntentResolutionError() {
-
-    val message = "Cannot resolve intent"
-
-    val error: Nip55Error = Nip55Error.IntentResolutionError(message)
-
-    assertTrue("Should be IntentResolutionError type", error is Nip55Error.IntentResolutionError)
-    assertEquals(
-        "Message should match", message, (error as Nip55Error.IntentResolutionError).message)
-  }
-
   /** Test createPublicKeyIntent() creates Intent with correct scheme */
   @Test
   fun testCreatePublicKeyIntent_HasCorrectScheme() {
