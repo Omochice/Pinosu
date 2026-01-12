@@ -489,7 +489,7 @@
         }
       }
     },
-    "tombi@latest": {
+    "tombi@0.6.55": {
       "last_modified": "2025-11-26T14:39:26Z",
       "resolved": "github:NixOS/nixpkgs/5c46f3bd98147c8d82366df95bbef2cab3a967ea#tombi",
       "source": "devbox-search",
