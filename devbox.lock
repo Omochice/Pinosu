@@ -1,51 +1,51 @@
 {
   "lockfile_version": "1",
   "packages": {
-    "actionlint@1.7.9": {
-      "last_modified": "2025-11-23T21:50:36Z",
-      "resolved": "github:NixOS/nixpkgs/ee09932cedcef15aaf476f9343d1dea2cb77e261#actionlint",
+    "actionlint@1.7.10": {
+      "last_modified": "2026-01-02T14:39:32Z",
+      "resolved": "github:NixOS/nixpkgs/16c7794d0a28b5a37904d55bcca36003b9109aaa#actionlint",
       "source": "devbox-search",
-      "version": "1.7.9",
+      "version": "1.7.10",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/abs087g3l0qmprh45w4d84si8r3x90bs-actionlint-1.7.9",
+              "path": "/nix/store/7xibqr4r119hgy8wvlp44cr1bpgkw6l1-actionlint-1.7.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/abs087g3l0qmprh45w4d84si8r3x90bs-actionlint-1.7.9"
+          "store_path": "/nix/store/7xibqr4r119hgy8wvlp44cr1bpgkw6l1-actionlint-1.7.10"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/r7qjr3bdr2d246id4a55bwl4g4df0sr7-actionlint-1.7.9",
+              "path": "/nix/store/5w5vwrrbphvps3di3rplhq7i0cjik048-actionlint-1.7.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/r7qjr3bdr2d246id4a55bwl4g4df0sr7-actionlint-1.7.9"
+          "store_path": "/nix/store/5w5vwrrbphvps3di3rplhq7i0cjik048-actionlint-1.7.10"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/rjgbgzgwmdd54ighy693ch9ysjsw4grd-actionlint-1.7.9",
+              "path": "/nix/store/sfh95ldy4qwrfzqwzvaazam186iv9pg5-actionlint-1.7.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/rjgbgzgwmdd54ighy693ch9ysjsw4grd-actionlint-1.7.9"
+          "store_path": "/nix/store/sfh95ldy4qwrfzqwzvaazam186iv9pg5-actionlint-1.7.10"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/q84msz3whpl3ky2rpz9mclbds283vhi7-actionlint-1.7.9",
+              "path": "/nix/store/9csk2bsf1kwqf33mha4n3wqg12ydrlsf-actionlint-1.7.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/q84msz3whpl3ky2rpz9mclbds283vhi7-actionlint-1.7.9"
+          "store_path": "/nix/store/9csk2bsf1kwqf33mha4n3wqg12ydrlsf-actionlint-1.7.10"
         }
       }
     },
@@ -439,7 +439,18 @@
     },
     "stdenv.cc.cc.lib": {
       "resolved": "github:NixOS/nixpkgs/890f57fde071de281cd0e950cd80ea3e1ab55e75?narHash=sha256-RCNYRb7zHt%2BqycQwfTD%2FZxnbd4Sxi2fgvkeAljtLEOs%3D#stdenv.cc.cc.lib",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "lib",
+              "path": "/tmp/containerbase/cache/nix/store/crk7xrp5r4dxam9pdzm67zzggm6105km-gcc-14.3.0-lib",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "temurin-bin@21.0.8": {
       "last_modified": "2025-10-22T20:59:19Z",
