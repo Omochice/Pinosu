@@ -96,7 +96,11 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
         _uiState.value =
-            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
+            _uiState.value.copy(
+                isLoading = false,
+                loginSuccess = true,
+                errorMessage = null,
+                needsRelayListRequest = true)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
       } else {
         val error = result.exceptionOrNull()
@@ -118,6 +122,27 @@ constructor(
       }
     }
   }
+
+  /**
+   * Process relay list response from NIP-55 signer
+   *
+   * Caches the relay list locally for use when fetching bookmarks. Failures are non-fatal - default
+   * relay will be used as fallback.
+   *
+   * @param resultCode ActivityResult resultCode
+   * @param data Intent data
+   */
+  fun processRelayListResponse(resultCode: Int, data: android.content.Intent?) {
+    viewModelScope.launch {
+      authRepository.processRelayListResponse(resultCode, data)
+      _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
+    }
+  }
+
+  /** Mark relay list request as handled (used when request is launched) */
+  fun onRelayListRequestHandled() {
+    _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
+  }
 }
 
 /**
@@ -127,12 +152,14 @@ constructor(
  * @property errorMessage Error message
  * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
  * @property loginSuccess Whether login was successful
+ * @property needsRelayListRequest Whether relay list needs to be requested from NIP-55 signer
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showNip55InstallDialog: Boolean = false,
     val loginSuccess: Boolean = false,
+    val needsRelayListRequest: Boolean = false,
 )
 
 /**

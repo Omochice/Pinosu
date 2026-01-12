@@ -91,6 +91,20 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             viewModel.processNip55Response(result.resultCode, result.data)
           }
 
+  val relayListLauncher =
+      rememberLauncherForActivityResult(
+          contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.processRelayListResponse(result.resultCode, result.data)
+          }
+
+  LaunchedEffect(loginUiState.needsRelayListRequest) {
+    if (loginUiState.needsRelayListRequest) {
+      viewModel.onRelayListRequestHandled()
+      val intent = nip55SignerClient.createGetRelaysIntent()
+      relayListLauncher.launch(intent)
+    }
+  }
+
   val startDestination = if (mainUiState.userPubkey != null) BOOKMARK_ROUTE else LOGIN_ROUTE
 
   ModalNavigationDrawer(
