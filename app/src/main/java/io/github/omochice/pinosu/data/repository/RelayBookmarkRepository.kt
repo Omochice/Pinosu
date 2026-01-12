@@ -9,6 +9,7 @@ import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
+import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +40,7 @@ constructor(
 
     private fun isValidUrl(url: String): Boolean {
       return try {
-        val uri = java.net.URI(url)
+        val uri = URI(url)
         uri.scheme in listOf("http", "https") && uri.host != null
       } catch (e: Exception) {
         false

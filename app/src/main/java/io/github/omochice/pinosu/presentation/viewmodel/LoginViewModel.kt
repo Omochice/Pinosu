@@ -1,5 +1,7 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,7 +93,7 @@ constructor(
    * @param resultCode ActivityResult resultCode
    * @param data Intent data
    */
-  fun processNip55Response(resultCode: Int, data: android.content.Intent?) {
+  fun processNip55Response(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
       _uiState.value =
           _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
@@ -135,11 +137,11 @@ constructor(
    * @param resultCode ActivityResult resultCode
    * @param data Intent data
    */
-  fun processRelayListResponse(resultCode: Int, data: android.content.Intent?) {
+  fun processRelayListResponse(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
       val result = authRepository.processRelayListResponse(resultCode, data)
       if (result.isFailure) {
-        android.util.Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
+        Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
       }
       _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
     }
