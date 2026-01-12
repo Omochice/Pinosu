@@ -105,9 +105,19 @@ kover {
   reports {
     filters {
       excludes {
-        classes("*_Hilt*", "Hilt_*", "*_HiltModules*")
-        classes("*_Factory", "*_MembersInjector", "*_Provide*Factory")
-        classes("*.BuildConfig")
+        classes(
+            // Hilt generated
+            "*_Hilt*",
+            "Hilt_*",
+            "*_HiltModules*",
+            "*_Factory",
+            "*_MembersInjector",
+            "*_Provide*Factory",
+            // BuildConfig
+            "*.BuildConfig",
+            // Jetpack Compose generated
+            "ComposableSingletons*",
+        )
       }
     }
     variant("debug") { xml { onCheck = true } }
