@@ -120,7 +120,7 @@ constructor(
     val relayResult = nip55SignerClient.handleRelayListResponse(resultCode, data)
 
     return if (relayResult.isSuccess) {
-      val relays = relayResult.getOrNull()!!
+      val relays = relayResult.getOrThrow()
       try {
         localAuthDataSource.saveRelayList(relays)
         Result.success(Unit)
