@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui.component
+package io.github.omochice.pinosu.feature.comments.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

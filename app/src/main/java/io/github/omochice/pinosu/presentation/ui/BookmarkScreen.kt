@@ -267,7 +267,7 @@ private fun BookmarkItemCard(
           }
 
           bookmark.eventId?.let {
-            io.github.omochice.pinosu.presentation.ui.component.CommentSection(
+            io.github.omochice.pinosu.feature.comments.ui.CommentSection(
                 isExpanded = isCommentExpanded,
                 loadState = commentLoadState,
                 onToggle = onToggleComments)
