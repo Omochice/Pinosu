@@ -7,6 +7,7 @@ import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.comments.model.CommentLoadState
 import io.github.omochice.pinosu.feature.comments.usecase.GetCommentsForBookmarkUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

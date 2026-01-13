@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comments.model.Comment
-import io.github.omochice.pinosu.presentation.viewmodel.CommentLoadState
+import io.github.omochice.pinosu.feature.comments.model.CommentLoadState
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

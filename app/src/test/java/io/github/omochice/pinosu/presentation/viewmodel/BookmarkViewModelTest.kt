@@ -6,6 +6,7 @@ import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.comments.model.Comment
+import io.github.omochice.pinosu.feature.comments.model.CommentLoadState
 import io.github.omochice.pinosu.feature.comments.usecase.GetCommentsForBookmarkUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
