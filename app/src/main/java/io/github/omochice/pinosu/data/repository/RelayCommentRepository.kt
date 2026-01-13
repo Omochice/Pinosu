@@ -4,7 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.relay.RelayPool
-import io.github.omochice.pinosu.domain.model.Comment
+import io.github.omochice.pinosu.feature.comments.model.Comment
 import javax.inject.Inject
 import javax.inject.Singleton
 

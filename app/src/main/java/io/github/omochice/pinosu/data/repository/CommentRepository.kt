@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.data.repository
 
-import io.github.omochice.pinosu.domain.model.Comment
+import io.github.omochice.pinosu.feature.comments.model.Comment
 
 /**
  * Repository interface for fetching Nostr kind:1111 comments

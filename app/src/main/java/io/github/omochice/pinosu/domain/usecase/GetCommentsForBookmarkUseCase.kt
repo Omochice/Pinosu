@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.domain.usecase
 
-import io.github.omochice.pinosu.domain.model.Comment
+import io.github.omochice.pinosu.feature.comments.model.Comment
 
 /**
  * UseCase interface for fetching comments on a bookmark event

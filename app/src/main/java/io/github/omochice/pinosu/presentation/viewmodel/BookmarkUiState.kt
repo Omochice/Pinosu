@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
 import io.github.omochice.pinosu.domain.model.BookmarkItem
-import io.github.omochice.pinosu.domain.model.Comment
+import io.github.omochice.pinosu.feature.comments.model.Comment
 
 /**
  * UI state for bookmark list screen

@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.model
+package io.github.omochice.pinosu.feature.comments.model
 
 /**
  * Domain model for Nostr kind:1111 comment events
