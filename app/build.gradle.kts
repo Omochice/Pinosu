@@ -89,6 +89,9 @@ dependencies {
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
+  // Workaround for Hilt + Kotlin 2.3.0 metadata compatibility
+  // https://github.com/google/dagger/issues/5001
+  annotationProcessor("org.jetbrains.kotlin:kotlin-metadata-jvm:2.3.0")
 
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
