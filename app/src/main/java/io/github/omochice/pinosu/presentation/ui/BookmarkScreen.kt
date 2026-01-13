@@ -135,6 +135,12 @@ fun BookmarkScreen(
                             key = { bookmark ->
                               "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
                             }) { bookmark ->
+                              val eventId = bookmark.eventId
+                              val isCommentExpanded =
+                                  eventId != null &&
+                                      uiState.expandedCommentEventIds.contains(eventId)
+                              val commentLoadState = eventId?.let { uiState.commentsMap[it] }
+
                               BookmarkItemCard(
                                   bookmark = bookmark,
                                   onClick = { clickedBookmark ->
@@ -149,6 +155,11 @@ fun BookmarkScreen(
                                         vm.onBookmarkCardClicked(clickedBookmark)
                                       }
                                     }
+                                  },
+                                  isCommentExpanded = isCommentExpanded,
+                                  commentLoadState = commentLoadState,
+                                  onToggleComments = {
+                                    eventId?.let { id -> viewModel?.toggleComments(id) }
                                   })
                             }
                       }
@@ -179,7 +190,13 @@ fun BookmarkScreen(
 }
 
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkItemCard(
+    bookmark: BookmarkItem,
+    onClick: (BookmarkItem) -> Unit,
+    isCommentExpanded: Boolean = false,
+    commentLoadState: io.github.omochice.pinosu.presentation.viewmodel.CommentLoadState? = null,
+    onToggleComments: () -> Unit = {},
+) {
   val hasUrls = bookmark.urls.isNotEmpty()
 
   Card(
@@ -247,6 +264,13 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
                 text = "(Title from OG metadata)",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary)
+          }
+
+          bookmark.eventId?.let {
+            io.github.omochice.pinosu.presentation.ui.component.CommentSection(
+                isExpanded = isCommentExpanded,
+                loadState = commentLoadState,
+                onToggle = onToggleComments)
           }
         }
       }
