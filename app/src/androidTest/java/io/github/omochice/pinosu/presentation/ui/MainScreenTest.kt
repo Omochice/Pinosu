@@ -19,7 +19,7 @@ class MainScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun mainScreen_logoutButtonIsDisplayed() {
+  fun `MainScreen should display logout button`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -30,7 +30,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_userPubkeyIsDisplayed() {
+  fun `MainScreen should display user pubkey`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -43,7 +43,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_whenPubkeyIsNull_showsNotLoggedInMessage() {
+  fun `MainScreen when pubkey is null should show not logged in message`() {
 
     val uiState = MainUiState(userPubkey = null, isLoggingOut = false)
 
@@ -53,7 +53,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_whenLogoutButtonClicked_callsOnLogout() {
+  fun `MainScreen when logout button clicked should call onLogout`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -67,7 +67,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_whenLoggingOut_showsLoadingIndicator() {
+  fun `MainScreen when logging out should show loading indicator`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
@@ -79,7 +79,7 @@ class MainScreenTest {
 
   /** Best Practice: Prevent double-click during logout */
   @Test
-  fun mainScreen_whenLoggingOut_logoutButtonIsDisabled() {
+  fun `MainScreen when logging out should disable logout button`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = true)
@@ -96,7 +96,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_afterLogout_callsNavigateToLogin() {
+  fun `MainScreen after logout should call navigateToLogin`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val loggedInState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -117,7 +117,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_doesNotNavigateWhileLoggingOut() {
+  fun `MainScreen should not navigate while logging out`() {
 
     val loggingOutState = MainUiState(userPubkey = null, isLoggingOut = true)
     var navigateToLoginCalled = false
@@ -134,7 +134,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_doesNotNavigateWhenInitiallyNotLoggedIn() {
+  fun `MainScreen should not navigate when initially not logged in`() {
 
     val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
     var navigateToLoginCalled = false
@@ -151,7 +151,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_displaysShortPubkeyWithoutMasking() {
+  fun `MainScreen should display short pubkey without masking`() {
 
     val shortPubkey = "short1234"
     val uiState = MainUiState(userPubkey = shortPubkey, isLoggingOut = false)
@@ -162,7 +162,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_displaysLoggedInText() {
+  fun `MainScreen should display logged in text`() {
 
     val testPubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     val uiState = MainUiState(userPubkey = testPubkey, isLoggingOut = false)
@@ -173,7 +173,7 @@ class MainScreenTest {
   }
 
   @Test
-  fun mainScreen_hidesLogoutButtonWhenNotLoggedIn() {
+  fun `MainScreen should hide logout button when not logged in`() {
 
     val notLoggedInState = MainUiState(userPubkey = null, isLoggingOut = false)
 

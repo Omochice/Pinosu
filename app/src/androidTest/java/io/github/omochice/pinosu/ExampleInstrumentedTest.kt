@@ -14,8 +14,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
   @Test
-  fun useAppContext() {
-    // Context of the app under test.
+  fun `app context should have correct package name`() {
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     assertEquals("io.github.omochice.pinosu", appContext.packageName)
   }

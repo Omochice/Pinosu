@@ -31,12 +31,12 @@ class LocalAuthDataSourceTest {
   }
 
   @Test
-  fun testInitialization() {
+  fun `initialization should succeed`() {
     assertNotNull("LocalAuthDataSource should be initialized", dataSource)
   }
 
   @Test
-  fun testEncryptedSharedPreferencesCreation() {
+  fun `EncryptedSharedPreferences creation should succeed`() {
     try {
       dataSource.toString()
       assertTrue("EncryptedSharedPreferences should be created successfully", true)
@@ -46,17 +46,17 @@ class LocalAuthDataSourceTest {
   }
 
   @Test
-  fun testMasterKeyGeneration() {
+  fun `MasterKey generation should succeed`() {
     assertNotNull("MasterKey should be generated", dataSource)
   }
 
   @Test
-  fun testEncryptionSchemes() {
+  fun `encryption schemes should be configured`() {
     assertNotNull("Encryption schemes should be configured", dataSource)
   }
 
   @Test
-  fun testMultipleInitializations() {
+  fun `multiple initializations should succeed`() {
     val dataSource1 = LocalAuthDataSource(context)
     val dataSource2 = LocalAuthDataSource(context)
 

@@ -30,13 +30,13 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun testSaveUser_Success() = runTest {
+  fun `saveUser should succeed`() = runTest {
     val user = User("a".repeat(64))
     dataSource.saveUser(user)
   }
 
   @Test
-  fun testSaveUser_SetsTimestamps() = runTest {
+  fun `saveUser should set timestamps`() = runTest {
     val user = User("b".repeat(64))
     val beforeSave = System.currentTimeMillis()
 
@@ -48,7 +48,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   /** Test that existing user can be overwritten */
   @Test
-  fun testSaveUser_Overwrite() = runTest {
+  fun `saveUser should overwrite existing user`() = runTest {
     val user1 = User("c".repeat(64))
     val user2 = User("d".repeat(64))
 
@@ -60,7 +60,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun testGetUser_AfterSave() = runTest {
+  fun `getUser after save should return saved user`() = runTest {
     val user = User("e".repeat(64))
     dataSource.saveUser(user)
 
@@ -71,14 +71,14 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun testGetUser_NoDataReturnsNull() = runTest {
+  fun `getUser with no data should return null`() = runTest {
     val retrieved = dataSource.getUser()
 
     assertNull("getUser should return null when no data exists", retrieved)
   }
 
   @Test
-  fun testGetUser_InvalidDataReturnsNull() = runTest {
+  fun `getUser with invalid data should return null`() = runTest {
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -92,7 +92,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   /** Test that created_at timestamp is saved and retrieved correctly */
   @Test
-  fun testGetUser_PreservesCreatedAt() = runTest {
+  fun `getUser should preserve createdAt timestamp`() = runTest {
     val user = User("f".repeat(64))
 
     dataSource.saveUser(user)
@@ -105,7 +105,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   /** Test that last_accessed timestamp is saved and retrieved correctly */
   @Test
-  fun testGetUser_UpdatesLastAccessed() = runTest {
+  fun `getUser should update lastAccessed timestamp`() = runTest {
     val user = User("1".repeat(64))
     dataSource.saveUser(user)
     Thread.sleep(10)
@@ -120,7 +120,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun testClearLoginState_Success() = runTest {
+  fun `clearLoginState should succeed`() = runTest {
     val user = User("2".repeat(64))
     dataSource.saveUser(user)
 
@@ -131,11 +131,12 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   /** Test that clear succeeds even when no data exists */
-  @Test fun testClearLoginState_NoDataSucceeds() = runTest { dataSource.clearLoginState() }
+  @Test
+  fun `clearLoginState with no data should succeed`() = runTest { dataSource.clearLoginState() }
 
   /** Test that timestamps are also removed after clear */
   @Test
-  fun testClearLoginState_RemovesTimestamps() = runTest {
+  fun `clearLoginState should remove timestamps`() = runTest {
     val user = User("3".repeat(64))
     dataSource.saveUser(user)
 
@@ -148,5 +149,5 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   /** Test error handling for storage errors (placeholder for future extension) */
-  @Test fun testSaveUser_HandlesStorageError() = runTest {}
+  @Test fun `saveUser should handle storage error`() = runTest {}
 }

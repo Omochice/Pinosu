@@ -131,9 +131,8 @@ class RelayPoolTest {
     }
   }
 
-  /** Test that RelayPool merges events from multiple relays */
   @Test
-  fun testSubscribeWithTimeout_MergesEventsFromMultipleRelays() = runBlocking {
+  fun `subscribeWithTimeout should merge events from multiple relays`() = runBlocking {
     val state1 = MockWebSocketState(listOf(createMockEvent("event1")))
     val state2 = MockWebSocketState(listOf(createMockEvent("event2")))
 
@@ -171,9 +170,8 @@ class RelayPoolTest {
     assertTrue("Should contain event2", result.any { it.id == "event2" })
   }
 
-  /** Test that RelayPool deduplicates events by ID */
   @Test
-  fun testSubscribeWithTimeout_DeduplicatesEventsById() = runBlocking {
+  fun `subscribeWithTimeout should deduplicate events by ID`() = runBlocking {
     val sameEvent = createMockEvent("same-event-id")
 
     val state1 = MockWebSocketState(listOf(sameEvent))
@@ -212,9 +210,8 @@ class RelayPoolTest {
     assertEquals("Event ID should be same-event-id", "same-event-id", result.first().id)
   }
 
-  /** Test that RelayPool handles single relay (backward compatibility) */
   @Test
-  fun testSubscribeWithTimeout_SingleRelay_ReturnsEvents() = runBlocking {
+  fun `subscribeWithTimeout with single relay should return events`() = runBlocking {
     val state = MockWebSocketState(listOf(createMockEvent("single-event")))
 
     every { okHttpClient.newWebSocket(any(), any()) } answers
@@ -234,9 +231,8 @@ class RelayPoolTest {
     assertEquals("Event ID should be single-event", "single-event", result.first().id)
   }
 
-  /** Test that RelayPool returns empty list when all relays fail */
   @Test
-  fun testSubscribeWithTimeout_AllRelaysFail_ReturnsEmptyList() = runBlocking {
+  fun `subscribeWithTimeout when all relays fail should return empty list`() = runBlocking {
     every { okHttpClient.newWebSocket(any(), any()) } answers
         {
           val listener = secondArg<WebSocketListener>()
@@ -255,17 +251,15 @@ class RelayPoolTest {
     assertTrue("Should return empty list when all relays fail", result.isEmpty())
   }
 
-  /** Test that RelayPool returns empty list for empty relay list */
   @Test
-  fun testSubscribeWithTimeout_EmptyRelayList_ReturnsEmptyList() = runBlocking {
+  fun `subscribeWithTimeout with empty relay list should return empty list`() = runBlocking {
     val result = relayPool.subscribeWithTimeout(emptyList(), """{"kinds":[39701]}""", 5000L)
 
     assertTrue("Should return empty list for empty relay list", result.isEmpty())
   }
 
-  /** Test that RelayPool continues on individual relay failure */
   @Test
-  fun testSubscribeWithTimeout_ContinuesOnIndividualRelayFailure() = runBlocking {
+  fun `subscribeWithTimeout should continue on individual relay failure`() = runBlocking {
     val workingState = MockWebSocketState(listOf(createMockEvent("working-event")))
 
     every {

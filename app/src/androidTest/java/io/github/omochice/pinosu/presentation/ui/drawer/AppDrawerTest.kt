@@ -20,7 +20,7 @@ class AppDrawerTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun appDrawer_shouldDisplayAllMenuItems() {
+  fun `AppDrawer should display all menu items`() {
     composeTestRule.setContent {
       AppDrawer(
           onNavigateToLicense = {}, onNavigateToAppInfo = {}, onLogout = {}, onCloseDrawer = {})
@@ -32,7 +32,7 @@ class AppDrawerTest {
   }
 
   @Test
-  fun appDrawer_shouldHandleLicenseClick() {
+  fun `AppDrawer should handle license click`() {
     var licenseClicked = false
     var drawerClosed = false
 
@@ -50,7 +50,7 @@ class AppDrawerTest {
   }
 
   @Test
-  fun appDrawer_shouldHandleLogoutClick() {
+  fun `AppDrawer should handle logout click`() {
     var logoutClicked = false
     var drawerClosed = false
 

@@ -35,14 +35,14 @@ class NavigationTest {
   }
 
   @Test
-  fun navigation_whenNotLoggedIn_displaysLoginScreen() {
+  fun `navigation when not logged in should display login screen`() {
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
   /** This test simulates the state where LoginViewModel.mainUiState.userPubkey is not null */
   @Test
-  fun navigation_whenLoginSuccess_navigatesToMainScreen() {
+  fun `navigation when login success should navigate to main screen`() {
 
     // This test verifies navigation state changes through ViewModel
     // Currently skipped until implementation is complete
@@ -51,7 +51,7 @@ class NavigationTest {
 
   /** Note: Pre-setup of login state is required */
   @Test
-  fun navigation_whenLogout_navigatesToLoginScreen() {
+  fun `navigation when logout should navigate to login screen`() {
     // Note: Setup of login state is required
     // This test verifies navigation behavior after logout
     // Currently skipped until implementation is complete
@@ -60,7 +60,7 @@ class NavigationTest {
 
   /** Note: Test after implementing Back Press handling */
   @Test
-  fun navigation_onBackPressFromMainScreen_exitsApp() {
+  fun `navigation on back press from main screen should exit app`() {
     // Note: Implementation of Back Press handling is required
     // This test verifies Back Press behavior from main screen
     // Currently skipped until implementation is complete
@@ -69,7 +69,7 @@ class NavigationTest {
 
   /** Requirement: Usability requirement (login screen is the root screen) */
   @Test
-  fun navigation_onBackPressFromLoginScreen_exitsApp() {
+  fun `navigation on back press from login screen should exit app`() {
     // Note: Implementation of Back Press handling is required
     // This test verifies Back Press behavior from login screen
     // Currently skipped until implementation is complete

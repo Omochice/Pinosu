@@ -36,7 +36,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that data is stored in encrypted form */
   @Test
-  fun testDataIsEncryptedInStorage() = runTest {
+  fun `data should be stored in encrypted form`() = runTest {
     val user = User("abcd1234".repeat(8)) // 64-character valid pubkey
 
     dataSource.saveUser(user)
@@ -61,7 +61,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that encrypted data is correctly decrypted */
   @Test
-  fun testEncryptedDataCanBeDecrypted() = runTest {
+  fun `encrypted data should be correctly decrypted`() = runTest {
     val user = User("1234abcd".repeat(8))
 
     dataSource.saveUser(user)
@@ -74,7 +74,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that same encryption key is used to decrypt across different instances */
   @Test
-  fun testEncryptionKeyPersistenceAcrossInstances() = runTest {
+  fun `encryption key should persist across instances`() = runTest {
     val user = User("fedcba98".repeat(8))
 
     dataSource.saveUser(user)
@@ -89,7 +89,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that encryption and decryption works correctly through multiple cycles */
   @Test
-  fun testMultipleEncryptionDecryptionCycles() = runTest {
+  fun `multiple encryption decryption cycles should work correctly`() = runTest {
     val users =
         listOf(
             User("0".repeat(64)), User("1".repeat(64)), User("a".repeat(64)), User("f".repeat(64)))
@@ -106,7 +106,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that null is returned when invalid pubkey format is stored */
   @Test
-  fun testGetUser_InvalidPubkeyFormat_ReturnsNull() = runTest {
+  fun `getUser with invalid pubkey format should return null`() = runTest {
     val invalidPubkeys =
         listOf(
             "invalid",
@@ -133,7 +133,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that null is returned when pubkey is missing */
   @Test
-  fun testGetUser_MissingPubkey_ReturnsNull() = runTest {
+  fun `getUser with missing pubkey should return null`() = runTest {
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -148,7 +148,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that exceptions during SharedPreferences read are caught */
   @Test
-  fun testGetUser_ExceptionHandling_ReturnsNull() = runTest {
+  fun `getUser with exception should return null`() = runTest {
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -162,7 +162,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that null is returned when empty string pubkey is stored */
   @Test
-  fun testGetUser_EmptyPubkey_ReturnsNull() = runTest {
+  fun `getUser with empty pubkey should return null`() = runTest {
     context
         .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
         .edit()
@@ -176,7 +176,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that timestamps are handled correctly even if invalid */
   @Test
-  fun testGetUser_TimestampHandling() = runTest {
+  fun `getUser should handle timestamps correctly`() = runTest {
     val user = User("deadbeef".repeat(8))
 
     dataSource.saveUser(user)
@@ -189,7 +189,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that all data is removed after clearLoginState */
   @Test
-  fun testClearLoginState_RemovesAllData() = runTest {
+  fun `clearLoginState should remove all data`() = runTest {
     val user = User("cafe1234".repeat(8))
 
     dataSource.saveUser(user)
@@ -208,7 +208,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that saveUser throws StorageError.WriteError on exception */
   @Test
-  fun testSaveUser_ValidatesErrorType() = runTest {
+  fun `saveUser should validate error type`() = runTest {
     val user = User("beef".repeat(16))
 
     try {
@@ -222,7 +222,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   /** Test that clearLoginState throws StorageError.WriteError on exception */
   @Test
-  fun testClearLoginState_ValidatesErrorType() = runTest {
+  fun `clearLoginState should validate error type`() = runTest {
     try {
       dataSource.clearLoginState()
       assertNull("Data should be cleared", dataSource.getUser())
