@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.repository
+package io.github.omochice.pinosu.feature.comments.repository
 
 import io.github.omochice.pinosu.feature.comments.model.Comment
 

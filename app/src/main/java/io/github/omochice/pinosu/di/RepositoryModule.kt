@@ -32,6 +32,6 @@ abstract class RepositoryModule {
 
   @Binds
   abstract fun bindCommentRepository(
-      impl: io.github.omochice.pinosu.data.repository.RelayCommentRepository
-  ): io.github.omochice.pinosu.data.repository.CommentRepository
+      impl: io.github.omochice.pinosu.feature.comments.repository.RelayCommentRepository
+  ): io.github.omochice.pinosu.feature.comments.repository.CommentRepository
 }

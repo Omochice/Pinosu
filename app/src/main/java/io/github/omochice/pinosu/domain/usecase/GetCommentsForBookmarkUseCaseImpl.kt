@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.domain.usecase
 
-import io.github.omochice.pinosu.data.repository.CommentRepository
 import io.github.omochice.pinosu.feature.comments.model.Comment
+import io.github.omochice.pinosu.feature.comments.repository.CommentRepository
 import javax.inject.Inject
 
 /**
