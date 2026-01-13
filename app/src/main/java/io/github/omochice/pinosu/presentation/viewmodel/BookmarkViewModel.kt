@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
+import io.github.omochice.pinosu.domain.usecase.GetCommentsForBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
  *
  * @property getBookmarkListUseCase UseCase for fetching bookmark list
  * @property getLoginStateUseCase UseCase for retrieving current login state
+ * @property getCommentsForBookmarkUseCase UseCase for fetching comments on bookmark events
  */
 @HiltViewModel
 class BookmarkViewModel
@@ -28,6 +30,7 @@ class BookmarkViewModel
 constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
+    private val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(BookmarkUiState())
@@ -146,5 +149,62 @@ constructor(
   /** Dismiss error dialog */
   fun dismissErrorDialog() {
     _uiState.value = _uiState.value.copy(urlOpenError = null)
+  }
+
+  /**
+   * Toggle comment section expansion for a bookmark
+   *
+   * Expands or collapses the comment section. When expanding, triggers fetch if comments not
+   * loaded.
+   *
+   * @param eventId The event ID of the bookmark to toggle comments for
+   */
+  fun toggleComments(eventId: String) {
+    val currentState = _uiState.value
+    val isExpanded = currentState.expandedCommentEventIds.contains(eventId)
+
+    if (isExpanded) {
+      _uiState.update { state ->
+        state.copy(expandedCommentEventIds = state.expandedCommentEventIds - eventId)
+      }
+    } else {
+      _uiState.update { state ->
+        state.copy(expandedCommentEventIds = state.expandedCommentEventIds + eventId)
+      }
+      if (!currentState.commentsMap.containsKey(eventId)) {
+        fetchCommentsForBookmark(eventId)
+      }
+    }
+  }
+
+  /**
+   * Fetch comments for a bookmark event
+   *
+   * @param eventId The event ID to fetch comments for
+   */
+  private fun fetchCommentsForBookmark(eventId: String) {
+    viewModelScope.launch {
+      _uiState.update { state ->
+        state.copy(commentsMap = state.commentsMap + (eventId to CommentLoadState.Loading))
+      }
+
+      val result = getCommentsForBookmarkUseCase(eventId)
+      result.fold(
+          onSuccess = { comments ->
+            _uiState.update { state ->
+              state.copy(
+                  commentsMap = state.commentsMap + (eventId to CommentLoadState.Success(comments)))
+            }
+          },
+          onFailure = { e ->
+            _uiState.update { state ->
+              state.copy(
+                  commentsMap =
+                      state.commentsMap +
+                          (eventId to
+                              CommentLoadState.Error(e.message ?: "Failed to load comments")))
+            }
+          })
+    }
   }
 }

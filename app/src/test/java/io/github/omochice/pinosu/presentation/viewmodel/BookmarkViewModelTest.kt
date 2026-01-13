@@ -2,8 +2,10 @@ package io.github.omochice.pinosu.presentation.viewmodel
 
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
+import io.github.omochice.pinosu.domain.model.Comment
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
+import io.github.omochice.pinosu.domain.usecase.GetCommentsForBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -33,6 +35,7 @@ class BookmarkViewModelTest {
 
   private lateinit var getBookmarkListUseCase: GetBookmarkListUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase
   private lateinit var viewModel: BookmarkViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -42,7 +45,11 @@ class BookmarkViewModelTest {
     Dispatchers.setMain(testDispatcher)
     getBookmarkListUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
-    viewModel = BookmarkViewModel(getBookmarkListUseCase, getLoginStateUseCase)
+    getCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(any()) } returns Result.success(emptyList())
+    viewModel =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
   }
 
   @After
@@ -389,5 +396,141 @@ class BookmarkViewModelTest {
     val state = viewModel.uiState.first()
 
     assertTrue("commentsMap should be empty", state.commentsMap.isEmpty())
+  }
+
+  @Test
+  fun `toggleComments should add eventId to expandedCommentEventIds when collapsed`() = runTest {
+    val eventId = "test-event-id"
+
+    viewModel.toggleComments(eventId)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertTrue(
+        "expandedCommentEventIds should contain eventId",
+        state.expandedCommentEventIds.contains(eventId))
+  }
+
+  @Test
+  fun `toggleComments should remove eventId from expandedCommentEventIds when expanded`() =
+      runTest {
+        val eventId = "test-event-id"
+
+        viewModel.toggleComments(eventId)
+        advanceUntilIdle()
+        viewModel.toggleComments(eventId)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        assertFalse(
+            "expandedCommentEventIds should not contain eventId",
+            state.expandedCommentEventIds.contains(eventId))
+      }
+
+  @Test
+  fun `toggleComments should trigger fetch when expanding and not already loaded`() = runTest {
+    val eventId = "test-event-id"
+    val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(eventId) } returns Result.success(emptyList())
+
+    val viewModelWithComments =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
+
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+
+    coVerify { getCommentsForBookmarkUseCase(eventId) }
+  }
+
+  @Test
+  fun `toggleComments should not refetch when expanding already loaded comments`() = runTest {
+    val eventId = "test-event-id"
+    val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(eventId) } returns Result.success(emptyList())
+
+    val viewModelWithComments =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
+
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { getCommentsForBookmarkUseCase(eventId) }
+  }
+
+  @Test
+  fun `fetchCommentsForBookmark should set loading state initially`() = runTest {
+    val eventId = "test-event-id"
+    val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(eventId) } coAnswers
+        {
+          kotlinx.coroutines.delay(100)
+          Result.success(emptyList())
+        }
+
+    val viewModelWithComments =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
+
+    viewModelWithComments.toggleComments(eventId)
+    testScheduler.runCurrent()
+
+    val state = viewModelWithComments.uiState.first()
+    assertTrue(
+        "commentsMap should have Loading state",
+        state.commentsMap[eventId] is CommentLoadState.Loading)
+  }
+
+  @Test
+  fun `fetchCommentsForBookmark should set success state with comments`() = runTest {
+    val eventId = "test-event-id"
+    val expectedComments =
+        listOf(
+            Comment(
+                id = "comment1",
+                content = "Test comment",
+                author = "author1",
+                createdAt = 1700000000L,
+                referencedEventId = eventId))
+    val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(eventId) } returns Result.success(expectedComments)
+
+    val viewModelWithComments =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
+
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+
+    val state = viewModelWithComments.uiState.first()
+    val loadState = state.commentsMap[eventId]
+    assertTrue("commentsMap should have Success state", loadState is CommentLoadState.Success)
+    assertEquals(expectedComments, (loadState as CommentLoadState.Success).comments)
+  }
+
+  @Test
+  fun `fetchCommentsForBookmark should set error state on failure`() = runTest {
+    val eventId = "test-event-id"
+    val errorMessage = "Network error"
+    val getCommentsForBookmarkUseCase: GetCommentsForBookmarkUseCase = mockk(relaxed = true)
+    coEvery { getCommentsForBookmarkUseCase(eventId) } returns
+        Result.failure(RuntimeException(errorMessage))
+
+    val viewModelWithComments =
+        BookmarkViewModel(
+            getBookmarkListUseCase, getLoginStateUseCase, getCommentsForBookmarkUseCase)
+
+    viewModelWithComments.toggleComments(eventId)
+    advanceUntilIdle()
+
+    val state = viewModelWithComments.uiState.first()
+    val loadState = state.commentsMap[eventId]
+    assertTrue("commentsMap should have Error state", loadState is CommentLoadState.Error)
+    assertEquals(errorMessage, (loadState as CommentLoadState.Error).message)
   }
 }
