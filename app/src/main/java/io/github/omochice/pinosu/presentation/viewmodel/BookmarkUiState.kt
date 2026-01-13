@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
 import io.github.omochice.pinosu.domain.model.BookmarkItem
+import io.github.omochice.pinosu.domain.model.Comment
 
 /**
  * UI state for bookmark list screen
@@ -13,6 +14,8 @@ import io.github.omochice.pinosu.domain.model.BookmarkItem
  * @property urlOpenError Error message when URL opening fails
  * @property selectedTab Currently selected filter tab (Local or Global)
  * @property userHexPubkey Hex-encoded pubkey of logged-in user for local filtering
+ * @property expandedCommentEventIds Set of event IDs for which comments section is expanded
+ * @property commentsMap Map of event ID to comment loading state
  */
 data class BookmarkUiState(
     val isLoading: Boolean = false,
@@ -23,4 +26,18 @@ data class BookmarkUiState(
     val urlOpenError: String? = null,
     val selectedTab: BookmarkFilterMode = BookmarkFilterMode.Local,
     val userHexPubkey: String? = null,
+    val expandedCommentEventIds: Set<String> = emptySet(),
+    val commentsMap: Map<String, CommentLoadState> = emptyMap(),
 )
+
+/** Loading state for comments on a bookmark */
+sealed class CommentLoadState {
+  /** Comments are being fetched */
+  data object Loading : CommentLoadState()
+
+  /** Comments loaded successfully */
+  data class Success(val comments: List<Comment>) : CommentLoadState()
+
+  /** Failed to load comments */
+  data class Error(val message: String) : CommentLoadState()
+}

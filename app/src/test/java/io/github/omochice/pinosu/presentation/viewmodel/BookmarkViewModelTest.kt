@@ -376,4 +376,18 @@ class BookmarkViewModelTest {
     assertNull("URL dialog should be dismissed", stateAfterDismissUrl.selectedBookmarkForUrlDialog)
     assertNotNull("Error dialog should still be shown", stateAfterDismissUrl.urlOpenError)
   }
+
+  @Test
+  fun `initial state should have empty expandedCommentEventIds`() = runTest {
+    val state = viewModel.uiState.first()
+
+    assertTrue("expandedCommentEventIds should be empty", state.expandedCommentEventIds.isEmpty())
+  }
+
+  @Test
+  fun `initial state should have empty commentsMap`() = runTest {
+    val state = viewModel.uiState.first()
+
+    assertTrue("commentsMap should be empty", state.commentsMap.isEmpty())
+  }
 }
