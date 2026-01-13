@@ -61,6 +61,13 @@
     <string name="dialog_title_select_url">URLを選択</string>
     <string name="button_open">開く</string>
 
+    <!-- コメントセクション -->
+    <string name="show_comments">コメントを表示</string>
+    <string name="hide_comments">コメントを非表示</string>
+    <string name="loading_comments">コメントを読み込み中...</string>
+    <string name="no_comments">コメントはありません</string>
+    <string name="error_loading_comments">コメントの読み込みに失敗しました</string>
+
     <!-- ライセンス画面 -->
     <string name="title_licenses">オープンソースライセンス</string>
 
