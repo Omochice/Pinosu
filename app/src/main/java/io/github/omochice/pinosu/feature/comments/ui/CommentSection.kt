@@ -70,6 +70,7 @@ internal fun CommentSection(
         visible = isExpanded, enter = expandVertically(), exit = shrinkVertically()) {
           Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
             when (loadState) {
+              null,
               is CommentLoadState.Loading -> {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
@@ -98,13 +99,6 @@ internal fun CommentSection(
                     text = loadState.message,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(vertical = 8.dp))
-              }
-              null -> {
-                Text(
-                    text = stringResource(R.string.loading_comments),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 8.dp))
               }
             }
