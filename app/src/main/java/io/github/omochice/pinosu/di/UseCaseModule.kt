@@ -34,6 +34,6 @@ abstract class UseCaseModule {
 
   @Binds
   abstract fun bindGetCommentsForBookmarkUseCase(
-      impl: io.github.omochice.pinosu.domain.usecase.GetCommentsForBookmarkUseCaseImpl
-  ): io.github.omochice.pinosu.domain.usecase.GetCommentsForBookmarkUseCase
+      impl: io.github.omochice.pinosu.feature.comments.usecase.GetCommentsForBookmarkUseCaseImpl
+  ): io.github.omochice.pinosu.feature.comments.usecase.GetCommentsForBookmarkUseCase
 }

@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.usecase
+package io.github.omochice.pinosu.feature.comments.usecase
 
 import io.github.omochice.pinosu.feature.comments.model.Comment
 
