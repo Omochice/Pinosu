@@ -194,7 +194,7 @@ private fun BookmarkItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     isCommentExpanded: Boolean = false,
-    commentLoadState: io.github.omochice.pinosu.presentation.viewmodel.CommentLoadState? = null,
+    commentLoadState: io.github.omochice.pinosu.feature.comments.model.CommentLoadState? = null,
     onToggleComments: () -> Unit = {},
 ) {
   val hasUrls = bookmark.urls.isNotEmpty()
