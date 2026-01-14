@@ -148,7 +148,7 @@ class UserFlowTest {
     }
     composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
 
-    val maskedPubkey = "1234abcd...5678efgh"
+    val maskedPubkey = "${testUser.pubkey.take(8)}...${testUser.pubkey.takeLast(8)}"
     composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertDoesNotExist()
