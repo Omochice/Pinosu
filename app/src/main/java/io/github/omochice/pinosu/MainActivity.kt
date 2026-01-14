@@ -13,10 +13,10 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -82,8 +82,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
 
-  val mainUiState by viewModel.mainUiState.collectAsState()
-  val loginUiState by viewModel.uiState.collectAsState()
+  val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()
+  val loginUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   val nip55Launcher =
       rememberLauncherForActivityResult(
@@ -177,7 +177,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               popEnterTransition = { defaultPopEnterTransition },
               popExitTransition = { defaultPopExitTransition }) {
                 val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
-                val bookmarkUiState by bookmarkViewModel.uiState.collectAsState()
+                val bookmarkUiState by bookmarkViewModel.uiState.collectAsStateWithLifecycle()
 
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
