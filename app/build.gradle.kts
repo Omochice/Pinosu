@@ -5,7 +5,7 @@ plugins {
   alias(libs.plugins.ksp)
   alias(libs.plugins.hilt)
   alias(libs.plugins.kover)
-  alias(libs.plugins.aboutlibraries)
+  alias(libs.plugins.aboutlibraries.android)
 }
 
 android {
