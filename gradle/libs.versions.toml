@@ -43,6 +43,7 @@ ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 kover = {id = "org.jetbrains.kotlinx.kover", version.ref = "kover"}
 aboutlibraries = {id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries"}
+aboutlibraries-android = {id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutlibraries"}
 
 [versions]
 agp = "8.13.2"
