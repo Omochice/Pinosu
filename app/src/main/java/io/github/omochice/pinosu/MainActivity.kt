@@ -22,11 +22,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
-import io.github.omochice.pinosu.presentation.navigation.APP_INFO_ROUTE
-import io.github.omochice.pinosu.presentation.navigation.BOOKMARK_ROUTE
-import io.github.omochice.pinosu.presentation.navigation.LICENSE_ROUTE
-import io.github.omochice.pinosu.presentation.navigation.LOGIN_ROUTE
-import io.github.omochice.pinosu.presentation.navigation.MAIN_ROUTE
+import io.github.omochice.pinosu.presentation.navigation.AppInfo
+import io.github.omochice.pinosu.presentation.navigation.Bookmark
+import io.github.omochice.pinosu.presentation.navigation.License
+import io.github.omochice.pinosu.presentation.navigation.Login
+import io.github.omochice.pinosu.presentation.navigation.Main
 import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultPopEnterTransition
@@ -105,20 +105,19 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
     }
   }
 
-  val startDestination = if (mainUiState.userPubkey != null) BOOKMARK_ROUTE else LOGIN_ROUTE
+  val startDestination: Any = if (mainUiState.userPubkey != null) Bookmark else Login
 
   ModalNavigationDrawer(
       drawerState = drawerState,
       drawerContent = {
         AppDrawer(
-            onNavigateToLicense = { navController.navigate(LICENSE_ROUTE) },
-            onNavigateToAppInfo = { navController.navigate(APP_INFO_ROUTE) },
+            onNavigateToLicense = { navController.navigate(License) },
+            onNavigateToAppInfo = { navController.navigate(AppInfo) },
             onLogout = { viewModel.onLogoutButtonClicked() },
             onCloseDrawer = { scope.launch { drawerState.close() } })
       }) {
         NavHost(navController = navController, startDestination = startDestination) {
-          composable(
-              LOGIN_ROUTE,
+          composable<Login>(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
@@ -144,22 +143,19 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                       }
                     },
                     onNavigateToMain = {
-                      navController.navigate(BOOKMARK_ROUTE) {
-                        popUpTo(LOGIN_ROUTE) { inclusive = true }
-                      }
+                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
                       viewModel.dismissError()
                     })
               }
 
-          composable(
-              MAIN_ROUTE,
+          composable<Main>(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
               popExitTransition = { defaultPopExitTransition }) {
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
-                    navController.navigate(LOGIN_ROUTE) { popUpTo(MAIN_ROUTE) { inclusive = true } }
+                    navController.navigate(Login) { popUpTo<Main> { inclusive = true } }
                   }
                 }
 
@@ -170,8 +166,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onNavigateToLogin = {})
               }
 
-          composable(
-              BOOKMARK_ROUTE,
+          composable<Bookmark>(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
@@ -181,9 +176,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
 
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
-                    navController.navigate(LOGIN_ROUTE) {
-                      popUpTo(BOOKMARK_ROUTE) { inclusive = true }
-                    }
+                    navController.navigate(Login) { popUpTo<Bookmark> { inclusive = true } }
                   }
                 }
 
@@ -196,8 +189,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     viewModel = bookmarkViewModel)
               }
 
-          composable(
-              LICENSE_ROUTE,
+          composable<License>(
               enterTransition = { EnterTransition.None },
               exitTransition = { ExitTransition.None },
               popEnterTransition = { EnterTransition.None },
@@ -205,8 +197,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                 LicenseScreen(onNavigateUp = { navController.navigateUp() })
               }
 
-          composable(
-              APP_INFO_ROUTE,
+          composable<AppInfo>(
               enterTransition = { EnterTransition.None },
               exitTransition = { ExitTransition.None },
               popEnterTransition = { EnterTransition.None },
