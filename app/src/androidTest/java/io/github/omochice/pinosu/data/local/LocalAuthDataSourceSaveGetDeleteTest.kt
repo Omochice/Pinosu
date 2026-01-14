@@ -148,6 +148,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertFalse("login_last_accessed should be removed", prefs.contains("login_last_accessed"))
   }
 
-  /** Test error handling for storage errors (placeholder for future extension) */
-  @Test fun `saveUser should handle storage error`() = runTest {}
+  @org.junit.Ignore("TODO: Implement storage error handling test")
+  @Test
+  fun `saveUser should handle storage error`() = runTest {}
 }
