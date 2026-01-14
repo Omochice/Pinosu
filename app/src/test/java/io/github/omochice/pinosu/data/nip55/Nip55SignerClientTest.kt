@@ -34,10 +34,8 @@ class Nip55SignerClientTest {
     nip55SignerClient = Nip55SignerClient(context)
   }
 
-  /** Test that returns true when NIP-55 signer is installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
-
+  fun `checkNip55SignerInstalled when installed should return true`() {
     every {
       packageManager.getPackageInfo(
           Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
@@ -48,10 +46,8 @@ class Nip55SignerClientTest {
     assertTrue("Should return true when NIP-55 signer is installed", result)
   }
 
-  /** Test that returns false when NIP-55 signer is not installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
-
+  fun `checkNip55SignerInstalled when not installed should return false`() {
     every {
       packageManager.getPackageInfo(
           Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
@@ -62,10 +58,8 @@ class Nip55SignerClientTest {
     assertFalse("Should return false when NIP-55 signer is not installed", result)
   }
 
-  /** Test that returns false when PackageManager throws exception */
   @Test
-  fun testCheckNip55SignerInstalled_OnException_ReturnsFalse() {
-
+  fun `checkNip55SignerInstalled on exception should return false`() {
     every {
       packageManager.getPackageInfo(
           Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
@@ -76,10 +70,8 @@ class Nip55SignerClientTest {
     assertFalse("Should return false on exception", result)
   }
 
-  /** Test createPublicKeyIntent() creates Intent with correct scheme */
   @Test
-  fun testCreatePublicKeyIntent_HasCorrectScheme() {
-
+  fun `createPublicKeyIntent should have correct scheme`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertNotNull("Intent should have data URI", intent.data)
@@ -89,10 +81,8 @@ class Nip55SignerClientTest {
         intent.data?.scheme)
   }
 
-  /** Test createPublicKeyIntent() sets correct package name */
   @Test
-  fun testCreatePublicKeyIntent_HasCorrectPackage() {
-
+  fun `createPublicKeyIntent should have correct package`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
@@ -101,10 +91,8 @@ class Nip55SignerClientTest {
         intent.`package`)
   }
 
-  /** Test createPublicKeyIntent() sets get_public_key type */
   @Test
-  fun testCreatePublicKeyIntent_HasCorrectType() {
-
+  fun `createPublicKeyIntent should have correct type`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
@@ -113,36 +101,29 @@ class Nip55SignerClientTest {
         intent.getStringExtra("type"))
   }
 
-  /** Test createPublicKeyIntent() sets correct flags */
   @Test
-  fun testCreatePublicKeyIntent_HasCorrectFlags() {
-
+  fun `createPublicKeyIntent should have correct flags`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     val expectedFlags =
         android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
             android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-    // Verify flags are included with OR operation
     assertTrue(
         "Intent should have SINGLE_TOP and CLEAR_TOP flags",
         (intent.flags and expectedFlags) == expectedFlags)
   }
 
-  /** Test createPublicKeyIntent() sets ACTION_VIEW action */
   @Test
-  fun testCreatePublicKeyIntent_HasCorrectAction() {
-
+  fun `createPublicKeyIntent should have correct action`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
         "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
 
-  /** Valid response（RESULT_OK + pubkey）correct processing test */
   @Test
-  fun testHandleNip55Response_Success_ReturnsNip55Response() {
-
+  fun `handleNip55Response on success should return Nip55Response`() {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = android.content.Intent()
     intent.putExtra("result", pubkey)
@@ -159,10 +140,8 @@ class Nip55SignerClientTest {
         response?.packageName)
   }
 
-  /** User rejection（rejected=true）detection test */
   @Test
-  fun testHandleNip55Response_UserRejected_ReturnsError() {
-
+  fun `handleNip55Response when user rejected should return error`() {
     val intent = android.content.Intent()
     intent.putExtra("rejected", true)
 
@@ -175,10 +154,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 
-  /** Test RESULT_CANCELED returns UserRejected error */
   @Test
-  fun testHandleNip55Response_ResultCanceled_ReturnsUserRejected() {
-
+  fun `handleNip55Response when result canceled should return UserRejected`() {
     val intent = android.content.Intent()
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_CANCELED, intent)
@@ -190,10 +167,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 
-  /** Test null Intent returns InvalidResponse error */
   @Test
-  fun testHandleNip55Response_NullIntent_ReturnsInvalidResponse() {
-
+  fun `handleNip55Response with null intent should return InvalidResponse`() {
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, null)
 
     assertTrue("Should return failure", result.isFailure)
@@ -203,10 +178,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test empty result returns InvalidResponse error */
   @Test
-  fun testHandleNip55Response_EmptyResult_ReturnsInvalidResponse() {
-
+  fun `handleNip55Response with empty result should return InvalidResponse`() {
     val intent = android.content.Intent()
     intent.putExtra("result", "")
 
@@ -219,10 +192,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test invalid format (not starting with npub1) returns InvalidResponse error */
   @Test
-  fun testHandleNip55Response_InvalidPubkeyLength_ReturnsInvalidResponse() {
-
+  fun `handleNip55Response with invalid pubkey length should return InvalidResponse`() {
     val intent = android.content.Intent()
     intent.putExtra("result", "a".repeat(64))
 
@@ -235,10 +206,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test invalid format (starting with nsec1) returns InvalidResponse error */
   @Test
-  fun testHandleNip55Response_InvalidPubkeyFormat_ReturnsInvalidResponse() {
-
+  fun `handleNip55Response with invalid pubkey format should return InvalidResponse`() {
     val intent = android.content.Intent()
     intent.putExtra("result", "nsec1" + "a".repeat(59))
 
@@ -251,10 +220,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test Bech32 format pubkey is masked correctly */
   @Test
-  fun testMaskPubkey_ValidPubkey_ReturnsMaskedString() {
-
+  fun `maskPubkey with valid pubkey should return masked string`() {
     val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
@@ -262,10 +229,8 @@ class Nip55SignerClientTest {
     assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
   }
 
-  /** Test masking format is consistent with different pubkeys */
   @Test
-  fun testMaskPubkey_DifferentPubkey_ReturnsMaskedString() {
-
+  fun `maskPubkey with different pubkey should return masked string`() {
     val pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a"
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
@@ -273,10 +238,8 @@ class Nip55SignerClientTest {
     assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
   }
 
-  /** Short pubkey（less than 64 characters）masking test */
   @Test
-  fun testMaskPubkey_ShortPubkey_ReturnsOriginalString() {
-
+  fun `maskPubkey with short pubkey should return original string`() {
     val pubkey = "abcdef0123456789"
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
@@ -284,10 +247,8 @@ class Nip55SignerClientTest {
     assertEquals("Should return original string when pubkey is too short", pubkey, masked)
   }
 
-  /** Empty string masking test */
   @Test
-  fun testMaskPubkey_EmptyString_ReturnsEmptyString() {
-
+  fun `maskPubkey with empty string should return empty string`() {
     val pubkey = ""
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
@@ -295,10 +256,8 @@ class Nip55SignerClientTest {
     assertEquals("Should return empty string when input is empty", "", masked)
   }
 
-  /** Test masking result length is correct */
   @Test
-  fun testMaskPubkey_ResultLength_IsCorrect() {
-
+  fun `maskPubkey result length should be correct`() {
     val pubkey = "npub1" + "a".repeat(59)
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
@@ -306,10 +265,8 @@ class Nip55SignerClientTest {
     assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
   }
 
-  /** Test createGetRelaysIntent() creates Intent with correct type */
   @Test
-  fun testCreateGetRelaysIntent_HasCorrectType() {
-
+  fun `createGetRelaysIntent should have correct type`() {
     val intent = nip55SignerClient.createGetRelaysIntent()
 
     assertEquals(
@@ -318,10 +275,8 @@ class Nip55SignerClientTest {
         intent.getStringExtra("type"))
   }
 
-  /** Test createGetRelaysIntent() creates Intent with correct scheme */
   @Test
-  fun testCreateGetRelaysIntent_HasCorrectScheme() {
-
+  fun `createGetRelaysIntent should have correct scheme`() {
     val intent = nip55SignerClient.createGetRelaysIntent()
 
     assertNotNull("Intent should have data URI", intent.data)
@@ -331,10 +286,8 @@ class Nip55SignerClientTest {
         intent.data?.scheme)
   }
 
-  /** Test createGetRelaysIntent() sets correct package name */
   @Test
-  fun testCreateGetRelaysIntent_HasCorrectPackage() {
-
+  fun `createGetRelaysIntent should have correct package`() {
     val intent = nip55SignerClient.createGetRelaysIntent()
 
     assertEquals(
@@ -343,10 +296,8 @@ class Nip55SignerClientTest {
         intent.`package`)
   }
 
-  /** Test createGetRelaysIntent() sets correct flags */
   @Test
-  fun testCreateGetRelaysIntent_HasCorrectFlags() {
-
+  fun `createGetRelaysIntent should have correct flags`() {
     val intent = nip55SignerClient.createGetRelaysIntent()
 
     val expectedFlags =
@@ -358,20 +309,16 @@ class Nip55SignerClientTest {
         (intent.flags and expectedFlags) == expectedFlags)
   }
 
-  /** Test createGetRelaysIntent() sets ACTION_VIEW action */
   @Test
-  fun testCreateGetRelaysIntent_HasCorrectAction() {
-
+  fun `createGetRelaysIntent should have correct action`() {
     val intent = nip55SignerClient.createGetRelaysIntent()
 
     assertEquals(
         "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
 
-  /** Test handleRelayListResponse() parses valid JSON response */
   @Test
-  fun testHandleRelayListResponse_ValidJson_ReturnsRelayConfigList() {
-
+  fun `handleRelayListResponse with valid JSON should return RelayConfigList`() {
     val json =
         """{"wss://relay1.example.com": {"read": true, "write": true}, "wss://relay2.example.com": {"read": true, "write": false}}"""
     val intent = android.content.Intent()
@@ -395,10 +342,8 @@ class Nip55SignerClientTest {
     assertFalse("relay2 should have write=false", relay2?.write == true)
   }
 
-  /** Test handleRelayListResponse() handles empty relay list */
   @Test
-  fun testHandleRelayListResponse_EmptyJson_ReturnsEmptyList() {
-
+  fun `handleRelayListResponse with empty JSON should return empty list`() {
     val json = "{}"
     val intent = android.content.Intent()
     intent.putExtra("result", json)
@@ -411,10 +356,8 @@ class Nip55SignerClientTest {
     assertTrue("Should have empty relay list", relays?.isEmpty() == true)
   }
 
-  /** Test handleRelayListResponse() filters read-only relays */
   @Test
-  fun testHandleRelayListResponse_FiltersReadOnlyRelays() {
-
+  fun `handleRelayListResponse should filter read-only relays`() {
     val json =
         """{"wss://read-relay.example.com": {"read": true, "write": false}, "wss://write-only.example.com": {"read": false, "write": true}}"""
     val intent = android.content.Intent()
@@ -432,10 +375,8 @@ class Nip55SignerClientTest {
         relays?.first()?.url)
   }
 
-  /** Test handleRelayListResponse() returns error on invalid JSON */
   @Test
-  fun testHandleRelayListResponse_InvalidJson_ReturnsError() {
-
+  fun `handleRelayListResponse with invalid JSON should return error`() {
     val invalidJson = "not a json"
     val intent = android.content.Intent()
     intent.putExtra("result", invalidJson)
@@ -449,10 +390,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test handleRelayListResponse() returns error on RESULT_CANCELED */
   @Test
-  fun testHandleRelayListResponse_ResultCanceled_ReturnsUserRejected() {
-
+  fun `handleRelayListResponse when result canceled should return UserRejected`() {
     val intent = android.content.Intent()
 
     val result =
@@ -465,10 +404,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
   }
 
-  /** Test handleRelayListResponse() returns error on null intent */
   @Test
-  fun testHandleRelayListResponse_NullIntent_ReturnsError() {
-
+  fun `handleRelayListResponse with null intent should return error`() {
     val result = nip55SignerClient.handleRelayListResponse(android.app.Activity.RESULT_OK, null)
 
     assertTrue("Should return failure", result.isFailure)
@@ -478,10 +415,8 @@ class Nip55SignerClientTest {
         error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
   }
 
-  /** Test handleRelayListResponse() handles missing read/write fields with defaults */
   @Test
-  fun testHandleRelayListResponse_MissingFields_UsesDefaults() {
-
+  fun `handleRelayListResponse with missing fields should use defaults`() {
     val json = """{"wss://relay.example.com": {}}"""
     val intent = android.content.Intent()
     intent.putExtra("result", json)
@@ -497,10 +432,8 @@ class Nip55SignerClientTest {
     assertTrue("write should default to true", relay?.write == true)
   }
 
-  /** Test handleRelayListResponse() handles rejected extra */
   @Test
-  fun testHandleRelayListResponse_RejectedExtra_ReturnsUserRejected() {
-
+  fun `handleRelayListResponse with rejected extra should return UserRejected`() {
     val intent = android.content.Intent()
     intent.putExtra("rejected", true)
 

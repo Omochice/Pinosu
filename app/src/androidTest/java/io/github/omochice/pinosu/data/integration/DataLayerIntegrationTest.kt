@@ -58,7 +58,7 @@ class DataLayerIntegrationTest {
    * 3. Return result
    */
   @Test
-  fun checkNip55SignerInstalled_shouldUseNip55SignerClient() {
+  fun `checkNip55SignerInstalled should use Nip55SignerClient`() {
 
     val isInstalled = authRepository.checkNip55SignerInstalled()
 
@@ -74,7 +74,7 @@ class DataLayerIntegrationTest {
    * 3. Retrieve and verify saved data
    */
   @Test
-  fun encryptedStorage_saveAndGet_shouldWorkCorrectly() = runTest {
+  fun `encrypted storage save and get should work correctly`() = runTest {
     val testPubkey = "b".repeat(64)
     val testUser = User(testPubkey)
 
@@ -95,7 +95,7 @@ class DataLayerIntegrationTest {
    * 3. Verify data cannot be retrieved after deletion
    */
   @Test
-  fun encryptedStorage_saveAndDelete_shouldWorkCorrectly() = runTest {
+  fun `encrypted storage save and delete should work correctly`() = runTest {
     val testPubkey = "c".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
@@ -119,7 +119,7 @@ class DataLayerIntegrationTest {
    * 2. Verify stability of EncryptedSharedPreferences
    */
   @Test
-  fun encryptedStorage_multipleSaveGetDeleteCycles_shouldWorkCorrectly() = runTest {
+  fun `encrypted storage multiple save get delete cycles should work correctly`() = runTest {
     val users =
         listOf(
             User("d".repeat(64)),
@@ -151,7 +151,7 @@ class DataLayerIntegrationTest {
    * 4. Data is deleted from EncryptedSharedPreferences
    */
   @Test
-  fun logoutFlow_shouldClearEncryptedStorage() = runTest {
+  fun `logout flow should clear encrypted storage`() = runTest {
     val testPubkey = "g".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
@@ -180,7 +180,7 @@ class DataLayerIntegrationTest {
    * 3. Verify that saved login state is restored
    */
   @Test
-  fun appRestart_shouldRestoreLoginStateFromEncryptedStorage() = runTest {
+  fun `app restart should restore login state from encrypted storage`() = runTest {
     val testPubkey = "h".repeat(64)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
@@ -203,7 +203,7 @@ class DataLayerIntegrationTest {
    * 3. Data is not saved, null is returned
    */
   @Test
-  fun invalidData_shouldBeRejectedByUserValidation() = runTest {
+  fun `invalid data should be rejected by User validation`() = runTest {
     val invalidPubkey = "invalid_pubkey_format"
 
     try {

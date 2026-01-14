@@ -20,8 +20,7 @@ class LoginScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun loginScreen_displaysLoginButton() {
-
+  fun `LoginScreen should display login button`() {
     val initialState = LoginUiState()
 
     composeTestRule.setContent {
@@ -32,8 +31,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_loginButtonClickTriggersCallback() {
-
+  fun `LoginScreen login button click should trigger callback`() {
     val initialState = LoginUiState()
     var clicked = false
 
@@ -47,8 +45,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysLoadingIndicatorWhenLoading() {
-
+  fun `LoginScreen should display loading indicator when loading`() {
     val loadingState = LoginUiState(isLoading = true)
 
     composeTestRule.setContent {
@@ -59,8 +56,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_hidesLoadingIndicatorWhenNotLoading() {
-
+  fun `LoginScreen should hide loading indicator when not loading`() {
     val notLoadingState = LoginUiState(isLoading = false)
 
     composeTestRule.setContent {
@@ -71,8 +67,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_disablesLoginButtonWhenLoading() {
-
+  fun `LoginScreen should disable login button when loading`() {
     val loadingState = LoginUiState(isLoading = true)
     var clickCount = 0
 
@@ -86,8 +81,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysNip55SignerInstallDialogWhenRequested() {
-
+  fun `LoginScreen should display Nip55Signer install dialog when requested`() {
     val dialogState = LoginUiState(showNip55InstallDialog = true)
 
     composeTestRule.setContent {
@@ -99,8 +93,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysGenericErrorDialogWhenErrorMessageExists() {
-
+  fun `LoginScreen should display generic error dialog when error message exists`() {
     val errorState = LoginUiState(errorMessage = "テストエラーメッセージ")
 
     composeTestRule.setContent {
@@ -112,8 +105,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_dismissDialogCallsCallback() {
-
+  fun `LoginScreen dismiss dialog should call callback`() {
     val dialogState = LoginUiState(showNip55InstallDialog = true)
     var dismissCalled = false
 
@@ -129,8 +121,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_installButtonOpensPlayStore() {
-
+  fun `LoginScreen install button should open Play Store`() {
     val dialogState = LoginUiState(showNip55InstallDialog = true)
     var installCalled = false
 
@@ -147,8 +138,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_retryButtonCallsCallback() {
-
+  fun `LoginScreen retry button should call callback`() {
     val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。")
     var retryCalled = false
 
@@ -165,8 +155,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysSuccessMessageWhenLoginSucceeds() {
-
+  fun `LoginScreen should display success message when login succeeds`() {
     val successState = LoginUiState(loginSuccess = true)
 
     composeTestRule.setContent {
@@ -181,8 +170,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_triggersNavigationWhenLoginSucceeds() {
-
+  fun `LoginScreen should trigger navigation when login succeeds`() {
     val successState = LoginUiState(loginSuccess = true)
     var navigationTriggered = false
 
@@ -199,8 +187,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_doesNotTriggerNavigationWhenLoginNotSuccessful() {
-
+  fun `LoginScreen should not trigger navigation when login not successful`() {
     val notSuccessState = LoginUiState(loginSuccess = false)
     var navigationTriggered = false
 
@@ -219,8 +206,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysUserRejectionErrorMessage() {
-
+  fun `LoginScreen should display user rejection error message`() {
     val errorState = LoginUiState(errorMessage = "ログインがキャンセルされました。再度お試しください。")
 
     composeTestRule.setContent {
@@ -233,8 +219,7 @@ class LoginScreenTest {
   }
 
   @Test
-  fun loginScreen_displaysTimeoutErrorWithRetryOption() {
-
+  fun `LoginScreen should display timeout error with retry option`() {
     val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
 
     composeTestRule.setContent {

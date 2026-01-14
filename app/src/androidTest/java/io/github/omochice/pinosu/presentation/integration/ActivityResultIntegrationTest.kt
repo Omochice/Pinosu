@@ -36,7 +36,7 @@ class ActivityResultIntegrationTest {
   }
 
   @Test
-  fun whenNip55SignerInstalled_loginButtonClick_shouldLaunchNip55SignerIntent() {
+  fun `when Nip55Signer installed login button click should launch Nip55Signer intent`() {
 
     val isInstalled = nip55SignerClient.checkNip55SignerInstalled()
 
@@ -51,7 +51,7 @@ class ActivityResultIntegrationTest {
   }
 
   @Test
-  fun whenNip55SignerNotInstalled_loginButtonClick_shouldShowErrorDialog() {
+  fun `when Nip55Signer not installed login button click should show error dialog`() {
 
     val isInstalled = nip55SignerClient.checkNip55SignerInstalled()
 
@@ -65,5 +65,7 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("NIP-55対応アプリがインストールされていません").assertExists()
   }
 
-  @Test fun whenNip55ResponseSuccess_shouldNavigateToMainScreen() {}
+  @org.junit.Ignore("TODO: Implement navigation verification after NIP-55 response")
+  @Test
+  fun `when Nip55Signer response success should navigate to main screen`() {}
 }

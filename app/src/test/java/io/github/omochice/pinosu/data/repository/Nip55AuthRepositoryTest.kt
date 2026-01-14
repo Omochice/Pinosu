@@ -40,9 +40,8 @@ class Nip55AuthRepositoryTest {
     authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
-  /** Test successful retrieval of logged-in state */
   @Test
-  fun testGetLoginState_WhenUserExists_ReturnsUser() = runTest {
+  fun `getLoginState when user exists should return user`() = runTest {
     val expectedUser = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.getUser() } returns expectedUser
 
@@ -52,9 +51,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.getUser() }
   }
 
-  /** Test retrieval of not-logged-in state */
   @Test
-  fun testGetLoginState_WhenNoUser_ReturnsNull() = runTest {
+  fun `getLoginState when no user should return null`() = runTest {
     coEvery { localAuthDataSource.getUser() } returns null
 
     val result = authRepository.getLoginState()
@@ -63,9 +61,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.getUser() }
   }
 
-  /** Test successful save of login state */
   @Test
-  fun testSaveLoginState_Success_ReturnsSuccess() = runTest {
+  fun `saveLoginState on success should return success`() = runTest {
     val user = User("npub1" + "a".repeat(59))
     coEvery { localAuthDataSource.saveUser(user) } returns Unit
 
@@ -75,9 +72,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  /** Test that login state save fails */
   @Test
-  fun testSaveLoginState_Failure_ReturnsStorageError() = runTest {
+  fun `saveLoginState on failure should return StorageError`() = runTest {
     val user = User("npub1" + "a".repeat(59))
     val storageError = StorageError.WriteError("Failed to save")
     coEvery { localAuthDataSource.saveUser(user) } throws storageError
@@ -90,9 +86,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(user) }
   }
 
-  /** Test successful logout */
   @Test
-  fun testLogout_Success_ReturnsSuccess() = runTest {
+  fun `logout on success should return success`() = runTest {
     coEvery { localAuthDataSource.clearLoginState() } returns Unit
 
     val result = authRepository.logout()
@@ -101,9 +96,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /** Test that logout fails */
   @Test
-  fun testLogout_Failure_ReturnsLogoutError() = runTest {
+  fun `logout on failure should return LogoutError`() = runTest {
     val storageError = StorageError.WriteError("Failed to clear")
     coEvery { localAuthDataSource.clearLoginState() } throws storageError
 
@@ -116,9 +110,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
-  /** Test NIP-55 signer response success and local save success */
   @Test
-  fun testProcessNip55Response_Success_SavesUserAndReturnsSuccess() = runTest {
+  fun `processNip55Response on success should save user and return success`() = runTest {
     val pubkey = "npub1" + "a".repeat(59)
     val intent = Intent().apply { putExtra("result", pubkey) }
     val nip55Response = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
@@ -136,9 +129,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.saveUser(any()) }
   }
 
-  /** Test NIP-55 signer response rejection */
   @Test
-  fun testProcessNip55Response_UserRejected_ReturnsLoginError() = runTest {
+  fun `processNip55Response when user rejected should return LoginError`() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
     every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
         Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.UserRejected)
@@ -150,9 +142,8 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
   }
 
-  /** Test NIP-55 signer not installed error classification */
   @Test
-  fun testProcessNip55Response_Nip55SignerNotInstalled_ReturnsNip55SignerNotInstalledError() =
+  fun `processNip55Response when Nip55Signer not installed should return Nip55SignerNotInstalledError`() =
       runTest {
         val intent = Intent()
         every { nip55SignerClient.handleNip55Response(any(), any()) } returns
@@ -167,9 +158,8 @@ class Nip55AuthRepositoryTest {
             exception is LoginError.Nip55SignerNotInstalled)
       }
 
-  /** Test NIP-55 signer timeout error classification */
   @Test
-  fun testProcessNip55Response_Timeout_ReturnsTimeoutError() = runTest {
+  fun `processNip55Response on timeout should return TimeoutError`() = runTest {
     val intent = Intent()
     every { nip55SignerClient.handleNip55Response(any(), any()) } returns
         Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.Timeout)
@@ -181,9 +171,8 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
   }
 
-  /** Test NIP-55 signer InvalidResponse error classification（treated as NetworkError） */
   @Test
-  fun testProcessNip55Response_InvalidResponse_ReturnsNetworkError() = runTest {
+  fun `processNip55Response on InvalidResponse should return NetworkError`() = runTest {
     val intent = Intent()
     every { nip55SignerClient.handleNip55Response(any(), any()) } returns
         Result.failure(
@@ -196,32 +185,33 @@ class Nip55AuthRepositoryTest {
     assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
   }
 
-  /** Transaction consistency test: NIP-55 signer success → local save failure */
   @Test
-  fun testProcessNip55Response_Nip55SignerSuccess_LocalStorageFail_ReturnsUnknownError() = runTest {
-    val pubkey = "npub1" + "a".repeat(59)
-    val intent = Intent().apply { putExtra("result", pubkey) }
-    val nip55Response = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
+  fun `processNip55Response when Nip55Signer success but local storage fails should return UnknownError`() =
+      runTest {
+        val pubkey = "npub1" + "a".repeat(59)
+        val intent = Intent().apply { putExtra("result", pubkey) }
+        val nip55Response = Nip55Response(pubkey, Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME)
 
-    every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
-        Result.success(nip55Response)
-    coEvery { localAuthDataSource.saveUser(any()) } throws StorageError.WriteError("Storage full")
+        every {
+          nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
+        } returns Result.success(nip55Response)
+        coEvery { localAuthDataSource.saveUser(any()) } throws
+            StorageError.WriteError("Storage full")
 
-    val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
+        val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
-    val exception = result.exceptionOrNull()
-    assertTrue("Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
+        assertTrue("Should return failure", result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(
+            "Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
 
-    // Verify StorageError is included as cause
-    val unknownError = exception as LoginError.UnknownError
-    assertTrue("Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
-  }
+        val unknownError = exception as LoginError.UnknownError
+        assertTrue(
+            "Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
+      }
 
-  /** Test when NIP-55 signer is installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
-
+  fun `checkNip55SignerInstalled when installed should return true`() {
     every { nip55SignerClient.checkNip55SignerInstalled() } returns true
 
     val result = authRepository.checkNip55SignerInstalled()
@@ -229,10 +219,8 @@ class Nip55AuthRepositoryTest {
     assertTrue("Should return true when NIP-55 signer is installed", result)
   }
 
-  /** Test when NIP-55 signer is not installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
-
+  fun `checkNip55SignerInstalled when not installed should return false`() {
     every { nip55SignerClient.checkNip55SignerInstalled() } returns false
 
     val result = authRepository.checkNip55SignerInstalled()
@@ -240,9 +228,8 @@ class Nip55AuthRepositoryTest {
     assertFalse("Should return false when NIP-55 signer is not installed", result)
   }
 
-  /** Test successful relay list response processing and caching */
   @Test
-  fun testProcessRelayListResponse_Success_SavesRelayListAndReturnsSuccess() = runTest {
+  fun `processRelayListResponse on success should save relay list and return success`() = runTest {
     val relays =
         listOf(
             io.github.omochice.pinosu.data.relay.RelayConfig(
@@ -263,9 +250,8 @@ class Nip55AuthRepositoryTest {
     coVerify { localAuthDataSource.saveRelayList(relays) }
   }
 
-  /** Test relay list response processing when NIP-55 signer returns error */
   @Test
-  fun testProcessRelayListResponse_Nip55Error_ReturnsFailure() = runTest {
+  fun `processRelayListResponse on Nip55Error should return failure`() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
 
     every {
@@ -277,9 +263,8 @@ class Nip55AuthRepositoryTest {
     assertTrue("Should return failure", result.isFailure)
   }
 
-  /** Test relay list response processing when local storage fails */
   @Test
-  fun testProcessRelayListResponse_StorageError_ReturnsFailure() = runTest {
+  fun `processRelayListResponse on StorageError should return failure`() = runTest {
     val relays =
         listOf(
             io.github.omochice.pinosu.data.relay.RelayConfig(

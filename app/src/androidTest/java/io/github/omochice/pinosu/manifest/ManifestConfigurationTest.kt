@@ -24,7 +24,7 @@ class ManifestConfigurationTest {
   }
 
   @Test
-  fun testApplicationName() {
+  fun `application name should not be null or empty`() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
@@ -33,7 +33,7 @@ class ManifestConfigurationTest {
   }
 
   @Test
-  fun testApplicationIcon() {
+  fun `application icon should be set`() {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appIcon = applicationInfo.icon
 
@@ -41,7 +41,7 @@ class ManifestConfigurationTest {
   }
 
   @Test
-  fun testQueriesElementForNip55SignerIntent() {
+  fun `queries element for Nip55Signer intent should be configured`() {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
 
     val resolveInfo =
@@ -51,7 +51,7 @@ class ManifestConfigurationTest {
   }
 
   @Test
-  fun testMainActivityExported() {
+  fun `MainActivity should be exported for launcher intent`() {
     val intent =
         Intent(Intent.ACTION_MAIN).apply {
           addCategory(Intent.CATEGORY_LAUNCHER)

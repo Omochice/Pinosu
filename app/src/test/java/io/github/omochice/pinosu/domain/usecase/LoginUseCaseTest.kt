@@ -24,10 +24,8 @@ class LoginUseCaseTest {
     loginUseCase = Nip55LoginUseCase(authRepository)
   }
 
-  /** Test when NIP-55 signer is not installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenNotInstalled_ReturnsFalse() {
-
+  fun `checkNip55SignerInstalled when not installed should return false`() {
     every { authRepository.checkNip55SignerInstalled() } returns false
 
     val result = loginUseCase.checkNip55SignerInstalled()
@@ -36,10 +34,8 @@ class LoginUseCaseTest {
     verify { authRepository.checkNip55SignerInstalled() }
   }
 
-  /** Test when NIP-55 signer is installed */
   @Test
-  fun testCheckNip55SignerInstalled_WhenInstalled_ReturnsTrue() {
-
+  fun `checkNip55SignerInstalled when installed should return true`() {
     every { authRepository.checkNip55SignerInstalled() } returns true
 
     val result = loginUseCase.checkNip55SignerInstalled()

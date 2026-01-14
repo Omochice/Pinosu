@@ -37,7 +37,7 @@ class LocalAuthDataSourceTest {
   }
 
   @Test
-  fun testSaveAndGetRelayList_RoundTrip() = runTest {
+  fun `saveAndGetRelayList round trip should preserve data`() = runTest {
     val relays =
         listOf(
             RelayConfig(url = "wss://relay1.example.com", read = true, write = true),
@@ -57,7 +57,7 @@ class LocalAuthDataSourceTest {
   }
 
   @Test
-  fun testGetRelayList_WhenSaved_ReturnsRelays() = runTest {
+  fun `getRelayList when saved should return relays`() = runTest {
     val jsonString =
         """[{"url":"wss://relay1.example.com","read":true,"write":true},{"url":"wss://relay2.example.com","read":true,"write":false}]"""
     sharedPreferences.edit().putString("relay_list", jsonString).commit()
@@ -74,14 +74,14 @@ class LocalAuthDataSourceTest {
   }
 
   @Test
-  fun testGetRelayList_WhenNotSet_ReturnsNull() = runTest {
+  fun `getRelayList when not set should return null`() = runTest {
     val result = localAuthDataSource.getRelayList()
 
     assertNull("Should return null when relay list is not set", result)
   }
 
   @Test
-  fun testClearLoginState_ClearsRelayList() = runTest {
+  fun `clearLoginState should clear relay list`() = runTest {
     sharedPreferences.edit().putString("relay_list", "test").commit()
 
     localAuthDataSource.clearLoginState()

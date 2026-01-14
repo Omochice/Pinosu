@@ -43,15 +43,12 @@ class UserFlowTest {
   }
 
   @Test
-  fun loginFlow_step1_displaysLoginScreen() {
-
+  fun `login flow step1 should display login screen`() {
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
 
-  /** Note: This test verifies loading state before NIP-55 signer Intent is launched */
   @Test
-  fun loginFlow_step2_displaysLoadingOnButtonClick() {
-
+  fun `login flow step2 should display loading on button click`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
     every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
@@ -62,10 +59,8 @@ class UserFlowTest {
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsNotEnabled()
   }
 
-  /** Note: NIP-55 signer Intent result simulation is required */
   @Test
-  fun loginFlow_step3_navigatesToMainScreenOnSuccess() {
-
+  fun `login flow step3 should navigate to main screen on success`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
     every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
@@ -79,11 +74,6 @@ class UserFlowTest {
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    // Note: Actual Intent result is handled in MainActivity's nip55SignerLauncher、
-    // Here we verify UI transitions instead of ViewModel state changes directly、
-    // verify UI transition results
-
-    // This test verifies UI transitions only
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
@@ -91,8 +81,7 @@ class UserFlowTest {
   }
 
   @Test
-  fun nip55SignerNotInstalledFlow_step1_displaysErrorDialog() {
-
+  fun `Nip55Signer not installed flow step1 should display error dialog`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
@@ -107,8 +96,7 @@ class UserFlowTest {
   }
 
   @Test
-  fun nip55SignerNotInstalledFlow_step2_dismissDialog() {
-
+  fun `Nip55Signer not installed flow step2 should dismiss dialog`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
@@ -126,8 +114,7 @@ class UserFlowTest {
   }
 
   @Test
-  fun logoutFlow_step1_navigatesToLoginScreenOnLogout() {
-
+  fun `logout flow step1 should navigate to login screen on logout`() {
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
     coEvery { mockLocalAuthDataSource.clearLoginState() } returns Unit
@@ -150,8 +137,7 @@ class UserFlowTest {
   }
 
   @Test
-  fun appRestart_whenLoggedIn_displaysMainScreen() {
-
+  fun `app restart when logged in should display main screen`() {
     val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
@@ -162,15 +148,14 @@ class UserFlowTest {
     }
     composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
 
-    val maskedPubkey = "1234abcd...5678efgh" // masking format first 8 chars...last 8 chars
+    val maskedPubkey = "${testUser.pubkey.take(8)}...${testUser.pubkey.takeLast(8)}"
     composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertDoesNotExist()
   }
 
   @Test
-  fun appRestart_whenNotLoggedIn_displaysLoginScreen() {
-
+  fun `app restart when not logged in should display login screen`() {
     coEvery { mockLocalAuthDataSource.getUser() } returns null
 
     composeTestRule.activityRule.scenario.recreate()

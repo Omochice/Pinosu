@@ -27,9 +27,8 @@ class LogoutUseCaseTest {
     logoutUseCase = Nip55LogoutUseCase(authRepository)
   }
 
-  /** Test successful logout */
   @Test
-  fun testInvoke_Success_ReturnsSuccess() = runTest {
+  fun `invoke on success should return success`() = runTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val result = logoutUseCase()
@@ -38,9 +37,8 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /** Test logout failure */
   @Test
-  fun testInvoke_Failure_ReturnsLogoutError() = runTest {
+  fun `invoke on failure should return LogoutError`() = runTest {
     val error = LogoutError.StorageError("Failed to clear")
     coEvery { authRepository.logout() } returns Result.failure(error)
 
@@ -53,9 +51,8 @@ class LogoutUseCaseTest {
     coVerify { authRepository.logout() }
   }
 
-  /** Idempotency test - multiple calls work correctly */
   @Test
-  fun testInvoke_Idempotency_MultipleCallsSucceed() = runTest {
+  fun `invoke multiple calls should succeed (idempotency)`() = runTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val result1 = logoutUseCase()

@@ -9,7 +9,7 @@ import org.junit.Test
 class RelayConfigTest {
 
   @Test
-  fun testConstructorWithAllParameters() {
+  fun `constructor with all parameters should set values correctly`() {
     val config = RelayConfig(url = "wss://relay.example.com", read = true, write = false)
 
     assertEquals("URL should match", "wss://relay.example.com", config.url)
@@ -18,7 +18,7 @@ class RelayConfigTest {
   }
 
   @Test
-  fun testDefaultValues() {
+  fun `constructor without optional parameters should use default values`() {
     val config = RelayConfig(url = "wss://relay.example.com")
 
     assertEquals("URL should match", "wss://relay.example.com", config.url)
