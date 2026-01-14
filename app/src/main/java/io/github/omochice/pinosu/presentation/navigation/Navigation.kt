@@ -1,18 +1,32 @@
 package io.github.omochice.pinosu.presentation.navigation
 
-/** Screen route definitions within the application */
+import kotlinx.serialization.Serializable
 
-/** Login screen route definition */
-const val LOGIN_ROUTE = "login"
+/** Login screen route */
+@Serializable object Login
 
-/** Main screen route definition */
-const val MAIN_ROUTE = "main"
+/** Main screen route */
+@Serializable object Main
 
-/** Bookmark list screen route definition */
+/** Bookmark list screen route */
+@Serializable object Bookmark
+
+/** License screen route */
+@Serializable object License
+
+/** App info screen route */
+@Serializable object AppInfo
+
+// Legacy string constants (to be removed after migration)
+@Deprecated("Use Login object instead", ReplaceWith("Login")) const val LOGIN_ROUTE = "login"
+
+@Deprecated("Use Main object instead", ReplaceWith("Main")) const val MAIN_ROUTE = "main"
+
+@Deprecated("Use Bookmark object instead", ReplaceWith("Bookmark"))
 const val BOOKMARK_ROUTE = "bookmark"
 
-/** License screen route definition */
+@Deprecated("Use License object instead", ReplaceWith("License"))
 const val LICENSE_ROUTE = "license"
 
-/** App info screen route definition */
+@Deprecated("Use AppInfo object instead", ReplaceWith("AppInfo"))
 const val APP_INFO_ROUTE = "appinfo"
