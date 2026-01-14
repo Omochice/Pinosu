@@ -65,5 +65,7 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("NIP-55対応アプリがインストールされていません").assertExists()
   }
 
-  @Test fun `when Nip55Signer response success should navigate to main screen`() {}
+  @org.junit.Ignore("TODO: Implement navigation verification after NIP-55 response")
+  @Test
+  fun `when Nip55Signer response success should navigate to main screen`() {}
 }
