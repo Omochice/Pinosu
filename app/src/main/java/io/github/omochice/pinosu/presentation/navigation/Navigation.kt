@@ -1,18 +1,20 @@
 package io.github.omochice.pinosu.presentation.navigation
 
-/** Screen route definitions within the application */
+import kotlinx.serialization.Serializable
 
-/** Login screen route definition */
-const val LOGIN_ROUTE = "login"
+sealed interface Route
 
-/** Main screen route definition */
-const val MAIN_ROUTE = "main"
+/** Login screen route */
+@Serializable object Login : Route
 
-/** Bookmark list screen route definition */
-const val BOOKMARK_ROUTE = "bookmark"
+/** Main screen route */
+@Serializable object Main : Route
 
-/** License screen route definition */
-const val LICENSE_ROUTE = "license"
+/** Bookmark list screen route */
+@Serializable object Bookmark : Route
 
-/** App info screen route definition */
-const val APP_INFO_ROUTE = "appinfo"
+/** License screen route */
+@Serializable object License : Route
+
+/** App info screen route */
+@Serializable object AppInfo : Route
