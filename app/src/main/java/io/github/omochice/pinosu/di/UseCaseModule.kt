@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.domain.usecase.FetchUserRelaysUseCase
+import io.github.omochice.pinosu.domain.usecase.FetchUserRelaysUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
@@ -31,4 +33,7 @@ abstract class UseCaseModule {
 
   @Binds
   abstract fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
+
+  @Binds
+  abstract fun bindFetchUserRelaysUseCase(impl: FetchUserRelaysUseCaseImpl): FetchUserRelaysUseCase
 }
