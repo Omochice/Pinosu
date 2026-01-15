@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.presentation.viewmodel
 
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
+import io.github.omochice.pinosu.domain.usecase.FetchUserRelaysUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -34,6 +35,7 @@ class LoginViewModelTest {
   private lateinit var loginUseCase: LoginUseCase
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var fetchUserRelaysUseCase: FetchUserRelaysUseCase
   private lateinit var authRepository: AuthRepository
   private lateinit var viewModel: LoginViewModel
 
@@ -45,8 +47,18 @@ class LoginViewModelTest {
     loginUseCase = mockk(relaxed = true)
     logoutUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
+    fetchUserRelaysUseCase = mockk(relaxed = true)
     authRepository = mockk(relaxed = true)
-    viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+
+    coEvery { fetchUserRelaysUseCase(any()) } returns Result.success(emptyList())
+
+    viewModel =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
   }
 
   @After
@@ -185,7 +197,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
 
@@ -206,7 +223,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -229,7 +251,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -251,7 +278,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -276,7 +308,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()

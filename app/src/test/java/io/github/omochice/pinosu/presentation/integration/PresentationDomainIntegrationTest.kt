@@ -4,6 +4,7 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
+import io.github.omochice.pinosu.domain.usecase.FetchUserRelaysUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -47,6 +48,7 @@ class PresentationDomainIntegrationTest {
   private lateinit var loginUseCase: LoginUseCase
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var fetchUserRelaysUseCase: FetchUserRelaysUseCase
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -56,12 +58,21 @@ class PresentationDomainIntegrationTest {
     Dispatchers.setMain(testDispatcher)
 
     authRepository = mockk(relaxed = true)
+    fetchUserRelaysUseCase = mockk(relaxed = true)
+
+    coEvery { fetchUserRelaysUseCase(any()) } returns Result.success(emptyList())
 
     loginUseCase = Nip55LoginUseCase(authRepository)
     logoutUseCase = Nip55LogoutUseCase(authRepository)
     getLoginStateUseCase = Nip55GetLoginStateUseCase(authRepository)
 
-    viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+    viewModel =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository)
   }
 
   @After

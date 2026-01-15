@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.error.LoginError
+import io.github.omochice.pinosu.domain.usecase.FetchUserRelaysUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
  * @property loginUseCase UseCase for login processing
  * @property logoutUseCase UseCase for logout processing
  * @property getLoginStateUseCase UseCase for retrieving login state
+ * @property fetchUserRelaysUseCase UseCase for fetching user's relay list via NIP-65
  * @property authRepository Authentication repository (for NIP-55 signer response processing)
  */
 @HiltViewModel
@@ -31,6 +33,7 @@ constructor(
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
+    private val fetchUserRelaysUseCase: FetchUserRelaysUseCase,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
@@ -109,6 +112,22 @@ constructor(
                 errorMessage = null,
                 needsRelayListRequest = true)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
+
+        // Fetch user's relay list via NIP-65 in background
+        user?.pubkey?.let { pubkey ->
+          viewModelScope.launch {
+            val relayResult = fetchUserRelaysUseCase(pubkey)
+            if (relayResult.isFailure) {
+              Log.w(
+                  TAG,
+                  "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
+            } else {
+              Log.d(
+                  TAG,
+                  "Successfully fetched ${relayResult.getOrNull()?.size ?: 0} relays via NIP-65")
+            }
+          }
+        }
       } else {
         val error = result.exceptionOrNull()
         val errorMessage =
