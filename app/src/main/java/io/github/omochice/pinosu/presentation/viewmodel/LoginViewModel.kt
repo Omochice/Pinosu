@@ -25,6 +25,8 @@ import kotlinx.coroutines.launch
  * @property getLoginStateUseCase UseCase for retrieving login state
  * @property fetchUserRelaysUseCase UseCase for fetching user's relay list via NIP-65
  * @property authRepository Authentication repository (for NIP-55 signer response processing)
+ * @property relayListRepository Repository for streaming connectable relays
+ * @property localAuthDataSource Local storage for caching relay lists
  */
 @HiltViewModel
 class LoginViewModel
@@ -35,6 +37,8 @@ constructor(
     private val getLoginStateUseCase: GetLoginStateUseCase,
     private val fetchUserRelaysUseCase: FetchUserRelaysUseCase,
     private val authRepository: AuthRepository,
+    private val relayListRepository: io.github.omochice.pinosu.data.repository.RelayListRepository,
+    private val localAuthDataSource: io.github.omochice.pinosu.data.local.LocalAuthDataSource,
 ) : ViewModel() {
 
   companion object {
@@ -47,6 +51,11 @@ constructor(
   private val _mainUiState = MutableStateFlow(MainUiState())
   val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
+  private val _availableRelays =
+      MutableStateFlow<List<io.github.omochice.pinosu.data.relay.RelayConfig>>(emptyList())
+  val availableRelays: StateFlow<List<io.github.omochice.pinosu.data.relay.RelayConfig>> =
+      _availableRelays.asStateFlow()
+
   /** Check and restore login state from local storage */
   fun checkLoginState() {
     viewModelScope.launch {
@@ -54,13 +63,12 @@ constructor(
       _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
 
       user?.pubkey?.let { pubkey ->
-        val relayResult = fetchUserRelaysUseCase(pubkey)
-        if (relayResult.isFailure) {
-          Log.w(
-              TAG,
-              "Failed to fetch NIP-65 relay list on startup: ${relayResult.exceptionOrNull()?.message}")
-        } else {
-          Log.d(TAG, "Fetched ${relayResult.getOrNull()?.size ?: 0} relays via NIP-65 on startup")
+        relayListRepository.streamConnectableRelays(pubkey).collect { relays ->
+          _availableRelays.value = relays
+          if (relays.isNotEmpty()) {
+            localAuthDataSource.saveRelayList(relays)
+            Log.d(TAG, "Cached ${relays.size} relays locally via streaming")
+          }
         }
       }
     }

@@ -37,6 +37,9 @@ class LoginViewModelTest {
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var fetchUserRelaysUseCase: FetchUserRelaysUseCase
   private lateinit var authRepository: AuthRepository
+  private lateinit var relayListRepository:
+      io.github.omochice.pinosu.data.repository.RelayListRepository
+  private lateinit var localAuthDataSource: io.github.omochice.pinosu.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -49,8 +52,12 @@ class LoginViewModelTest {
     getLoginStateUseCase = mockk(relaxed = true)
     fetchUserRelaysUseCase = mockk(relaxed = true)
     authRepository = mockk(relaxed = true)
+    relayListRepository = mockk(relaxed = true)
+    localAuthDataSource = mockk(relaxed = true)
 
     coEvery { fetchUserRelaysUseCase(any()) } returns Result.success(emptyList())
+    every { relayListRepository.streamConnectableRelays(any()) } returns
+        kotlinx.coroutines.flow.flowOf(emptyList())
 
     viewModel =
         LoginViewModel(
@@ -58,7 +65,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
   }
 
   @After
@@ -197,7 +206,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
 
@@ -223,7 +234,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -251,7 +264,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -278,7 +293,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -308,7 +325,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()

@@ -49,6 +49,9 @@ class PresentationDomainIntegrationTest {
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var fetchUserRelaysUseCase: FetchUserRelaysUseCase
+  private lateinit var relayListRepository:
+      io.github.omochice.pinosu.data.repository.RelayListRepository
+  private lateinit var localAuthDataSource: io.github.omochice.pinosu.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -59,8 +62,12 @@ class PresentationDomainIntegrationTest {
 
     authRepository = mockk(relaxed = true)
     fetchUserRelaysUseCase = mockk(relaxed = true)
+    relayListRepository = mockk(relaxed = true)
+    localAuthDataSource = mockk(relaxed = true)
 
     coEvery { fetchUserRelaysUseCase(any()) } returns Result.success(emptyList())
+    every { relayListRepository.streamConnectableRelays(any()) } returns
+        kotlinx.coroutines.flow.flowOf(emptyList())
 
     loginUseCase = Nip55LoginUseCase(authRepository)
     logoutUseCase = Nip55LogoutUseCase(authRepository)
@@ -72,7 +79,9 @@ class PresentationDomainIntegrationTest {
             logoutUseCase,
             getLoginStateUseCase,
             fetchUserRelaysUseCase,
-            authRepository)
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
   }
 
   @After
