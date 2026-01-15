@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.data.model.NostrEvent
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
@@ -44,6 +45,15 @@ interface RelayPool {
       filter: String,
       timeoutMs: Long
   ): List<NostrEvent>
+
+  /**
+   * Check if a relay is connectable by attempting WebSocket connection
+   *
+   * @param relayUrl WebSocket URL of the relay to check
+   * @param timeoutMs Timeout in milliseconds for the connection attempt
+   * @return true if connection was established successfully, false otherwise
+   */
+  suspend fun checkRelayConnectivity(relayUrl: String, timeoutMs: Long = 3000L): Boolean
 }
 
 /**
@@ -84,6 +94,35 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
       val allEvents = deferredResults.awaitAll().flatten()
       allEvents.distinctBy { it.id }
     }
+  }
+
+  override suspend fun checkRelayConnectivity(relayUrl: String, timeoutMs: Long): Boolean {
+    return withTimeoutOrNull(timeoutMs) {
+      kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+        val request = Request.Builder().url(relayUrl).build()
+
+        val listener =
+            object : WebSocketListener() {
+              override fun onOpen(webSocket: WebSocket, response: Response) {
+                webSocket.close(1000, "Connectivity check complete")
+                if (continuation.isActive) {
+                  continuation.resume(true)
+                }
+              }
+
+              override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.d(TAG, "Connectivity check failed for $relayUrl: ${t.message}")
+                if (continuation.isActive) {
+                  continuation.resume(false)
+                }
+              }
+            }
+
+        val webSocket = okHttpClient.newWebSocket(request, listener)
+
+        continuation.invokeOnCancellation { webSocket.cancel() }
+      }
+    } ?: false
   }
 
   /**
