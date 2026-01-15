@@ -71,7 +71,7 @@ class Nip55SignerClientTest {
   }
 
   @Test
-  fun `createPublicKeyIntent should have correct scheme`() {
+  fun `createPublicKeyIntent should create NIP-55 compliant Intent`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertNotNull("Intent should have data URI", intent.data)
@@ -79,47 +79,22 @@ class Nip55SignerClientTest {
         "URI scheme should be nostrsigner",
         Nip55SignerClient.NOSTRSIGNER_SCHEME,
         intent.data?.scheme)
-  }
-
-  @Test
-  fun `createPublicKeyIntent should have correct package`() {
-    val intent = nip55SignerClient.createPublicKeyIntent()
-
     assertEquals(
         "Package should be NIP-55 signer package name",
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
         intent.`package`)
-  }
-
-  @Test
-  fun `createPublicKeyIntent should have correct type`() {
-    val intent = nip55SignerClient.createPublicKeyIntent()
-
     assertEquals(
         "Type extra should be get_public_key",
         Nip55SignerClient.TYPE_GET_PUBLIC_KEY,
         intent.getStringExtra("type"))
-  }
-
-  @Test
-  fun `createPublicKeyIntent should have correct flags`() {
-    val intent = nip55SignerClient.createPublicKeyIntent()
-
+    assertEquals(
+        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
     val expectedFlags =
         android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or
             android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
-
     assertTrue(
         "Intent should have SINGLE_TOP and CLEAR_TOP flags",
         (intent.flags and expectedFlags) == expectedFlags)
-  }
-
-  @Test
-  fun `createPublicKeyIntent should have correct action`() {
-    val intent = nip55SignerClient.createPublicKeyIntent()
-
-    assertEquals(
-        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
   }
 
   @Test
@@ -221,30 +196,22 @@ class Nip55SignerClientTest {
   }
 
   @Test
-  fun `maskPubkey with valid pubkey should return masked string`() {
+  fun `maskPubkey with valid pubkey should return first8 and last8 format`() {
     val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
+    assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
   }
 
   @Test
-  fun `maskPubkey with different pubkey should return masked string`() {
-    val pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a"
-
-    val masked = nip55SignerClient.maskPubkey(pubkey)
-
-    assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
-  }
-
-  @Test
-  fun `maskPubkey with short pubkey should return original string`() {
+  fun `maskPubkey with 16 char or less should return original to avoid information increase`() {
     val pubkey = "abcdef0123456789"
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Should return original string when pubkey is too short", pubkey, masked)
+    assertEquals("Should return original string when pubkey is 16 chars or less", pubkey, masked)
   }
 
   @Test
@@ -254,14 +221,5 @@ class Nip55SignerClientTest {
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
     assertEquals("Should return empty string when input is empty", "", masked)
-  }
-
-  @Test
-  fun `maskPubkey result length should be correct`() {
-    val pubkey = "npub1" + "a".repeat(59)
-
-    val masked = nip55SignerClient.maskPubkey(pubkey)
-
-    assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
   }
 }
