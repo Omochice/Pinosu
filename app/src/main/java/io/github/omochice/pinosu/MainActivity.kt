@@ -167,6 +167,10 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                   }
                 }
 
+                LaunchedEffect(Unit) {
+                  bookmarkViewModel.observeRelaysAndLoadBookmarks(viewModel.availableRelays)
+                }
+
                 BookmarkScreen(
                     uiState = bookmarkUiState,
                     onRefresh = { bookmarkViewModel.refresh() },
