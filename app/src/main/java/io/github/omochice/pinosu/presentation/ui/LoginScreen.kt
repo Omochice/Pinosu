@@ -32,7 +32,7 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
  * @param onDismissDialog Callback to dismiss dialog
  * @param onInstallNip55Signer Callback when NIP-55 signer install button is clicked
  * @param onRetry Callback when retry button is clicked
- * @param onNavigateToMain Callback to navigate to main screen
+ * @param onLoginSuccess Callback when login succeeds
  */
 @Composable
 fun LoginScreen(
@@ -41,11 +41,11 @@ fun LoginScreen(
     onDismissDialog: () -> Unit = {},
     onInstallNip55Signer: () -> Unit = {},
     onRetry: () -> Unit = {},
-    onNavigateToMain: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {}
 ) {
   LaunchedEffect(uiState.loginSuccess) {
     if (uiState.loginSuccess) {
-      onNavigateToMain()
+      onLoginSuccess()
     }
   }
 
