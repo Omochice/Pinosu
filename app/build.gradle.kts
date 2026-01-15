@@ -91,7 +91,6 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
-  androidTestImplementation(libs.androidx.espresso.core)
 
   androidTestImplementation(libs.mockk)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
