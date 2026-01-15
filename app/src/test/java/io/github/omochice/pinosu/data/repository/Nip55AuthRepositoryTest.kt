@@ -41,24 +41,16 @@ class Nip55AuthRepositoryTest {
   }
 
   @Test
-  fun `getLoginState when user exists should return user`() = runTest {
+  fun `getLoginState should correctly delegate to LocalAuthDataSource`() = runTest {
     val expectedUser = User("npub1" + "a".repeat(59))
+
     coEvery { localAuthDataSource.getUser() } returns expectedUser
+    assertEquals("Should return user when stored", expectedUser, authRepository.getLoginState())
 
-    val result = authRepository.getLoginState()
-
-    assertEquals("Should return user from LocalAuthDataSource", expectedUser, result)
-    coVerify { localAuthDataSource.getUser() }
-  }
-
-  @Test
-  fun `getLoginState when no user should return null`() = runTest {
     coEvery { localAuthDataSource.getUser() } returns null
+    assertNull("Should return null when not stored", authRepository.getLoginState())
 
-    val result = authRepository.getLoginState()
-
-    assertNull("Should return null when no user is stored", result)
-    coVerify { localAuthDataSource.getUser() }
+    coVerify(exactly = 2) { localAuthDataSource.getUser() }
   }
 
   @Test
@@ -211,20 +203,14 @@ class Nip55AuthRepositoryTest {
       }
 
   @Test
-  fun `checkNip55SignerInstalled when installed should return true`() {
+  fun `checkNip55SignerInstalled should correctly delegate to Nip55SignerClient`() {
     every { nip55SignerClient.checkNip55SignerInstalled() } returns true
+    assertTrue("Should return true when installed", authRepository.checkNip55SignerInstalled())
 
-    val result = authRepository.checkNip55SignerInstalled()
-
-    assertTrue("Should return true when NIP-55 signer is installed", result)
-  }
-
-  @Test
-  fun `checkNip55SignerInstalled when not installed should return false`() {
     every { nip55SignerClient.checkNip55SignerInstalled() } returns false
+    assertFalse(
+        "Should return false when not installed", authRepository.checkNip55SignerInstalled())
 
-    val result = authRepository.checkNip55SignerInstalled()
-
-    assertFalse("Should return false when NIP-55 signer is not installed", result)
+    io.mockk.verify(exactly = 2) { nip55SignerClient.checkNip55SignerInstalled() }
   }
 }
