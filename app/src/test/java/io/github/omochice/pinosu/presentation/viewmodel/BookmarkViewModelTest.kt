@@ -376,4 +376,127 @@ class BookmarkViewModelTest {
     assertNull("URL dialog should be dismissed", stateAfterDismissUrl.selectedBookmarkForUrlDialog)
     assertNotNull("Error dialog should still be shown", stateAfterDismissUrl.urlOpenError)
   }
+
+  @Test
+  fun `observeRelaysAndLoadBookmarks should load bookmarks when relays arrive`() = runTest {
+    val testUser = User("npub1" + "a".repeat(59))
+    val testRelays =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay1.example.com", read = true, write = true))
+    val testBookmarks =
+        listOf(
+            BookmarkItem(
+                type = "event",
+                eventId = "id1",
+                title = "Bookmark 1",
+                urls = listOf("https://example.com/1")))
+    val bookmarkList = BookmarkList("test", testBookmarks, 0L)
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(testUser.pubkey, testRelays) } returns
+        Result.success(bookmarkList)
+
+    val relayFlow = kotlinx.coroutines.flow.flowOf(testRelays)
+    viewModel.observeRelaysAndLoadBookmarks(relayFlow)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals("allBookmarks should contain fetched bookmarks", testBookmarks, state.allBookmarks)
+    coVerify { getBookmarkListUseCase(testUser.pubkey, testRelays) }
+  }
+
+  @Test
+  fun `observeRelaysAndLoadBookmarks should use default relay when no relays received`() = runTest {
+    val testUser = User("npub1" + "b".repeat(59))
+    val testBookmarks =
+        listOf(
+            BookmarkItem(
+                type = "event",
+                eventId = "id2",
+                title = "Bookmark 2",
+                urls = listOf("https://example.com/2")))
+    val bookmarkList = BookmarkList("test", testBookmarks, 0L)
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(testUser.pubkey, any()) } returns Result.success(bookmarkList)
+
+    val relayFlow =
+        kotlinx.coroutines.flow.flowOf(
+            emptyList<io.github.omochice.pinosu.data.relay.RelayConfig>())
+    viewModel.observeRelaysAndLoadBookmarks(relayFlow)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals("allBookmarks should contain fetched bookmarks", testBookmarks, state.allBookmarks)
+    coVerify {
+      getBookmarkListUseCase(
+          testUser.pubkey,
+          withArg { relays ->
+            assertEquals("Should use default relay", 1, relays.size)
+            assertEquals("Default relay should be yabu.me", "wss://yabu.me", relays[0].url)
+          })
+    }
+  }
+
+  @Test
+  fun `observeRelaysAndLoadBookmarks should merge and deduplicate bookmarks`() = runTest {
+    val testUser = User("npub1" + "c".repeat(59))
+    val relay1 =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay1.example.com", read = true, write = true))
+    val relay2 =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay1.example.com", read = true, write = true),
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay2.example.com", read = true, write = true))
+
+    val bookmark1 = createTestBookmarkItem("id1", "author1")
+    val bookmark2 = createTestBookmarkItem("id2", "author1")
+    val bookmark1Duplicate = createTestBookmarkItem("id1", "author1")
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(testUser.pubkey, relay1) } returns
+        Result.success(BookmarkList("test", listOf(bookmark1), 0L))
+    coEvery { getBookmarkListUseCase(testUser.pubkey, relay2) } returns
+        Result.success(BookmarkList("test", listOf(bookmark1Duplicate, bookmark2), 0L))
+
+    val relayFlow =
+        kotlinx.coroutines.flow.flow {
+          emit(relay1)
+          kotlinx.coroutines.delay(400)
+          emit(relay2)
+        }
+
+    viewModel.observeRelaysAndLoadBookmarks(relayFlow)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(
+        "allBookmarks should have deduplicated bookmarks (2 unique IDs)",
+        2,
+        state.allBookmarks.size)
+    assertTrue("Should contain bookmark1", state.allBookmarks.any { it.eventId == "id1" })
+    assertTrue("Should contain bookmark2", state.allBookmarks.any { it.eventId == "id2" })
+  }
+
+  @Test
+  fun `observeRelaysAndLoadBookmarks should not load when user not logged in`() = runTest {
+    coEvery { getLoginStateUseCase() } returns null
+
+    val testRelays =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay1.example.com", read = true, write = true))
+    val relayFlow = kotlinx.coroutines.flow.flowOf(testRelays)
+
+    viewModel.observeRelaysAndLoadBookmarks(relayFlow)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertTrue("allBookmarks should be empty when not logged in", state.allBookmarks.isEmpty())
+    coVerify(exactly = 0) { getBookmarkListUseCase(any(), any()) }
+  }
 }
