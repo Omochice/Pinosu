@@ -47,7 +47,6 @@ kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarg
 
 dependencies {
   implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.appcompat)
   implementation(libs.material)
   val composeBom = platform(libs.androidx.compose.bom)
   implementation(composeBom)
