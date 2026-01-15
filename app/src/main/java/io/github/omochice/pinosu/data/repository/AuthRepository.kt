@@ -44,8 +44,6 @@ interface AuthRepository {
    *
    * Parses response with Nip55SignerClient and saves to LocalAuthDataSource on success.
    *
-   * local storage
-   *
    * @param resultCode ActivityResult's resultCode
    * @param data Intent data
    * @return Success(User) on success, Failure(LoginError) on failure
