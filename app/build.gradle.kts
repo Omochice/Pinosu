@@ -47,7 +47,6 @@ kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarg
 
 dependencies {
   implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.appcompat)
   implementation(libs.material)
   val composeBom = platform(libs.androidx.compose.bom)
   implementation(composeBom)
@@ -59,7 +58,6 @@ dependencies {
   implementation(libs.androidx.compose.material.icons.extended)
   debugImplementation(libs.androidx.compose.ui.tooling)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
-  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -92,7 +90,6 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
-  androidTestImplementation(libs.androidx.espresso.core)
 
   androidTestImplementation(libs.mockk)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
