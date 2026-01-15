@@ -30,6 +30,17 @@ interface RelayListRepository {
    * @return Success with relay list, or Failure on error
    */
   suspend fun fetchAndCacheUserRelays(pubkey: String): Result<List<RelayConfig>>
+
+  /**
+   * Stream connectable relays as they are verified
+   *
+   * Fetches NIP-65 relay list, checks connectivity in parallel, and emits cumulative list as relays
+   * become available. Prioritizes read+write relays and limits to [MAX_CACHED_RELAYS].
+   *
+   * @param pubkey User's public key (Bech32 npub format)
+   * @return Flow emitting cumulative list of connectable relays
+   */
+  fun streamConnectableRelays(pubkey: String): kotlinx.coroutines.flow.Flow<List<RelayConfig>>
 }
 
 /**
