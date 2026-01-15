@@ -101,8 +101,6 @@ class PresentationDomainIntegrationTest {
     assertFalse("isLoading should be false", state.isLoading)
     assertNull("errorMessage should be null", state.errorMessage)
 
-    // AuthRepositoryのcheckNip55SignerInstalled()が呼ばれることを確認
-    // Verify AuthRepository.checkNip55SignerInstalled() is called
     io.mockk.verify { authRepository.checkNip55SignerInstalled() }
   }
 
