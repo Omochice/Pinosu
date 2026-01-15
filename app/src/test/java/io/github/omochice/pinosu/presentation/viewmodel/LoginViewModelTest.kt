@@ -317,4 +317,73 @@ class LoginViewModelTest {
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("isLoading should be false", state.isLoading)
   }
+
+  @Test
+  fun `availableRelays should start empty`() = runTest {
+    val relays = viewModel.availableRelays.first()
+    assertTrue("availableRelays should start empty", relays.isEmpty())
+  }
+
+  @Test
+  fun `checkLoginState should update availableRelays from streamConnectableRelays`() = runTest {
+    val testPubkey = "npub1" + "a".repeat(59)
+    val testUser = io.github.omochice.pinosu.domain.model.User(testPubkey)
+    val testRelays =
+        listOf(
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay1.example.com", read = true, write = true),
+            io.github.omochice.pinosu.data.relay.RelayConfig(
+                url = "wss://relay2.example.com", read = true, write = false))
+    val relayListRepository =
+        mockk<io.github.omochice.pinosu.data.repository.RelayListRepository>(relaxed = true)
+    val localAuthDataSource =
+        mockk<io.github.omochice.pinosu.data.local.LocalAuthDataSource>(relaxed = true)
+    coEvery { getLoginStateUseCase() } returns testUser
+    every { relayListRepository.streamConnectableRelays(testPubkey) } returns
+        kotlinx.coroutines.flow.flowOf(testRelays)
+
+    val viewModelWithMock =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
+
+    viewModelWithMock.checkLoginState()
+    advanceUntilIdle()
+
+    val relays = viewModelWithMock.availableRelays.first()
+    assertEquals("Should have 2 relays", 2, relays.size)
+    assertTrue("Should contain relay1", relays.any { it.url == "wss://relay1.example.com" })
+    coVerify { localAuthDataSource.saveRelayList(testRelays) }
+  }
+
+  @Test
+  fun `checkLoginState should not stream relays when user not logged in`() = runTest {
+    val relayListRepository =
+        mockk<io.github.omochice.pinosu.data.repository.RelayListRepository>(relaxed = true)
+    val localAuthDataSource =
+        mockk<io.github.omochice.pinosu.data.local.LocalAuthDataSource>(relaxed = true)
+    coEvery { getLoginStateUseCase() } returns null
+
+    val viewModelWithMock =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            fetchUserRelaysUseCase,
+            authRepository,
+            relayListRepository,
+            localAuthDataSource)
+
+    viewModelWithMock.checkLoginState()
+    advanceUntilIdle()
+
+    val relays = viewModelWithMock.availableRelays.first()
+    assertTrue("availableRelays should remain empty", relays.isEmpty())
+    coVerify(exactly = 0) { relayListRepository.streamConnectableRelays(any()) }
+  }
 }
