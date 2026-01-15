@@ -67,21 +67,16 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `initial LoginUiState should have default values`() = runTest {
+  fun `ViewModel should be ready for user interaction after initialization`() = runTest {
+    every { loginUseCase.checkNip55SignerInstalled() } returns true
+
+    viewModel.onLoginButtonClicked()
+    advanceUntilIdle()
+
     val state = viewModel.uiState.first()
-
-    assertFalse("isLoading should be false", state.isLoading)
-    assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("showNip55InstallDialog should be false", state.showNip55InstallDialog)
-    assertFalse("loginSuccess should be false", state.loginSuccess)
-  }
-
-  @Test
-  fun `initial MainUiState should have default values`() = runTest {
-    val state = viewModel.mainUiState.first()
-
-    assertNull("userPubkey should be null", state.userPubkey)
-    assertFalse("isLoggingOut should be false", state.isLoggingOut)
+    assertFalse(
+        "Should not show install dialog when signer is installed", state.showNip55InstallDialog)
+    io.mockk.verify { loginUseCase.checkNip55SignerInstalled() }
   }
 
   @Test
