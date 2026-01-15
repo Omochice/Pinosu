@@ -12,6 +12,8 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
+import io.github.omochice.pinosu.data.repository.RelayListRepository
+import io.github.omochice.pinosu.data.repository.RelayListRepositoryImpl
 
 /**
  * Hilt module for Repository dependency injection
@@ -29,4 +31,6 @@ abstract class RepositoryModule {
   @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
 
   @Binds abstract fun bindRelayPool(impl: RelayPoolImpl): RelayPool
+
+  @Binds abstract fun bindRelayListRepository(impl: RelayListRepositoryImpl): RelayListRepository
 }
