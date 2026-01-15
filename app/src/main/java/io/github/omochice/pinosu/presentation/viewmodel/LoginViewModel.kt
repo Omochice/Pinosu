@@ -52,6 +52,17 @@ constructor(
     viewModelScope.launch {
       val user = getLoginStateUseCase()
       _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
+
+      user?.pubkey?.let { pubkey ->
+        val relayResult = fetchUserRelaysUseCase(pubkey)
+        if (relayResult.isFailure) {
+          Log.w(
+              TAG,
+              "Failed to fetch NIP-65 relay list on startup: ${relayResult.exceptionOrNull()?.message}")
+        } else {
+          Log.d(TAG, "Fetched ${relayResult.getOrNull()?.size ?: 0} relays via NIP-65 on startup")
+        }
+      }
     }
   }
 
