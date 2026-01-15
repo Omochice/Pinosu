@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.domain.usecase
 
+import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.domain.model.BookmarkList
 
 /**
@@ -12,7 +13,11 @@ interface GetBookmarkListUseCase {
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param relays Optional list of relays to query. If null, uses cached relays or default.
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  suspend operator fun invoke(pubkey: String): Result<BookmarkList?>
+  suspend operator fun invoke(
+      pubkey: String,
+      relays: List<RelayConfig>? = null
+  ): Result<BookmarkList?>
 }

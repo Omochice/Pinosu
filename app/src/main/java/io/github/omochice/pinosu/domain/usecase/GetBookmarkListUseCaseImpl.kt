@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.domain.usecase
 
+import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import javax.inject.Inject
@@ -19,9 +20,10 @@ constructor(private val bookmarkRepository: BookmarkRepository) : GetBookmarkLis
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param relays Optional list of relays to query. If null, uses cached relays or default.
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun invoke(pubkey: String): Result<BookmarkList?> {
-    return bookmarkRepository.getBookmarkList(pubkey)
+  override suspend fun invoke(pubkey: String, relays: List<RelayConfig>?): Result<BookmarkList?> {
+    return bookmarkRepository.getBookmarkList(pubkey, relays)
   }
 }

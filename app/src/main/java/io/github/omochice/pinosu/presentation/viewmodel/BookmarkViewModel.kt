@@ -1,16 +1,25 @@
+@file:OptIn(kotlinx.coroutines.FlowPreview::class)
+
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,6 +38,12 @@ constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
 ) : ViewModel() {
+
+  companion object {
+    private const val TAG = "BookmarkViewModel"
+    private const val DEFAULT_RELAY_URL = "wss://yabu.me"
+    private const val RELAY_DEBOUNCE_MS = 300L
+  }
 
   private val _uiState = MutableStateFlow(BookmarkUiState())
   val uiState: StateFlow<BookmarkUiState> = _uiState.asStateFlow()
@@ -146,5 +161,73 @@ constructor(
   /** Dismiss error dialog */
   fun dismissErrorDialog() {
     _uiState.value = _uiState.value.copy(urlOpenError = null)
+  }
+
+  /**
+   * Observe relay flow and load bookmarks incrementally
+   *
+   * Subscribes to relay flow with 300ms debounce. When relays arrive, fetches bookmarks using those
+   * relays and merges with existing results (deduplicating by event ID). Falls back to default
+   * relay (yabu.me) only when no relays are received from the flow.
+   *
+   * @param relayFlow Flow emitting available relay configurations
+   */
+  fun observeRelaysAndLoadBookmarks(relayFlow: Flow<List<RelayConfig>>) {
+    viewModelScope.launch {
+      val user = getLoginStateUseCase()
+      if (user == null) {
+        return@launch
+      }
+
+      val userHexPubkey = Bech32.npubToHex(user.pubkey)
+      var hasReceivedRelays = false
+
+      relayFlow
+          .filter { it.isNotEmpty() }
+          .distinctUntilChanged()
+          .debounce(RELAY_DEBOUNCE_MS)
+          .onCompletion {
+            if (!hasReceivedRelays) {
+              Log.d(TAG, "No relays received, using default relay")
+              loadBookmarksWithRelays(
+                  user.pubkey, userHexPubkey, listOf(RelayConfig(url = DEFAULT_RELAY_URL)))
+            }
+          }
+          .collect { relays ->
+            hasReceivedRelays = true
+            Log.d(TAG, "Loading bookmarks with ${relays.size} relays")
+            loadBookmarksWithRelays(user.pubkey, userHexPubkey, relays)
+          }
+    }
+  }
+
+  /**
+   * Load bookmarks using specified relays and merge with existing results
+   *
+   * @param pubkey User's public key
+   * @param userHexPubkey User's hex-encoded public key for filtering
+   * @param relays List of relays to query
+   */
+  private suspend fun loadBookmarksWithRelays(
+      pubkey: String,
+      userHexPubkey: String?,
+      relays: List<RelayConfig>
+  ) {
+    val result = getBookmarkListUseCase(pubkey, relays)
+    result.fold(
+        onSuccess = { bookmarkList ->
+          val newItems = bookmarkList?.items ?: emptyList()
+          _uiState.update { state ->
+            val merged = (state.allBookmarks + newItems).distinctBy { it.eventId }
+            val updatedState =
+                state.copy(
+                    isLoading = false,
+                    allBookmarks = merged,
+                    userHexPubkey = userHexPubkey,
+                    error = null)
+            updatedState.copy(bookmarks = filterBookmarks(updatedState))
+          }
+        },
+        onFailure = { e -> Log.w(TAG, "Failed to load bookmarks: ${e.message}") })
   }
 }

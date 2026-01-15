@@ -52,17 +52,21 @@ constructor(
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param relays Optional list of relays to query. If null, uses cached relays or default.
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
+  override suspend fun getBookmarkList(
+      pubkey: String,
+      relays: List<RelayConfig>?
+  ): Result<BookmarkList?> {
     return try {
       val hexPubkey =
           Bech32.npubToHex(pubkey)
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val relays = getRelaysForQuery()
+      val queryRelays = relays ?: getRelaysForQuery()
       val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
-      val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(queryRelays, filter, PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
         return Result.success(null)
