@@ -105,25 +105,22 @@ constructor(
 
       if (result.isSuccess) {
         val user = result.getOrNull()
-        _uiState.value =
-            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
 
-        // Fetch user's relay list via NIP-65 in background
+        // Fetch user's relay list via NIP-65 before completing login
         user?.pubkey?.let { pubkey ->
-          viewModelScope.launch {
-            val relayResult = fetchUserRelaysUseCase(pubkey)
-            if (relayResult.isFailure) {
-              Log.w(
-                  TAG,
-                  "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
-            } else {
-              Log.d(
-                  TAG,
-                  "Successfully fetched ${relayResult.getOrNull()?.size ?: 0} relays via NIP-65")
-            }
+          val relayResult = fetchUserRelaysUseCase(pubkey)
+          if (relayResult.isFailure) {
+            Log.w(
+                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
+          } else {
+            Log.d(
+                TAG, "Successfully fetched ${relayResult.getOrNull()?.size ?: 0} relays via NIP-65")
           }
         }
+
+        _uiState.value =
+            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
       } else {
         val error = result.exceptionOrNull()
         val errorMessage =
