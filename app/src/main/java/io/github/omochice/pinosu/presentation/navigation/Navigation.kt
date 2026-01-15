@@ -2,6 +2,8 @@ package io.github.omochice.pinosu.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
+sealed interface Route
+
 /** Login screen route */
 @Serializable object Login
 
