@@ -5,16 +5,16 @@ import kotlinx.serialization.Serializable
 sealed interface Route
 
 /** Login screen route */
-@Serializable object Login
+@Serializable object Login : Route
 
 /** Main screen route */
-@Serializable object Main
+@Serializable object Main : Route
 
 /** Bookmark list screen route */
-@Serializable object Bookmark
+@Serializable object Bookmark : Route
 
 /** License screen route */
-@Serializable object License
+@Serializable object License : Route
 
 /** App info screen route */
-@Serializable object AppInfo
+@Serializable object AppInfo : Route
