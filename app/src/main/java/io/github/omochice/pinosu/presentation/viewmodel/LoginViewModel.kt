@@ -106,11 +106,7 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
         _uiState.value =
-            _uiState.value.copy(
-                isLoading = false,
-                loginSuccess = true,
-                errorMessage = null,
-                needsRelayListRequest = true)
+            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
 
         // Fetch user's relay list via NIP-65 in background
@@ -146,30 +142,6 @@ constructor(
       }
     }
   }
-
-  /**
-   * Process relay list response from NIP-55 signer
-   *
-   * Caches the relay list locally for use when fetching bookmarks. Failures are non-fatal - default
-   * relay will be used as fallback.
-   *
-   * @param resultCode ActivityResult resultCode
-   * @param data Intent data
-   */
-  fun processRelayListResponse(resultCode: Int, data: Intent?) {
-    viewModelScope.launch {
-      val result = authRepository.processRelayListResponse(resultCode, data)
-      if (result.isFailure) {
-        Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
-      }
-      _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
-    }
-  }
-
-  /** Mark relay list request as handled (used when request is launched) */
-  fun onRelayListRequestHandled() {
-    _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
-  }
 }
 
 /**
@@ -179,14 +151,12 @@ constructor(
  * @property errorMessage Error message
  * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
  * @property loginSuccess Whether login was successful
- * @property needsRelayListRequest Whether relay list needs to be requested from NIP-55 signer
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showNip55InstallDialog: Boolean = false,
     val loginSuccess: Boolean = false,
-    val needsRelayListRequest: Boolean = false,
 )
 
 /**
