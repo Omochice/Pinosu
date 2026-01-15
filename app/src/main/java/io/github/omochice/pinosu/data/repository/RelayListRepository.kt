@@ -8,6 +8,9 @@ import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Repository for fetching and caching user relay lists via NIP-65
@@ -47,6 +50,9 @@ constructor(
     private const val TAG = "RelayListRepository"
     private const val DEFAULT_RELAY_URL = "wss://yabu.me"
     private const val TIMEOUT_MS = 10000L
+    private const val CONNECTIVITY_TIMEOUT_MS = 3000L
+    private const val MAX_CACHED_RELAYS = 5
+    private const val MAX_RELAYS_TO_CHECK = 10
   }
 
   override suspend fun fetchAndCacheUserRelays(pubkey: String): Result<List<RelayConfig>> {
@@ -77,15 +83,49 @@ constructor(
       val relays = Nip65RelayListParser.parseRelayListFromEvent(mostRecentEvent)
       Log.d(TAG, "Parsed ${relays.size} relays from NIP-65 event")
 
-      if (relays.isNotEmpty()) {
-        localAuthDataSource.saveRelayList(relays)
-        Log.d(TAG, "Cached ${relays.size} relays locally")
+      if (relays.isEmpty()) {
+        return Result.success(emptyList())
       }
 
-      Result.success(relays)
+      val connectableRelays = filterConnectableRelays(relays)
+      Log.d(TAG, "Filtered to ${connectableRelays.size} connectable relays")
+
+      if (connectableRelays.isNotEmpty()) {
+        localAuthDataSource.saveRelayList(connectableRelays)
+        Log.d(TAG, "Cached ${connectableRelays.size} relays locally")
+      }
+
+      Result.success(connectableRelays)
     } catch (e: Exception) {
       Log.e(TAG, "Error fetching relay list", e)
       Result.failure(e)
     }
+  }
+
+  /**
+   * Filter relays by connectivity, prioritizing read+write relays
+   *
+   * @param relays List of relay configurations to filter
+   * @return List of connectable relays, max [MAX_CACHED_RELAYS]
+   */
+  private suspend fun filterConnectableRelays(relays: List<RelayConfig>): List<RelayConfig> {
+    val sortedRelays =
+        relays.sortedByDescending { relay -> if (relay.read && relay.write) 1 else 0 }
+
+    val relaysToCheck = sortedRelays.take(MAX_RELAYS_TO_CHECK)
+
+    val connectableRelays = coroutineScope {
+      val deferreds =
+          relaysToCheck.map { relay ->
+            async {
+              val isConnectable =
+                  relayPool.checkRelayConnectivity(relay.url, CONNECTIVITY_TIMEOUT_MS)
+              if (isConnectable) relay else null
+            }
+          }
+      deferreds.awaitAll().filterNotNull()
+    }
+
+    return connectableRelays.take(MAX_CACHED_RELAYS)
   }
 }
