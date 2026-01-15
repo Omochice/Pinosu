@@ -27,6 +27,7 @@ import io.github.omochice.pinosu.presentation.navigation.Bookmark
 import io.github.omochice.pinosu.presentation.navigation.License
 import io.github.omochice.pinosu.presentation.navigation.Login
 import io.github.omochice.pinosu.presentation.navigation.Main
+import io.github.omochice.pinosu.presentation.navigation.Route
 import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultPopEnterTransition
@@ -105,7 +106,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
     }
   }
 
-  val startDestination: Any = if (mainUiState.userPubkey != null) Bookmark else Login
+  val startDestination: Route = if (mainUiState.userPubkey != null) Bookmark else Login
 
   ModalNavigationDrawer(
       drawerState = drawerState,
