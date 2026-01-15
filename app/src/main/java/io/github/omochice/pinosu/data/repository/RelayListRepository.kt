@@ -10,7 +10,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 /**
  * Repository for fetching and caching user relay lists via NIP-65
@@ -111,6 +115,74 @@ constructor(
       Log.e(TAG, "Error fetching relay list", e)
       Result.failure(e)
     }
+  }
+
+  override fun streamConnectableRelays(pubkey: String): Flow<List<RelayConfig>> = flow {
+    val hexPubkey = Bech32.npubToHex(pubkey)
+    if (hexPubkey == null) {
+      Log.w(TAG, "Invalid npub format: $pubkey")
+      return@flow
+    }
+
+    Log.d(TAG, "Streaming relay list for pubkey: ${hexPubkey.take(8)}...")
+
+    val defaultRelays = listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+    val filter =
+        """{"kinds":[${Nip65RelayListParser.KIND_RELAY_LIST}],"authors":["$hexPubkey"],"limit":1}"""
+
+    val events =
+        try {
+          relayPool.subscribeWithTimeout(defaultRelays, filter, TIMEOUT_MS)
+        } catch (e: Exception) {
+          Log.e(TAG, "Error fetching NIP-65 event", e)
+          return@flow
+        }
+
+    if (events.isEmpty()) {
+      Log.d(TAG, "No relay list found for user")
+      return@flow
+    }
+
+    val mostRecentEvent = events.maxByOrNull { it.createdAt }
+    if (mostRecentEvent == null) {
+      Log.d(TAG, "No valid event found")
+      return@flow
+    }
+
+    val relays = Nip65RelayListParser.parseRelayListFromEvent(mostRecentEvent)
+    Log.d(TAG, "Parsed ${relays.size} relays from NIP-65 event")
+
+    if (relays.isEmpty()) {
+      return@flow
+    }
+
+    val sortedRelays =
+        relays.sortedByDescending { relay -> if (relay.read && relay.write) 1 else 0 }
+    val relaysToCheck = sortedRelays.take(MAX_RELAYS_TO_CHECK)
+
+    val connectableRelays = mutableListOf<RelayConfig>()
+    val channel = Channel<RelayConfig?>(relaysToCheck.size)
+
+    coroutineScope {
+      relaysToCheck.forEach { relay ->
+        launch {
+          val isConnectable = relayPool.checkRelayConnectivity(relay.url, CONNECTIVITY_TIMEOUT_MS)
+          channel.send(if (isConnectable) relay else null)
+        }
+      }
+
+      repeat(relaysToCheck.size) {
+        val relay = channel.receive()
+        if (relay != null && connectableRelays.size < MAX_CACHED_RELAYS) {
+          connectableRelays.add(relay)
+          Log.d(TAG, "Relay confirmed connectable: ${relay.url}")
+          emit(connectableRelays.toList())
+        }
+      }
+    }
+
+    channel.close()
+    Log.d(TAG, "Streaming complete: ${connectableRelays.size} connectable relays")
   }
 
   /**
