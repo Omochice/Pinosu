@@ -143,7 +143,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                         nip55Launcher.launch(intent)
                       }
                     },
-                    onNavigateToMain = {
+                    onLoginSuccess = {
                       navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
                       viewModel.dismissError()
                     })
