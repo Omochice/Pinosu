@@ -100,28 +100,10 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     return "$prefix...$suffix"
   }
 
-  /**
-   * Create Intent for NIP-04 decryption request
-   *
-   * @param encryptedContent Encrypted content to decrypt
-   * @param pubkey Public key of the sender (for DM decryption)
-   * @return Constructed Intent
-   */
-  fun createDecryptIntent(encryptedContent: String, pubkey: String): Intent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:"))
-    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
-    intent.putExtra("type", TYPE_NIP04_DECRYPT)
-    intent.putExtra("data", encryptedContent)
-    intent.putExtra("pubKey", pubkey)
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    return intent
-  }
-
   companion object {
     const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
-    const val TYPE_NIP04_DECRYPT = "nip04_decrypt"
   }
 }
 
