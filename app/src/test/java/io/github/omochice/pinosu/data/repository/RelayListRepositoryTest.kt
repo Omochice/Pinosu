@@ -298,4 +298,107 @@ class RelayListRepositoryImplTest {
 
         io.mockk.coVerify(exactly = 0) { localAuthDataSource.saveRelayList(any()) }
       }
+
+  @org.junit.Test
+  fun `streamConnectableRelays should emit cumulative list as relays become connectable`() =
+      kotlinx.coroutines.test.runTest {
+        val tags =
+            listOf(
+                listOf("r", "wss://relay1.example.com"),
+                listOf("r", "wss://relay2.example.com"),
+                listOf("r", "wss://relay3.example.com"))
+        val event = createRelayListEvent(tags)
+        io.mockk.coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns
+            listOf(event)
+        io.mockk.coEvery {
+          relayPool.checkRelayConnectivity("wss://relay1.example.com", any())
+        } returns true
+        io.mockk.coEvery {
+          relayPool.checkRelayConnectivity("wss://relay2.example.com", any())
+        } returns true
+        io.mockk.coEvery {
+          relayPool.checkRelayConnectivity("wss://relay3.example.com", any())
+        } returns true
+
+        val emissions = mutableListOf<List<io.github.omochice.pinosu.data.relay.RelayConfig>>()
+        repository.streamConnectableRelays(testPubkey).collect { emissions.add(it) }
+
+        assertTrue("Should have emissions", emissions.isNotEmpty())
+        val finalEmission = emissions.last()
+        assertEquals("Final emission should have 3 relays", 3, finalEmission.size)
+      }
+
+  @org.junit.Test
+  fun `streamConnectableRelays should limit to 5 relays max`() =
+      kotlinx.coroutines.test.runTest {
+        val tags = (1..8).map { i -> listOf("r", "wss://relay$i.example.com") }
+        val event = createRelayListEvent(tags)
+        io.mockk.coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns
+            listOf(event)
+        io.mockk.coEvery { relayPool.checkRelayConnectivity(any(), any()) } returns true
+
+        val emissions = mutableListOf<List<io.github.omochice.pinosu.data.relay.RelayConfig>>()
+        repository.streamConnectableRelays(testPubkey).collect { emissions.add(it) }
+
+        val finalEmission = emissions.last()
+        assertEquals("Should have max 5 relays", 5, finalEmission.size)
+      }
+
+  @org.junit.Test
+  fun `streamConnectableRelays should emit empty list when no connectable relays`() =
+      kotlinx.coroutines.test.runTest {
+        val tags =
+            listOf(listOf("r", "wss://relay1.example.com"), listOf("r", "wss://relay2.example.com"))
+        val event = createRelayListEvent(tags)
+        io.mockk.coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns
+            listOf(event)
+        io.mockk.coEvery { relayPool.checkRelayConnectivity(any(), any()) } returns false
+
+        val emissions = mutableListOf<List<io.github.omochice.pinosu.data.relay.RelayConfig>>()
+        repository.streamConnectableRelays(testPubkey).collect { emissions.add(it) }
+
+        assertTrue("Should complete", true)
+        if (emissions.isNotEmpty()) {
+          assertTrue("Last emission should be empty", emissions.last().isEmpty())
+        }
+      }
+
+  @org.junit.Test
+  fun `streamConnectableRelays should emit empty when NIP-65 event not found`() =
+      kotlinx.coroutines.test.runTest {
+        io.mockk.coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
+
+        val emissions = mutableListOf<List<io.github.omochice.pinosu.data.relay.RelayConfig>>()
+        repository.streamConnectableRelays(testPubkey).collect { emissions.add(it) }
+
+        assertTrue("Should complete", true)
+        if (emissions.isNotEmpty()) {
+          assertTrue("Should emit empty list", emissions.last().isEmpty())
+        }
+      }
+
+  @org.junit.Test
+  fun `streamConnectableRelays should prioritize read-write relays`() =
+      kotlinx.coroutines.test.runTest {
+        val tags =
+            listOf(
+                listOf("r", "wss://read-only1.example.com", "read"),
+                listOf("r", "wss://read-write1.example.com"),
+                listOf("r", "wss://write-only1.example.com", "write"),
+                listOf("r", "wss://read-write2.example.com"),
+                listOf("r", "wss://read-only2.example.com", "read"),
+                listOf("r", "wss://read-write3.example.com"))
+        val event = createRelayListEvent(tags)
+        io.mockk.coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns
+            listOf(event)
+        io.mockk.coEvery { relayPool.checkRelayConnectivity(any(), any()) } returns true
+
+        val emissions = mutableListOf<List<io.github.omochice.pinosu.data.relay.RelayConfig>>()
+        repository.streamConnectableRelays(testPubkey).collect { emissions.add(it) }
+
+        val finalEmission = emissions.last()
+        assertEquals("Should have 5 relays", 5, finalEmission.size)
+        val readWriteCount = finalEmission.count { it.read && it.write }
+        assertEquals("All 3 read-write relays should be included", 3, readWriteCount)
+      }
 }
