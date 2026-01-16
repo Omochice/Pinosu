@@ -6,12 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.json.JSONException
-import org.json.JSONObject
 
 /** Encapsulation of NIP-55 Intent communication */
 @Singleton
@@ -103,92 +100,10 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     return "$prefix...$suffix"
   }
 
-  /**
-   * Create Intent for NIP-04 decryption request
-   *
-   * @param encryptedContent Encrypted content to decrypt
-   * @param pubkey Public key of the sender (for DM decryption)
-   * @return Constructed Intent
-   */
-  fun createDecryptIntent(encryptedContent: String, pubkey: String): Intent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:"))
-    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
-    intent.putExtra("type", TYPE_NIP04_DECRYPT)
-    intent.putExtra("data", encryptedContent)
-    intent.putExtra("pubKey", pubkey)
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    return intent
-  }
-
-  /**
-   * Create Intent for NIP-55 relay list retrieval request
-   *
-   * @return Constructed Intent for requesting user's relay list
-   */
-  fun createGetRelaysIntent(): Intent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:"))
-    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
-    intent.putExtra("type", TYPE_GET_RELAYS)
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    return intent
-  }
-
-  /**
-   * Handle relay list response from NIP-55 signer
-   *
-   * @param resultCode ActivityResult's resultCode (RESULT_OK or RESULT_CANCELED)
-   * @param data Intent data containing relay list JSON
-   * @return Success(List<RelayConfig>) or Failure(Nip55Error)
-   *
-   * Response format: {"wss://relay1.com": {"read": true, "write": true}, ...}
-   */
-  fun handleRelayListResponse(resultCode: Int, data: Intent?): Result<List<RelayConfig>> {
-    if (resultCode == Activity.RESULT_CANCELED) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
-
-    if (data == null) {
-      return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
-    }
-
-    val rejected = data.getBooleanExtra("rejected", false)
-    if (rejected) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
-
-    val jsonString = data.getStringExtra("result")
-    if (jsonString.isNullOrEmpty()) {
-      return Result.failure(Nip55Error.InvalidResponse("Result is null or empty"))
-    }
-
-    return try {
-      val relays = mutableListOf<RelayConfig>()
-      val jsonObject = JSONObject(jsonString)
-      val keys = jsonObject.keys()
-
-      while (keys.hasNext()) {
-        val url = keys.next()
-        val relayObj = jsonObject.optJSONObject(url) ?: JSONObject()
-        val read = relayObj.optBoolean("read", true)
-        val write = relayObj.optBoolean("write", true)
-
-        if (read) {
-          relays.add(RelayConfig(url = url, read = read, write = write))
-        }
-      }
-
-      Result.success(relays)
-    } catch (e: JSONException) {
-      Result.failure(Nip55Error.InvalidResponse("Invalid JSON format: ${e.message}"))
-    }
-  }
-
   companion object {
     const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
-    const val TYPE_NIP04_DECRYPT = "nip04_decrypt"
-    const val TYPE_GET_RELAYS = "get_relays"
   }
 }
 
