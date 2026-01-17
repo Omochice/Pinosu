@@ -27,8 +27,11 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /** Unit tests for [PostBookmarkViewModel] */
+@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class PostBookmarkViewModelTest {
 
@@ -175,17 +178,17 @@ class PostBookmarkViewModelTest {
 
   @Test
   fun `prepareSignEventIntent should call useCase and create intent when URL is valid`() = runTest {
-    val mockEvent =
+    val realEvent =
         UnsignedNostrEvent(
-            pubkey = "abc123",
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
             createdAt = 1234567890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
-            content = "comment")
+            content = "Test comment")
     val mockIntent = mockk<Intent>()
 
     coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
-        Result.success(mockEvent)
+        Result.success(realEvent)
     every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
 
     viewModel.updateUrl("example.com")
@@ -223,9 +226,9 @@ class PostBookmarkViewModelTest {
 
   @Test
   fun `processSignedEvent should publish event on success`() = runTest {
-    val mockEvent =
+    val realEvent =
         UnsignedNostrEvent(
-            pubkey = "abc123",
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
             createdAt = 1234567890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
@@ -236,7 +239,7 @@ class PostBookmarkViewModelTest {
     val mockIntent = mockk<Intent>()
 
     coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
-        Result.success(mockEvent)
+        Result.success(realEvent)
     every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
     every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
         Result.success(SignedEventResponse(signedEventJson))
@@ -275,9 +278,9 @@ class PostBookmarkViewModelTest {
 
   @Test
   fun `processSignedEvent should set error on publish failure`() = runTest {
-    val mockEvent =
+    val realEvent =
         UnsignedNostrEvent(
-            pubkey = "abc123",
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
             createdAt = 1234567890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
@@ -286,7 +289,7 @@ class PostBookmarkViewModelTest {
     val mockIntent = mockk<Intent>()
 
     coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
-        Result.success(mockEvent)
+        Result.success(realEvent)
     every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
     every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
         Result.success(SignedEventResponse(signedEventJson))
@@ -310,9 +313,9 @@ class PostBookmarkViewModelTest {
 
   @Test
   fun `prepareSignEventIntent should parse categories correctly`() = runTest {
-    val mockEvent =
+    val realEvent =
         UnsignedNostrEvent(
-            pubkey = "abc123",
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
             createdAt = 1234567890,
             kind = 39701,
             tags = emptyList(),
@@ -320,7 +323,7 @@ class PostBookmarkViewModelTest {
     val mockIntent = mockk<Intent>()
 
     coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
-        Result.success(mockEvent)
+        Result.success(realEvent)
     every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
 
     viewModel.updateUrl("example.com")

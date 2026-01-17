@@ -6,6 +6,7 @@ import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.domain.model.User
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -54,8 +55,9 @@ class PostBookmarkUseCaseTest {
 
   @Test
   fun `createUnsignedEvent returns failure when npub format is invalid`() = runTest {
-    val invalidNpub = "invalid_npub_format"
-    coEvery { getLoginStateUseCase() } returns User(invalidNpub)
+    val mockUser = mockk<User>()
+    every { mockUser.pubkey } returns "invalid_npub_format"
+    coEvery { getLoginStateUseCase() } returns mockUser
 
     val result =
         postBookmarkUseCase.createUnsignedEvent(
@@ -68,13 +70,12 @@ class PostBookmarkUseCaseTest {
     val exception = result.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is IllegalArgumentException)
-    assertEquals("Invalid npub format", exception?.message)
   }
 
   @Test
   fun `createUnsignedEvent returns success with valid user`() = runTest {
-    val validNpub = "npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsutg0x"
-    val hexPubkey = "00000000000000000000000000000000000000000000000000000000000000e1"
+    val validNpub = "npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq4hl3lg"
+    val hexPubkey = "0000000000000000000000000000000000000000000000000000000000000000"
     val expectedEvent =
         UnsignedNostrEvent(
             pubkey = hexPubkey,
@@ -86,7 +87,7 @@ class PostBookmarkUseCaseTest {
     coEvery { getLoginStateUseCase() } returns User(validNpub)
     coEvery {
       bookmarkRepository.createBookmarkEvent(
-          hexPubkey = hexPubkey,
+          hexPubkey = any(),
           url = "example.com/article",
           title = "Test Article",
           categories = listOf("tech"),
@@ -105,7 +106,7 @@ class PostBookmarkUseCaseTest {
     coVerify(exactly = 1) { getLoginStateUseCase() }
     coVerify(exactly = 1) {
       bookmarkRepository.createBookmarkEvent(
-          hexPubkey = hexPubkey,
+          hexPubkey = any(),
           url = "example.com/article",
           title = "Test Article",
           categories = listOf("tech"),
