@@ -191,9 +191,10 @@ constructor(
    * @return URL without scheme
    */
   private fun stripUrlScheme(url: String): String {
-    return url.removePrefix("https://")
-        .removePrefix("http://")
-        .removePrefix("HTTPS://")
-        .removePrefix("HTTP://")
+    return when {
+      url.startsWith("https://", ignoreCase = true) -> url.substring("https://".length)
+      url.startsWith("http://", ignoreCase = true) -> url.substring("http://".length)
+      else -> url
+    }
   }
 }
