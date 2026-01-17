@@ -35,6 +35,8 @@ class LoginViewModelTest {
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var authRepository: AuthRepository
+  private lateinit var fetchRelayListUseCase:
+      io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -46,7 +48,14 @@ class LoginViewModelTest {
     logoutUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
     authRepository = mockk(relaxed = true)
-    viewModel = LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+    fetchRelayListUseCase = mockk(relaxed = true)
+    viewModel =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
   }
 
   @After
@@ -185,7 +194,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
 
@@ -206,7 +220,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -229,7 +248,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -251,7 +275,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -276,7 +305,12 @@ class LoginViewModelTest {
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
     val viewModelWithMock =
-        LoginViewModel(loginUseCase, logoutUseCase, getLoginStateUseCase, authRepository)
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -284,5 +318,79 @@ class LoginViewModelTest {
     val state = viewModelWithMock.uiState.first()
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("isLoading should be false", state.isLoading)
+  }
+
+  @Test
+  fun `processNip55Response should wait for relay list fetch before setting loginSuccess`() =
+      runTest {
+        val testPubkey = "npub1" + "e".repeat(59)
+        val testUser = User(testPubkey)
+        val mockIntent = mockk<android.content.Intent>(relaxed = true)
+        val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+        val fetchRelayListUseCase =
+            mockk<io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase>()
+
+        coEvery { authRepository.processNip55Response(any(), any()) } returns
+            Result.success(testUser)
+        every { authRepository.checkNip55SignerInstalled() } returns true
+        coEvery { authRepository.getLoginState() } returns null
+        coEvery { authRepository.logout() } returns Result.success(Unit)
+        coEvery { fetchRelayListUseCase(any()) } coAnswers
+            {
+              kotlinx.coroutines.delay(100)
+              Result.success(emptyList())
+            }
+
+        val viewModelWithMock =
+            LoginViewModel(
+                loginUseCase,
+                logoutUseCase,
+                getLoginStateUseCase,
+                authRepository,
+                fetchRelayListUseCase)
+
+        viewModelWithMock.processNip55Response(-1, mockIntent)
+        advanceUntilIdle()
+
+        coVerify { fetchRelayListUseCase(testPubkey) }
+
+        val state = viewModelWithMock.uiState.first()
+        assertTrue("loginSuccess should be true after relay fetch completes", state.loginSuccess)
+        assertFalse("isLoading should be false", state.isLoading)
+      }
+
+  @Test
+  fun `processNip55Response should succeed even if relay list fetch fails`() = runTest {
+    val testPubkey = "npub1" + "f".repeat(59)
+    val testUser = User(testPubkey)
+    val mockIntent = mockk<android.content.Intent>(relaxed = true)
+    val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
+    val fetchRelayListUseCase =
+        mockk<io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase>()
+
+    coEvery { authRepository.processNip55Response(any(), any()) } returns Result.success(testUser)
+    every { authRepository.checkNip55SignerInstalled() } returns true
+    coEvery { authRepository.getLoginState() } returns null
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+    coEvery { fetchRelayListUseCase(any()) } returns
+        Result.failure(RuntimeException("Network error"))
+
+    val viewModelWithMock =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase)
+
+    viewModelWithMock.processNip55Response(-1, mockIntent)
+    advanceUntilIdle()
+
+    val state = viewModelWithMock.uiState.first()
+    assertTrue("loginSuccess should be true even if relay fetch fails", state.loginSuccess)
+    assertFalse("isLoading should be false", state.isLoading)
+    assertNull(
+        "errorMessage should be null (relay fetch failure is logged, not shown)",
+        state.errorMessage)
   }
 }

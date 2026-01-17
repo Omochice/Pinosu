@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.domain.model.error.LoginError
+import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
  * @property logoutUseCase UseCase for logout processing
  * @property getLoginStateUseCase UseCase for retrieving login state
  * @property authRepository Authentication repository (for NIP-55 signer response processing)
+ * @property fetchRelayListUseCase UseCase for fetching NIP-65 relay list
  */
 @HiltViewModel
 class LoginViewModel
@@ -32,6 +34,7 @@ constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
     private val authRepository: AuthRepository,
+    private val fetchRelayListUseCase: FetchRelayListUseCase,
 ) : ViewModel() {
 
   companion object {
@@ -102,13 +105,20 @@ constructor(
 
       if (result.isSuccess) {
         val user = result.getOrNull()
-        _uiState.value =
-            _uiState.value.copy(
-                isLoading = false,
-                loginSuccess = true,
-                errorMessage = null,
-                needsRelayListRequest = true)
+
+        // Fetch NIP-65 relay list and wait for completion before login success
+        val pubkey = user?.pubkey
+        if (pubkey != null) {
+          val relayResult = fetchRelayListUseCase(pubkey)
+          if (relayResult.isFailure) {
+            Log.w(
+                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
+          }
+        }
+
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
+        _uiState.value =
+            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
       } else {
         val error = result.exceptionOrNull()
         val errorMessage =
@@ -127,30 +137,6 @@ constructor(
       }
     }
   }
-
-  /**
-   * Process relay list response from NIP-55 signer
-   *
-   * Caches the relay list locally for use when fetching bookmarks. Failures are non-fatal - default
-   * relay will be used as fallback.
-   *
-   * @param resultCode ActivityResult resultCode
-   * @param data Intent data
-   */
-  fun processRelayListResponse(resultCode: Int, data: Intent?) {
-    viewModelScope.launch {
-      val result = authRepository.processRelayListResponse(resultCode, data)
-      if (result.isFailure) {
-        Log.w(TAG, "Failed to cache relay list: ${result.exceptionOrNull()?.message}")
-      }
-      _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
-    }
-  }
-
-  /** Mark relay list request as handled (used when request is launched) */
-  fun onRelayListRequestHandled() {
-    _uiState.value = _uiState.value.copy(needsRelayListRequest = false)
-  }
 }
 
 /**
@@ -160,14 +146,12 @@ constructor(
  * @property errorMessage Error message
  * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
  * @property loginSuccess Whether login was successful
- * @property needsRelayListRequest Whether relay list needs to be requested from NIP-55 signer
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showNip55InstallDialog: Boolean = false,
     val loginSuccess: Boolean = false,
-    val needsRelayListRequest: Boolean = false,
 )
 
 /**

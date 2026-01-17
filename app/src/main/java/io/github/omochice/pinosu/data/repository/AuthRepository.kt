@@ -44,8 +44,6 @@ interface AuthRepository {
    *
    * Parses response with Nip55SignerClient and saves to LocalAuthDataSource on success.
    *
-   * local storage
-   *
    * @param resultCode ActivityResult's resultCode
    * @param data Intent data
    * @return Success(User) on success, Failure(LoginError) on failure
@@ -60,16 +58,4 @@ interface AuthRepository {
    * @return true if NIP-55 signer is installed
    */
   fun checkNip55SignerInstalled(): Boolean
-
-  /**
-   * Process relay list response from NIP-55 signer
-   *
-   * Parses relay list with Nip55SignerClient and caches to LocalAuthDataSource. This is optional -
-   * if user rejects or signer doesn't support it, default relay is used.
-   *
-   * @param resultCode ActivityResult's resultCode
-   * @param data Intent data containing relay list JSON
-   * @return Success(Unit) on success, Failure on error (errors are non-fatal)
-   */
-  suspend fun processRelayListResponse(resultCode: Int, data: Intent?): Result<Unit>
 }
