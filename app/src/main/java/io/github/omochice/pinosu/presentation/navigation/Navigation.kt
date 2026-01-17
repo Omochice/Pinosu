@@ -18,3 +18,6 @@ sealed interface Route
 
 /** App info screen route */
 @Serializable object AppInfo : Route
+
+/** Post bookmark screen route */
+@Serializable object PostBookmark : Route
