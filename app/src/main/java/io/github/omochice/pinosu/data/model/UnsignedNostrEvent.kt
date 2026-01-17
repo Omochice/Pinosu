@@ -57,25 +57,9 @@ data class UnsignedNostrEvent(
    */
   fun toSignedJson(signature: String): String {
     val eventId = calculateId()
-
-    val json = JSONObject()
+    val json = JSONObject(toJson())
     json.put("id", eventId)
-    json.put("pubkey", pubkey)
-    json.put("created_at", createdAt)
-    json.put("kind", kind)
-    json.put("content", content)
-
-    val tagsArray = JSONArray()
-    for (tag in tags) {
-      val tagArray = JSONArray()
-      for (element in tag) {
-        tagArray.put(element)
-      }
-      tagsArray.put(tagArray)
-    }
-    json.put("tags", tagsArray)
     json.put("sig", signature)
-
     return json.toString()
   }
 }
