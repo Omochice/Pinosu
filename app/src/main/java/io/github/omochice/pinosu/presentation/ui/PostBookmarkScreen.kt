@@ -26,6 +26,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
@@ -67,7 +69,9 @@ fun PostBookmarkScreen(
       }) { paddingValues ->
         if (uiState.isSubmitting) {
           Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(
+                modifier =
+                    Modifier.align(Alignment.Center).semantics { contentDescription = "読み込み中" })
           }
         } else {
           Column(
