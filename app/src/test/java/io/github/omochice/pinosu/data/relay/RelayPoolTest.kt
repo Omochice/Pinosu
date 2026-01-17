@@ -296,4 +296,235 @@ class RelayPoolTest {
     assertEquals("Should have 1 event from working relay", 1, result.size)
     assertEquals("Event should be from working relay", "working-event", result.first().id)
   }
+
+  /**
+   * Helper class to manage WebSocket mock state for publish operations.
+   *
+   * Simulates OK responses from relays for EVENT messages.
+   */
+  private inner class MockPublishWebSocketState(
+      private val accepted: Boolean,
+      private val message: String = ""
+  ) {
+    val ws: WebSocket = mockk(relaxed = true)
+    private val closed = java.util.concurrent.atomic.AtomicBoolean(false)
+    @Volatile private var wsListener: WebSocketListener? = null
+
+    init {
+      every { ws.send(any<String>()) } answers
+          {
+            val msg = firstArg<String>()
+            val currentListener = wsListener
+
+            if (currentListener != null && msg.startsWith("[\"EVENT\"")) {
+              val eventJson = org.json.JSONArray(msg).getJSONObject(1)
+              val eventId = eventJson.getString("id")
+
+              executor.execute {
+                try {
+                  Thread.sleep(50)
+                  if (!closed.get()) {
+                    val okResponse = """["OK","$eventId",$accepted,"$message"]"""
+                    currentListener.onMessage(ws, okResponse)
+                  }
+                } catch (_: InterruptedException) {}
+              }
+            }
+            true
+          }
+
+      every { ws.close(any(), any()) } answers
+          {
+            closed.set(true)
+            val code = firstArg<Int>()
+            val reason = secondArg<String?>() ?: ""
+            val currentListener = wsListener
+            if (currentListener != null) {
+              executor.execute {
+                try {
+                  Thread.sleep(30)
+                  currentListener.onClosed(ws, code, reason)
+                } catch (_: InterruptedException) {}
+              }
+            }
+            true
+          }
+    }
+
+    fun setListener(l: WebSocketListener) {
+      wsListener = l
+    }
+
+    fun triggerOpen() {
+      executor.execute {
+        try {
+          Thread.sleep(30)
+          val mockResponse = mockk<Response>(relaxed = true)
+          wsListener?.onOpen(ws, mockResponse)
+        } catch (_: InterruptedException) {}
+      }
+    }
+  }
+
+  @Test
+  fun `publishEvent should return failure when no write-enabled relays`() = runBlocking {
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://relay1.example.com", write = false),
+            RelayConfig(url = "wss://relay2.example.com", write = false))
+
+    val signedEventJson = """{"id":"test123","pubkey":"abc","kind":39701,"content":"test"}"""
+
+    val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should mention no write-enabled relays",
+        result.exceptionOrNull()?.message?.contains("No write-enabled relays") == true)
+  }
+
+  @Test
+  fun `publishEvent should return failure when signedEventJson is invalid JSON`() = runBlocking {
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
+
+    val invalidJson = "not valid json"
+
+    val result = relayPool.publishEvent(relays, invalidJson, 5000L)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should mention invalid JSON",
+        result.exceptionOrNull()?.message?.contains("Invalid JSON") == true)
+  }
+
+  @Test
+  fun `publishEvent should return success when relay accepts`() = runBlocking {
+    val publishState = MockPublishWebSocketState(accepted = true)
+
+    every { okHttpClient.newWebSocket(any(), any()) } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          publishState.setListener(listener)
+          publishState.triggerOpen()
+          publishState.ws
+        }
+
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
+    val signedEventJson =
+        """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""
+
+    val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
+
+    assertTrue("Should return success", result.isSuccess)
+    val publishResult = result.getOrNull()
+    assertEquals("Event ID should match", "event123", publishResult?.eventId)
+    assertEquals(
+        "Should have 1 successful relay",
+        listOf("wss://relay.example.com"),
+        publishResult?.successfulRelays)
+    assertTrue("Should have no failed relays", publishResult?.failedRelays?.isEmpty() == true)
+  }
+
+  @Test
+  fun `publishEvent should return failure when all relays reject`() = runBlocking {
+    val publishState = MockPublishWebSocketState(accepted = false, message = "blocked: spam")
+
+    every { okHttpClient.newWebSocket(any(), any()) } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          publishState.setListener(listener)
+          publishState.triggerOpen()
+          publishState.ws
+        }
+
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
+    val signedEventJson =
+        """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""
+
+    val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
+
+    assertTrue("Should return failure when all relays reject", result.isFailure)
+    assertTrue(
+        "Error should mention failed to publish",
+        result.exceptionOrNull()?.message?.contains("Failed to publish") == true)
+  }
+
+  @Test
+  fun `publishEvent should filter only write-enabled relays`() = runBlocking {
+    val publishState = MockPublishWebSocketState(accepted = true)
+
+    every {
+      okHttpClient.newWebSocket(match { it.url.toString().contains("write-relay") }, any())
+    } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          publishState.setListener(listener)
+          publishState.triggerOpen()
+          publishState.ws
+        }
+
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://read-only-relay.example.com", write = false),
+            RelayConfig(url = "wss://write-relay.example.com", write = true))
+
+    val signedEventJson =
+        """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""
+
+    val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
+
+    assertTrue("Should return success", result.isSuccess)
+    val publishResult = result.getOrNull()
+    assertEquals(
+        "Should only have write-enabled relay in success list",
+        listOf("wss://write-relay.example.com"),
+        publishResult?.successfulRelays)
+  }
+
+  @Test
+  fun `publishEvent should handle mixed success and failure from multiple relays`() = runBlocking {
+    val acceptingState = MockPublishWebSocketState(accepted = true)
+    val rejectingState = MockPublishWebSocketState(accepted = false, message = "duplicate")
+
+    every {
+      okHttpClient.newWebSocket(match { it.url.toString().contains("accepting") }, any())
+    } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          acceptingState.setListener(listener)
+          acceptingState.triggerOpen()
+          acceptingState.ws
+        }
+
+    every {
+      okHttpClient.newWebSocket(match { it.url.toString().contains("rejecting") }, any())
+    } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          rejectingState.setListener(listener)
+          rejectingState.triggerOpen()
+          rejectingState.ws
+        }
+
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://accepting.example.com", write = true),
+            RelayConfig(url = "wss://rejecting.example.com", write = true))
+
+    val signedEventJson =
+        """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""
+
+    val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
+
+    assertTrue("Should return success when at least one relay accepts", result.isSuccess)
+    val publishResult = result.getOrNull()
+    assertEquals("Should have 1 successful relay", 1, publishResult?.successfulRelays?.size)
+    assertEquals("Should have 1 failed relay", 1, publishResult?.failedRelays?.size)
+    assertTrue(
+        "Successful relay should be accepting",
+        publishResult?.successfulRelays?.contains("wss://accepting.example.com") == true)
+    assertTrue(
+        "Failed relay should be rejecting",
+        publishResult?.failedRelays?.any { it.first == "wss://rejecting.example.com" } == true)
+  }
 }
