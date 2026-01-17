@@ -116,7 +116,6 @@ constructor(
           }
         }
 
-        // Set login success and update main state after relay list fetch completes
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
         _uiState.value =
             _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
