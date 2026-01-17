@@ -151,4 +151,61 @@ constructor(
       cachedRelays
     }
   }
+
+  /**
+   * Create an unsigned bookmark event
+   *
+   * @param hexPubkey Author's public key (hex-encoded)
+   * @param url URL to bookmark (without scheme)
+   * @param title Bookmark title
+   * @param categories List of categories (t-tags)
+   * @param comment Bookmark comment (content)
+   * @return Unsigned event ready for NIP-55 signing
+   */
+  override fun createBookmarkEvent(
+      hexPubkey: String,
+      url: String,
+      title: String,
+      categories: List<String>,
+      comment: String
+  ): io.github.omochice.pinosu.data.model.UnsignedNostrEvent {
+    val tags = mutableListOf<List<String>>()
+
+    tags.add(listOf("d", url))
+
+    if (title.isNotBlank()) {
+      tags.add(listOf("title", title))
+    }
+
+    categories
+        .filter { it.isNotBlank() }
+        .forEach { category -> tags.add(listOf("t", category.trim())) }
+
+    tags.add(listOf("r", "https://$url"))
+
+    return io.github.omochice.pinosu.data.model.UnsignedNostrEvent(
+        pubkey = hexPubkey,
+        createdAt = System.currentTimeMillis() / 1000,
+        kind = KIND_BOOKMARK_LIST,
+        tags = tags,
+        content = comment)
+  }
+
+  /**
+   * Publish a signed bookmark event to relays
+   *
+   * @param signedEventJson Signed event as JSON string
+   * @return Result containing PublishResult on success or error on failure
+   */
+  override suspend fun publishBookmark(
+      signedEventJson: String
+  ): Result<io.github.omochice.pinosu.data.relay.PublishResult> {
+    return try {
+      val relays = getRelaysForQuery()
+      relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
+    } catch (e: Exception) {
+      Log.e(TAG, "Error publishing bookmark", e)
+      Result.failure(e)
+    }
+  }
 }
