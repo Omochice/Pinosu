@@ -3,6 +3,8 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.data.relay.PublishResult
 import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
@@ -168,7 +170,7 @@ constructor(
       title: String,
       categories: List<String>,
       comment: String
-  ): io.github.omochice.pinosu.data.model.UnsignedNostrEvent {
+  ): UnsignedNostrEvent {
     val tags = mutableListOf<List<String>>()
 
     tags.add(listOf("d", url))
@@ -183,7 +185,7 @@ constructor(
 
     tags.add(listOf("r", "https://$url"))
 
-    return io.github.omochice.pinosu.data.model.UnsignedNostrEvent(
+    return UnsignedNostrEvent(
         pubkey = hexPubkey,
         createdAt = System.currentTimeMillis() / 1000,
         kind = KIND_BOOKMARK_LIST,
@@ -197,9 +199,7 @@ constructor(
    * @param signedEventJson Signed event as JSON string
    * @return Result containing PublishResult on success or error on failure
    */
-  override suspend fun publishBookmark(
-      signedEventJson: String
-  ): Result<io.github.omochice.pinosu.data.relay.PublishResult> {
+  override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = getRelaysForQuery()
       relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)

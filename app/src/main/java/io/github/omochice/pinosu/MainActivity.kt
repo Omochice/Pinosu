@@ -27,6 +27,7 @@ import io.github.omochice.pinosu.presentation.navigation.Bookmark
 import io.github.omochice.pinosu.presentation.navigation.License
 import io.github.omochice.pinosu.presentation.navigation.Login
 import io.github.omochice.pinosu.presentation.navigation.Main
+import io.github.omochice.pinosu.presentation.navigation.PostBookmark
 import io.github.omochice.pinosu.presentation.navigation.Route
 import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
@@ -37,9 +38,11 @@ import io.github.omochice.pinosu.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
+import io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -173,21 +176,16 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
-                    onAddBookmark = {
-                      navController.navigate(
-                          io.github.omochice.pinosu.presentation.navigation.PostBookmark)
-                    },
+                    onAddBookmark = { navController.navigate(PostBookmark) },
                     viewModel = bookmarkViewModel)
               }
 
-          composable<io.github.omochice.pinosu.presentation.navigation.PostBookmark>(
+          composable<PostBookmark>(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
               popExitTransition = { defaultPopExitTransition }) {
-                val postBookmarkViewModel:
-                    io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel =
-                    hiltViewModel()
+                val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
                 val postBookmarkUiState by
                     postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -204,7 +202,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                   }
                 }
 
-                io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen(
+                PostBookmarkScreen(
                     uiState = postBookmarkUiState,
                     onUrlChange = { postBookmarkViewModel.updateUrl(it) },
                     onTitleChange = { postBookmarkViewModel.updateTitle(it) },
