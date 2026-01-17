@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
@@ -137,7 +138,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     }
 
     val signedEventJson = data.getStringExtra("result")
-    android.util.Log.d(TAG, "Sign event response: $signedEventJson")
+    Log.d(TAG, "Sign event response: $signedEventJson")
 
     if (signedEventJson.isNullOrEmpty()) {
       return Result.failure(Nip55Error.InvalidResponse("Signed event result is null or empty"))
