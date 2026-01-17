@@ -173,7 +173,50 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
+                    onAddBookmark = {
+                      navController.navigate(
+                          io.github.omochice.pinosu.presentation.navigation.PostBookmark)
+                    },
                     viewModel = bookmarkViewModel)
+              }
+
+          composable<io.github.omochice.pinosu.presentation.navigation.PostBookmark>(
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                val postBookmarkViewModel:
+                    io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel =
+                    hiltViewModel()
+                val postBookmarkUiState by
+                    postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
+
+                val signEventLauncher =
+                    rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartActivityForResult()) { result ->
+                          postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
+                        }
+
+                LaunchedEffect(postBookmarkUiState.postSuccess) {
+                  if (postBookmarkUiState.postSuccess) {
+                    postBookmarkViewModel.resetPostSuccess()
+                    navController.navigateUp()
+                  }
+                }
+
+                io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen(
+                    uiState = postBookmarkUiState,
+                    onUrlChange = { postBookmarkViewModel.updateUrl(it) },
+                    onTitleChange = { postBookmarkViewModel.updateTitle(it) },
+                    onCategoriesChange = { postBookmarkViewModel.updateCategories(it) },
+                    onCommentChange = { postBookmarkViewModel.updateComment(it) },
+                    onPostClick = {
+                      postBookmarkViewModel.prepareSignEventIntent { intent ->
+                        intent?.let { signEventLauncher.launch(it) }
+                      }
+                    },
+                    onNavigateBack = { navController.navigateUp() },
+                    onDismissError = { postBookmarkViewModel.dismissError() })
               }
 
           composable<License>(
