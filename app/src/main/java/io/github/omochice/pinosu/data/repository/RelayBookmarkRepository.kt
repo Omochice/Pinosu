@@ -173,7 +173,15 @@ constructor(
   ): UnsignedNostrEvent {
     val tags = mutableListOf<List<String>>()
 
-    tags.add(listOf("d", url))
+    val rawUrl = url.trim()
+    val normalizedUrl =
+        when {
+          rawUrl.startsWith("https://", ignoreCase = true) -> rawUrl.substring("https://".length)
+          rawUrl.startsWith("http://", ignoreCase = true) -> rawUrl.substring("http://".length)
+          else -> rawUrl
+        }
+
+    tags.add(listOf("d", normalizedUrl))
 
     if (title.isNotBlank()) {
       tags.add(listOf("title", title))
@@ -183,7 +191,14 @@ constructor(
         .filter { it.isNotBlank() }
         .forEach { category -> tags.add(listOf("t", category.trim())) }
 
-    tags.add(listOf("r", "https://$url"))
+    val fullUrl =
+        if (rawUrl.startsWith("http://", ignoreCase = true) ||
+            rawUrl.startsWith("https://", ignoreCase = true)) {
+          rawUrl
+        } else {
+          "https://$normalizedUrl"
+        }
+    tags.add(listOf("r", fullUrl))
 
     return UnsignedNostrEvent(
         pubkey = hexPubkey,
