@@ -100,12 +100,68 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
     return "$prefix...$suffix"
   }
 
+  /**
+   * Create Intent for NIP-55 event signing request
+   *
+   * @param unsignedEventJson JSON string of the unsigned event
+   * @return Constructed Intent for signing
+   */
+  fun createSignEventIntent(unsignedEventJson: String): Intent {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:$unsignedEventJson"))
+    intent.`package` = NIP55_SIGNER_PACKAGE_NAME
+    intent.putExtra("type", TYPE_SIGN_EVENT)
+    intent.putExtra("returnType", RETURN_TYPE_EVENT)
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    return intent
+  }
+
+  /**
+   * Handle ActivityResult response from NIP-55 signer for sign event
+   *
+   * @param resultCode ActivityResult's resultCode (RESULT_OK or RESULT_CANCELED)
+   * @param data Intent data (containing signature)
+   * @return Success(SignedEventResponse) or Failure(Nip55Error)
+   */
+  fun handleSignEventResponse(resultCode: Int, data: Intent?): Result<SignedEventResponse> {
+    if (resultCode == Activity.RESULT_CANCELED) {
+      return Result.failure(Nip55Error.UserRejected)
+    }
+
+    if (data == null) {
+      return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
+    }
+
+    val rejected = data.getBooleanExtra("rejected", false)
+    if (rejected) {
+      return Result.failure(Nip55Error.UserRejected)
+    }
+
+    val signedEventJson = data.getStringExtra("result")
+    android.util.Log.d(TAG, "Sign event response: $signedEventJson")
+
+    if (signedEventJson.isNullOrEmpty()) {
+      return Result.failure(Nip55Error.InvalidResponse("Signed event result is null or empty"))
+    }
+
+    return Result.success(SignedEventResponse(signedEventJson))
+  }
+
   companion object {
+    private const val TAG = "Nip55SignerClient"
     const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
+    const val TYPE_SIGN_EVENT = "sign_event"
+    const val RETURN_TYPE_EVENT = "event"
   }
 }
+
+/**
+ * Response from NIP-55 signer for sign event request
+ *
+ * @property signedEventJson Signed event as JSON string (contains id and sig)
+ */
+data class SignedEventResponse(val signedEventJson: String)
 
 /**
  * Response from NIP-55 signer
