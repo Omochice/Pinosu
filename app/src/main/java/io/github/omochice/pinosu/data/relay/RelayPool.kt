@@ -109,8 +109,6 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
       signedEventJson: String,
       timeoutMs: Long
   ): Result<PublishResult> {
-    Log.d(TAG, "publishEvent called with: $signedEventJson")
-
     val writeRelays = relays.filter { it.write }
     if (writeRelays.isEmpty()) {
       return Result.failure(Exception("No write-enabled relays available"))
@@ -120,10 +118,14 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
         try {
           JSONObject(signedEventJson)
         } catch (e: Exception) {
-          Log.e(TAG, "Failed to parse signedEventJson: $signedEventJson", e)
+          Log.e(TAG, "Failed to parse signedEventJson", e)
           return Result.failure(Exception("Invalid JSON: ${e.message}"))
         }
-    val eventId = eventJson.getString("id")
+    val eventId = eventJson.optString("id")
+    if (eventId.isBlank()) {
+      return Result.failure(Exception("Missing event id"))
+    }
+    Log.d(TAG, "publishEvent called for eventId=$eventId")
 
     return coroutineScope {
       val results =
