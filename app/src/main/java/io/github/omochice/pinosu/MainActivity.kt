@@ -195,6 +195,12 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                           postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
                         }
 
+                LaunchedEffect(mainUiState.userPubkey) {
+                  if (mainUiState.userPubkey == null) {
+                    navController.navigate(Login) { popUpTo<PostBookmark> { inclusive = true } }
+                  }
+                }
+
                 LaunchedEffect(postBookmarkUiState.postSuccess) {
                   if (postBookmarkUiState.postSuccess) {
                     postBookmarkViewModel.resetPostSuccess()
