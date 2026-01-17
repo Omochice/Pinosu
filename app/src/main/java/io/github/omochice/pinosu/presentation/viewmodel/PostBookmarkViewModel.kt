@@ -85,46 +85,6 @@ constructor(
   }
 
   /**
-   * Create sign event Intent for NIP-55 signer
-   *
-   * @return Intent for NIP-55 signing or null if event creation failed
-   */
-  fun createSignEventIntent(): Intent? {
-    val state = _uiState.value
-
-    if (state.url.isBlank()) {
-      _uiState.update { it.copy(errorMessage = "URLを入力してください") }
-      return null
-    }
-
-    _uiState.update { it.copy(isSubmitting = true, errorMessage = null) }
-
-    var intent: Intent? = null
-    viewModelScope.launch {
-      val categories = state.categories.split(",").map { it.trim() }.filter { it.isNotBlank() }
-
-      postBookmarkUseCase
-          .createUnsignedEvent(
-              url = state.url,
-              title = state.title,
-              categories = categories,
-              comment = state.comment)
-          .onSuccess { unsignedEvent ->
-            val eventJson = unsignedEvent.toJson()
-            _uiState.update { it.copy(unsignedEventJson = eventJson) }
-            intent = nip55SignerClient.createSignEventIntent(eventJson)
-          }
-          .onFailure { error ->
-            _uiState.update {
-              it.copy(isSubmitting = false, errorMessage = error.message ?: "イベント作成に失敗しました")
-            }
-          }
-    }
-
-    return intent
-  }
-
-  /**
    * Prepare sign event Intent synchronously (for launcher)
    *
    * @param onReady Callback with Intent when ready, or null on failure
