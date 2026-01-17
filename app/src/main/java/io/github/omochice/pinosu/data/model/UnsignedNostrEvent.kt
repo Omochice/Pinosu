@@ -32,16 +32,7 @@ data class UnsignedNostrEvent(
     json.put("created_at", createdAt)
     json.put("kind", kind)
     json.put("content", content)
-
-    val tagsArray = JSONArray()
-    for (tag in tags) {
-      val tagArray = JSONArray()
-      for (element in tag) {
-        tagArray.put(element)
-      }
-      tagsArray.put(tagArray)
-    }
-    json.put("tags", tagsArray)
+    json.put("tags", JSONArray(tags.map { JSONArray(it) }))
 
     return json.toString()
   }
