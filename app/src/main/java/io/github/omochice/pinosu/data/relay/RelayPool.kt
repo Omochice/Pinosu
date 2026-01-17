@@ -192,6 +192,9 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
                 }
               } catch (e: Exception) {
                 Log.e(TAG, "Error parsing OK response from $relayUrl: $text", e)
+                if (continuation.isActive) {
+                  continuation.resume(Pair(relayUrl, "Parse error: ${e.message}"))
+                }
               }
             }
 
