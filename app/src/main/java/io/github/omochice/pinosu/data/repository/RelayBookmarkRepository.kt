@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
@@ -134,6 +135,75 @@ constructor(
     }
   }
 
+  override suspend fun createBookmarkEvent(
+      pubkey: String,
+      url: String,
+      title: String?,
+      categories: List<String>,
+      comment: String
+  ): Result<UnsignedNostrEvent> {
+    return try {
+      val normalizedUrl = normalizeUrl(url)
+      val fullUrl =
+          if (normalizedUrl.startsWith("http://") || normalizedUrl.startsWith("https://")) {
+            normalizedUrl
+          } else {
+            "https://$normalizedUrl"
+          }
+
+      val tags = mutableListOf<List<String>>()
+      tags.add(listOf("d", normalizedUrl))
+      tags.add(listOf("r", fullUrl))
+
+      if (!title.isNullOrBlank()) {
+        tags.add(listOf("title", title))
+      }
+
+      categories.forEach { category ->
+        if (category.isNotBlank()) {
+          tags.add(listOf("t", category))
+        }
+      }
+
+      val event =
+          UnsignedNostrEvent(
+              pubkey = pubkey,
+              createdAt = System.currentTimeMillis() / 1000,
+              kind = KIND_BOOKMARK_LIST,
+              tags = tags,
+              content = comment)
+
+      Result.success(event)
+    } catch (e: Exception) {
+      Log.e(TAG, "Error creating bookmark event", e)
+      Result.failure(e)
+    }
+  }
+
+  override suspend fun publishBookmark(signedEventJson: String): Result<Unit> {
+    return try {
+      val relays = getRelaysForPublish()
+      if (relays.isEmpty()) {
+        return Result.failure(Exception("No write-enabled relays available"))
+      }
+
+      relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
+    } catch (e: Exception) {
+      Log.e(TAG, "Error publishing bookmark", e)
+      Result.failure(e)
+    }
+  }
+
+  /**
+   * Normalize URL by removing scheme prefix
+   *
+   * @param url URL to normalize
+   * @return URL without http:// or https:// scheme
+   */
+  private fun normalizeUrl(url: String): String {
+    return url.replace(Regex("^https?://", RegexOption.IGNORE_CASE), "")
+  }
+
   /**
    * Get relay list for querying bookmarks
    *
@@ -149,6 +219,26 @@ constructor(
     } else {
       Log.d(TAG, "Using ${cachedRelays.size} cached relays")
       cachedRelays
+    }
+  }
+
+  /**
+   * Get relay list for publishing events
+   *
+   * Returns write-enabled relays from cached relay list
+   *
+   * @return List of write-enabled relay configurations
+   */
+  private suspend fun getRelaysForPublish(): List<RelayConfig> {
+    val cachedRelays = localAuthDataSource.getRelayList()
+    val writeRelays = cachedRelays?.filter { it.write } ?: emptyList()
+
+    return if (writeRelays.isEmpty()) {
+      Log.d(TAG, "No write-enabled relays, using default relay")
+      listOf(RelayConfig(url = DEFAULT_RELAY_URL, write = true))
+    } else {
+      Log.d(TAG, "Using ${writeRelays.size} write-enabled relays")
+      writeRelays
     }
   }
 }

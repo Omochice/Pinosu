@@ -44,6 +44,23 @@ interface RelayPool {
       filter: String,
       timeoutMs: Long
   ): List<NostrEvent>
+
+  /**
+   * Publish a signed event to multiple write-enabled relays
+   *
+   * Sends the event to all relays with write permission in parallel and waits for OK responses.
+   *
+   * @param relays List of relay configurations to publish to (only write-enabled relays will be
+   *   used)
+   * @param signedEventJson Complete signed event JSON string
+   * @param timeoutMs Timeout in milliseconds for each relay
+   * @return Success if published to at least one relay, Failure otherwise
+   */
+  suspend fun publishEvent(
+      relays: List<RelayConfig>,
+      signedEventJson: String,
+      timeoutMs: Long = 5000
+  ): Result<Unit>
 }
 
 /**
@@ -143,6 +160,102 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
     awaitClose { webSocket.close(1000, "Flow cancelled") }
   }
+
+  override suspend fun publishEvent(
+      relays: List<RelayConfig>,
+      signedEventJson: String,
+      timeoutMs: Long
+  ): Result<Unit> {
+    val writeRelays = relays.filter { it.write }
+    if (writeRelays.isEmpty()) {
+      return Result.failure(Exception("No write-enabled relays configured"))
+    }
+
+    return coroutineScope {
+      val results =
+          writeRelays.map { relay ->
+            async {
+              try {
+                withTimeoutOrNull(timeoutMs) { publishToRelay(relay.url, signedEventJson) }
+                    ?: Result.failure(Exception("Timeout publishing to ${relay.url}"))
+              } catch (e: Exception) {
+                Log.w(TAG, "Failed to publish to relay ${relay.url}: ${e.message}")
+                Result.failure(e)
+              }
+            }
+          }
+
+      val allResults = results.awaitAll()
+      val successCount = allResults.count { it.isSuccess }
+
+      if (successCount > 0) {
+        Result.success(Unit)
+      } else {
+        Result.failure(
+            Exception(
+                "Failed to publish to all relays: ${allResults.mapNotNull { it.exceptionOrNull()?.message }.joinToString()}"))
+      }
+    }
+  }
+
+  /**
+   * Publish event to a single relay and wait for OK response
+   *
+   * @param relayUrl WebSocket URL of the relay
+   * @param signedEventJson Complete signed event JSON
+   * @return Success if relay accepted the event, Failure otherwise
+   */
+  private suspend fun publishToRelay(relayUrl: String, signedEventJson: String): Result<Unit> =
+      kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+        val request = Request.Builder().url(relayUrl).build()
+
+        val listener =
+            object : WebSocketListener() {
+              override fun onOpen(webSocket: WebSocket, response: Response) {
+                val eventMessage = """["EVENT",$signedEventJson]"""
+                webSocket.send(eventMessage)
+              }
+
+              override fun onMessage(webSocket: WebSocket, text: String) {
+                try {
+                  val jsonArray = JSONArray(text)
+                  val messageType = jsonArray.getString(0)
+                  when (messageType) {
+                    "OK" -> {
+                      val accepted = jsonArray.getBoolean(2)
+                      if (accepted) {
+                        continuation.resumeWith(Result.success(Result.success(Unit)))
+                      } else {
+                        val errorMessage = jsonArray.optString(3, "Event rejected by relay")
+                        continuation.resumeWith(
+                            Result.success(Result.failure(Exception(errorMessage))))
+                      }
+                      webSocket.close(1000, "OK received")
+                    }
+                  }
+                } catch (e: Exception) {
+                  Log.e(TAG, "Error parsing OK message from $relayUrl: $text", e)
+                  continuation.resumeWith(Result.success(Result.failure(e)))
+                  webSocket.close(1000, "Parse error")
+                }
+              }
+
+              override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}")
+                continuation.resumeWith(Result.success(Result.failure(t)))
+              }
+
+              override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                if (continuation.isActive) {
+                  continuation.resumeWith(
+                      Result.success(Result.failure(Exception("Connection closed: $reason"))))
+                }
+              }
+            }
+
+        val webSocket = okHttpClient.newWebSocket(request, listener)
+        continuation.invokeOnCancellation { webSocket.close(1000, "Cancelled") }
+      }
 
   /**
    * Parse JSON to NostrEvent
