@@ -20,11 +20,13 @@ graph TB
         UC_Login[LoginUseCase<br/>Interface]
         UC_Logout[LogoutUseCase<br/>Interface]
         UC_GetState[GetLoginStateUseCase<br/>Interface]
+        UC_PostBookmark[PostBookmarkUseCase<br/>Interface]
         Model[User, AuthEvent<br/>ErrorTypes]
 
         UC_Login -.implements.- UC_Login_Impl[Nip55LoginUseCase]
         UC_Logout -.implements.- UC_Logout_Impl[Nip55LogoutUseCase]
         UC_GetState -.implements.- UC_GetState_Impl[Nip55GetLoginStateUseCase]
+        UC_PostBookmark -.implements.- UC_PostBookmark_Impl[PostBookmarkUseCaseImpl]
     end
 
     subgraph "Data Layer"
@@ -32,10 +34,13 @@ graph TB
         RepoImpl[Nip55AuthRepository]
         LocalDS[LocalAuthDataSource<br/>EncryptedSharedPreferences]
         Nip55Client[Nip55SignerClient<br/>NIP-55]
+        Nip65Fetcher[Nip65RelayListFetcher<br/>Kind 10002]
+        RelayPool[RelayPool<br/>WebSocket]
 
         Repo -.implements.- RepoImpl
         RepoImpl --> LocalDS
         RepoImpl --> Nip55Client
+        Nip65Fetcher --> RelayPool
     end
 
     subgraph "External Dependencies"
@@ -76,8 +81,8 @@ graph TB
     classDef di fill:#fce4ec,stroke:#880e4f
 
     class UI,VM presentation
-    class UC_Login,UC_Logout,UC_GetState,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,Model domain
-    class Repo,RepoImpl,LocalDS,Nip55Client data
+    class UC_Login,UC_Logout,UC_GetState,UC_PostBookmark,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,UC_PostBookmark_Impl,Model domain
+    class Repo,RepoImpl,LocalDS,Nip55Client,Nip65Fetcher,RelayPool data
     class Nip55Signer,Keystore external
     class Hilt,RepoModule,UCModule di
 ```
@@ -109,16 +114,17 @@ graph TB
 - `repository/`: Repository implementations (Auth, Bookmark)
 - `local/`: EncryptedSharedPreferences data sources
 - `nip55/`: NIP-55 signer client
-- `relay/`: WebSocket relay client for Nostr events
+- `nip65/`: NIP-65 relay list fetcher (Nip65RelayListFetcher, Nip65EventParser)
+- `relay/`: WebSocket relay client for Nostr events (RelayPool, PublishResult)
 - `metadata/`: URL metadata fetching (Open Graph)
-- `model/`: Data transfer objects (NostrEvent)
+- `model/`: Data transfer objects (NostrEvent, UnsignedNostrEvent)
 - `util/`: Utilities (Bech32 encoding via Quartz)
 
 ### Presentation Layer (`presentation/`)
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/`
 **Purpose**: ViewModels and UI state management
-**Example**: `viewmodel/LoginViewModel.kt` with `LoginUiState`, `MainUiState`
+**Example**: `viewmodel/LoginViewModel.kt` with `LoginUiState`, `viewmodel/PostBookmarkViewModel.kt` with `PostBookmarkUiState`
 
 **Pattern**: MVVM with StateFlow, Hilt-injected ViewModels
 
@@ -126,7 +132,7 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/ui/`
 **Purpose**: Jetpack Compose screens and components
-**Example**: `LoginScreen.kt`, `MainScreen.kt`, `BookmarkScreen.kt`
+**Example**: `LoginScreen.kt`, `MainScreen.kt`, `BookmarkScreen.kt`, `PostBookmarkScreen.kt`
 
 **Pattern**: Composable functions observing ViewModel state
 
@@ -160,18 +166,19 @@ graph TB
 io.github.omochice.pinosu/
 ├── domain/          // Core business logic
 │   ├── model/       // Entities and value objects (User, Bookmark, AuthEvent)
-│   └── usecase/     // Business use cases (Login, Logout, GetBookmarkList)
+│   └── usecase/     // Business use cases (Login, Logout, GetBookmarkList, PostBookmark)
 ├── data/            // Data access implementations
 │   ├── repository/  // Repository implementations (Auth, Bookmark)
 │   ├── local/       // Local storage (EncryptedSharedPreferences)
 │   ├── nip55/       // NIP-55 signer client
-│   ├── relay/       // WebSocket relay client
+│   ├── nip65/       // NIP-65 relay list fetcher
+│   ├── relay/       // WebSocket relay client, PublishResult
 │   ├── metadata/    // URL metadata fetcher (Open Graph)
-│   ├── model/       // Data transfer objects (NostrEvent)
+│   ├── model/       // Data transfer objects (NostrEvent, UnsignedNostrEvent)
 │   └── util/        // Utilities (Bech32)
 ├── presentation/    // UI layer
-│   ├── viewmodel/   // State management (Login, Bookmark ViewModels)
-│   ├── ui/          // Compose screens (Login, Main, Bookmark)
+│   ├── viewmodel/   // State management (Login, Bookmark, PostBookmark ViewModels)
+│   ├── ui/          // Compose screens (Login, Main, Bookmark, PostBookmark)
 │   │   ├── component/   // Reusable dialogs (ErrorDialog, UrlSelectionDialog)
 │   │   └── drawer/      // Navigation drawer UI
 │   └── navigation/  // Navigation graphs

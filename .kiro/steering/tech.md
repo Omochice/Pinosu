@@ -30,9 +30,10 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 - **Min SDK**: 26
 - **Target SDK**: 36
-- **Kotlin**: 2.1.0
-- **Compose BOM**: 2025.12.00
+- **Kotlin**: 2.3.0
+- **Compose BOM**: 2026.01.00
 - **Gradle Plugin**: 8.13.2
+- **Hilt**: 2.58 (requires metadata compatibility workaround for Kotlin 2.3.0)
 
 ### Architecture
 
@@ -48,17 +49,18 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Nostr Integration
 
-- **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.03.0)
+- **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.05.1)
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
+- **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
-- **WebSocket Client**: OkHttp 4.12.0 for relay connections
-- **Event Types**: Kind 39701 (bookmark lists)
+- **WebSocket Client**: OkHttp for relay connections
+- **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata)
 
 ### Network & HTTP
 
-- **OkHttp**: 4.12.0 with Hilt singleton injection
+- **OkHttp**: 5.3.2 with Hilt singleton injection
 - **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
-- **HTML Parsing**: Jsoup 1.18.1 for Open Graph metadata extraction
+- **HTML Parsing**: Jsoup 1.22.1 for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
 
 ### Testing
