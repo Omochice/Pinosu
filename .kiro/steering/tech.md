@@ -53,7 +53,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
-- **WebSocket Client**: OkHttp 5.3.2 for relay connections
+- **WebSocket Client**: OkHttp for relay connections
 - **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata)
 
 ### Network & HTTP
