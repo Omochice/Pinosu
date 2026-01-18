@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
@@ -180,19 +178,18 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
             override fun onMessage(webSocket: WebSocket, text: String) {
               try {
-                val jsonArray = Json.parseToJsonElement(text).jsonArray
-                val messageType = jsonArray[0].jsonPrimitive.content
-                if (messageType == "OK") {
-                  val accepted = jsonArray[2].jsonPrimitive.content.toBoolean()
-                  val message = if (jsonArray.size > 3) jsonArray[3].jsonPrimitive.content else ""
-                  webSocket.close(1000, "OK received")
-                  if (continuation.isActive) {
-                    if (accepted) {
-                      continuation.resume(Pair(relayUrl, "OK"))
-                    } else {
-                      continuation.resume(Pair(relayUrl, message.ifEmpty { "Rejected" }))
+                when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
+                  is NostrRelayMessage.Ok -> {
+                    webSocket.close(1000, "OK received")
+                    if (continuation.isActive) {
+                      if (message.accepted) {
+                        continuation.resume(Pair(relayUrl, "OK"))
+                      } else {
+                        continuation.resume(Pair(relayUrl, message.message.ifEmpty { "Rejected" }))
+                      }
                     }
                   }
+                  else -> {}
                 }
               } catch (e: Exception) {
                 Log.e(TAG, "Error parsing OK response from $relayUrl: $text", e)
@@ -242,20 +239,11 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
           override fun onMessage(webSocket: WebSocket, text: String) {
             try {
-              val jsonArray = Json.parseToJsonElement(text).jsonArray
-              val messageType = jsonArray[0].jsonPrimitive.content
-              when (messageType) {
-                "EVENT" -> {
-                  val eventJsonElement = jsonArray[2]
-                  val event = json.decodeFromJsonElement<NostrEvent>(eventJsonElement)
-                  trySend(event)
-                }
-                "EOSE" -> {
-                  webSocket.close(1000, "EOSE received")
-                }
-                "CLOSED" -> {
-                  close()
-                }
+              when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
+                is NostrRelayMessage.Event -> trySend(message.event)
+                is NostrRelayMessage.Eose -> webSocket.close(1000, "EOSE received")
+                is NostrRelayMessage.Closed -> close()
+                else -> {}
               }
             } catch (e: Exception) {
               Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
