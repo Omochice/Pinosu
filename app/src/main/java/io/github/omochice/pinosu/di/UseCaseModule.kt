@@ -35,5 +35,10 @@ abstract class UseCaseModule {
   abstract fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
 
   @Binds
+  abstract fun bindPostBookmarkUseCase(
+      impl: io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
+  ): io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
+
+  @Binds
   abstract fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
 }
