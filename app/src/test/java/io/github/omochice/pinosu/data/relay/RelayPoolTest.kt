@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import java.util.concurrent.Executors
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -319,7 +320,7 @@ class RelayPoolTest {
             val currentListener = wsListener
 
             if (currentListener != null && msg.startsWith("[\"EVENT\"")) {
-              val jsonArray = kotlinx.serialization.json.Json.parseToJsonElement(msg).jsonArray
+              val jsonArray = Json.parseToJsonElement(msg).jsonArray
               val eventId = jsonArray[1].jsonObject["id"]?.jsonPrimitive?.content ?: ""
 
               executor.execute {
