@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
 
 /**
@@ -37,10 +36,7 @@ import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
  * @param onNavigateBack Callback when navigation back is requested
  */
 @Composable
-fun PostBookmarkScreen(
-    viewModel: PostBookmarkViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit = {}
-) {
+fun PostBookmarkScreen(viewModel: PostBookmarkViewModel, onNavigateBack: () -> Unit = {}) {
   val uiState by viewModel.uiState.collectAsState()
 
   val nip55Launcher =

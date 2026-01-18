@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -185,6 +185,10 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
               popExitTransition = { defaultPopExitTransition }) {
+                val postBookmarkViewModel:
+                    io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel =
+                    hiltViewModel()
+
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
                     navController.navigate(Login) {
@@ -196,6 +200,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                 }
 
                 io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen(
+                    viewModel = postBookmarkViewModel,
                     onNavigateBack = { navController.navigateUp() })
               }
 
