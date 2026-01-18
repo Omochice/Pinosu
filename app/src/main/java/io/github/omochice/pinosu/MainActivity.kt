@@ -27,6 +27,7 @@ import io.github.omochice.pinosu.presentation.navigation.Bookmark
 import io.github.omochice.pinosu.presentation.navigation.License
 import io.github.omochice.pinosu.presentation.navigation.Login
 import io.github.omochice.pinosu.presentation.navigation.Main
+import io.github.omochice.pinosu.presentation.navigation.PostBookmark
 import io.github.omochice.pinosu.presentation.navigation.Route
 import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
@@ -37,9 +38,11 @@ import io.github.omochice.pinosu.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
+import io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -173,7 +176,51 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
+                    onAddBookmark = { navController.navigate(PostBookmark) },
                     viewModel = bookmarkViewModel)
+              }
+
+          composable<PostBookmark>(
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
+                val postBookmarkUiState by
+                    postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
+
+                val signEventLauncher =
+                    rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartActivityForResult()) { result ->
+                          postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
+                        }
+
+                LaunchedEffect(mainUiState.userPubkey) {
+                  if (mainUiState.userPubkey == null) {
+                    navController.navigate(Login) { popUpTo<PostBookmark> { inclusive = true } }
+                  }
+                }
+
+                LaunchedEffect(postBookmarkUiState.postSuccess) {
+                  if (postBookmarkUiState.postSuccess) {
+                    postBookmarkViewModel.resetPostSuccess()
+                    navController.navigateUp()
+                  }
+                }
+
+                PostBookmarkScreen(
+                    uiState = postBookmarkUiState,
+                    onUrlChange = { postBookmarkViewModel.updateUrl(it) },
+                    onTitleChange = { postBookmarkViewModel.updateTitle(it) },
+                    onCategoriesChange = { postBookmarkViewModel.updateCategories(it) },
+                    onCommentChange = { postBookmarkViewModel.updateComment(it) },
+                    onPostClick = {
+                      postBookmarkViewModel.prepareSignEventIntent { intent ->
+                        intent?.let { signEventLauncher.launch(it) }
+                      }
+                    },
+                    onNavigateBack = { navController.navigateUp() },
+                    onDismissError = { postBookmarkViewModel.dismissError() })
               }
 
           composable<License>(

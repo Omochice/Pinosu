@@ -3,6 +3,8 @@ package io.github.omochice.pinosu.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.data.relay.PublishResult
 import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.util.Bech32
@@ -149,6 +151,76 @@ constructor(
     } else {
       Log.d(TAG, "Using ${cachedRelays.size} cached relays")
       cachedRelays
+    }
+  }
+
+  /**
+   * Create an unsigned bookmark event
+   *
+   * @param hexPubkey Author's public key (hex-encoded)
+   * @param url URL to bookmark (without scheme)
+   * @param title Bookmark title
+   * @param categories List of categories (t-tags)
+   * @param comment Bookmark comment (content)
+   * @return Unsigned event ready for NIP-55 signing
+   */
+  override fun createBookmarkEvent(
+      hexPubkey: String,
+      url: String,
+      title: String,
+      categories: List<String>,
+      comment: String
+  ): UnsignedNostrEvent {
+    val tags = mutableListOf<List<String>>()
+
+    val rawUrl = url.trim()
+    val normalizedUrl =
+        when {
+          rawUrl.startsWith("https://", ignoreCase = true) -> rawUrl.substring("https://".length)
+          rawUrl.startsWith("http://", ignoreCase = true) -> rawUrl.substring("http://".length)
+          else -> rawUrl
+        }
+
+    tags.add(listOf("d", normalizedUrl))
+
+    if (title.isNotBlank()) {
+      tags.add(listOf("title", title))
+    }
+
+    categories
+        .filter { it.isNotBlank() }
+        .forEach { category -> tags.add(listOf("t", category.trim())) }
+
+    val fullUrl =
+        if (rawUrl.startsWith("http://", ignoreCase = true) ||
+            rawUrl.startsWith("https://", ignoreCase = true)) {
+          rawUrl
+        } else {
+          "https://$normalizedUrl"
+        }
+    tags.add(listOf("r", fullUrl))
+
+    return UnsignedNostrEvent(
+        pubkey = hexPubkey,
+        createdAt = System.currentTimeMillis() / 1000,
+        kind = KIND_BOOKMARK_LIST,
+        tags = tags,
+        content = comment)
+  }
+
+  /**
+   * Publish a signed bookmark event to relays
+   *
+   * @param signedEventJson Signed event as JSON string
+   * @return Result containing PublishResult on success or error on failure
+   */
+  override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
+    return try {
+      val relays = getRelaysForQuery()
+      relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
+    } catch (e: Exception) {
+      Log.e(TAG, "Error publishing bookmark", e)
+      Result.failure(e)
     }
   }
 }

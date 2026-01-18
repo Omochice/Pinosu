@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +70,7 @@ fun BookmarkScreen(
     onLoad: () -> Unit,
     onOpenDrawer: () -> Unit = {},
     onTabSelected: (BookmarkFilterMode) -> Unit = {},
+    onAddBookmark: () -> Unit = {},
     viewModel: BookmarkViewModel? = null,
 ) {
   LaunchedEffect(Unit) { onLoad() }
@@ -96,6 +99,11 @@ fun BookmarkScreen(
                     onClick = { onTabSelected(BookmarkFilterMode.Global) },
                     text = { Text(stringResource(R.string.tab_global)) })
               }
+        }
+      },
+      floatingActionButton = {
+        FloatingActionButton(onClick = onAddBookmark) {
+          Icon(imageVector = Icons.Filled.Add, contentDescription = "Add bookmark")
         }
       }) { paddingValues ->
         PullToRefreshBox(

@@ -14,6 +14,8 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
+import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
+import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 
 /**
  * Hilt module for UseCase dependency injection
@@ -36,4 +38,6 @@ abstract class UseCaseModule {
 
   @Binds
   abstract fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
+
+  @Binds abstract fun bindPostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase
 }
