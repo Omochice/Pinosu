@@ -173,7 +173,30 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
+                    onNavigateToPostBookmark = {
+                      navController.navigate(
+                          io.github.omochice.pinosu.presentation.navigation.PostBookmark)
+                    },
                     viewModel = bookmarkViewModel)
+              }
+
+          composable<io.github.omochice.pinosu.presentation.navigation.PostBookmark>(
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) {
+                LaunchedEffect(mainUiState.userPubkey) {
+                  if (mainUiState.userPubkey == null) {
+                    navController.navigate(Login) {
+                      popUpTo<io.github.omochice.pinosu.presentation.navigation.PostBookmark> {
+                        inclusive = true
+                      }
+                    }
+                  }
+                }
+
+                io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen(
+                    onNavigateBack = { navController.navigateUp() })
               }
 
           composable<License>(

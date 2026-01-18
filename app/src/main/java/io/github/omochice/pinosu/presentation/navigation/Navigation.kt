@@ -13,6 +13,9 @@ sealed interface Route
 /** Bookmark list screen route */
 @Serializable object Bookmark : Route
 
+/** Post bookmark screen route */
+@Serializable object PostBookmark : Route
+
 /** License screen route */
 @Serializable object License : Route
 
