@@ -15,13 +15,16 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * Interface for managing multiple relay connections
@@ -71,9 +74,9 @@ interface RelayPool {
  */
 @Singleton
 class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) : RelayPool {
-
   companion object {
     private const val TAG = "RelayPool"
+    private val json = Json { ignoreUnknownKeys = true }
   }
 
   override suspend fun subscribeWithTimeout(
@@ -114,14 +117,13 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
       return Result.failure(Exception("No write-enabled relays available"))
     }
 
-    val eventJson =
+    val eventId =
         try {
-          JSONObject(signedEventJson)
+          Json.parseToJsonElement(signedEventJson).jsonObject["id"]?.jsonPrimitive?.content ?: ""
         } catch (e: Exception) {
           Log.e(TAG, "Failed to parse signedEventJson", e)
           return Result.failure(Exception("Invalid JSON: ${e.message}"))
         }
-    val eventId = eventJson.optString("id")
     if (eventId.isBlank()) {
       return Result.failure(Exception("Missing event id"))
     }
@@ -178,11 +180,11 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
             override fun onMessage(webSocket: WebSocket, text: String) {
               try {
-                val jsonArray = JSONArray(text)
-                val messageType = jsonArray.getString(0)
+                val jsonArray = Json.parseToJsonElement(text).jsonArray
+                val messageType = jsonArray[0].jsonPrimitive.content
                 if (messageType == "OK") {
-                  val accepted = jsonArray.getBoolean(2)
-                  val message = if (jsonArray.length() > 3) jsonArray.getString(3) else ""
+                  val accepted = jsonArray[2].jsonPrimitive.content.toBoolean()
+                  val message = if (jsonArray.size > 3) jsonArray[3].jsonPrimitive.content else ""
                   webSocket.close(1000, "OK received")
                   if (continuation.isActive) {
                     if (accepted) {
@@ -240,15 +242,13 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
           override fun onMessage(webSocket: WebSocket, text: String) {
             try {
-              val jsonArray = JSONArray(text)
-              val messageType = jsonArray.getString(0)
+              val jsonArray = Json.parseToJsonElement(text).jsonArray
+              val messageType = jsonArray[0].jsonPrimitive.content
               when (messageType) {
                 "EVENT" -> {
-                  val eventJson = jsonArray.getJSONObject(2)
-                  val event = parseEvent(eventJson)
-                  if (event != null) {
-                    trySend(event)
-                  }
+                  val eventJsonElement = jsonArray[2]
+                  val event = json.decodeFromJsonElement<NostrEvent>(eventJsonElement)
+                  trySend(event)
                 }
                 "EOSE" -> {
                   webSocket.close(1000, "EOSE received")
@@ -276,37 +276,5 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     val webSocket = okHttpClient.newWebSocket(request, listener)
 
     awaitClose { webSocket.close(1000, "Flow cancelled") }
-  }
-
-  /**
-   * Parse JSON to NostrEvent
-   *
-   * @param json JSONObject of the event
-   * @return Parsed NostrEvent or null
-   */
-  private fun parseEvent(json: JSONObject): NostrEvent? {
-    return try {
-      val tagsArray = json.getJSONArray("tags")
-      val tags = mutableListOf<List<String>>()
-      for (i in 0 until tagsArray.length()) {
-        val tagArray = tagsArray.getJSONArray(i)
-        val tag = mutableListOf<String>()
-        for (j in 0 until tagArray.length()) {
-          tag.add(tagArray.getString(j))
-        }
-        tags.add(tag)
-      }
-
-      NostrEvent(
-          id = json.getString("id"),
-          pubkey = json.getString("pubkey"),
-          createdAt = json.getLong("created_at"),
-          kind = json.getInt("kind"),
-          tags = tags,
-          content = json.getString("content"))
-    } catch (e: Exception) {
-      Log.e(TAG, "Error parsing event", e)
-      null
-    }
   }
 }
