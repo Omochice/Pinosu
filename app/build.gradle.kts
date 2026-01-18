@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.android.application)
+  alias(libs.plugins.detekt)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.serialization)
@@ -85,6 +86,8 @@ dependencies {
   // https://github.com/google/dagger/issues/5001
   annotationProcessor("org.jetbrains.kotlin:kotlin-metadata-jvm:2.3.0")
 
+  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
+
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
   testImplementation(libs.robolectric)
@@ -116,5 +119,21 @@ kover {
       }
     }
     variant("debug") { xml { onCheck = true } }
+  }
+}
+
+detekt {
+  buildUponDefaultConfig = true
+  allRules = false
+  config.setFrom("$rootDir/config/detekt/detekt.yaml")
+  baseline = file("detekt-baseline.xml")
+  basePath = rootDir.absolutePath
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+  reports {
+    html.required.set(true)
+    xml.required.set(true)
+    sarif.required.set(true)
   }
 }
