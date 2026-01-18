@@ -409,6 +409,7 @@
     <ID>FunctionSignature:Nip55AuthRepositoryTest.kt$Nip55AuthRepositoryTest$@Test fun `processNip55Response when Nip55Signer not installed should return Nip55SignerNotInstalledError`()</ID>
     <ID>FunctionSignature:Nip55AuthRepositoryTest.kt$Nip55AuthRepositoryTest$@Test fun `processNip55Response when Nip55Signer success but local storage fails should return UnknownError`()</ID>
     <ID>FunctionSignature:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$private fun createNip65Event( pubkey: String, tags: List&lt;List&lt;String&gt;&gt;, createdAt: Long = 1234567890L ): NostrEvent</ID>
+    <ID>FunctionSignature:NostrRelayMessage.kt$NostrRelayMessageSerializer$private fun deserializeEvent( array: JsonArray, jsonDecoder: JsonDecoder, ): NostrRelayMessage.Event</ID>
     <ID>FunctionSignature:PresentationDomainIntegrationTest.kt$PresentationDomainIntegrationTest$@Test fun `login flow - when NIP-55 signer response success - should update UI state and navigate to main`()</ID>
     <ID>FunctionSignature:RelayPool.kt$RelayPool$suspend fun publishEvent( relays: List&lt;RelayConfig&gt;, signedEventJson: String, timeoutMs: Long ): Result&lt;PublishResult&gt;</ID>
     <ID>FunctionSignature:RelayPool.kt$RelayPool$suspend fun subscribeWithTimeout( relays: List&lt;RelayConfig&gt;, filter: String, timeoutMs: Long ): List&lt;NostrEvent&gt;</ID>
@@ -442,7 +443,6 @@
     <ID>Indentation:ErrorTypes.kt$StorageError.ReadError$ </ID>
     <ID>Indentation:ErrorTypes.kt$StorageError.WriteError$ </ID>
     <ID>Indentation:ErrorTypesTest.kt$ErrorTypesTest$ </ID>
-    <ID>Indentation:ExampleUnitTest.kt$ExampleUnitTest$ </ID>
     <ID>Indentation:FetchRelayListUseCase.kt$FetchRelayListUseCase$ </ID>
     <ID>Indentation:FetchRelayListUseCase.kt$FetchRelayListUseCaseImpl$ </ID>
     <ID>Indentation:FetchRelayListUseCase.kt$FetchRelayListUseCaseImpl.Companion$ </ID>
@@ -491,6 +491,13 @@
     <ID>Indentation:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$ </ID>
     <ID>Indentation:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl.Companion$ </ID>
     <ID>Indentation:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage.Closed$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage.Eose$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage.Event$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage.Ok$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessage.Unknown$ </ID>
+    <ID>Indentation:NostrRelayMessage.kt$NostrRelayMessageSerializer$ </ID>
     <ID>Indentation:PostBookmarkScreen.kt$ </ID>
     <ID>Indentation:PostBookmarkUseCase.kt$PostBookmarkUseCase$ </ID>
     <ID>Indentation:PostBookmarkUseCaseImpl.kt$PostBookmarkUseCaseImpl$ </ID>
@@ -536,9 +543,9 @@
     <ID>MagicNumber:NetworkModule.kt$NetworkModule$10</ID>
     <ID>MagicNumber:Nip55SignerClient.kt$Nip55SignerClient$16</ID>
     <ID>MagicNumber:Nip55SignerClient.kt$Nip55SignerClient$8</ID>
+    <ID>MagicNumber:NostrRelayMessage.kt$NostrRelayMessageSerializer$3</ID>
     <ID>MagicNumber:RelayPool.kt$RelayPoolImpl$1000</ID>
     <ID>MagicNumber:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$1000</ID>
-    <ID>MagicNumber:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$3</ID>
     <ID>MaxLineLength:LocalAuthDataSourceTest.kt$LocalAuthDataSourceTest$"""[{"url":"wss://relay1.example.com","read":true,"write":true},{"url":"wss://relay2.example.com","read":true,"write":false}]"""</ID>
     <ID>MaxLineLength:RelayPoolTest.kt$RelayPoolTest$"""{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""</ID>
     <ID>MaxLineLength:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState$return """["EVENT","$subscriptionId",{"id":"${event.id}","pubkey":"${event.pubkey}","created_at":${event.createdAt},"kind":${event.kind},"tags":[$tagsJson],"content":"${event.content}"}]"""</ID>
@@ -647,7 +654,7 @@
     <ID>MultilineExpressionWrapping:PresentationDomainIntegrationTest.kt$PresentationDomainIntegrationTest$runTest { val testPubkey = "npub1" + "b".repeat(59) val testUser = User(testPubkey) coEvery { authRepository.getLoginState() } returns testUser viewModel.checkLoginState() advanceUntilIdle() val state = viewModel.mainUiState.first() assertEquals("userPubkey should be restored", testPubkey, state.userPubkey) coVerify { authRepository.getLoginState() } }</ID>
     <ID>MultilineExpressionWrapping:PresentationDomainIntegrationTest.kt$PresentationDomainIntegrationTest$runTest { val testPubkey = "npub1" + "c".repeat(59) val testUser = User(testPubkey) coEvery { authRepository.getLoginState() } returns testUser viewModel.checkLoginState() advanceUntilIdle() val stateBeforeLogout = viewModel.mainUiState.first() assertEquals("userPubkey should be set", testPubkey, stateBeforeLogout.userPubkey) coEvery { authRepository.logout() } returns Result.success(Unit) viewModel.onLogoutButtonClicked() advanceUntilIdle() val stateAfterLogout = viewModel.mainUiState.first() assertNull("userPubkey should be null after logout", stateAfterLogout.userPubkey) assertFalse("isLoggingOut should be false", stateAfterLogout.isLoggingOut) coVerify { authRepository.logout() } }</ID>
     <ID>MultilineExpressionWrapping:PresentationDomainIntegrationTest.kt$PresentationDomainIntegrationTest$runTest { val testPubkey = "npub1" + "d".repeat(59) val testUser = User(testPubkey) coEvery { authRepository.getLoginState() } returns testUser viewModel.checkLoginState() advanceUntilIdle() val error = LogoutError.StorageError("Failed to clear storage") coEvery { authRepository.logout() } returns Result.failure(error) viewModel.onLogoutButtonClicked() advanceUntilIdle() val state = viewModel.mainUiState.first() assertFalse("isLoggingOut should be false after error", state.isLoggingOut) coVerify { authRepository.logout() } }</ID>
-    <ID>MultilineExpressionWrapping:RelayPool.kt$RelayPoolImpl$callbackFlow { val subscriptionId = UUID.randomUUID().toString() val request = Request.Builder().url(relayUrl).build() val listener = object : WebSocketListener() { override fun onOpen(webSocket: WebSocket, response: Response) { val reqMessage = """["REQ","$subscriptionId",$filter]""" webSocket.send(reqMessage) } override fun onMessage(webSocket: WebSocket, text: String) { try { val jsonArray = Json.parseToJsonElement(text).jsonArray val messageType = jsonArray[0].jsonPrimitive.content when (messageType) { "EVENT" -&gt; { val eventJsonElement = jsonArray[2] val event = json.decodeFromJsonElement&lt;NostrEvent&gt;(eventJsonElement) trySend(event) } "EOSE" -&gt; { webSocket.close(1000, "EOSE received") } "CLOSED" -&gt; { close() } } } catch (e: Exception) { Log.e(TAG, "Error parsing message from $relayUrl: $text", e) close(e) } } override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) { Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}") close(t) } override fun onClosed(webSocket: WebSocket, code: Int, reason: String) { close() } } val webSocket = okHttpClient.newWebSocket(request, listener) awaitClose { webSocket.close(1000, "Flow cancelled") } }</ID>
+    <ID>MultilineExpressionWrapping:RelayPool.kt$RelayPoolImpl$callbackFlow { val subscriptionId = UUID.randomUUID().toString() val request = Request.Builder().url(relayUrl).build() val listener = object : WebSocketListener() { override fun onOpen(webSocket: WebSocket, response: Response) { val reqMessage = """["REQ","$subscriptionId",$filter]""" webSocket.send(reqMessage) } override fun onMessage(webSocket: WebSocket, text: String) { try { when (val message = json.decodeFromString&lt;NostrRelayMessage&gt;(text)) { is NostrRelayMessage.Event -&gt; trySend(message.event) is NostrRelayMessage.Eose -&gt; webSocket.close(1000, "EOSE received") is NostrRelayMessage.Closed -&gt; close() else -&gt; {} } } catch (e: Exception) { Log.e(TAG, "Error parsing message from $relayUrl: $text", e) close(e) } } override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) { Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}") close(t) } override fun onClosed(webSocket: WebSocket, code: Int, reason: String) { close() } } val webSocket = okHttpClient.newWebSocket(request, listener) awaitClose { webSocket.close(1000, "Flow cancelled") } }</ID>
     <ID>MultilineExpressionWrapping:RelayPoolTest.kt$RelayPoolTest$runBlocking { every { okHttpClient.newWebSocket(any(), any()) } answers { val listener = secondArg&lt;WebSocketListener&gt;() val ws = mockk&lt;WebSocket&gt;(relaxed = true) every { ws.close(any(), any()) } returns true listener.onFailure(ws, RuntimeException("Connection failed"), null) ws } val relays = listOf(RelayConfig(url = "wss://relay.example.com")) val filter = """{"kinds":[39701],"limit":10}""" val result = relayPool.subscribeWithTimeout(relays, filter, 5000L) assertTrue("Should return empty list when all relays fail", result.isEmpty()) }</ID>
     <ID>MultilineExpressionWrapping:RelayPoolTest.kt$RelayPoolTest$runBlocking { val acceptingState = MockPublishWebSocketState(accepted = true) val rejectingState = MockPublishWebSocketState(accepted = false, message = "duplicate") every { okHttpClient.newWebSocket(match { it.url.toString().contains("accepting") }, any()) } answers { val listener = secondArg&lt;WebSocketListener&gt;() acceptingState.setListener(listener) acceptingState.triggerOpen() acceptingState.ws } every { okHttpClient.newWebSocket(match { it.url.toString().contains("rejecting") }, any()) } answers { val listener = secondArg&lt;WebSocketListener&gt;() rejectingState.setListener(listener) rejectingState.triggerOpen() rejectingState.ws } val relays = listOf( RelayConfig(url = "wss://accepting.example.com", write = true), RelayConfig(url = "wss://rejecting.example.com", write = true)) val signedEventJson = """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}""" val result = relayPool.publishEvent(relays, signedEventJson, 5000L) assertTrue("Should return success when at least one relay accepts", result.isSuccess) val publishResult = result.getOrNull() assertEquals("Should have 1 successful relay", 1, publishResult?.successfulRelays?.size) assertEquals("Should have 1 failed relay", 1, publishResult?.failedRelays?.size) assertTrue( "Successful relay should be accepting", publishResult?.successfulRelays?.contains("wss://accepting.example.com") == true) assertTrue( "Failed relay should be rejecting", publishResult?.failedRelays?.any { it.first == "wss://rejecting.example.com" } == true) }</ID>
     <ID>MultilineExpressionWrapping:RelayPoolTest.kt$RelayPoolTest$runBlocking { val publishState = MockPublishWebSocketState(accepted = false, message = "blocked: spam") every { okHttpClient.newWebSocket(any(), any()) } answers { val listener = secondArg&lt;WebSocketListener&gt;() publishState.setListener(listener) publishState.triggerOpen() publishState.ws } val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true)) val signedEventJson = """{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}""" val result = relayPool.publishEvent(relays, signedEventJson, 5000L) assertTrue("Should return failure when all relays reject", result.isFailure) assertTrue( "Error should mention failed to publish", result.exceptionOrNull()?.message?.contains("Failed to publish") == true) }</ID>
@@ -713,7 +720,6 @@
     <ID>NoWildcardImports:AuthEventTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:BookmarkViewModelTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:ErrorTypesTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:GetLoginStateUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:LoginUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:LoginViewModelTest.kt$import org.junit.Assert.*</ID>
@@ -749,6 +755,7 @@
     <ID>ReturnCount:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$private fun parseOgTitle(html: String): String?</ID>
     <ID>SpacingBetweenDeclarationsWithAnnotations:RelayPoolTest.kt$RelayPoolTest.MockPublishWebSocketState$@Volatile private var wsListener: WebSocketListener? = null</ID>
     <ID>SpacingBetweenDeclarationsWithAnnotations:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState$@Volatile private var wsListener: WebSocketListener? = null</ID>
+    <ID>StringLiteralDuplication:NostrRelayMessage.kt$NostrRelayMessageSerializer$"Subscription ID must be a string"</ID>
     <ID>StringLiteralDuplication:RelayBookmarkRepository.kt$RelayBookmarkRepository$"http://"</ID>
     <ID>StringLiteralDuplication:RelayBookmarkRepository.kt$RelayBookmarkRepository$"https://"</ID>
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>
@@ -971,10 +978,10 @@
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenLoadingPreview()</ID>
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenPreview()</ID>
+    <ID>UseIfInsteadOfWhen:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$when (val message = json.decodeFromString&lt;NostrRelayMessage&gt;(text)) { is NostrRelayMessage.Ok -&gt; { webSocket.close(1000, "OK received") if (continuation.isActive) { if (message.accepted) { continuation.resume(Pair(relayUrl, "OK")) } else { continuation.resume(Pair(relayUrl, message.message.ifEmpty { "Rejected" })) } } } else -&gt; {} }</ID>
     <ID>WildcardImport:AuthEventTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:BookmarkViewModelTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:ErrorTypesTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:GetLoginStateUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:LoginUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:LoginViewModelTest.kt$import org.junit.Assert.*</ID>
