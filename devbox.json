@@ -1,7 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
   "packages": [
-    "ktlint@1.8.0",
     "ktfmt@0.51",
     "tombi@0.7.12",
     "mado@0.3.0",
