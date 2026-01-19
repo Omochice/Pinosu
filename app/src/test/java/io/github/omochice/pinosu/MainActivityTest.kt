@@ -59,4 +59,96 @@ class MainActivityTest {
     val user = getLoginStateUseCase()
     return if (user != null) "MainScreen" else "LoginScreen"
   }
+
+  @Test
+  fun `extractSharedContent returns url for https URL`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com/path")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = "https://example.com/path", comment = null), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns url for http URL`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "http://example.com/path")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = "http://example.com/path", comment = null), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns comment for non-URL text`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "This is a note")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = null, comment = "This is a note"), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null for non-SEND action`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com")
+        }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null for non-text MIME type`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "image/png"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com")
+        }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null when EXTRA_TEXT is missing`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply { type = "text/plain" }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
+  }
+
+  /**
+   * Represents content shared from other apps
+   *
+   * @property url The shared URL (http/https), or null if shared text is not a URL
+   * @property comment The shared text when it's not a URL, or null if it's a URL
+   */
+  private data class SharedContent(val url: String? = null, val comment: String? = null)
+
+  /**
+   * Stub implementation for TDD RED phase
+   *
+   * Will be replaced with actual implementation in MainActivity.kt
+   */
+  private fun extractSharedContent(intent: android.content.Intent): SharedContent? {
+    return null
+  }
 }
