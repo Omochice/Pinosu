@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -75,7 +74,6 @@ class MainActivity : ComponentActivity() {
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
             sharedContent = pendingSharedContent,
-            onSharedContentConsumed = { pendingSharedContent = null },
         )
       }
     }
@@ -98,14 +96,12 @@ class MainActivity : ComponentActivity() {
  * @param viewModel ViewModel managing login/logout state
  * @param nip55SignerClient Client for NIP-55 communication
  * @param sharedContent Content shared from other apps, or null if not from share intent
- * @param onSharedContentConsumed Callback when shared content has been consumed
  */
 @Composable
 fun PinosuApp(
     viewModel: LoginViewModel,
     nip55SignerClient: Nip55SignerClient,
     sharedContent: SharedContent? = null,
-    onSharedContentConsumed: () -> Unit = {},
 ) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -121,8 +117,6 @@ fun PinosuApp(
           }
 
   val isLoggedIn = mainUiState.userPubkey != null
-  var pendingContentAfterLogin by
-      androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(sharedContent) }
 
   val startDestination: Route =
       when {
@@ -168,18 +162,7 @@ fun PinosuApp(
                       }
                     },
                     onLoginSuccess = {
-                      val destination =
-                          if (pendingContentAfterLogin != null) {
-                            PostBookmark(
-                                sharedUrl = pendingContentAfterLogin?.url,
-                                sharedComment = pendingContentAfterLogin?.comment,
-                            )
-                          } else {
-                            Bookmark
-                          }
-                      navController.navigate(destination) { popUpTo<Login> { inclusive = true } }
-                      pendingContentAfterLogin = null
-                      onSharedContentConsumed()
+                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
                       viewModel.dismissError()
                     },
                 )
