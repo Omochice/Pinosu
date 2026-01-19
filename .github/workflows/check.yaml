@@ -107,7 +107,6 @@ jobs:
             ${{ runner.os }}-gradle-
       - run: devbox run ./gradlew detekt testDebugUnitTest koverXmlReportDebug
       - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
-        if: github.event_name == 'pull_request'
         with:
           config: octocov.yaml
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
