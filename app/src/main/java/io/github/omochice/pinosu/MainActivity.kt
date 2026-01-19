@@ -57,7 +57,6 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
   private val loginViewModel: LoginViewModel by viewModels()
 
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
@@ -76,7 +75,8 @@ class MainActivity : ComponentActivity() {
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
             sharedContent = pendingSharedContent,
-            onSharedContentConsumed = { pendingSharedContent = null })
+            onSharedContentConsumed = { pendingSharedContent = null },
+        )
       }
     }
   }
@@ -105,7 +105,7 @@ fun PinosuApp(
     viewModel: LoginViewModel,
     nip55SignerClient: Nip55SignerClient,
     sharedContent: SharedContent? = null,
-    onSharedContentConsumed: () -> Unit = {}
+    onSharedContentConsumed: () -> Unit = {},
 ) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -172,7 +172,8 @@ fun PinosuApp(
                           if (pendingContentAfterLogin != null) {
                             PostBookmark(
                                 sharedUrl = pendingContentAfterLogin?.url,
-                                sharedComment = pendingContentAfterLogin?.comment)
+                                sharedComment = pendingContentAfterLogin?.comment,
+                            )
                           } else {
                             Bookmark
                           }
@@ -180,7 +181,8 @@ fun PinosuApp(
                       pendingContentAfterLogin = null
                       onSharedContentConsumed()
                       viewModel.dismissError()
-                    })
+                    },
+                )
               }
 
           composable<Main>(
@@ -222,7 +224,8 @@ fun PinosuApp(
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
                     onAddBookmark = { navController.navigate(PostBookmark()) },
-                    viewModel = bookmarkViewModel)
+                    viewModel = bookmarkViewModel,
+                )
               }
 
           composable<PostBookmark>(
