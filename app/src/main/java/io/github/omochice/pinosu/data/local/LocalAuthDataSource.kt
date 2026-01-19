@@ -11,7 +11,6 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
@@ -33,36 +32,24 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
   }
 
   companion object {
-    private const val PREFS_FILE_NAME = "pinosu_auth_prefs"
+    // NOTE: Eager initialization (e.g., `Json { }` directly) causes AEADBadTagException
+    // because kotlinx.serialization's static initialization interferes with
+    // Android Keystore operations during EncryptedSharedPreferences creation.
+    private val json by lazy { Json { ignoreUnknownKeys = true } }
     internal const val KEY_USER_PUBKEY = "user_pubkey"
     internal const val KEY_CREATED_AT = "login_created_at"
     internal const val KEY_LAST_ACCESSED = "login_last_accessed"
     internal const val KEY_RELAY_LIST = "relay_list"
 
     private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
-      return try {
-        createEncryptedSharedPreferencesInternal(context)
-      } catch (e: Exception) {
-        clearCorruptedPreferences(context)
-        createEncryptedSharedPreferencesInternal(context)
-      }
-    }
-
-    private fun createEncryptedSharedPreferencesInternal(context: Context): SharedPreferences {
       val masterKey =
           MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
       return EncryptedSharedPreferences.create(
           context,
-          PREFS_FILE_NAME,
+          "pinosu_auth_prefs",
           masterKey,
           EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
           EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-    }
-
-    private fun clearCorruptedPreferences(context: Context) {
-      val sharedPrefsDir = java.io.File(context.applicationInfo.dataDir, "shared_prefs")
-      java.io.File(sharedPrefsDir, "$PREFS_FILE_NAME.xml").delete()
-      java.io.File(sharedPrefsDir, "__androidx_security_crypto_encrypted_prefs__.xml").delete()
     }
   }
 
@@ -115,7 +102,7 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    */
   suspend fun saveRelayList(relays: List<RelayConfig>) {
     try {
-      val jsonString = Json.encodeToString(relays)
+      val jsonString = json.encodeToString(relays)
       sharedPreferences.edit().putString(KEY_RELAY_LIST, jsonString).apply()
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to save relay list: ${e.message}")
@@ -130,7 +117,7 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
   suspend fun getRelayList(): List<RelayConfig>? {
     return try {
       val jsonString = sharedPreferences.getString(KEY_RELAY_LIST, null) ?: return null
-      Json.decodeFromString<List<RelayConfig>>(jsonString)
+      json.decodeFromString<List<RelayConfig>>(jsonString)
     } catch (e: Exception) {
       null
     }
