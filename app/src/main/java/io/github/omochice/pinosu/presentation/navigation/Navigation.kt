@@ -21,3 +21,6 @@ sealed interface Route
 
 /** Post bookmark screen route */
 @Serializable object PostBookmark : Route
+
+/** Settings screen route */
+@Serializable object Settings : Route
