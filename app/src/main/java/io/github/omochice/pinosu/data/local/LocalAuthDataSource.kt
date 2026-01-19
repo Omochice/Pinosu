@@ -33,20 +33,36 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
   }
 
   companion object {
+    private const val PREFS_FILE_NAME = "pinosu_auth_prefs"
     internal const val KEY_USER_PUBKEY = "user_pubkey"
     internal const val KEY_CREATED_AT = "login_created_at"
     internal const val KEY_LAST_ACCESSED = "login_last_accessed"
     internal const val KEY_RELAY_LIST = "relay_list"
 
     private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
+      return try {
+        createEncryptedSharedPreferencesInternal(context)
+      } catch (e: Exception) {
+        clearCorruptedPreferences(context)
+        createEncryptedSharedPreferencesInternal(context)
+      }
+    }
+
+    private fun createEncryptedSharedPreferencesInternal(context: Context): SharedPreferences {
       val masterKey =
           MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
       return EncryptedSharedPreferences.create(
           context,
-          "pinosu_auth_prefs",
+          PREFS_FILE_NAME,
           masterKey,
           EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
           EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+    }
+
+    private fun clearCorruptedPreferences(context: Context) {
+      val sharedPrefsDir = java.io.File(context.applicationInfo.dataDir, "shared_prefs")
+      java.io.File(sharedPrefsDir, "$PREFS_FILE_NAME.xml").delete()
+      java.io.File(sharedPrefsDir, "__androidx_security_crypto_encrypted_prefs__.xml").delete()
     }
   }
 
