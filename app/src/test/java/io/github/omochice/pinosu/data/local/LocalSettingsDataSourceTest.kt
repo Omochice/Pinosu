@@ -28,14 +28,14 @@ class LocalSettingsDataSourceTest {
   }
 
   @Test
-  fun `getThemeMode returns System as default`() {
+  fun `default is System`() {
     val result = localSettingsDataSource.getThemeMode()
 
     assertEquals(ThemeMode.System, result)
   }
 
   @Test
-  fun `setThemeMode and getThemeMode round trip preserves Light`() {
+  fun `persists Light`() {
     localSettingsDataSource.setThemeMode(ThemeMode.Light)
 
     val result = localSettingsDataSource.getThemeMode()
@@ -44,7 +44,7 @@ class LocalSettingsDataSourceTest {
   }
 
   @Test
-  fun `setThemeMode and getThemeMode round trip preserves Dark`() {
+  fun `persists Dark`() {
     localSettingsDataSource.setThemeMode(ThemeMode.Dark)
 
     val result = localSettingsDataSource.getThemeMode()
@@ -53,7 +53,7 @@ class LocalSettingsDataSourceTest {
   }
 
   @Test
-  fun `setThemeMode and getThemeMode round trip preserves System`() {
+  fun `persists System`() {
     localSettingsDataSource.setThemeMode(ThemeMode.Light)
     localSettingsDataSource.setThemeMode(ThemeMode.System)
 
@@ -63,7 +63,7 @@ class LocalSettingsDataSourceTest {
   }
 
   @Test
-  fun `getThemeMode returns System when stored value is invalid`() {
+  fun `invalid value returns System`() {
     sharedPreferences.edit().putInt("theme_mode", 999).commit()
 
     val result = localSettingsDataSource.getThemeMode()

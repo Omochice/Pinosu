@@ -93,6 +93,7 @@ private fun ThemeModeRadioItem(mode: ThemeMode, selected: Boolean, onClick: () -
       }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true)
 @Composable
 private fun SettingsScreenPreview() {

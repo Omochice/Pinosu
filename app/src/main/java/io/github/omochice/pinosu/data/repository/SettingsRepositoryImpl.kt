@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class SettingsRepositoryImpl
 @Inject
 constructor(private val localSettingsDataSource: LocalSettingsDataSource) : SettingsRepository {
-
   private val _themeMode = MutableStateFlow(localSettingsDataSource.getThemeMode())
   override val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 

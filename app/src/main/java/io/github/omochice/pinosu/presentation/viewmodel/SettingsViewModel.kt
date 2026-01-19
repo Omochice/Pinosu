@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * Manages settings UI state including theme mode selection.
  *
- * @property settingsRepository Repository for accessing settings
+ * @param settingsRepository Repository for accessing settings
  */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(private val settingsRepository: SettingsRepository) :

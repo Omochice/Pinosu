@@ -21,12 +21,13 @@ private val DarkColorScheme = darkColorScheme()
  *
  * @param darkTheme Whether to use dark theme (defaults to system setting)
  * @param dynamicColor Whether to use dynamic color (defaults to true)
+ * @param content The composable content to be themed
  */
 @Composable
 fun PinosuTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
   val colorScheme =
       when {
@@ -34,8 +35,12 @@ fun PinosuTheme(
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+          DarkColorScheme
+        }
+        else -> {
+          LightColorScheme
+        }
       }
 
   MaterialTheme(colorScheme = colorScheme, content = content)

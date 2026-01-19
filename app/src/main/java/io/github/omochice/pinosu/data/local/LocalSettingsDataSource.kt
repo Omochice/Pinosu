@@ -27,11 +27,6 @@ constructor(@ApplicationContext private val context: Context) {
     testSharedPreferences = prefs
   }
 
-  companion object {
-    private const val PREFS_NAME = "pinosu_settings"
-    internal const val KEY_THEME_MODE = "theme_mode"
-  }
-
   /**
    * Get current theme mode
    *
@@ -49,5 +44,10 @@ constructor(@ApplicationContext private val context: Context) {
    */
   fun setThemeMode(mode: ThemeMode) {
     sharedPreferences.edit().putInt(KEY_THEME_MODE, mode.ordinal).apply()
+  }
+
+  companion object {
+    private const val PREFS_NAME = "pinosu_settings"
+    internal const val KEY_THEME_MODE = "theme_mode"
   }
 }

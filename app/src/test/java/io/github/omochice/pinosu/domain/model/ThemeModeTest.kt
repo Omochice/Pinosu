@@ -6,12 +6,12 @@ import org.junit.Test
 class ThemeModeTest {
 
   @Test
-  fun `ThemeMode has exactly three entries`() {
+  fun `has exactly three entries`() {
     assertEquals(3, ThemeMode.entries.size)
   }
 
   @Test
-  fun `ThemeMode entries are Light, Dark, System in order`() {
+  fun `entries order is correct`() {
     val entries = ThemeMode.entries
     assertEquals(ThemeMode.Light, entries[0])
     assertEquals(ThemeMode.Dark, entries[1])

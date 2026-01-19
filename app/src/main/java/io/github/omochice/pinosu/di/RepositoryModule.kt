@@ -27,7 +27,6 @@ import io.github.omochice.pinosu.data.repository.SettingsRepositoryImpl
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
   @Binds abstract fun bindAuthRepository(impl: Nip55AuthRepository): AuthRepository
 
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository

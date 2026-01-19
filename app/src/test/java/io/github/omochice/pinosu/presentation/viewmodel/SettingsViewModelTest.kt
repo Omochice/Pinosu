@@ -25,14 +25,14 @@ class SettingsViewModelTest {
   }
 
   @Test
-  fun `initial uiState should have System as default themeMode`() = runTest {
+  fun `initial state is System`() = runTest {
     val state = viewModel.uiState.first()
 
     assertEquals(ThemeMode.System, state.themeMode)
   }
 
   @Test
-  fun `setThemeMode should update uiState`() = runTest {
+  fun `setThemeMode updates state`() = runTest {
     viewModel.setThemeMode(ThemeMode.Dark)
 
     val state = viewModel.uiState.first()
@@ -40,14 +40,14 @@ class SettingsViewModelTest {
   }
 
   @Test
-  fun `setThemeMode should call repository setThemeMode`() = runTest {
+  fun `setThemeMode calls repo`() = runTest {
     viewModel.setThemeMode(ThemeMode.Light)
 
     verify { settingsRepository.setThemeMode(ThemeMode.Light) }
   }
 
   @Test
-  fun `setThemeMode to each mode should update correctly`() = runTest {
+  fun `all modes update correctly`() = runTest {
     viewModel.setThemeMode(ThemeMode.Light)
     assertEquals(ThemeMode.Light, viewModel.uiState.first().themeMode)
 

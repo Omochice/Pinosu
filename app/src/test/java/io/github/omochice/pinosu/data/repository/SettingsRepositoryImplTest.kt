@@ -32,35 +32,35 @@ class SettingsRepositoryImplTest {
   }
 
   @Test
-  fun `themeMode StateFlow emits System as initial value`() {
+  fun `initial value is System`() {
     val result = settingsRepository.themeMode.value
 
     assertEquals(ThemeMode.System, result)
   }
 
   @Test
-  fun `getThemeMode returns System as default`() {
+  fun `getThemeMode default System`() {
     val result = settingsRepository.getThemeMode()
 
     assertEquals(ThemeMode.System, result)
   }
 
   @Test
-  fun `setThemeMode updates themeMode StateFlow`() {
+  fun `setThemeMode updates flow`() {
     settingsRepository.setThemeMode(ThemeMode.Dark)
 
     assertEquals(ThemeMode.Dark, settingsRepository.themeMode.value)
   }
 
   @Test
-  fun `setThemeMode persists to LocalSettingsDataSource`() {
+  fun `setThemeMode persists`() {
     settingsRepository.setThemeMode(ThemeMode.Light)
 
     assertEquals(ThemeMode.Light, localSettingsDataSource.getThemeMode())
   }
 
   @Test
-  fun `getThemeMode returns value from StateFlow`() {
+  fun `getThemeMode reads flow`() {
     settingsRepository.setThemeMode(ThemeMode.Dark)
 
     assertEquals(ThemeMode.Dark, settingsRepository.getThemeMode())
