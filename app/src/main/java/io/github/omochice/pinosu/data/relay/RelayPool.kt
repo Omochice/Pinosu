@@ -178,19 +178,12 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
             override fun onMessage(webSocket: WebSocket, text: String) {
               try {
-                when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
-                  is NostrRelayMessage.Ok -> {
-                    webSocket.close(1000, "OK received")
-                    if (continuation.isActive) {
-                      if (message.accepted) {
-                        continuation.resume(Pair(relayUrl, "OK"))
-                      } else {
-                        continuation.resume(Pair(relayUrl, message.message.ifEmpty { "Rejected" }))
-                      }
-                    }
-                  }
-                  else -> {}
-                }
+                val message = json.decodeFromString<NostrRelayMessage>(text)
+                if (message !is NostrRelayMessage.Ok) return
+                webSocket.close(1000, "OK received")
+                if (!continuation.isActive) return
+                val result = if (message.accepted) "OK" else message.message.ifEmpty { "Rejected" }
+                continuation.resume(Pair(relayUrl, result))
               } catch (e: Exception) {
                 Log.e(TAG, "Error parsing OK response from $relayUrl: $text", e)
                 if (continuation.isActive) {

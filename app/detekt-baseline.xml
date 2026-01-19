@@ -978,7 +978,6 @@
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenLoadingPreview()</ID>
     <ID>UnusedPrivateMember:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenPreview()</ID>
-    <ID>UseIfInsteadOfWhen:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$when (val message = json.decodeFromString&lt;NostrRelayMessage&gt;(text)) { is NostrRelayMessage.Ok -&gt; { webSocket.close(1000, "OK received") if (continuation.isActive) { if (message.accepted) { continuation.resume(Pair(relayUrl, "OK")) } else { continuation.resume(Pair(relayUrl, message.message.ifEmpty { "Rejected" })) } } } else -&gt; {} }</ID>
     <ID>WildcardImport:AuthEventTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:BookmarkViewModelTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:ErrorTypesTest.kt$import org.junit.Assert.*</ID>
