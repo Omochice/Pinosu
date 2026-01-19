@@ -1,8 +1,12 @@
 package io.github.omochice.pinosu.data.model
 
 import com.vitorpamplona.quartz.nip01Core.crypto.EventHasher
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 
 /**
  * Unsigned Nostr event for NIP-55 signing
@@ -20,21 +24,20 @@ data class UnsignedNostrEvent(
     val tags: List<List<String>>,
     val content: String
 ) {
-
   /**
    * Serialize to JSON string for NIP-55 signing request
    *
    * @return JSON string representation of the unsigned event
    */
   fun toJson(): String {
-    val json = JSONObject()
-    json.put("pubkey", pubkey)
-    json.put("created_at", createdAt)
-    json.put("kind", kind)
-    json.put("content", content)
-    json.put("tags", JSONArray(tags.map { JSONArray(it) }))
-
-    return json.toString()
+    val json = buildJsonObject {
+      put("pubkey", pubkey)
+      put("created_at", createdAt)
+      put("kind", kind)
+      putJsonArray("tags") { tags.forEach { tag -> add(JsonArray(tag.map { JsonPrimitive(it) })) } }
+      put("content", content)
+    }
+    return Json.encodeToString(json)
   }
 
   /**
@@ -57,9 +60,15 @@ data class UnsignedNostrEvent(
    */
   fun toSignedJson(signature: String): String {
     val eventId = calculateId()
-    val json = JSONObject(toJson())
-    json.put("id", eventId)
-    json.put("sig", signature)
-    return json.toString()
+    val json = buildJsonObject {
+      put("id", eventId)
+      put("pubkey", pubkey)
+      put("created_at", createdAt)
+      put("kind", kind)
+      putJsonArray("tags") { tags.forEach { tag -> add(JsonArray(tag.map { JsonPrimitive(it) })) } }
+      put("content", content)
+      put("sig", signature)
+    }
+    return Json.encodeToString(json)
   }
 }

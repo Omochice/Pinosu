@@ -1,5 +1,8 @@
 package io.github.omochice.pinosu.data.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * Nostr event data model
  *
@@ -12,10 +15,11 @@ package io.github.omochice.pinosu.data.model
  * @property tags List of tag arrays (e.g., [["r", "url"], ["title", "..."]])
  * @property content Event content (may be encrypted for private events)
  */
+@Serializable
 data class NostrEvent(
     val id: String,
     val pubkey: String,
-    val createdAt: Long,
+    @SerialName("created_at") val createdAt: Long,
     val kind: Int,
     val tags: List<List<String>>,
     val content: String,

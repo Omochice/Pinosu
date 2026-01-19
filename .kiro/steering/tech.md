@@ -56,6 +56,12 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **WebSocket Client**: OkHttp for relay connections
 - **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata)
 
+### Serialization
+
+- **kotlinx-serialization-json**: 1.10.0-RC for type-safe JSON handling
+- **Custom Serializers**: `KSerializer<T>` for Nostr protocol array-based messages
+- **Lazy Initialization**: Use `by lazy { }` for Json instances interacting with EncryptedSharedPreferences
+
 ### Network & HTTP
 
 - **OkHttp**: 5.3.2 with Hilt singleton injection

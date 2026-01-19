@@ -764,8 +764,9 @@ formatting:
     active: true
   MultiLineIfElse:
     active: true
+  # Disabled: conflicts with ktfmt formatter
   MultilineExpressionWrapping:
-    active: true
+    active: false
   NoBlankLineBeforeRbrace:
     active: true
   NoBlankLineInList:

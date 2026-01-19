@@ -76,6 +76,7 @@ dependencies {
 
   implementation(libs.okhttp)
   implementation(libs.jsoup)
+  implementation(libs.kotlinx.serialization.json)
 
   implementation(libs.aboutlibraries.core)
   implementation(libs.aboutlibraries.compose.m3)

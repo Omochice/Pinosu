@@ -11,8 +11,7 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.json.Json
 
 /**
  * Local authentication data data source
@@ -21,7 +20,6 @@ import org.json.JSONObject
  */
 @Singleton
 class LocalAuthDataSource @Inject constructor(@ApplicationContext private val context: Context) {
-
   private val sharedPreferences: SharedPreferences by lazy {
     testSharedPreferences ?: createEncryptedSharedPreferences(context)
   }
@@ -34,6 +32,10 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
   }
 
   companion object {
+    // NOTE: Eager initialization (e.g., `Json { }` directly) causes AEADBadTagException
+    // because kotlinx.serialization's static initialization interferes with
+    // Android Keystore operations during EncryptedSharedPreferences creation.
+    private val json by lazy { Json { ignoreUnknownKeys = true } }
     internal const val KEY_USER_PUBKEY = "user_pubkey"
     internal const val KEY_CREATED_AT = "login_created_at"
     internal const val KEY_LAST_ACCESSED = "login_last_accessed"
@@ -100,17 +102,8 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    */
   suspend fun saveRelayList(relays: List<RelayConfig>) {
     try {
-      val jsonArray = JSONArray()
-      relays.forEach { relay ->
-        val jsonObject =
-            JSONObject().apply {
-              put("url", relay.url)
-              put("read", relay.read)
-              put("write", relay.write)
-            }
-        jsonArray.put(jsonObject)
-      }
-      sharedPreferences.edit().putString(KEY_RELAY_LIST, jsonArray.toString()).apply()
+      val jsonString = json.encodeToString(relays)
+      sharedPreferences.edit().putString(KEY_RELAY_LIST, jsonString).apply()
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to save relay list: ${e.message}")
     }
@@ -124,17 +117,7 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
   suspend fun getRelayList(): List<RelayConfig>? {
     return try {
       val jsonString = sharedPreferences.getString(KEY_RELAY_LIST, null) ?: return null
-      val jsonArray = JSONArray(jsonString)
-      val relays = mutableListOf<RelayConfig>()
-      for (i in 0 until jsonArray.length()) {
-        val jsonObject = jsonArray.getJSONObject(i)
-        relays.add(
-            RelayConfig(
-                url = jsonObject.getString("url"),
-                read = jsonObject.getBoolean("read"),
-                write = jsonObject.getBoolean("write")))
-      }
-      relays
+      json.decodeFromString<List<RelayConfig>>(jsonString)
     } catch (e: Exception) {
       null
     }
