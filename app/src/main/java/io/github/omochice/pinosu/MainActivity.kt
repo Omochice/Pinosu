@@ -15,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.presentation.navigation.AppInfo
@@ -118,7 +120,17 @@ fun PinosuApp(
             viewModel.processNip55Response(result.resultCode, result.data)
           }
 
-  val startDestination: Route = if (mainUiState.userPubkey != null) Bookmark else Login
+  val isLoggedIn = mainUiState.userPubkey != null
+  var pendingContentAfterLogin by
+      androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(sharedContent) }
+
+  val startDestination: Route =
+      when {
+        isLoggedIn && sharedContent != null ->
+            PostBookmark(sharedUrl = sharedContent.url, sharedComment = sharedContent.comment)
+        isLoggedIn -> Bookmark
+        else -> Login
+      }
 
   ModalNavigationDrawer(
       drawerState = drawerState,
@@ -156,7 +168,17 @@ fun PinosuApp(
                       }
                     },
                     onLoginSuccess = {
-                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+                      val destination =
+                          if (pendingContentAfterLogin != null) {
+                            PostBookmark(
+                                sharedUrl = pendingContentAfterLogin?.url,
+                                sharedComment = pendingContentAfterLogin?.comment)
+                          } else {
+                            Bookmark
+                          }
+                      navController.navigate(destination) { popUpTo<Login> { inclusive = true } }
+                      pendingContentAfterLogin = null
+                      onSharedContentConsumed()
                       viewModel.dismissError()
                     })
               }
@@ -207,7 +229,8 @@ fun PinosuApp(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
+              popExitTransition = { defaultPopExitTransition }) { backStackEntry ->
+                val route: PostBookmark = backStackEntry.toRoute()
                 val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
                 val postBookmarkUiState by
                     postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
@@ -217,6 +240,11 @@ fun PinosuApp(
                         contract = ActivityResultContracts.StartActivityForResult()) { result ->
                           postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
                         }
+
+                LaunchedEffect(route.sharedUrl, route.sharedComment) {
+                  route.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
+                  route.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                }
 
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
