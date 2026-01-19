@@ -241,3 +241,36 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
         }
       }
 }
+
+/**
+ * Represents content shared from other apps
+ *
+ * @property url The shared URL (http/https), or null if shared text is not a URL
+ * @property comment The shared text when it's not a URL, or null if it's a URL
+ */
+data class SharedContent(val url: String? = null, val comment: String? = null)
+
+/**
+ * Extract shared content from ACTION_SEND intent
+ *
+ * If the shared text is a URL (http/https), it's set as url. Otherwise, it's set as comment.
+ *
+ * @param intent The intent to process
+ * @return SharedContent if valid share intent, null otherwise
+ */
+internal fun extractSharedContent(intent: android.content.Intent): SharedContent? {
+  if (intent.action != android.content.Intent.ACTION_SEND) return null
+  if (intent.type != "text/plain") return null
+
+  val sharedText = intent.getStringExtra(android.content.Intent.EXTRA_TEXT) ?: return null
+
+  val isUrl =
+      sharedText.startsWith("http://", ignoreCase = true) ||
+          sharedText.startsWith("https://", ignoreCase = true)
+
+  return if (isUrl) {
+    SharedContent(url = sharedText, comment = null)
+  } else {
+    SharedContent(url = null, comment = sharedText)
+  }
+}

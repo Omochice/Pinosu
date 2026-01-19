@@ -7,6 +7,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /**
  * Unit tests for MainActivity
@@ -14,7 +16,9 @@ import org.junit.Test
  * - Logged-in → display main screen
  * - Not logged-in → display login screen
  * - Clear login state when invalid data detected
+ * - Extract shared content from share intent
  */
+@RunWith(RobolectricTestRunner::class)
 class MainActivityTest {
 
   @Test
@@ -133,22 +137,5 @@ class MainActivityTest {
     val result = extractSharedContent(intent)
 
     org.junit.Assert.assertNull(result)
-  }
-
-  /**
-   * Represents content shared from other apps
-   *
-   * @property url The shared URL (http/https), or null if shared text is not a URL
-   * @property comment The shared text when it's not a URL, or null if it's a URL
-   */
-  private data class SharedContent(val url: String? = null, val comment: String? = null)
-
-  /**
-   * Stub implementation for TDD RED phase
-   *
-   * Will be replaced with actual implementation in MainActivity.kt
-   */
-  private fun extractSharedContent(intent: android.content.Intent): SharedContent? {
-    return null
   }
 }
