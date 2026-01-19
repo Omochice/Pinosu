@@ -60,13 +60,22 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
+  private var pendingSharedContent: SharedContent? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     loginViewModel.checkLoginState()
+    pendingSharedContent = extractSharedContent(intent)
 
     setContent {
-      PinosuTheme { PinosuApp(viewModel = loginViewModel, nip55SignerClient = nip55SignerClient) }
+      PinosuTheme {
+        PinosuApp(
+            viewModel = loginViewModel,
+            nip55SignerClient = nip55SignerClient,
+            sharedContent = pendingSharedContent,
+            onSharedContentConsumed = { pendingSharedContent = null })
+      }
     }
   }
 }
@@ -79,9 +88,16 @@ class MainActivity : ComponentActivity() {
  *
  * @param viewModel ViewModel managing login/logout state
  * @param nip55SignerClient Client for NIP-55 communication
+ * @param sharedContent Content shared from other apps, or null if not from share intent
+ * @param onSharedContentConsumed Callback when shared content has been consumed
  */
 @Composable
-fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
+fun PinosuApp(
+    viewModel: LoginViewModel,
+    nip55SignerClient: Nip55SignerClient,
+    sharedContent: SharedContent? = null,
+    onSharedContentConsumed: () -> Unit = {}
+) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
