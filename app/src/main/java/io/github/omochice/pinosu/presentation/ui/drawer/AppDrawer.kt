@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -24,10 +25,12 @@ import io.github.omochice.pinosu.R
  * Application drawer menu
  *
  * Displays navigation drawer with menu items for:
+ * - Settings
  * - License information
  * - App information
  * - Logout
  *
+ * @param onNavigateToSettings Callback when Settings menu is clicked
  * @param onNavigateToLicense Callback when License menu is clicked
  * @param onNavigateToAppInfo Callback when App Info menu is clicked
  * @param onLogout Callback when Logout menu is clicked
@@ -36,6 +39,7 @@ import io.github.omochice.pinosu.R
  */
 @Composable
 fun AppDrawer(
+    onNavigateToSettings: () -> Unit,
     onNavigateToLicense: () -> Unit,
     onNavigateToAppInfo: () -> Unit,
     onLogout: () -> Unit,
@@ -52,6 +56,14 @@ fun AppDrawer(
       Spacer(modifier = Modifier.height(8.dp))
 
       HorizontalDivider()
+
+      DrawerMenuItem(
+          icon = Icons.Default.Settings,
+          text = stringResource(R.string.menu_settings),
+          onClick = {
+            onCloseDrawer()
+            onNavigateToSettings()
+          })
 
       DrawerMenuItem(
           icon = Icons.AutoMirrored.Filled.List,
@@ -85,5 +97,10 @@ fun AppDrawer(
 @Preview(showBackground = true)
 @Composable
 private fun AppDrawerPreview() {
-  AppDrawer(onNavigateToLicense = {}, onNavigateToAppInfo = {}, onLogout = {}, onCloseDrawer = {})
+  AppDrawer(
+      onNavigateToSettings = {},
+      onNavigateToLicense = {},
+      onNavigateToAppInfo = {},
+      onLogout = {},
+      onCloseDrawer = {})
 }

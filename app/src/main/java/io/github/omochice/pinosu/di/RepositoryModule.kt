@@ -16,6 +16,8 @@ import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
+import io.github.omochice.pinosu.data.repository.SettingsRepository
+import io.github.omochice.pinosu.data.repository.SettingsRepositoryImpl
 
 /**
  * Hilt module for Repository dependency injection
@@ -25,7 +27,6 @@ import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
   @Binds abstract fun bindAuthRepository(impl: Nip55AuthRepository): AuthRepository
 
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
@@ -38,4 +39,6 @@ abstract class RepositoryModule {
 
   @Binds
   abstract fun bindNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher
+
+  @Binds abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 }

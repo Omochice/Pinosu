@@ -72,4 +72,12 @@
     <!-- アプリ情報画面 -->
     <string name="title_app_info">アプリ情報</string>
     <string name="label_version">バージョン</string>
+
+    <!-- 設定画面 -->
+    <string name="title_settings">設定</string>
+    <string name="menu_settings">設定</string>
+    <string name="label_theme">テーマ</string>
+    <string name="theme_light">light</string>
+    <string name="theme_dark">dark</string>
+    <string name="theme_system">system</string>
 </resources>
