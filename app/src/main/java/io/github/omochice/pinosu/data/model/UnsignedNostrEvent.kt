@@ -34,8 +34,8 @@ data class UnsignedNostrEvent(
       put("pubkey", pubkey)
       put("created_at", createdAt)
       put("kind", kind)
-      put("content", content)
       putJsonArray("tags") { tags.forEach { tag -> add(JsonArray(tag.map { JsonPrimitive(it) })) } }
+      put("content", content)
     }
     return Json.encodeToString(json)
   }
