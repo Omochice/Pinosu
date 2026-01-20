@@ -6,23 +6,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
-import io.github.omochice.pinosu.domain.usecase.GetDisplayModeUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for bookmark list screen
  *
- * Manages bookmark data loading and UI state for the bookmark list display.
+ * Manages bookmark data loading and UI state for the bookmark list display. Observes display mode
+ * changes for immediate UI updates.
  *
  * @property getBookmarkListUseCase UseCase for fetching bookmark list
  * @property getLoginStateUseCase UseCase for retrieving current login state
- * @property getDisplayModeUseCase UseCase for retrieving display mode preference
+ * @property observeDisplayModeUseCase UseCase for observing display mode preference changes
  */
 @HiltViewModel
 class BookmarkViewModel
@@ -30,20 +33,21 @@ class BookmarkViewModel
 constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
-    private val getDisplayModeUseCase: GetDisplayModeUseCase,
+    private val observeDisplayModeUseCase: ObserveDisplayModeUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(BookmarkUiState())
   val uiState: StateFlow<BookmarkUiState> = _uiState.asStateFlow()
 
   init {
-    loadDisplayMode()
+    observeDisplayMode()
   }
 
-  /** Load display mode preference from settings */
-  private fun loadDisplayMode() {
-    val displayMode = getDisplayModeUseCase()
-    _uiState.update { it.copy(displayMode = displayMode) }
+  /** Observe display mode preference changes for reactive updates */
+  private fun observeDisplayMode() {
+    observeDisplayModeUseCase()
+        .onEach { displayMode -> _uiState.update { it.copy(displayMode = displayMode) } }
+        .launchIn(viewModelScope)
   }
 
   /**

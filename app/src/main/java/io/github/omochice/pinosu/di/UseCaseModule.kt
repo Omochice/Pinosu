@@ -16,6 +16,8 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
+import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
@@ -50,4 +52,9 @@ abstract class UseCaseModule {
 
   @Binds
   abstract fun bindSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase
+
+  @Binds
+  abstract fun bindObserveDisplayModeUseCase(
+      impl: ObserveDisplayModeUseCaseImpl
+  ): ObserveDisplayModeUseCase
 }

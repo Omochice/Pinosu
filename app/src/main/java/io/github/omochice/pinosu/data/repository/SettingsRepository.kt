@@ -1,13 +1,17 @@
 package io.github.omochice.pinosu.data.repository
 
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Repository interface for application settings.
  *
- * Provides abstraction layer for settings data access.
+ * Provides abstraction layer for settings data access with reactive updates.
  */
 interface SettingsRepository {
+  /** Observable StateFlow of display mode preference for reactive updates */
+  val displayModeFlow: StateFlow<BookmarkDisplayMode>
+
   /**
    * Retrieve bookmark display mode preference.
    *

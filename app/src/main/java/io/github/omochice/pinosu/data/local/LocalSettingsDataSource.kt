@@ -6,11 +6,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Local data source for application settings.
  *
- * Uses SharedPreferences to store non-sensitive user preferences.
+ * Uses SharedPreferences to store non-sensitive user preferences. Provides observable StateFlow for
+ * reactive updates.
  */
 @Singleton
 class LocalSettingsDataSource
@@ -21,6 +25,15 @@ constructor(@ApplicationContext private val context: Context) {
   }
 
   private var testSharedPreferences: SharedPreferences? = null
+
+  private val _displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
+
+  /** Observable StateFlow of display mode preference */
+  val displayModeFlow: StateFlow<BookmarkDisplayMode> = _displayModeFlow.asStateFlow()
+
+  init {
+    _displayModeFlow.value = getDisplayMode()
+  }
 
   /** For testing only - sets SharedPreferences before first access */
   internal fun setTestSharedPreferences(prefs: SharedPreferences) {
@@ -47,11 +60,12 @@ constructor(@ApplicationContext private val context: Context) {
   }
 
   /**
-   * Save bookmark display mode preference.
+   * Save bookmark display mode preference and emit to observers.
    *
    * @param mode Display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode) {
     sharedPreferences.edit().putString(KEY_DISPLAY_MODE, mode.name).apply()
+    _displayModeFlow.value = mode
   }
 }
