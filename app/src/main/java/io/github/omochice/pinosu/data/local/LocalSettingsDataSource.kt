@@ -21,10 +21,8 @@ class LocalSettingsDataSource
 @Inject
 constructor(@ApplicationContext private val context: Context) {
   private val sharedPreferences: SharedPreferences by lazy {
-    testSharedPreferences ?: context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   }
-
-  private var testSharedPreferences: SharedPreferences? = null
 
   private val _displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
 
@@ -33,11 +31,6 @@ constructor(@ApplicationContext private val context: Context) {
 
   init {
     _displayModeFlow.value = getDisplayMode()
-  }
-
-  /** For testing only - sets SharedPreferences before first access */
-  internal fun setTestSharedPreferences(prefs: SharedPreferences) {
-    testSharedPreferences = prefs
   }
 
   companion object {

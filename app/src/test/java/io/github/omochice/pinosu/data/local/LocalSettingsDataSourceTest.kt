@@ -29,7 +29,6 @@ class LocalSettingsDataSourceTest {
     every { editor.putString(any(), any()) } returns editor
 
     dataSource = LocalSettingsDataSource(context)
-    dataSource.setTestSharedPreferences(sharedPreferences)
   }
 
   @Test
