@@ -89,7 +89,7 @@ private fun SettingsScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun SettingsScreenGridSelectedPreview() {
+private fun SettingsScreenGridPreview() {
   SettingsScreen(
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.Grid),
       onNavigateUp = {},

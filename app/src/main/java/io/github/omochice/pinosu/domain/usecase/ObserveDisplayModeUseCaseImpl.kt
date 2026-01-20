@@ -14,7 +14,5 @@ class ObserveDisplayModeUseCaseImpl
 @Inject
 constructor(private val settingsRepository: SettingsRepository) : ObserveDisplayModeUseCase {
 
-  override fun invoke(): StateFlow<BookmarkDisplayMode> {
-    return settingsRepository.displayModeFlow
-  }
+  override fun invoke(): StateFlow<BookmarkDisplayMode> = settingsRepository.displayModeFlow
 }

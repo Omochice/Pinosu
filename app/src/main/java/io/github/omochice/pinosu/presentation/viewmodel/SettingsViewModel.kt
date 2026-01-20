@@ -19,9 +19,6 @@ import kotlinx.coroutines.flow.update
  *
  * Manages settings state and handles settings updates. Observes display mode changes for reactive
  * UI updates.
- *
- * @property observeDisplayModeUseCase Use case for observing display mode preference changes
- * @property setDisplayModeUseCase Use case for saving display mode
  */
 @HiltViewModel
 class SettingsViewModel

@@ -29,11 +29,6 @@ constructor(@ApplicationContext private val context: Context) {
   /** Observable StateFlow of display mode preference */
   val displayModeFlow: StateFlow<BookmarkDisplayMode> = _displayModeFlow.asStateFlow()
 
-  companion object {
-    private const val PREFS_NAME = "pinosu_settings"
-    internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
-  }
-
   /**
    * Retrieve bookmark display mode preference.
    *
@@ -43,7 +38,7 @@ constructor(@ApplicationContext private val context: Context) {
     val value = sharedPreferences.getString(KEY_DISPLAY_MODE, null)
     return try {
       value?.let { BookmarkDisplayMode.valueOf(it) } ?: BookmarkDisplayMode.List
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
       BookmarkDisplayMode.List
     }
   }
@@ -56,5 +51,10 @@ constructor(@ApplicationContext private val context: Context) {
   fun setDisplayMode(mode: BookmarkDisplayMode) {
     sharedPreferences.edit().putString(KEY_DISPLAY_MODE, mode.name).apply()
     _displayModeFlow.value = mode
+  }
+
+  companion object {
+    private const val PREFS_NAME = "pinosu_settings"
+    internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
   }
 }

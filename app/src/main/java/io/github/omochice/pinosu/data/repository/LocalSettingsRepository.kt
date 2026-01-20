@@ -15,13 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 class LocalSettingsRepository
 @Inject
 constructor(private val localSettingsDataSource: LocalSettingsDataSource) : SettingsRepository {
-
   override val displayModeFlow: StateFlow<BookmarkDisplayMode> =
       localSettingsDataSource.displayModeFlow
 
-  override fun getDisplayMode(): BookmarkDisplayMode {
-    return localSettingsDataSource.getDisplayMode()
-  }
+  override fun getDisplayMode(): BookmarkDisplayMode = localSettingsDataSource.getDisplayMode()
 
   override fun setDisplayMode(mode: BookmarkDisplayMode) {
     localSettingsDataSource.setDisplayMode(mode)

@@ -8,8 +8,6 @@ import javax.inject.Inject
  * Implementation of SetDisplayModeUseCase.
  *
  * Delegates to SettingsRepository for display mode persistence.
- *
- * @property settingsRepository Repository for settings data access
  */
 class SetDisplayModeUseCaseImpl
 @Inject

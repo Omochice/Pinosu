@@ -259,6 +259,7 @@ naming:
     forbiddenName: []
   FunctionMaxLength:
     active: true
+    excludes: ['**/test/**', '**/androidTest/**']
     maximumFunctionNameLength: 30
   FunctionMinLength:
     active: true
@@ -565,8 +566,8 @@ style:
   MultilineLambdaItParameter:
     active: true
   MultilineRawStringIndentation:
-    active: true
-    indentSize: 4
+    active: false
+    indentSize: 2
   NestedClassesVisibility:
     active: true
   NewLineAtEndOfFile:
@@ -656,6 +657,8 @@ style:
   UnusedPrivateMember:
     active: true
     allowedNames: ''
+    ignoreAnnotated:
+      - 'Preview'
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'
@@ -708,7 +711,7 @@ formatting:
   AnnotationSpacing:
     active: true
   ArgumentListWrapping:
-    active: true
+    active: false
     maxLineLength: 120
   BlockCommentInitialStarAlignment:
     active: true
@@ -737,7 +740,7 @@ formatting:
   FunctionReturnTypeSpacing:
     active: true
   FunctionSignature:
-    active: true
+    active: false
     maxLineLength: 120
   FunctionStartOfBodySpacing:
     active: true
@@ -751,8 +754,8 @@ formatting:
     active: true
     layout: '*'
   Indentation:
-    active: true
-    indentSize: 4
+    active: false
+    indentSize: 2
   KdocWrapping:
     active: true
   MaximumLineLength:
@@ -780,7 +783,7 @@ formatting:
   NoEmptyClassBody:
     active: true
   NoEmptyFirstLineInClassBody:
-    active: true
+    active: false
   NoEmptyFirstLineInMethodBlock:
     active: true
   NoLineBreakAfterElse:
@@ -808,15 +811,15 @@ formatting:
   ParameterListSpacing:
     active: true
   ParameterListWrapping:
-    active: true
+    active: false
     maxLineLength: 120
   ParameterWrapping:
-    active: true
+    active: false
     maxLineLength: 120
   PropertyName:
     active: false
   PropertyWrapping:
-    active: true
+    active: false
     maxLineLength: 120
   SpacingAroundAngleBrackets:
     active: true
@@ -851,11 +854,11 @@ formatting:
   StringTemplateIndent:
     active: true
   TrailingCommaOnCallSite:
-    active: true
-    useTrailingCommaOnCallSite: true
+    active: false
+    useTrailingCommaOnCallSite: false
   TrailingCommaOnDeclarationSite:
-    active: true
-    useTrailingCommaOnDeclarationSite: true
+    active: false
+    useTrailingCommaOnDeclarationSite: false
   TryCatchFinallySpacing:
     active: true
   TypeArgumentListSpacing:
@@ -865,5 +868,5 @@ formatting:
   UnnecessaryParenthesesBeforeTrailingLambda:
     active: true
   Wrapping:
-    active: true
+    active: false
     maxLineLength: 120
