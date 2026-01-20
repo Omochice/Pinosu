@@ -104,7 +104,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             onNavigateToLicense = { navController.navigate(License) },
             onNavigateToAppInfo = { navController.navigate(AppInfo) },
             onLogout = { viewModel.onLogoutButtonClicked() },
-            onCloseDrawer = { scope.launch { drawerState.close() } })
+            onCloseDrawer = { scope.launch { drawerState.close() } },
+            isAuthenticated = mainUiState.userPubkey != null)
       }) {
         NavHost(navController = navController, startDestination = startDestination) {
           composable<Login>(
