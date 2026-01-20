@@ -1,15 +1,19 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -27,12 +31,15 @@ import org.junit.Test
  * Tests cover:
  * - Multiple URLs dialog state management
  * - Error dialog state management
+ * - Display mode observation
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkViewModelTest {
 
   private lateinit var getBookmarkListUseCase: GetBookmarkListUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var observeDisplayModeUseCase: ObserveDisplayModeUseCase
+  private lateinit var displayModeFlow: MutableStateFlow<BookmarkDisplayMode>
   private lateinit var viewModel: BookmarkViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -42,7 +49,11 @@ class BookmarkViewModelTest {
     Dispatchers.setMain(testDispatcher)
     getBookmarkListUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
-    viewModel = BookmarkViewModel(getBookmarkListUseCase, getLoginStateUseCase)
+    displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
+    observeDisplayModeUseCase = mockk()
+    every { observeDisplayModeUseCase() } returns displayModeFlow
+    viewModel =
+        BookmarkViewModel(getBookmarkListUseCase, getLoginStateUseCase, observeDisplayModeUseCase)
   }
 
   @After
@@ -350,6 +361,22 @@ class BookmarkViewModelTest {
 
     state = viewModel.uiState.first()
     assertNull("Error should be dismissed", state.urlOpenError)
+  }
+
+  @Test
+  fun `observeDisplayMode should update uiState when display mode changes`() = runTest {
+    assertEquals(
+        "Initial display mode should be List",
+        BookmarkDisplayMode.List,
+        viewModel.uiState.first().displayMode)
+
+    displayModeFlow.value = BookmarkDisplayMode.Grid
+    advanceUntilIdle()
+
+    assertEquals(
+        "Display mode should be updated to Grid",
+        BookmarkDisplayMode.Grid,
+        viewModel.uiState.first().displayMode)
   }
 
   @Test

@@ -72,4 +72,20 @@
     <!-- アプリ情報画面 -->
     <string name="title_app_info">アプリ情報</string>
     <string name="label_version">バージョン</string>
+
+    <!-- 設定画面 -->
+    <string name="title_settings">設定</string>
+    <string name="menu_settings">設定</string>
+    <string name="settings_display_mode">ブックマーク表示</string>
+    <string name="display_mode_list">リスト</string>
+    <string name="display_mode_grid">グリッド</string>
+
+    <!-- アクセシビリティ用contentDescription -->
+    <string name="cd_navigate_up">戻る</string>
+    <string name="cd_open_menu">メニューを開く</string>
+    <string name="cd_add_bookmark">ブックマークを追加</string>
+
+    <!-- ブックマークカード内のUI文字列 -->
+    <string name="url_count">URL (%1$d件)</string>
+    <string name="title_from_metadata">(OGメタデータから取得したタイトル)</string>
 </resources>

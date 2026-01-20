@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -26,10 +27,12 @@ import io.github.omochice.pinosu.R
  * Displays navigation drawer with menu items for:
  * - License information
  * - App information
+ * - Settings
  * - Logout
  *
  * @param onNavigateToLicense Callback when License menu is clicked
  * @param onNavigateToAppInfo Callback when App Info menu is clicked
+ * @param onNavigateToSettings Callback when Settings menu is clicked
  * @param onLogout Callback when Logout menu is clicked
  * @param onCloseDrawer Callback to close the drawer after navigation
  * @param modifier Modifier for this composable
@@ -38,6 +41,7 @@ import io.github.omochice.pinosu.R
 fun AppDrawer(
     onNavigateToLicense: () -> Unit,
     onNavigateToAppInfo: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
@@ -69,6 +73,14 @@ fun AppDrawer(
             onNavigateToAppInfo()
           })
 
+      DrawerMenuItem(
+          icon = Icons.Default.Settings,
+          text = stringResource(R.string.menu_settings),
+          onClick = {
+            onCloseDrawer()
+            onNavigateToSettings()
+          })
+
       HorizontalDivider()
 
       DrawerMenuItem(
@@ -85,5 +97,10 @@ fun AppDrawer(
 @Preview(showBackground = true)
 @Composable
 private fun AppDrawerPreview() {
-  AppDrawer(onNavigateToLicense = {}, onNavigateToAppInfo = {}, onLogout = {}, onCloseDrawer = {})
+  AppDrawer(
+      onNavigateToLicense = {},
+      onNavigateToAppInfo = {},
+      onNavigateToSettings = {},
+      onLogout = {},
+      onCloseDrawer = {})
 }

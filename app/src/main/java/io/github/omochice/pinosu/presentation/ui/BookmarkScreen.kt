@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -39,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
@@ -54,6 +58,7 @@ import java.time.format.DateTimeFormatter
  * Composable function for bookmark list screen
  *
  * Displays a list of bookmarked items with pull-to-refresh support and tab-based filtering.
+ * Supports both list and grid display modes based on user preference.
  *
  * @param uiState Bookmark screen UI state
  * @param onRefresh Callback when pull-to-refresh is triggered
@@ -78,6 +83,20 @@ fun BookmarkScreen(
   val uriHandler = LocalUriHandler.current
   val urlOpenErrorText = stringResource(R.string.error_url_open_failed)
 
+  val onBookmarkClick: (BookmarkItem) -> Unit = { clickedBookmark ->
+    viewModel?.let { vm ->
+      if (clickedBookmark.urls.size == 1) {
+        try {
+          uriHandler.openUri(clickedBookmark.urls.first())
+        } catch (e: Exception) {
+          vm.setUrlOpenError(e.message ?: urlOpenErrorText)
+        }
+      } else {
+        vm.onBookmarkCardClicked(clickedBookmark)
+      }
+    }
+  }
+
   Scaffold(
       topBar = {
         Column {
@@ -85,7 +104,9 @@ fun BookmarkScreen(
               title = { Text(stringResource(R.string.title_bookmarks)) },
               navigationIcon = {
                 IconButton(onClick = onOpenDrawer) {
-                  Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
+                  Icon(
+                      imageVector = Icons.Default.Menu,
+                      contentDescription = stringResource(R.string.cd_open_menu))
                 }
               })
           PrimaryTabRow(
@@ -103,7 +124,9 @@ fun BookmarkScreen(
       },
       floatingActionButton = {
         FloatingActionButton(onClick = onAddBookmark) {
-          Icon(imageVector = Icons.Filled.Add, contentDescription = "Add bookmark")
+          Icon(
+              imageVector = Icons.Filled.Add,
+              contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
         PullToRefreshBox(
@@ -134,32 +157,12 @@ fun BookmarkScreen(
                   }
                 }
                 else -> {
-                  LazyColumn(
-                      modifier = Modifier.fillMaxSize(),
-                      contentPadding = PaddingValues(16.dp),
-                      verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(
-                            uiState.bookmarks,
-                            key = { bookmark ->
-                              "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}"
-                            }) { bookmark ->
-                              BookmarkItemCard(
-                                  bookmark = bookmark,
-                                  onClick = { clickedBookmark ->
-                                    viewModel?.let { vm ->
-                                      if (clickedBookmark.urls.size == 1) {
-                                        try {
-                                          uriHandler.openUri(clickedBookmark.urls.first())
-                                        } catch (e: Exception) {
-                                          vm.setUrlOpenError(e.message ?: urlOpenErrorText)
-                                        }
-                                      } else {
-                                        vm.onBookmarkCardClicked(clickedBookmark)
-                                      }
-                                    }
-                                  })
-                            }
-                      }
+                  when (uiState.displayMode) {
+                    BookmarkDisplayMode.List ->
+                        BookmarkListView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
+                    BookmarkDisplayMode.Grid ->
+                        BookmarkGridView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
+                  }
                 }
               }
             }
@@ -183,6 +186,38 @@ fun BookmarkScreen(
             ErrorDialog(message = error, onDismiss = { vm.dismissErrorDialog() })
           }
         }
+      }
+}
+
+@Composable
+private fun BookmarkListView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+  LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(
+            bookmarks,
+            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
+                bookmark ->
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+            }
+      }
+}
+
+@Composable
+private fun BookmarkGridView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+  LazyVerticalStaggeredGrid(
+      columns = StaggeredGridCells.Adaptive(minSize = 160.dp),
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(16.dp),
+      verticalItemSpacing = 8.dp,
+      horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(
+            bookmarks,
+            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
+                bookmark ->
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+            }
       }
 }
 
@@ -224,7 +259,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
 
           if (bookmark.urls.isNotEmpty()) {
             Text(
-                text = "URLs (${bookmark.urls.size})",
+                text = stringResource(R.string.url_count, bookmark.urls.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.tertiary)
             Spacer(modifier = Modifier.height(4.dp))
@@ -252,7 +287,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
           if (bookmark.titleSource == "metadata") {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "(Title from OG metadata)",
+                text = stringResource(R.string.title_from_metadata),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary)
           }
