@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.presentation.navigation.AppInfo
@@ -55,19 +56,34 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
   private val loginViewModel: LoginViewModel by viewModels()
 
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
+
+  private var pendingSharedContent: SharedContent? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     loginViewModel.checkLoginState()
+    pendingSharedContent = extractSharedContent(intent)
 
     setContent {
-      PinosuTheme { PinosuApp(viewModel = loginViewModel, nip55SignerClient = nip55SignerClient) }
+      PinosuTheme {
+        PinosuApp(
+            viewModel = loginViewModel,
+            nip55SignerClient = nip55SignerClient,
+            sharedContent = pendingSharedContent,
+        )
+      }
     }
+  }
+
+  override fun onNewIntent(intent: android.content.Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    pendingSharedContent = extractSharedContent(intent)
+    recreate()
   }
 }
 
@@ -79,9 +95,14 @@ class MainActivity : ComponentActivity() {
  *
  * @param viewModel ViewModel managing login/logout state
  * @param nip55SignerClient Client for NIP-55 communication
+ * @param sharedContent Content shared from other apps, or null if not from share intent
  */
 @Composable
-fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
+fun PinosuApp(
+    viewModel: LoginViewModel,
+    nip55SignerClient: Nip55SignerClient,
+    sharedContent: SharedContent? = null,
+) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
@@ -95,7 +116,15 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             viewModel.processNip55Response(result.resultCode, result.data)
           }
 
-  val startDestination: Route = if (mainUiState.userPubkey != null) Bookmark else Login
+  val isLoggedIn = mainUiState.userPubkey != null
+
+  val startDestination: Route =
+      when {
+        isLoggedIn && sharedContent != null ->
+            PostBookmark(sharedUrl = sharedContent.url, sharedComment = sharedContent.comment)
+        isLoggedIn -> Bookmark
+        else -> Login
+      }
 
   ModalNavigationDrawer(
       drawerState = drawerState,
@@ -135,7 +164,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoginSuccess = {
                       navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
                       viewModel.dismissError()
-                    })
+                    },
+                )
               }
 
           composable<Main>(
@@ -176,15 +206,17 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
-                    onAddBookmark = { navController.navigate(PostBookmark) },
-                    viewModel = bookmarkViewModel)
+                    onAddBookmark = { navController.navigate(PostBookmark()) },
+                    viewModel = bookmarkViewModel,
+                )
               }
 
           composable<PostBookmark>(
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
+              popExitTransition = { defaultPopExitTransition }) { backStackEntry ->
+                val route: PostBookmark = backStackEntry.toRoute()
                 val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
                 val postBookmarkUiState by
                     postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
@@ -194,6 +226,11 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                         contract = ActivityResultContracts.StartActivityForResult()) { result ->
                           postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
                         }
+
+                LaunchedEffect(route.sharedUrl, route.sharedComment) {
+                  route.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
+                  route.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                }
 
                 LaunchedEffect(mainUiState.userPubkey) {
                   if (mainUiState.userPubkey == null) {
@@ -240,4 +277,37 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               }
         }
       }
+}
+
+/**
+ * Represents content shared from other apps
+ *
+ * @property url The shared URL (http/https), or null if shared text is not a URL
+ * @property comment The shared text when it's not a URL, or null if it's a URL
+ */
+data class SharedContent(val url: String? = null, val comment: String? = null)
+
+/**
+ * Extract shared content from ACTION_SEND intent
+ *
+ * If the shared text is a URL (http/https), it's set as url. Otherwise, it's set as comment.
+ *
+ * @param intent The intent to process
+ * @return SharedContent if valid share intent, null otherwise
+ */
+internal fun extractSharedContent(intent: android.content.Intent): SharedContent? {
+  if (intent.action != android.content.Intent.ACTION_SEND) return null
+  if (intent.type != "text/plain") return null
+
+  val sharedText = intent.getStringExtra(android.content.Intent.EXTRA_TEXT) ?: return null
+
+  val isUrl =
+      sharedText.startsWith("http://", ignoreCase = true) ||
+          sharedText.startsWith("https://", ignoreCase = true)
+
+  return if (isUrl) {
+    SharedContent(url = sharedText, comment = null)
+  } else {
+    SharedContent(url = null, comment = sharedText)
+  }
 }

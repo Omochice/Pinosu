@@ -70,4 +70,20 @@ class ManifestConfigurationTest {
     assertTrue(
         "MainActivity should be exported for LAUNCHER intent", activityInfo?.exported == true)
   }
+
+  @Test
+  fun `MainActivity should handle ACTION_SEND intent with text plain`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          setPackage(context.packageName)
+        }
+
+    val resolveInfo =
+        packageManager
+            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            .firstOrNull()
+
+    assertNotNull("MainActivity should handle ACTION_SEND with text/plain", resolveInfo)
+  }
 }

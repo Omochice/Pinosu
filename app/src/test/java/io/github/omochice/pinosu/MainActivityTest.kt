@@ -7,6 +7,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /**
  * Unit tests for MainActivity
@@ -14,7 +16,9 @@ import org.junit.Test
  * - Logged-in → display main screen
  * - Not logged-in → display login screen
  * - Clear login state when invalid data detected
+ * - Extract shared content from share intent
  */
+@RunWith(RobolectricTestRunner::class)
 class MainActivityTest {
 
   @Test
@@ -58,5 +62,80 @@ class MainActivityTest {
   ): String {
     val user = getLoginStateUseCase()
     return if (user != null) "MainScreen" else "LoginScreen"
+  }
+
+  @Test
+  fun `extractSharedContent returns url for https URL`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com/path")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = "https://example.com/path", comment = null), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns url for http URL`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "http://example.com/path")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = "http://example.com/path", comment = null), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns comment for non-URL text`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "This is a note")
+        }
+
+    val result = extractSharedContent(intent)
+
+    assertEquals(SharedContent(url = null, comment = "This is a note"), result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null for non-SEND action`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+          type = "text/plain"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com")
+        }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null for non-text MIME type`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+          type = "image/png"
+          putExtra(android.content.Intent.EXTRA_TEXT, "https://example.com")
+        }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
+  }
+
+  @Test
+  fun `extractSharedContent returns null when EXTRA_TEXT is missing`() {
+    val intent =
+        android.content.Intent(android.content.Intent.ACTION_SEND).apply { type = "text/plain" }
+
+    val result = extractSharedContent(intent)
+
+    org.junit.Assert.assertNull(result)
   }
 }
