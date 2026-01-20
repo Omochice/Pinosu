@@ -29,6 +29,7 @@ import io.github.omochice.pinosu.presentation.navigation.Login
 import io.github.omochice.pinosu.presentation.navigation.Main
 import io.github.omochice.pinosu.presentation.navigation.PostBookmark
 import io.github.omochice.pinosu.presentation.navigation.Route
+import io.github.omochice.pinosu.presentation.navigation.Settings
 import io.github.omochice.pinosu.presentation.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultExitTransition
 import io.github.omochice.pinosu.presentation.navigation.defaultPopEnterTransition
@@ -39,10 +40,12 @@ import io.github.omochice.pinosu.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
 import io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen
+import io.github.omochice.pinosu.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.presentation.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.presentation.viewmodel.SettingsViewModel
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -103,6 +106,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
         AppDrawer(
             onNavigateToLicense = { navController.navigate(License) },
             onNavigateToAppInfo = { navController.navigate(AppInfo) },
+            onNavigateToSettings = { navController.navigate(Settings) },
             onLogout = { viewModel.onLogoutButtonClicked() },
             onCloseDrawer = { scope.launch { drawerState.close() } })
       }) {
@@ -237,6 +241,20 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               popEnterTransition = { EnterTransition.None },
               popExitTransition = { ExitTransition.None }) {
                 AppInfoScreen(onNavigateUp = { navController.navigateUp() })
+              }
+
+          composable<Settings>(
+              enterTransition = { EnterTransition.None },
+              exitTransition = { ExitTransition.None },
+              popEnterTransition = { EnterTransition.None },
+              popExitTransition = { ExitTransition.None }) {
+                val settingsViewModel: SettingsViewModel = hiltViewModel()
+                val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+                SettingsScreen(
+                    uiState = settingsUiState,
+                    onNavigateUp = { navController.navigateUp() },
+                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) })
               }
         }
       }
