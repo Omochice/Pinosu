@@ -93,4 +93,14 @@ class LocalSettingsDataSourceTest {
 
     assertEquals(BookmarkDisplayMode.Grid, dataSource.displayModeFlow.value)
   }
+
+  @Test
+  fun `displayModeFlow is initialized with stored value on construction`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_DISPLAY_MODE, null) } returns
+        "Grid"
+
+    val newDataSource = LocalSettingsDataSource(context)
+
+    assertEquals(BookmarkDisplayMode.Grid, newDataSource.displayModeFlow.value)
+  }
 }
