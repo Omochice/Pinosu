@@ -364,6 +364,22 @@ class BookmarkViewModelTest {
   }
 
   @Test
+  fun `observeDisplayMode should update uiState when display mode changes`() = runTest {
+    assertEquals(
+        "Initial display mode should be List",
+        BookmarkDisplayMode.List,
+        viewModel.uiState.first().displayMode)
+
+    displayModeFlow.value = BookmarkDisplayMode.Grid
+    advanceUntilIdle()
+
+    assertEquals(
+        "Display mode should be updated to Grid",
+        BookmarkDisplayMode.Grid,
+        viewModel.uiState.first().displayMode)
+  }
+
+  @Test
   fun `state should handle concurrent dialog states independently`() = runTest {
     val bookmark =
         BookmarkItem(
