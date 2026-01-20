@@ -24,14 +24,10 @@ constructor(@ApplicationContext private val context: Context) {
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   }
 
-  private val _displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
+  private val _displayModeFlow = MutableStateFlow(getDisplayMode())
 
   /** Observable StateFlow of display mode preference */
   val displayModeFlow: StateFlow<BookmarkDisplayMode> = _displayModeFlow.asStateFlow()
-
-  init {
-    _displayModeFlow.value = getDisplayMode()
-  }
 
   companion object {
     private const val PREFS_NAME = "pinosu_settings"
