@@ -35,7 +35,7 @@ fun DrawerMenuItem(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
   val contentColor =
       if (enabled) {
@@ -50,11 +50,12 @@ fun DrawerMenuItem(
               .fillMaxWidth()
               .clickable(enabled = enabled, onClick = onClick)
               .padding(horizontal = 16.dp, vertical = 12.dp),
-      verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = text, tint = contentColor)
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = text, style = MaterialTheme.typography.bodyLarge, color = contentColor)
-      }
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(imageVector = icon, contentDescription = text, tint = contentColor)
+    Spacer(modifier = Modifier.width(16.dp))
+    Text(text = text, style = MaterialTheme.typography.bodyLarge, color = contentColor)
+  }
 }
 
 @Preview(showBackground = true)

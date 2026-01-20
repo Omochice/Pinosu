@@ -42,7 +42,7 @@ fun AppDrawer(
     onLogout: () -> Unit,
     onCloseDrawer: () -> Unit,
     isAuthenticated: Boolean = true,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
   ModalDrawerSheet(modifier = modifier.fillMaxSize()) {
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
@@ -80,7 +80,8 @@ fun AppDrawer(
           onClick = {
             onCloseDrawer()
             onLogout()
-          })
+          },
+      )
     }
   }
 }

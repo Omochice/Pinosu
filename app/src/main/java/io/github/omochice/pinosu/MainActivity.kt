@@ -105,140 +105,141 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             onNavigateToAppInfo = { navController.navigate(AppInfo) },
             onLogout = { viewModel.onLogoutButtonClicked() },
             onCloseDrawer = { scope.launch { drawerState.close() } },
-            isAuthenticated = mainUiState.userPubkey != null)
-      }) {
-        NavHost(navController = navController, startDestination = startDestination) {
-          composable<Login>(
-              enterTransition = { defaultEnterTransition },
-              exitTransition = { defaultExitTransition },
-              popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
-                LoginScreen(
-                    uiState = loginUiState,
-                    onLoginButtonClick = {
-                      viewModel.onLoginButtonClicked()
-                      if (nip55SignerClient.checkNip55SignerInstalled()) {
-                        val intent = nip55SignerClient.createPublicKeyIntent()
-                        nip55Launcher.launch(intent)
-                      }
-                    },
-                    onDismissDialog = { viewModel.dismissError() },
-                    onInstallNip55Signer = {
-                      // TODO: Implement Play Store link
-                    },
-                    onRetry = {
-                      viewModel.onRetryLogin()
-                      if (nip55SignerClient.checkNip55SignerInstalled()) {
-                        val intent = nip55SignerClient.createPublicKeyIntent()
-                        nip55Launcher.launch(intent)
-                      }
-                    },
-                    onLoginSuccess = {
-                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
-                      viewModel.dismissError()
-                    })
-              }
-
-          composable<Main>(
-              enterTransition = { defaultEnterTransition },
-              exitTransition = { defaultExitTransition },
-              popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
-                LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<Main> { inclusive = true } }
+            isAuthenticated = mainUiState.userPubkey != null,
+        )
+      },
+  ) {
+    NavHost(navController = navController, startDestination = startDestination) {
+      composable<Login>(
+          enterTransition = { defaultEnterTransition },
+          exitTransition = { defaultExitTransition },
+          popEnterTransition = { defaultPopEnterTransition },
+          popExitTransition = { defaultPopExitTransition }) {
+            LoginScreen(
+                uiState = loginUiState,
+                onLoginButtonClick = {
+                  viewModel.onLoginButtonClicked()
+                  if (nip55SignerClient.checkNip55SignerInstalled()) {
+                    val intent = nip55SignerClient.createPublicKeyIntent()
+                    nip55Launcher.launch(intent)
                   }
-                }
-
-                MainScreen(
-                    uiState = mainUiState,
-                    onLogout = { viewModel.onLogoutButtonClicked() },
-                    onOpenDrawer = { scope.launch { drawerState.open() } },
-                    onNavigateToLogin = {})
-              }
-
-          composable<Bookmark>(
-              enterTransition = { defaultEnterTransition },
-              exitTransition = { defaultExitTransition },
-              popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
-                val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
-                val bookmarkUiState by bookmarkViewModel.uiState.collectAsStateWithLifecycle()
-
-                LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<Bookmark> { inclusive = true } }
+                },
+                onDismissDialog = { viewModel.dismissError() },
+                onInstallNip55Signer = {
+                  // TODO: Implement Play Store link
+                },
+                onRetry = {
+                  viewModel.onRetryLogin()
+                  if (nip55SignerClient.checkNip55SignerInstalled()) {
+                    val intent = nip55SignerClient.createPublicKeyIntent()
+                    nip55Launcher.launch(intent)
                   }
-                }
+                },
+                onLoginSuccess = {
+                  navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+                  viewModel.dismissError()
+                })
+          }
 
-                BookmarkScreen(
-                    uiState = bookmarkUiState,
-                    onRefresh = { bookmarkViewModel.refresh() },
-                    onLoad = { bookmarkViewModel.loadBookmarks() },
-                    onOpenDrawer = { scope.launch { drawerState.open() } },
-                    onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
-                    onAddBookmark = { navController.navigate(PostBookmark) },
-                    viewModel = bookmarkViewModel)
+      composable<Main>(
+          enterTransition = { defaultEnterTransition },
+          exitTransition = { defaultExitTransition },
+          popEnterTransition = { defaultPopEnterTransition },
+          popExitTransition = { defaultPopExitTransition }) {
+            LaunchedEffect(mainUiState.userPubkey) {
+              if (mainUiState.userPubkey == null) {
+                navController.navigate(Login) { popUpTo<Main> { inclusive = true } }
               }
+            }
 
-          composable<PostBookmark>(
-              enterTransition = { defaultEnterTransition },
-              exitTransition = { defaultExitTransition },
-              popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
-                val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
-                val postBookmarkUiState by
-                    postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
+            MainScreen(
+                uiState = mainUiState,
+                onLogout = { viewModel.onLogoutButtonClicked() },
+                onOpenDrawer = { scope.launch { drawerState.open() } },
+                onNavigateToLogin = {})
+          }
 
-                val signEventLauncher =
-                    rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.StartActivityForResult()) { result ->
-                          postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
-                        }
+      composable<Bookmark>(
+          enterTransition = { defaultEnterTransition },
+          exitTransition = { defaultExitTransition },
+          popEnterTransition = { defaultPopEnterTransition },
+          popExitTransition = { defaultPopExitTransition }) {
+            val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
+            val bookmarkUiState by bookmarkViewModel.uiState.collectAsStateWithLifecycle()
 
-                LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<PostBookmark> { inclusive = true } }
+            LaunchedEffect(mainUiState.userPubkey) {
+              if (mainUiState.userPubkey == null) {
+                navController.navigate(Login) { popUpTo<Bookmark> { inclusive = true } }
+              }
+            }
+
+            BookmarkScreen(
+                uiState = bookmarkUiState,
+                onRefresh = { bookmarkViewModel.refresh() },
+                onLoad = { bookmarkViewModel.loadBookmarks() },
+                onOpenDrawer = { scope.launch { drawerState.open() } },
+                onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
+                onAddBookmark = { navController.navigate(PostBookmark) },
+                viewModel = bookmarkViewModel)
+          }
+
+      composable<PostBookmark>(
+          enterTransition = { defaultEnterTransition },
+          exitTransition = { defaultExitTransition },
+          popEnterTransition = { defaultPopEnterTransition },
+          popExitTransition = { defaultPopExitTransition }) {
+            val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
+            val postBookmarkUiState by postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
+
+            val signEventLauncher =
+                rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()) { result ->
+                      postBookmarkViewModel.processSignedEvent(result.resultCode, result.data)
+                    }
+
+            LaunchedEffect(mainUiState.userPubkey) {
+              if (mainUiState.userPubkey == null) {
+                navController.navigate(Login) { popUpTo<PostBookmark> { inclusive = true } }
+              }
+            }
+
+            LaunchedEffect(postBookmarkUiState.postSuccess) {
+              if (postBookmarkUiState.postSuccess) {
+                postBookmarkViewModel.resetPostSuccess()
+                navController.navigateUp()
+              }
+            }
+
+            PostBookmarkScreen(
+                uiState = postBookmarkUiState,
+                onUrlChange = { postBookmarkViewModel.updateUrl(it) },
+                onTitleChange = { postBookmarkViewModel.updateTitle(it) },
+                onCategoriesChange = { postBookmarkViewModel.updateCategories(it) },
+                onCommentChange = { postBookmarkViewModel.updateComment(it) },
+                onPostClick = {
+                  postBookmarkViewModel.prepareSignEventIntent { intent ->
+                    intent?.let { signEventLauncher.launch(it) }
                   }
-                }
+                },
+                onNavigateBack = { navController.navigateUp() },
+                onDismissError = { postBookmarkViewModel.dismissError() })
+          }
 
-                LaunchedEffect(postBookmarkUiState.postSuccess) {
-                  if (postBookmarkUiState.postSuccess) {
-                    postBookmarkViewModel.resetPostSuccess()
-                    navController.navigateUp()
-                  }
-                }
+      composable<License>(
+          enterTransition = { EnterTransition.None },
+          exitTransition = { ExitTransition.None },
+          popEnterTransition = { EnterTransition.None },
+          popExitTransition = { ExitTransition.None }) {
+            LicenseScreen(onNavigateUp = { navController.navigateUp() })
+          }
 
-                PostBookmarkScreen(
-                    uiState = postBookmarkUiState,
-                    onUrlChange = { postBookmarkViewModel.updateUrl(it) },
-                    onTitleChange = { postBookmarkViewModel.updateTitle(it) },
-                    onCategoriesChange = { postBookmarkViewModel.updateCategories(it) },
-                    onCommentChange = { postBookmarkViewModel.updateComment(it) },
-                    onPostClick = {
-                      postBookmarkViewModel.prepareSignEventIntent { intent ->
-                        intent?.let { signEventLauncher.launch(it) }
-                      }
-                    },
-                    onNavigateBack = { navController.navigateUp() },
-                    onDismissError = { postBookmarkViewModel.dismissError() })
-              }
-
-          composable<License>(
-              enterTransition = { EnterTransition.None },
-              exitTransition = { ExitTransition.None },
-              popEnterTransition = { EnterTransition.None },
-              popExitTransition = { ExitTransition.None }) {
-                LicenseScreen(onNavigateUp = { navController.navigateUp() })
-              }
-
-          composable<AppInfo>(
-              enterTransition = { EnterTransition.None },
-              exitTransition = { ExitTransition.None },
-              popEnterTransition = { EnterTransition.None },
-              popExitTransition = { ExitTransition.None }) {
-                AppInfoScreen(onNavigateUp = { navController.navigateUp() })
-              }
-        }
-      }
+      composable<AppInfo>(
+          enterTransition = { EnterTransition.None },
+          exitTransition = { ExitTransition.None },
+          popEnterTransition = { EnterTransition.None },
+          popExitTransition = { ExitTransition.None }) {
+            AppInfoScreen(onNavigateUp = { navController.navigateUp() })
+          }
+    }
+  }
 }
