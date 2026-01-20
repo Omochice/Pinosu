@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.data.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
+import io.github.omochice.pinosu.domain.usecase.GetDisplayModeUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
  *
  * @property getBookmarkListUseCase UseCase for fetching bookmark list
  * @property getLoginStateUseCase UseCase for retrieving current login state
+ * @property getDisplayModeUseCase UseCase for retrieving display mode preference
  */
 @HiltViewModel
 class BookmarkViewModel
@@ -28,10 +30,21 @@ class BookmarkViewModel
 constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
     private val getLoginStateUseCase: GetLoginStateUseCase,
+    private val getDisplayModeUseCase: GetDisplayModeUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(BookmarkUiState())
   val uiState: StateFlow<BookmarkUiState> = _uiState.asStateFlow()
+
+  init {
+    loadDisplayMode()
+  }
+
+  /** Load display mode preference from settings */
+  private fun loadDisplayMode() {
+    val displayMode = getDisplayModeUseCase()
+    _uiState.update { it.copy(displayMode = displayMode) }
+  }
 
   /**
    * Load bookmarks for the current logged-in user

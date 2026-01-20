@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 
 /**
@@ -13,6 +14,7 @@ import io.github.omochice.pinosu.domain.model.BookmarkItem
  * @property urlOpenError Error message when URL opening fails
  * @property selectedTab Currently selected filter tab (Local or Global)
  * @property userHexPubkey Hex-encoded pubkey of logged-in user for local filtering
+ * @property displayMode Current display mode for bookmark list (List or Grid)
  */
 data class BookmarkUiState(
     val isLoading: Boolean = false,
@@ -23,4 +25,5 @@ data class BookmarkUiState(
     val urlOpenError: String? = null,
     val selectedTab: BookmarkFilterMode = BookmarkFilterMode.Local,
     val userHexPubkey: String? = null,
+    val displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
 )

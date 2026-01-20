@@ -1,12 +1,15 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
+import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
+import io.github.omochice.pinosu.domain.usecase.GetDisplayModeUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,12 +30,14 @@ import org.junit.Test
  * Tests cover:
  * - Multiple URLs dialog state management
  * - Error dialog state management
+ * - Display mode initialization
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkViewModelTest {
 
   private lateinit var getBookmarkListUseCase: GetBookmarkListUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
+  private lateinit var getDisplayModeUseCase: GetDisplayModeUseCase
   private lateinit var viewModel: BookmarkViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -42,7 +47,10 @@ class BookmarkViewModelTest {
     Dispatchers.setMain(testDispatcher)
     getBookmarkListUseCase = mockk(relaxed = true)
     getLoginStateUseCase = mockk(relaxed = true)
-    viewModel = BookmarkViewModel(getBookmarkListUseCase, getLoginStateUseCase)
+    getDisplayModeUseCase = mockk()
+    every { getDisplayModeUseCase() } returns BookmarkDisplayMode.List
+    viewModel =
+        BookmarkViewModel(getBookmarkListUseCase, getLoginStateUseCase, getDisplayModeUseCase)
   }
 
   @After
