@@ -104,7 +104,9 @@ fun BookmarkScreen(
               title = { Text(stringResource(R.string.title_bookmarks)) },
               navigationIcon = {
                 IconButton(onClick = onOpenDrawer) {
-                  Icon(imageVector = Icons.Default.Menu, contentDescription = "Open menu")
+                  Icon(
+                      imageVector = Icons.Default.Menu,
+                      contentDescription = stringResource(R.string.cd_open_menu))
                 }
               })
           PrimaryTabRow(
@@ -122,7 +124,9 @@ fun BookmarkScreen(
       },
       floatingActionButton = {
         FloatingActionButton(onClick = onAddBookmark) {
-          Icon(imageVector = Icons.Filled.Add, contentDescription = "Add bookmark")
+          Icon(
+              imageVector = Icons.Filled.Add,
+              contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
         PullToRefreshBox(
@@ -255,7 +259,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
 
           if (bookmark.urls.isNotEmpty()) {
             Text(
-                text = "URLs (${bookmark.urls.size})",
+                text = stringResource(R.string.url_count, bookmark.urls.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.tertiary)
             Spacer(modifier = Modifier.height(4.dp))
@@ -283,7 +287,7 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
           if (bookmark.titleSource == "metadata") {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "(Title from OG metadata)",
+                text = stringResource(R.string.title_from_metadata),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary)
           }
