@@ -8,6 +8,8 @@ import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCaseImpl
+import io.github.omochice.pinosu.domain.usecase.GetDisplayModeUseCase
+import io.github.omochice.pinosu.domain.usecase.GetDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
@@ -16,6 +18,8 @@ import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
+import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
+import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCaseImpl
 
 /**
  * Hilt module for UseCase dependency injection
@@ -40,4 +44,10 @@ abstract class UseCaseModule {
   abstract fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
 
   @Binds abstract fun bindPostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase
+
+  @Binds
+  abstract fun bindGetDisplayModeUseCase(impl: GetDisplayModeUseCaseImpl): GetDisplayModeUseCase
+
+  @Binds
+  abstract fun bindSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase
 }
