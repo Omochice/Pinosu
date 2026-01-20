@@ -50,7 +50,7 @@ fun SettingsScreen(
               IconButton(onClick = onNavigateUp) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Navigate up")
+                    contentDescription = stringResource(R.string.cd_navigate_up))
               }
             })
       }) { paddingValues ->
