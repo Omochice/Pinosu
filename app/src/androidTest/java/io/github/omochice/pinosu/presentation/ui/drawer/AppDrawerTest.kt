@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -14,6 +15,7 @@ import org.junit.Test
  * Tests cover:
  * - Drawer rendering with all menu items
  * - Menu item click handling
+ * - Authentication state affecting logout button
  */
 class AppDrawerTest {
 
@@ -65,5 +67,60 @@ class AppDrawerTest {
     composeTestRule.onNodeWithText("ログアウト").performClick()
     assertTrue("Logout should be triggered", logoutClicked)
     assertTrue("Drawer should be closed after logout click", drawerClosed)
+  }
+
+  @Test
+  fun `AppDrawer should enable logout when authenticated`() {
+    var logoutClicked = false
+
+    composeTestRule.setContent {
+      AppDrawer(
+          onNavigateToLicense = {},
+          onNavigateToAppInfo = {},
+          onLogout = { logoutClicked = true },
+          onCloseDrawer = {},
+          isAuthenticated = true)
+    }
+
+    composeTestRule.onNodeWithText("ログアウト").performClick()
+    assertTrue("Logout should be clickable when authenticated", logoutClicked)
+  }
+
+  @Test
+  fun `AppDrawer should disable logout when not authenticated`() {
+    var logoutClicked = false
+
+    composeTestRule.setContent {
+      AppDrawer(
+          onNavigateToLicense = {},
+          onNavigateToAppInfo = {},
+          onLogout = { logoutClicked = true },
+          onCloseDrawer = {},
+          isAuthenticated = false)
+    }
+
+    composeTestRule.onNodeWithText("ログアウト").performClick()
+    assertFalse("Logout should not be clickable when not authenticated", logoutClicked)
+  }
+
+  @Test
+  fun `AppDrawer should always enable license and app info menus`() {
+    var licenseClicked = false
+    var appInfoClicked = false
+
+    composeTestRule.setContent {
+      AppDrawer(
+          onNavigateToLicense = { licenseClicked = true },
+          onNavigateToAppInfo = { appInfoClicked = true },
+          onLogout = {},
+          onCloseDrawer = {},
+          isAuthenticated = false)
+    }
+
+    composeTestRule.onNodeWithText("ライセンス").performClick()
+    assertTrue("License should be clickable even when not authenticated", licenseClicked)
+
+    composeTestRule.onNodeWithText("アプリ情報").performClick()
+    assertTrue("App info should be clickable even when not authenticated", appInfoClicked)
   }
 }
