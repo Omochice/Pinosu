@@ -32,6 +32,7 @@ import io.github.omochice.pinosu.R
  * @param onNavigateToAppInfo Callback when App Info menu is clicked
  * @param onLogout Callback when Logout menu is clicked
  * @param onCloseDrawer Callback to close the drawer after navigation
+ * @param isAuthenticated Whether the user is authenticated. When false, logout is disabled.
  * @param modifier Modifier for this composable
  */
 @Composable
@@ -40,7 +41,8 @@ fun AppDrawer(
     onNavigateToAppInfo: () -> Unit,
     onLogout: () -> Unit,
     onCloseDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    isAuthenticated: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
   ModalDrawerSheet(modifier = modifier.fillMaxSize()) {
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
@@ -74,10 +76,12 @@ fun AppDrawer(
       DrawerMenuItem(
           icon = Icons.AutoMirrored.Filled.ExitToApp,
           text = stringResource(R.string.menu_logout),
+          enabled = isAuthenticated,
           onClick = {
             onCloseDrawer()
             onLogout()
-          })
+          },
+      )
     }
   }
 }
