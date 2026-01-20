@@ -27,25 +27,33 @@ import androidx.compose.ui.unit.dp
  * @param text Text label for the menu item
  * @param onClick Callback when the item is clicked
  * @param modifier Modifier for this composable
+ * @param enabled Whether the menu item is enabled and clickable
  */
 @Composable
 fun DrawerMenuItem(
     icon: ImageVector,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
+  val contentColor =
+      if (enabled) {
+        MaterialTheme.colorScheme.primary
+      } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+      }
+
   Row(
       modifier =
           modifier
               .fillMaxWidth()
-              .clickable(onClick = onClick)
+              .clickable(enabled = enabled, onClick = onClick)
               .padding(horizontal = 16.dp, vertical = 12.dp),
       verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = icon, contentDescription = text, tint = MaterialTheme.colorScheme.primary)
+        Icon(imageVector = icon, contentDescription = text, tint = contentColor)
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
+        Text(text = text, style = MaterialTheme.typography.bodyLarge, color = contentColor)
       }
 }
 
