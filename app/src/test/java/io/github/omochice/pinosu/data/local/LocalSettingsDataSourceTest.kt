@@ -86,4 +86,11 @@ class LocalSettingsDataSourceTest {
     verify { editor.putString(LocalSettingsDataSource.KEY_DISPLAY_MODE, "Grid") }
     verify { editor.apply() }
   }
+
+  @Test
+  fun `setDisplayMode updates displayModeFlow with new value`() {
+    dataSource.setDisplayMode(BookmarkDisplayMode.Grid)
+
+    assertEquals(BookmarkDisplayMode.Grid, dataSource.displayModeFlow.value)
+  }
 }
