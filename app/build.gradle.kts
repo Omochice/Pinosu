@@ -9,6 +9,19 @@ val versionProps =
       }
     }
 
+val gitCommitHash =
+    System.getenv("GITHUB_SHA")?.take(7)
+        ?: providers
+            .exec {
+              commandLine("git", "rev-parse", "--short", "HEAD")
+              isIgnoreExitValue = true
+            }
+            .standardOutput
+            .asText
+            .getOrElse("")
+            .trim()
+            .ifEmpty { "unknown" }
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.detekt)
@@ -31,6 +44,8 @@ android {
     targetSdk = 36
     versionCode = (versionProps["VERSION_CODE"] as String?)?.toIntOrNull() ?: 1
     versionName = (versionProps["VERSION_NAME"] as String?) ?: "0.1.0"
+
+    buildConfigField("String", "COMMIT_HASH", "\"$gitCommitHash\"")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -58,7 +73,10 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  buildFeatures { compose = true }
+  buildFeatures {
+    buildConfig = true
+    compose = true
+  }
   testOptions { unitTests.isReturnDefaultValues = true }
   packaging {
     resources {
