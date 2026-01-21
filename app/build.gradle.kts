@@ -1,3 +1,14 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+val versionPropsFile = rootProject.file("version.properties")
+val versionProps =
+    Properties().apply {
+      if (versionPropsFile.exists()) {
+        load(FileInputStream(versionPropsFile))
+      }
+    }
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.detekt)
@@ -18,16 +29,29 @@ android {
     applicationId = "io.github.omochice.pinosu"
     minSdk = 26
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = (versionProps["VERSION_CODE"] as String?)?.toIntOrNull() ?: 1
+    versionName = (versionProps["VERSION_NAME"] as String?) ?: "0.1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  signingConfigs {
+    create("release") {
+      val keystoreFile = file("release.keystore")
+      if (keystoreFile.exists()) {
+        storeFile = keystoreFile
+        storePassword = System.getenv("KEYSTORE_PASSWORD")
+        keyAlias = System.getenv("KEY_ALIAS")
+        keyPassword = System.getenv("KEY_PASSWORD")
+      }
+    }
   }
 
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
   compileOptions {
