@@ -107,8 +107,7 @@ constructor(
         val user = result.getOrNull()
 
         // Fetch NIP-65 relay list and wait for completion before login success
-        val pubkey = user?.pubkey
-        if (pubkey != null) {
+        user?.pubkey?.let { pubkey ->
           val relayResult = fetchRelayListUseCase(pubkey)
           if (relayResult.isFailure) {
             Log.w(

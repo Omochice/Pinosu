@@ -98,7 +98,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
             viewModel.processNip55Response(result.resultCode, result.data)
           }
 
-  val startDestination: Route = if (mainUiState.userPubkey != null) Bookmark else Login
+  val startDestination: Route = mainUiState.userPubkey?.let { Bookmark } ?: Login
 
   ModalNavigationDrawer(
       drawerState = drawerState,
@@ -148,9 +148,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               popEnterTransition = { defaultPopEnterTransition },
               popExitTransition = { defaultPopExitTransition }) {
                 LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<Main> { inclusive = true } }
-                  }
+                  mainUiState.userPubkey
+                      ?: navController.navigate(Login) { popUpTo<Main> { inclusive = true } }
                 }
 
                 MainScreen(
@@ -169,9 +168,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                 val bookmarkUiState by bookmarkViewModel.uiState.collectAsStateWithLifecycle()
 
                 LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<Bookmark> { inclusive = true } }
-                  }
+                  mainUiState.userPubkey
+                      ?: navController.navigate(Login) { popUpTo<Bookmark> { inclusive = true } }
                 }
 
                 BookmarkScreen(
@@ -200,9 +198,10 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                         }
 
                 LaunchedEffect(mainUiState.userPubkey) {
-                  if (mainUiState.userPubkey == null) {
-                    navController.navigate(Login) { popUpTo<PostBookmark> { inclusive = true } }
-                  }
+                  mainUiState.userPubkey
+                      ?: navController.navigate(Login) {
+                        popUpTo<PostBookmark> { inclusive = true }
+                      }
                 }
 
                 LaunchedEffect(postBookmarkUiState.postSuccess) {

@@ -60,16 +60,17 @@ constructor(
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-      val user = getLoginStateUseCase()
-      if (user == null) {
-        _uiState.value =
-            _uiState.value.copy(
-                isLoading = false,
-                error = "Not logged in",
-                allBookmarks = emptyList(),
-                bookmarks = emptyList())
-        return@launch
-      }
+      val user =
+          getLoginStateUseCase()
+              ?: run {
+                _uiState.value =
+                    _uiState.value.copy(
+                        isLoading = false,
+                        error = "Not logged in",
+                        allBookmarks = emptyList(),
+                        bookmarks = emptyList())
+                return@launch
+              }
 
       val userHexPubkey = Bech32.npubToHex(user.pubkey)
 
