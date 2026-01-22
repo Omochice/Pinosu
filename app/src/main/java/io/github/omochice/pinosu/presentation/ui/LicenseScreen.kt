@@ -10,10 +10,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import io.github.omochice.pinosu.R
 
 /**
@@ -26,6 +29,10 @@ import io.github.omochice.pinosu.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicenseScreen(onNavigateUp: () -> Unit) {
+  val context = LocalContext.current
+  val libraries by produceLibraries {
+    context.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().readText()
+  }
   Scaffold(
       topBar = {
         TopAppBar(
@@ -38,7 +45,7 @@ fun LicenseScreen(onNavigateUp: () -> Unit) {
               }
             })
       }) { paddingValues ->
-        LibrariesContainer(modifier = Modifier.padding(paddingValues))
+        LibrariesContainer(libraries, modifier = Modifier.padding(paddingValues))
       }
 }
 
