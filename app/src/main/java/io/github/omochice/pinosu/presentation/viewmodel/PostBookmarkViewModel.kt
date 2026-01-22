@@ -142,11 +142,14 @@ constructor(
         .handleSignEventResponse(resultCode, data)
         .onSuccess { response ->
           viewModelScope.launch {
-            val signedEventJson = buildSignedEventJson(response.signedEventJson)
-            if (signedEventJson == null) {
-              _uiState.update { it.copy(isSubmitting = false, errorMessage = "署名済みイベントの構築に失敗しました") }
-              return@launch
-            }
+            val signedEventJson =
+                buildSignedEventJson(response.signedEventJson)
+                    ?: run {
+                      _uiState.update {
+                        it.copy(isSubmitting = false, errorMessage = "署名済みイベントの構築に失敗しました")
+                      }
+                      return@launch
+                    }
 
             postBookmarkUseCase
                 .publishSignedEvent(signedEventJson)

@@ -57,9 +57,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
       return Result.failure(Nip55Error.UserRejected)
     }
 
-    if (data == null) {
-      return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
-    }
+    data ?: return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
 
     val rejected = data.getBooleanExtra("rejected", false)
     if (rejected) {
@@ -128,9 +126,7 @@ class Nip55SignerClient @Inject constructor(@ApplicationContext private val cont
       return Result.failure(Nip55Error.UserRejected)
     }
 
-    if (data == null) {
-      return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
-    }
+    data ?: return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
 
     val rejected = data.getBooleanExtra("rejected", false)
     if (rejected) {

@@ -27,10 +27,8 @@ constructor(
       categories: List<String>,
       comment: String
   ): Result<UnsignedNostrEvent> {
-    val user = getLoginStateUseCase()
-    if (user == null) {
-      return Result.failure(IllegalStateException("User not logged in"))
-    }
+    val user =
+        getLoginStateUseCase() ?: return Result.failure(IllegalStateException("User not logged in"))
 
     val hexPubkey =
         Bech32.npubToHex(user.pubkey)
