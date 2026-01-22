@@ -37,31 +37,23 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
    *
    * @return AuthData from legacy storage, or null if empty or read fails
    */
-  @Suppress("ReturnCount")
-  fun readLegacyData(): AuthData? {
-    return try {
-      val prefs = legacyPrefs ?: return null
-      val pubkey = prefs.getString(KEY_USER_PUBKEY, null) ?: return null
+  fun readLegacyData(): AuthData? =
+      runCatching {
+            val prefs = legacyPrefs ?: return@runCatching null
+            val pubkey = prefs.getString(KEY_USER_PUBKEY, null) ?: return@runCatching null
 
-      val relayListJson = prefs.getString(KEY_RELAY_LIST, null)
-      val relayList =
-          relayListJson?.let {
-            try {
-              json.decodeFromString<List<RelayConfig>>(it)
-            } catch (_: Exception) {
-              null
-            }
+            val relayList =
+                prefs.getString(KEY_RELAY_LIST, null)?.let { relayJson ->
+                  runCatching { json.decodeFromString<List<RelayConfig>>(relayJson) }.getOrNull()
+                }
+
+            AuthData(
+                userPubkey = pubkey,
+                createdAt = prefs.getLong(KEY_CREATED_AT, 0L),
+                lastAccessed = prefs.getLong(KEY_LAST_ACCESSED, 0L),
+                relayList = relayList)
           }
-
-      AuthData(
-          userPubkey = pubkey,
-          createdAt = prefs.getLong(KEY_CREATED_AT, 0L),
-          lastAccessed = prefs.getLong(KEY_LAST_ACCESSED, 0L),
-          relayList = relayList)
-    } catch (_: Exception) {
-      null
-    }
-  }
+          .getOrNull()
 
   /**
    * Delete old EncryptedSharedPreferences data after successful migration
