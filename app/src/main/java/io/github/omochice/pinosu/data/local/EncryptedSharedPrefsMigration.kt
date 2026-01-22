@@ -39,19 +39,21 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
    */
   fun readLegacyData(): AuthData? =
       runCatching {
-            val prefs = legacyPrefs ?: return@runCatching null
-            val pubkey = prefs.getString(KEY_USER_PUBKEY, null) ?: return@runCatching null
+            legacyPrefs?.let { prefs ->
+              prefs.getString(KEY_USER_PUBKEY, null)?.let { pubkey ->
+                val relayList =
+                    prefs.getString(KEY_RELAY_LIST, null)?.let { relayJson ->
+                      runCatching { json.decodeFromString<List<RelayConfig>>(relayJson) }
+                          .getOrNull()
+                    }
 
-            val relayList =
-                prefs.getString(KEY_RELAY_LIST, null)?.let { relayJson ->
-                  runCatching { json.decodeFromString<List<RelayConfig>>(relayJson) }.getOrNull()
-                }
-
-            AuthData(
-                userPubkey = pubkey,
-                createdAt = prefs.getLong(KEY_CREATED_AT, 0L),
-                lastAccessed = prefs.getLong(KEY_LAST_ACCESSED, 0L),
-                relayList = relayList)
+                AuthData(
+                    userPubkey = pubkey,
+                    createdAt = prefs.getLong(KEY_CREATED_AT, 0L),
+                    lastAccessed = prefs.getLong(KEY_LAST_ACCESSED, 0L),
+                    relayList = relayList)
+              }
+            }
           }
           .getOrNull()
 
