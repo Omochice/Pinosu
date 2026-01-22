@@ -27,7 +27,7 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
   fun needsMigration(): Boolean {
     return try {
       legacyPrefs?.contains(KEY_USER_PUBKEY) == true
-    } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+    } catch (_: Exception) {
       false
     }
   }
@@ -48,7 +48,7 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
           relayListJson?.let {
             try {
               json.decodeFromString<List<RelayConfig>>(it)
-            } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+            } catch (_: Exception) {
               null
             }
           }
@@ -58,7 +58,7 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
           createdAt = prefs.getLong(KEY_CREATED_AT, 0L),
           lastAccessed = prefs.getLong(KEY_LAST_ACCESSED, 0L),
           relayList = relayList)
-    } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+    } catch (_: Exception) {
       null
     }
   }
@@ -68,17 +68,16 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
    *
    * Clears all data from the legacy storage.
    */
-  @Suppress("SwallowedException", "TooGenericExceptionCaught")
   fun clearLegacyData() {
     try {
       legacyPrefs?.edit()?.clear()?.apply()
       context.deleteSharedPreferences(PREF_FILE_NAME)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       // Best effort deletion, ignore errors
     }
   }
 
-  @Suppress("DEPRECATION", "SwallowedException", "TooGenericExceptionCaught")
+  @Suppress("DEPRECATION")
   private fun createLegacyPrefs(): SharedPreferences? {
     return try {
       val masterKey =
@@ -89,7 +88,7 @@ class EncryptedSharedPrefsMigration(private val context: Context) {
           masterKey,
           EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
           EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       null
     }
   }
