@@ -82,7 +82,7 @@ constructor(
       }
 
       User(pubkey)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       null
     }
   }
@@ -111,7 +111,7 @@ constructor(
     ensureMigrated()
     return try {
       activeDataStore.data.first().relayList
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       null
     }
   }
@@ -145,7 +145,7 @@ constructor(
           }
           migration.clearLegacyData()
         }
-      } catch (e: Exception) {
+      } catch (_: Exception) {
         // Migration failed, continue with empty data
       }
 
