@@ -25,7 +25,7 @@ class AuthDataSerializer(private val aead: Aead) : Serializer<AuthData> {
     return try {
       val decryptedBytes = aead.decrypt(encryptedBytes, ASSOCIATED_DATA)
       Json.decodeFromString<AuthData>(decryptedBytes.decodeToString())
-    } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+    } catch (_: Exception) {
       defaultValue
     }
   }
