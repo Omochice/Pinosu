@@ -31,7 +31,7 @@ import io.github.omochice.pinosu.R
 fun LicenseScreen(onNavigateUp: () -> Unit) {
   val context = LocalContext.current
   val libraries by produceLibraries {
-    context.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().readText()
+    context.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
   }
   Scaffold(
       topBar = {
