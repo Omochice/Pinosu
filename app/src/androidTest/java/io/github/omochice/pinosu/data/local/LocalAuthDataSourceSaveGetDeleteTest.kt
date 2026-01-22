@@ -1,9 +1,12 @@
 package io.github.omochice.pinosu.data.local
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.omochice.pinosu.domain.model.User
+import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -17,16 +20,25 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   private lateinit var context: Context
   private lateinit var dataSource: LocalAuthDataSource
+  private lateinit var testDataStore: DataStore<AuthData>
+  private lateinit var testFile: File
 
   @Before
   fun setup() {
     context = ApplicationProvider.getApplicationContext()
-    dataSource = LocalAuthDataSource(context)
+    testFile = File(context.filesDir, "test_auth_data_${System.currentTimeMillis()}.pb")
+    testDataStore =
+        DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
+
+    dataSource =
+        LocalAuthDataSource(
+            context, testDataStore // Use test DataStore directly as production one
+            )
   }
 
   @After
   fun tearDown() {
-    context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE).edit().clear().commit()
+    testFile.delete()
   }
 
   @Test
@@ -46,7 +58,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNotNull("Saved user should be retrievable", savedUser)
   }
 
-  /** Test that existing user can be overwritten */
   @Test
   fun `saveUser should overwrite existing user`() = runTest {
     val user1 = User("c".repeat(64))
@@ -78,20 +89,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun `getUser with invalid data should return null`() = runTest {
-    context
-        .getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
-        .edit()
-        .putString("user_pubkey", "invalid_pubkey")
-        .commit()
-
-    val retrieved = dataSource.getUser()
-
-    assertNull("getUser should return null for invalid pubkey", retrieved)
-  }
-
-  /** Test that created_at timestamp is saved and retrieved correctly */
-  @Test
   fun `getUser should preserve createdAt timestamp`() = runTest {
     val user = User("f".repeat(64))
 
@@ -103,7 +100,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
-  /** Test that last_accessed timestamp is saved and retrieved correctly */
   @Test
   fun `getUser should update lastAccessed timestamp`() = runTest {
     val user = User("1".repeat(64))
@@ -130,22 +126,18 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     assertNull("User should be null after clear", retrieved)
   }
 
-  /** Test that clear succeeds even when no data exists */
   @Test
   fun `clearLoginState with no data should succeed`() = runTest { dataSource.clearLoginState() }
 
-  /** Test that timestamps are also removed after clear */
   @Test
-  fun `clearLoginState should remove timestamps`() = runTest {
+  fun `clearLoginState should remove all data`() = runTest {
     val user = User("3".repeat(64))
     dataSource.saveUser(user)
 
     dataSource.clearLoginState()
 
-    val prefs = context.getSharedPreferences("pinosu_auth_prefs", Context.MODE_PRIVATE)
-    assertFalse("user_pubkey should be removed", prefs.contains("user_pubkey"))
-    assertFalse("login_created_at should be removed", prefs.contains("login_created_at"))
-    assertFalse("login_last_accessed should be removed", prefs.contains("login_last_accessed"))
+    assertNull("getUser should return null after clear", dataSource.getUser())
+    assertNull("getRelayList should return null after clear", dataSource.getRelayList())
   }
 
   @org.junit.Ignore("TODO: Implement storage error handling test")

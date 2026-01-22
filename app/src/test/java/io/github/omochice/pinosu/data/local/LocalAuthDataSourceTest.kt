@@ -1,7 +1,11 @@
 package io.github.omochice.pinosu.data.local
 
-import android.content.Context
+import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.data.relay.RelayConfig
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -16,24 +20,36 @@ import org.robolectric.annotation.Config
 /**
  * Unit tests for [LocalAuthDataSource]
  *
- * Tests relay list caching functionality including save, retrieve, and clear operations. Uses real
- * SharedPreferences through Robolectric to test actual JSON serialization behavior.
+ * Tests relay list caching functionality including save, retrieve, and clear operations. Uses mock
+ * DataStore to test data operations without encryption.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class LocalAuthDataSourceTest {
 
-  private lateinit var sharedPreferences: android.content.SharedPreferences
   private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var testDataStore: DataStore<AuthData>
+  private lateinit var dataFlow: MutableStateFlow<AuthData>
 
   @Before
   fun setup() {
     val context = RuntimeEnvironment.getApplication()
-    sharedPreferences = context.getSharedPreferences("test_prefs", Context.MODE_PRIVATE)
-    sharedPreferences.edit().clear().commit()
+    dataFlow = MutableStateFlow(AuthData.DEFAULT)
 
-    localAuthDataSource = LocalAuthDataSource(context)
-    localAuthDataSource.setTestSharedPreferences(sharedPreferences)
+    testDataStore = mockk {
+      every { data } returns dataFlow
+      coEvery { updateData(any()) } coAnswers
+          {
+            val transform = firstArg<suspend (AuthData) -> AuthData>()
+            val newValue = transform(dataFlow.value)
+            dataFlow.value = newValue
+            newValue
+          }
+    }
+
+    val productionDataStore = mockk<DataStore<AuthData>>()
+    localAuthDataSource = LocalAuthDataSource(context, productionDataStore)
+    localAuthDataSource.setTestDataStore(testDataStore)
   }
 
   @Test
@@ -58,9 +74,11 @@ class LocalAuthDataSourceTest {
 
   @Test
   fun `getRelayList when saved should return relays`() = runTest {
-    val jsonString =
-        """[{"url":"wss://relay1.example.com","read":true,"write":true},{"url":"wss://relay2.example.com","read":true,"write":false}]"""
-    sharedPreferences.edit().putString("relay_list", jsonString).commit()
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://relay1.example.com", read = true, write = true),
+            RelayConfig(url = "wss://relay2.example.com", read = true, write = false))
+    dataFlow.value = AuthData(relayList = relays)
 
     val result = localAuthDataSource.getRelayList()
 
@@ -82,10 +100,11 @@ class LocalAuthDataSourceTest {
 
   @Test
   fun `clearLoginState should clear relay list`() = runTest {
-    sharedPreferences.edit().putString("relay_list", "test").commit()
+    dataFlow.value =
+        AuthData(relayList = listOf(RelayConfig(url = "test", read = true, write = true)))
 
     localAuthDataSource.clearLoginState()
 
-    assertNull("relay_list should be cleared", sharedPreferences.getString("relay_list", null))
+    assertNull("relay_list should be cleared", dataFlow.value.relayList)
   }
 }

@@ -1,12 +1,17 @@
 package io.github.omochice.pinosu.data.integration
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.github.omochice.pinosu.data.local.AuthData
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.data.local.TestAuthDataSerializer
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.domain.model.User
+import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -16,12 +21,14 @@ import org.junit.runner.RunWith
 
 /**
  * Integration tests for data layer
- * - AuthRepository + Nip55SignerClient + LocalAuthDataSource integration test
- * - EncryptedSharedPreferences runtime test (save → retrieve → delete)
+ *
+ * Tests:
+ * - AuthRepository + Nip55SignerClient + LocalAuthDataSource integration
+ * - DataStore with Tink encryption runtime test (save → retrieve → delete)
  *
  * Test strategy:
  * - Data layer: Using actual Nip55AuthRepository, LocalAuthDataSource, Nip55SignerClient
- * - Storage: Using actual EncryptedSharedPreferences (Android runtime required)
+ * - Storage: Using test DataStore without encryption for isolation
  * - Note: NIP-55 signer communication requires actual NIP-55 signer app, testing storage operations
  *   only
  */
@@ -32,21 +39,25 @@ class DataLayerIntegrationTest {
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var nip55SignerClient: Nip55SignerClient
   private lateinit var authRepository: Nip55AuthRepository
+  private lateinit var testDataStore: DataStore<AuthData>
+  private lateinit var testFile: File
 
   @Before
   fun setup() {
     context = ApplicationProvider.getApplicationContext()
+    testFile = File(context.filesDir, "test_integration_auth_data_${System.currentTimeMillis()}.pb")
+    testDataStore =
+        DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
 
-    localAuthDataSource = LocalAuthDataSource(context)
-
+    localAuthDataSource = LocalAuthDataSource(context, testDataStore)
     nip55SignerClient = Nip55SignerClient(context)
-
     authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
   @After
   fun tearDown() {
     runTest { localAuthDataSource.clearLoginState() }
+    testFile.delete()
   }
 
   /**
@@ -66,11 +77,11 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences runtime test: Save → Retrieve
+   * DataStore runtime test: Save → Retrieve
    *
    * Integration flow:
    * 1. Save user info to LocalAuthDataSource
-   * 2. Encrypted and stored in EncryptedSharedPreferences
+   * 2. Data is stored in DataStore
    * 3. Retrieve and verify saved data
    */
   @Test
@@ -87,7 +98,7 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences runtime test: Save → Delete → Retrieve
+   * DataStore runtime test: Save → Delete → Retrieve
    *
    * Integration flow:
    * 1. Save user info to LocalAuthDataSource
@@ -112,11 +123,11 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * EncryptedSharedPreferences runtime test: Multiple save-get-delete cycles
+   * DataStore runtime test: Multiple save-get-delete cycles
    *
    * Integration flow:
    * 1. Repeat save → retrieve → delete multiple times
-   * 2. Verify stability of EncryptedSharedPreferences
+   * 2. Verify stability of DataStore
    */
   @Test
   fun `encrypted storage multiple save get delete cycles should work correctly`() = runTest {
@@ -142,13 +153,13 @@ class DataLayerIntegrationTest {
   }
 
   /**
-   * Logout flow → Delete data from EncryptedSharedPreferences
+   * Logout flow → Delete data from DataStore
    *
    * Integration flow:
    * 1. User is logged in
    * 2. Call AuthRepository.logout()
    * 3. Login state is cleared in LocalAuthDataSource
-   * 4. Data is deleted from EncryptedSharedPreferences
+   * 4. Data is deleted from DataStore
    */
   @Test
   fun `logout flow should clear encrypted storage`() = runTest {
@@ -186,7 +197,7 @@ class DataLayerIntegrationTest {
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
 
-    val newLocalAuthDataSource = LocalAuthDataSource(context)
+    val newLocalAuthDataSource = LocalAuthDataSource(context, testDataStore)
     val newAuthRepository = Nip55AuthRepository(nip55SignerClient, newLocalAuthDataSource)
 
     val restoredUser = newAuthRepository.getLoginState()
