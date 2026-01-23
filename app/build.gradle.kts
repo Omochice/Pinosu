@@ -73,6 +73,8 @@ dependencies {
   implementation(libs.quartz)
 
   implementation(libs.androidx.security.crypto)
+  implementation(libs.androidx.datastore)
+  implementation(libs.tink.android)
 
   implementation(libs.okhttp)
   implementation(libs.jsoup)
@@ -94,7 +96,7 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
-
+  androidTestImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.mockk)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")

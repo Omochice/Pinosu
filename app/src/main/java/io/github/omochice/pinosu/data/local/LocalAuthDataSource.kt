@@ -1,9 +1,7 @@
 package io.github.omochice.pinosu.data.local
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.datastore.core.DataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.domain.model.User
@@ -11,46 +9,35 @@ import io.github.omochice.pinosu.domain.model.error.StorageError
 import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Local authentication data data source
  *
- * Uses EncryptedSharedPreferences to securely store and retrieve user's public keys.
+ * Uses DataStore with Tink AEAD encryption to securely store and retrieve user's public keys. Data
+ * is encrypted using AES256-GCM before being written to disk.
  */
 @Singleton
-class LocalAuthDataSource @Inject constructor(@ApplicationContext private val context: Context) {
-  private val sharedPreferences: SharedPreferences by lazy {
-    testSharedPreferences ?: createEncryptedSharedPreferences(context)
-  }
+class LocalAuthDataSource
+@Inject
+constructor(
+    @ApplicationContext private val context: Context,
+    private val dataStore: DataStore<AuthData>
+) {
 
-  private var testSharedPreferences: SharedPreferences? = null
+  private val migrationMutex = Mutex()
+  private var migrationCompleted = false
 
-  /** For testing only - sets SharedPreferences before first access */
-  internal fun setTestSharedPreferences(prefs: SharedPreferences) {
-    testSharedPreferences = prefs
-  }
+  private var testDataStore: DataStore<AuthData>? = null
 
-  companion object {
-    // NOTE: Eager initialization (e.g., `Json { }` directly) causes AEADBadTagException
-    // because kotlinx.serialization's static initialization interferes with
-    // Android Keystore operations during EncryptedSharedPreferences creation.
-    private val json by lazy { Json { ignoreUnknownKeys = true } }
-    internal const val KEY_USER_PUBKEY = "user_pubkey"
-    internal const val KEY_CREATED_AT = "login_created_at"
-    internal const val KEY_LAST_ACCESSED = "login_last_accessed"
-    internal const val KEY_RELAY_LIST = "relay_list"
+  private val activeDataStore: DataStore<AuthData>
+    get() = testDataStore ?: dataStore
 
-    private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
-      val masterKey =
-          MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-      return EncryptedSharedPreferences.create(
-          context,
-          "pinosu_auth_prefs",
-          masterKey,
-          EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-          EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
-    }
+  /** For testing only - sets DataStore before first access */
+  internal fun setTestDataStore(dataStore: DataStore<AuthData>) {
+    testDataStore = dataStore
   }
 
   /**
@@ -60,14 +47,16 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    * @throws StorageError.WriteError when save fails
    */
   suspend fun saveUser(user: User) {
+    ensureMigrated()
     try {
       val currentTime = System.currentTimeMillis()
-      sharedPreferences
-          .edit()
-          .putString(KEY_USER_PUBKEY, user.pubkey)
-          .putLong(KEY_CREATED_AT, currentTime)
-          .putLong(KEY_LAST_ACCESSED, currentTime)
-          .apply()
+      activeDataStore.updateData { current ->
+        current.copy(
+            userPubkey = user.pubkey,
+            createdAt = currentTime,
+            lastAccessed = currentTime,
+            relayList = current.relayList)
+      }
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to save user: ${e.message}")
     }
@@ -79,17 +68,21 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    * @return Saved user, null if not exists or invalid
    */
   suspend fun getUser(): User? {
+    ensureMigrated()
     return try {
-      val pubkey = sharedPreferences.getString(KEY_USER_PUBKEY, null) ?: return null
+      val data = activeDataStore.data.first()
+      val pubkey = data.userPubkey ?: return null
 
       if (!pubkey.isValidNostrPubkey()) {
         return null
       }
 
-      sharedPreferences.edit().putLong(KEY_LAST_ACCESSED, System.currentTimeMillis()).apply()
+      activeDataStore.updateData { current ->
+        current.copy(lastAccessed = System.currentTimeMillis())
+      }
 
       User(pubkey)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       null
     }
   }
@@ -101,9 +94,9 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    * @throws StorageError.WriteError when save fails
    */
   suspend fun saveRelayList(relays: List<RelayConfig>) {
+    ensureMigrated()
     try {
-      val jsonString = json.encodeToString(relays)
-      sharedPreferences.edit().putString(KEY_RELAY_LIST, jsonString).apply()
+      activeDataStore.updateData { current -> current.copy(relayList = relays) }
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to save relay list: ${e.message}")
     }
@@ -115,10 +108,10 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    * @return Saved relay list, null if not exists
    */
   suspend fun getRelayList(): List<RelayConfig>? {
+    ensureMigrated()
     return try {
-      val jsonString = sharedPreferences.getString(KEY_RELAY_LIST, null) ?: return null
-      json.decodeFromString<List<RelayConfig>>(jsonString)
-    } catch (e: Exception) {
+      activeDataStore.data.first().relayList
+    } catch (_: Exception) {
       null
     }
   }
@@ -129,16 +122,34 @@ class LocalAuthDataSource @Inject constructor(@ApplicationContext private val co
    * @throws StorageError.WriteError when clear fails
    */
   suspend fun clearLoginState() {
+    ensureMigrated()
     try {
-      sharedPreferences
-          .edit()
-          .remove(KEY_USER_PUBKEY)
-          .remove(KEY_CREATED_AT)
-          .remove(KEY_LAST_ACCESSED)
-          .remove(KEY_RELAY_LIST)
-          .apply()
+      activeDataStore.updateData { AuthData.DEFAULT }
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to clear login state: ${e.message}")
+    }
+  }
+
+  private suspend fun ensureMigrated() {
+    if (migrationCompleted || testDataStore != null) return
+
+    migrationMutex.withLock {
+      if (migrationCompleted) return
+
+      try {
+        val migration = EncryptedSharedPrefsMigration(context)
+        if (migration.needsMigration()) {
+          val legacyData = migration.readLegacyData()
+          if (legacyData != null) {
+            activeDataStore.updateData { legacyData }
+          }
+          migration.clearLegacyData()
+        }
+      } catch (_: Exception) {
+        // Migration failed, continue with empty data
+      }
+
+      migrationCompleted = true
     }
   }
 }
