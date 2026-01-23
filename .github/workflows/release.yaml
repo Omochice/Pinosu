@@ -65,7 +65,7 @@ jobs:
       - run: gh release upload ${{ needs.release-please.outputs.tag_name }} ./app/build/outputs/apk/release/app-release.apk
 
   increment-version-code:
-    needs: build-release
+    needs: release-please
     timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
