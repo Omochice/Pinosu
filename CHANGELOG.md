@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/Omochice/Pinosu/compare/v0.1.1...v0.1.2) (2026-01-23)
+
+
+### Continuous Integration
+
+* publish release draft on first ([#118](https://github.com/Omochice/Pinosu/issues/118)) ([aa5b2d9](https://github.com/Omochice/Pinosu/commit/aa5b2d9326f3316921116bc3ec3279b585f6cd18))
+
 ## [0.1.1](https://github.com/Omochice/Pinosu/compare/v0.1.0...v0.1.1) (2026-01-23)
 
 
