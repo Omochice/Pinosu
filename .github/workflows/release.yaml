@@ -68,7 +68,7 @@ jobs:
           app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
           permission-contents: write
-      - run: gh release upload ${TAG_NAME} ./app/build/outputs/apk/release/app-release.apk
+      - run: gh release upload "${TAG_NAME}" ./app/build/outputs/apk/release/app-release.apk
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
