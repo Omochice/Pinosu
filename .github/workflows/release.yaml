@@ -68,9 +68,10 @@ jobs:
           app-id: ${{ secrets.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
           permission-contents: write
-      - run: gh release upload ${{ needs.release-please.outputs.tag_name }} ./app/build/outputs/apk/release/app-release.apk
+      - run: gh release upload ${TAG_NAME} ./app/build/outputs/apk/release/app-release.apk
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
   increment-version-code:
     needs: release-please
@@ -99,7 +100,9 @@ jobs:
           devbox run version-up
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}"
+          git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${{ github.repository }}"
           git add version.json
           git commit -m "chore: bump VERSION_CODE"
           git push
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
