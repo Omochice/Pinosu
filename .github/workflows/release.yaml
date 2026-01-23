@@ -62,7 +62,15 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: devbox run ./gradlew assembleRelease
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        id: app-token
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          permission-contents: write
       - run: gh release upload ${{ needs.release-please.outputs.tag_name }} ./app/build/outputs/apk/release/app-release.apk
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
   increment-version-code:
     needs: release-please
