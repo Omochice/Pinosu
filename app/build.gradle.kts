@@ -1,3 +1,25 @@
+val versionJsonFile = rootProject.file("version.json")
+val versionJson =
+    versionJsonFile
+        .takeIf { it.exists() }
+        ?.let {
+          @Suppress("UNCHECKED_CAST")
+          groovy.json.JsonSlurper().parseText(it.readText()) as Map<String, Any>
+        } ?: emptyMap()
+
+val gitCommitHash =
+    providers.environmentVariable("GITHUB_SHA").orNull?.take(7)
+        ?: providers
+            .exec {
+              commandLine("git", "rev-parse", "--short", "HEAD")
+              isIgnoreExitValue = true
+            }
+            .standardOutput
+            .asText
+            .getOrElse("")
+            .trim()
+            .ifEmpty { "unknown" }
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.detekt)
@@ -18,23 +40,41 @@ android {
     applicationId = "io.github.omochice.pinosu"
     minSdk = 26
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = (versionJson["versionCode"] as? Number)?.toInt() ?: 1
+    versionName = (versionJson["versionName"] as? String) ?: "0.1.0"
+
+    buildConfigField("String", "COMMIT_HASH", "\"$gitCommitHash\"")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  signingConfigs {
+    create("release") {
+      val keystoreFile = file("release.keystore")
+      if (keystoreFile.exists()) {
+        storeFile = keystoreFile
+        storePassword = providers.environmentVariable("KEYSTORE_PASSWORD").orNull
+        keyAlias = providers.environmentVariable("KEY_ALIAS").orNull
+        keyPassword = providers.environmentVariable("KEY_PASSWORD").orNull
+      }
+    }
   }
 
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  buildFeatures { compose = true }
+  buildFeatures {
+    buildConfig = true
+    compose = true
+  }
   testOptions { unitTests.isReturnDefaultValues = true }
   packaging {
     resources {

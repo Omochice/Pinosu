@@ -16,7 +16,9 @@
     "actionlint@1.7.10",
     "zizmor@1.21.0",
     "ghalint@1.5.4",
-    "stdenv.cc.cc.lib"
+    "stdenv.cc.cc.lib",
+    "gojq@0.12.18",
+    "moreutils@0.70"
   ],
   "shell": {
     "init_hook": [
@@ -24,7 +26,12 @@
     ],
     "scripts": {
       "fmt": ["treefmt"],
-      "check": ["./gradlew lint"]
+      "check": ["./gradlew lint"],
+      "version-up": [
+        "VERSION_CODE=$(gojq -r '.versionCode' version.json)",
+        "NEW_VERSION_CODE=$((VERSION_CODE + 1))",
+        "gojq --argjson vc \"$NEW_VERSION_CODE\" '.versionCode = $vc' version.json | sponge version.json"
+      ]
     }
   }
 }
