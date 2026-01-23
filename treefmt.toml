@@ -17,6 +17,7 @@ includes = ["*.kt", "*.kts"]
 [formatter.rumdl]
 command = "rumdl"
 options = ["fmt"]
+excludes = ["CHANGELOG.md"]
 includes = ["*.md"]
 
 [formatter.tombi]
