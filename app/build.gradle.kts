@@ -8,7 +8,7 @@ val versionJson =
         } ?: emptyMap()
 
 val gitCommitHash =
-    System.getenv("GITHUB_SHA")?.take(7)
+    providers.environmentVariable("GITHUB_SHA").orNull?.take(7)
         ?: providers
             .exec {
               commandLine("git", "rev-parse", "--short", "HEAD")
@@ -53,9 +53,9 @@ android {
       val keystoreFile = file("release.keystore")
       if (keystoreFile.exists()) {
         storeFile = keystoreFile
-        storePassword = System.getenv("KEYSTORE_PASSWORD")
-        keyAlias = System.getenv("KEY_ALIAS")
-        keyPassword = System.getenv("KEY_PASSWORD")
+        storePassword = providers.environmentVariable("KEYSTORE_PASSWORD").orNull
+        keyAlias = providers.environmentVariable("KEY_ALIAS").orNull
+        keyPassword = providers.environmentVariable("KEY_PASSWORD").orNull
       }
     }
   }
