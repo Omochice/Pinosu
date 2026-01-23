@@ -52,11 +52,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: devbox run ./gradlew assembleRelease
-      - name: Upload APK to release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
-        with:
-          files: app/build/outputs/apk/release/app-release.apk
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
+      - run: gh release upload ${{ needs.release-please.outputs.tag_name }} ./app/build/outputs/apk/release/app-release.apk
 
   increment-version-code:
     needs: build-release
