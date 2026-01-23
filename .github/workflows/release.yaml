@@ -71,11 +71,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Increment VERSION_CODE
         run: |
-          VERSION_CODE=$(grep VERSION_CODE version.properties | cut -d'=' -f2)
+          VERSION_CODE=$(jq -r '.versionCode' version.json)
           NEW_VERSION_CODE=$((VERSION_CODE + 1))
-          sed -i "s/VERSION_CODE=.*/VERSION_CODE=$NEW_VERSION_CODE/" version.properties
+          jq --argjson vc "$NEW_VERSION_CODE" '.versionCode = $vc' version.json > version.json.tmp && mv version.json.tmp version.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.properties
+          git add version.json
           git commit -m "chore: bump VERSION_CODE to $NEW_VERSION_CODE"
           git push

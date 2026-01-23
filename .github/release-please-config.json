@@ -7,8 +7,9 @@
       "include-component-in-tag": false,
       "extra-files": [
         {
-          "type": "generic",
-          "path": "version.properties"
+          "type": "json",
+          "path": "version.json",
+          "jsonpath": "$.versionName"
         }
       ]
     }

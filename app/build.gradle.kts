@@ -1,13 +1,11 @@
-import java.io.FileInputStream
-import java.util.Properties
-
-val versionPropsFile = rootProject.file("version.properties")
-val versionProps =
-    Properties().apply {
-      if (versionPropsFile.exists()) {
-        load(FileInputStream(versionPropsFile))
-      }
-    }
+val versionJsonFile = rootProject.file("version.json")
+val versionJson =
+    versionJsonFile
+        .takeIf { it.exists() }
+        ?.let {
+          @Suppress("UNCHECKED_CAST")
+          groovy.json.JsonSlurper().parseText(it.readText()) as Map<String, Any>
+        } ?: emptyMap()
 
 val gitCommitHash =
     System.getenv("GITHUB_SHA")?.take(7)
@@ -42,8 +40,8 @@ android {
     applicationId = "io.github.omochice.pinosu"
     minSdk = 26
     targetSdk = 36
-    versionCode = (versionProps["VERSION_CODE"] as String?)?.toIntOrNull() ?: 1
-    versionName = (versionProps["VERSION_NAME"] as String?) ?: "0.1.0"
+    versionCode = (versionJson["versionCode"] as? Number)?.toInt() ?: 1
+    versionName = (versionJson["versionName"] as? String) ?: "0.1.0"
 
     buildConfigField("String", "COMMIT_HASH", "\"$gitCommitHash\"")
 
