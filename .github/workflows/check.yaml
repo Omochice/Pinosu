@@ -140,7 +140,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run instrumented tests on emulator
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
         with:
           api-level: 34
           target: google_apis
