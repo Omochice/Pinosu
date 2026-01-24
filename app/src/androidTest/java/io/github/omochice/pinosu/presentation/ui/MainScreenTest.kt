@@ -104,16 +104,19 @@ class MainScreenTest {
     var navigateToLoginCalled = false
     val onNavigateToLogin = { navigateToLoginCalled = true }
 
-    composeTestRule.setContent {
-      MainScreen(uiState = loggedInState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
-    }
+    val uiState = androidx.compose.runtime.mutableStateOf(loggedInState)
 
     composeTestRule.setContent {
-      MainScreen(uiState = loggedOutState, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
+      MainScreen(uiState = uiState.value, onLogout = {}, onNavigateToLogin = onNavigateToLogin)
     }
 
-    // After logout completion（pubkey = null）、callback to navigate to login screen is called
-    assert(navigateToLoginCalled) { "After logout completion、onNavigateToLoginコールバックが呼ばれるべき" }
+    // Simulate logout by updating state (triggers recomposition)
+    uiState.value = loggedOutState
+
+    // Wait for LaunchedEffect to execute
+    composeTestRule.waitForIdle()
+
+    assert(navigateToLoginCalled) { "After logout completion, onNavigateToLogin should be called" }
   }
 
   @Test
