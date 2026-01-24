@@ -58,10 +58,7 @@ class ManifestConfigurationTest {
           setPackage(context.packageName)
         }
 
-    val resolveInfo =
-        packageManager
-            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            .firstOrNull()
+    val resolveInfo = packageManager.queryIntentActivities(intent, 0).firstOrNull()
 
     assertNotNull("MainActivity should be resolvable", resolveInfo)
 

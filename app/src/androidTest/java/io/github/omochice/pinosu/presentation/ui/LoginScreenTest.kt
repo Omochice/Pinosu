@@ -139,7 +139,7 @@ class LoginScreenTest {
 
   @Test
   fun `LoginScreen retry button should call callback`() {
-    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。")
+    val errorState = LoginUiState(errorMessage = "Login timeout occurred.")
     var retryCalled = false
 
     composeTestRule.setContent {
@@ -220,14 +220,16 @@ class LoginScreenTest {
 
   @Test
   fun `LoginScreen should display timeout error with retry option`() {
-    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
+    val errorState =
+        LoginUiState(
+            errorMessage = "Login timeout occurred. Please check your NIP-55 app and try again.")
 
     composeTestRule.setContent {
       LoginScreen(uiState = errorState, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
     composeTestRule
-        .onNodeWithText("ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
+        .onNodeWithText("Login timeout occurred. Please check your NIP-55 app and try again.")
         .assertIsDisplayed()
 
     composeTestRule.onNodeWithText("再試行").assertIsDisplayed()

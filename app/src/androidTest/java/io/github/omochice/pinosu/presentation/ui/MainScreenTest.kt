@@ -49,7 +49,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログインしていません").assertIsDisplayed()
+    composeTestRule.onNodeWithText("未ログイン").assertIsDisplayed()
   }
 
   @Test
@@ -172,7 +172,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログイン中").assertIsDisplayed()
+    composeTestRule.onNodeWithText("ログイン済み").assertIsDisplayed()
   }
 
   @Test

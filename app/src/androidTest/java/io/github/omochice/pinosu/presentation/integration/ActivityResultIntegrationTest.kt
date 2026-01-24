@@ -47,7 +47,7 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithText("NIP-55対応アプリがインストールされていません").assertDoesNotExist()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertDoesNotExist()
   }
 
   @Test
@@ -62,7 +62,7 @@ class ActivityResultIntegrationTest {
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
     composeTestRule.waitForIdle()
-    composeTestRule.onNodeWithText("NIP-55対応アプリがインストールされていません").assertExists()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertExists()
   }
 
   @org.junit.Ignore("TODO: Implement navigation verification after NIP-55 response")

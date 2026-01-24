@@ -10,9 +10,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.model.User
+import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,11 +36,19 @@ class UserFlowTest {
 
   @BindValue @JvmField val mockNip55SignerClient: Nip55SignerClient = mockk(relaxed = true)
 
-  @BindValue @JvmField val mockLocalAuthDataSource: LocalAuthDataSource = mockk(relaxed = true)
+  @BindValue
+  @JvmField
+  val mockLocalAuthDataSource: LocalAuthDataSource =
+      mockk(relaxed = true) { coEvery { getUser() } returns null }
 
   @Before
   fun setup() {
     hiltRule.inject()
+  }
+
+  @After
+  fun teardown() {
+    clearMocks(mockLocalAuthDataSource, mockNip55SignerClient, answers = false)
     coEvery { mockLocalAuthDataSource.getUser() } returns null
   }
 
@@ -86,9 +96,7 @@ class UserFlowTest {
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    composeTestRule
-        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("インストール").assertIsDisplayed()
 
@@ -100,15 +108,11 @@ class UserFlowTest {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
-    composeTestRule
-        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("閉じる").performClick()
 
-    composeTestRule
-        .onNodeWithText("NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。")
-        .assertDoesNotExist()
+    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertDoesNotExist()
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
   }
