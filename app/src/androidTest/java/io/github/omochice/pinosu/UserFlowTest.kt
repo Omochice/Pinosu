@@ -64,7 +64,7 @@ class UserFlowTest {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
     every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
 
-    val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
     coEvery { mockLocalAuthDataSource.saveUser(any()) } returns Unit
 
     every { mockNip55SignerClient.handleNip55Response(Activity.RESULT_OK, any()) } returns
@@ -115,7 +115,7 @@ class UserFlowTest {
 
   @Test
   fun `logout flow step1 should navigate to login screen on logout`() {
-    val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
     coEvery { mockLocalAuthDataSource.clearLoginState() } returns Unit
 
@@ -138,7 +138,7 @@ class UserFlowTest {
 
   @Test
   fun `app restart when logged in should display main screen`() {
-    val testUser = User(pubkey = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
     composeTestRule.activityRule.scenario.recreate()
