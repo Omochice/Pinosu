@@ -163,7 +163,7 @@ class LoginScreenTest {
           uiState = successState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = {})
+          onLoginSuccess = {})
     }
 
     composeTestRule.onNodeWithText("ログインに成功しました").assertIsDisplayed()
@@ -179,7 +179,7 @@ class LoginScreenTest {
           uiState = successState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = { navigationTriggered = true })
+          onLoginSuccess = { navigationTriggered = true })
     }
 
     composeTestRule.waitUntil(timeoutMillis = 1000) { navigationTriggered }
@@ -196,7 +196,7 @@ class LoginScreenTest {
           uiState = notSuccessState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = { navigationTriggered = true })
+          onLoginSuccess = { navigationTriggered = true })
     }
 
     composeTestRule.waitForIdle()
