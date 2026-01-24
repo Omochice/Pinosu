@@ -38,7 +38,7 @@ android {
 
   defaultConfig {
     applicationId = "io.github.omochice.pinosu"
-    minSdk = 26
+    minSdk = 30
     targetSdk = 36
     versionCode = (versionJson["versionCode"] as? Number)?.toInt() ?: 1
     versionName = (versionJson["versionName"] as? String) ?: "0.1.0"
