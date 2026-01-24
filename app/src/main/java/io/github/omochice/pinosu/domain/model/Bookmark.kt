@@ -9,7 +9,6 @@ package io.github.omochice.pinosu.domain.model
  * @property title Title (from title tag or og:title)
  * @property event Full event data (contains content as description)
  * @property urls List of all r tag URLs in the event
- * @property titleSource Source of title ("tag" or "metadata")
  */
 data class BookmarkItem(
     val type: String,
@@ -18,7 +17,6 @@ data class BookmarkItem(
     val title: String? = null,
     val event: BookmarkedEvent? = null,
     val urls: List<String> = emptyList(),
-    val titleSource: String = "tag",
 )
 
 /**

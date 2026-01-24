@@ -19,15 +19,14 @@ class BookmarkScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun `BookmarkItemCard should not display title source indicator even when titleSource is metadata`() {
-    val bookmarkWithMetadataTitle =
+  fun `BookmarkItemCard should not display title source indicator`() {
+    val bookmark =
         BookmarkItem(
             type = "event",
             eventId = "test123",
             title = "Test Bookmark Title",
             url = "https://example.com",
             urls = listOf("https://example.com"),
-            titleSource = "metadata",
             event =
                 BookmarkedEvent(
                     kind = 39701,
@@ -38,9 +37,7 @@ class BookmarkScreenTest {
 
     val uiState =
         BookmarkUiState(
-            isLoading = false,
-            bookmarks = listOf(bookmarkWithMetadataTitle),
-            displayMode = BookmarkDisplayMode.List)
+            isLoading = false, bookmarks = listOf(bookmark), displayMode = BookmarkDisplayMode.List)
 
     composeTestRule.setContent { BookmarkScreen(uiState = uiState, onRefresh = {}, onLoad = {}) }
 

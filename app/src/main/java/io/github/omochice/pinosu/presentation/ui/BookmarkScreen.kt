@@ -319,7 +319,6 @@ private fun BookmarkScreenWithDataPreview() {
               title = "Example Article Title",
               url = "https://example.com/article",
               urls = listOf("https://example.com/article", "https://example.com/related"),
-              titleSource = "tag",
               event =
                   BookmarkedEvent(
                       kind = 39701,
@@ -333,7 +332,6 @@ private fun BookmarkScreenWithDataPreview() {
               title = "Another Bookmark",
               url = "https://example.com/another",
               urls = listOf("https://example.com/another"),
-              titleSource = "metadata",
               event =
                   BookmarkedEvent(
                       kind = 39701,
