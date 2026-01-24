@@ -627,7 +627,9 @@ style:
   UnnecessaryAbstractClass:
     active: true
   UnnecessaryAnnotationUseSiteTarget:
-    active: true
+    # Obsolete rule, removed in detekt 2.0.0
+    # ref: https://github.com/detekt/detekt/pull/8861
+    active: false
   UnnecessaryApply:
     active: true
   UnnecessaryBackticks:
