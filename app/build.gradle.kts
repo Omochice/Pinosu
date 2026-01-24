@@ -139,7 +139,7 @@ dependencies {
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
-  androidTestImplementation(libs.mockk)
+  androidTestImplementation(libs.mockk.android)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
 }
