@@ -85,6 +85,4 @@
     <string name="cd_open_menu">メニューを開く</string>
     <string name="cd_add_bookmark">ブックマークを追加</string>
 
-    <!-- ブックマークカード内のUI文字列 -->
-    <string name="url_count">URL (%1$d件)</string>
 </resources>

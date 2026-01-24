@@ -258,12 +258,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
           }
 
           if (bookmark.urls.isNotEmpty()) {
-            Text(
-                text = stringResource(R.string.url_count, bookmark.urls.size),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.tertiary)
-            Spacer(modifier = Modifier.height(4.dp))
-
             bookmark.urls.forEach { url ->
               Text(
                   text = url,
