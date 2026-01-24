@@ -51,12 +51,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
           return@withContext Result.failure(Exception("HTTP ${response.code}"))
         }
 
-        val html =
-            response.body?.string()
-                ?: run {
-                  Log.w(TAG, "Response body is null")
-                  return@withContext Result.failure(Exception("Empty response body"))
-                }
+        val html = response.body.string()
 
         val title = parseOgTitle(html)
 
