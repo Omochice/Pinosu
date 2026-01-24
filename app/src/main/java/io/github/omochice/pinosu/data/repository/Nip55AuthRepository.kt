@@ -91,9 +91,8 @@ constructor(
             is Nip55Error.NotInstalled -> LoginError.Nip55SignerNotInstalled
             is Nip55Error.UserRejected -> LoginError.UserRejected
             is Nip55Error.Timeout -> LoginError.Timeout
-            is Nip55Error.InvalidResponse,
-            is Nip55Error.IntentResolutionError ->
-                LoginError.NetworkError(nip55Error?.toString() ?: "Unknown NIP-55 signer error")
+            is Nip55Error.InvalidResponse -> LoginError.NetworkError(nip55Error.message)
+            is Nip55Error.IntentResolutionError -> LoginError.NetworkError(nip55Error.message)
             null -> LoginError.UnknownError(Exception("Unknown NIP-55 signer error"))
           }
       Result.failure(loginError)
