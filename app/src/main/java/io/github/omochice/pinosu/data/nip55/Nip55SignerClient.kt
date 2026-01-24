@@ -13,7 +13,9 @@ import javax.inject.Singleton
 
 /** Encapsulation of NIP-55 Intent communication */
 @Singleton
-class Nip55SignerClient @Inject constructor(@ApplicationContext private val context: Context) {
+class Nip55SignerClient
+@Inject
+constructor(@param:ApplicationContext private val context: Context) {
 
   /**
    * Check if NIP-55 signer app is installed
