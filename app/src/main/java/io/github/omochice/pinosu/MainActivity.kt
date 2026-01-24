@@ -100,6 +100,15 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
 
   val startDestination: Route = mainUiState.userPubkey?.let { Bookmark } ?: Login
 
+  LaunchedEffect(mainUiState.userPubkey) {
+    if (mainUiState.userPubkey != null) {
+      val currentRoute = navController.currentBackStackEntry?.destination?.route
+      if (currentRoute?.contains("Login") == true) {
+        navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+      }
+    }
+  }
+
   ModalNavigationDrawer(
       drawerState = drawerState,
       drawerContent = {
