@@ -283,14 +283,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
-
-          if (bookmark.titleSource == "metadata") {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.title_from_metadata),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.tertiary)
-          }
         }
       }
 }
