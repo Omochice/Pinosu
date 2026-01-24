@@ -18,7 +18,7 @@ import javax.inject.Singleton
  * Android Keystore master key).
  */
 @Singleton
-class TinkKeyManager @Inject constructor(@ApplicationContext private val context: Context) {
+class TinkKeyManager @Inject constructor(@param:ApplicationContext private val context: Context) {
 
   private val keysetHandle: KeysetHandle by lazy { createOrLoadKeysetHandle() }
 

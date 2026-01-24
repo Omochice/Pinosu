@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 @Singleton
 class LocalSettingsDataSource
 @Inject
-constructor(@ApplicationContext private val context: Context) {
+constructor(@param:ApplicationContext private val context: Context) {
   private val sharedPreferences: SharedPreferences by lazy {
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   }
