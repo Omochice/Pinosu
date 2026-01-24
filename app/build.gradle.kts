@@ -45,7 +45,7 @@ android {
 
     buildConfigField("String", "COMMIT_HASH", "\"$gitCommitHash\"")
 
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner = "io.github.omochice.pinosu.HiltTestRunner"
   }
 
   signingConfigs {
@@ -137,6 +137,7 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.mockk)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
