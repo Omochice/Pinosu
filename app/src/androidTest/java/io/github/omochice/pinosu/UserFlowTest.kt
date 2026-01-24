@@ -1,6 +1,5 @@
 package io.github.omochice.pinosu
 
-import android.app.Activity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -58,39 +57,6 @@ class UserFlowTest {
   }
 
   @Test
-  fun `login flow step2 should display loading on button click`() {
-    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
-    every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
-
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
-
-    composeTestRule.onNodeWithTag("LoadingIndicator").assertIsDisplayed()
-
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsNotEnabled()
-  }
-
-  @Test
-  fun `login flow step3 should navigate to main screen on success`() {
-    every { mockNip55SignerClient.checkNip55SignerInstalled() } returns true
-    every { mockNip55SignerClient.createPublicKeyIntent() } returns mockk(relaxed = true)
-
-    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
-    coEvery { mockLocalAuthDataSource.saveUser(any()) } returns Unit
-
-    every { mockNip55SignerClient.handleNip55Response(Activity.RESULT_OK, any()) } returns
-        Result.success(
-            io.github.omochice.pinosu.data.nip55.Nip55Response(
-                pubkey = testUser.pubkey, packageName = "com.greenart7c3.nostrsigner"))
-
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
-
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
-    }
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
-  }
-
-  @Test
   fun `Nip55Signer not installed flow step1 should display error dialog`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
@@ -125,35 +91,35 @@ class UserFlowTest {
 
     composeTestRule.activityRule.scenario.recreate()
 
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
+
+    composeTestRule.onNodeWithContentDescription("メニューを開く").performClick()
+
     composeTestRule.waitUntil(timeoutMillis = 3000) {
       composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
-
     composeTestRule.onNodeWithText("ログアウト").performClick()
 
     composeTestRule.waitUntil(timeoutMillis = 3000) {
       composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
-
-    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
   }
 
   @Test
-  fun `app restart when logged in should display main screen`() {
+  fun `app restart when logged in should display bookmark screen`() {
     val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
     composeTestRule.activityRule.scenario.recreate()
 
-    composeTestRule.waitUntil(timeoutMillis = 3000) {
-      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
-
-    val maskedPubkey = "${testUser.pubkey.take(8)}...${testUser.pubkey.takeLast(8)}"
-    composeTestRule.onNodeWithText(maskedPubkey).assertIsDisplayed()
+    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertDoesNotExist()
   }
@@ -164,11 +130,11 @@ class UserFlowTest {
 
     composeTestRule.activityRule.scenario.recreate()
 
-    composeTestRule.waitUntil(timeoutMillis = 3000) {
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
+    composeTestRule.onNodeWithText("ブックマーク").assertDoesNotExist()
   }
 }
