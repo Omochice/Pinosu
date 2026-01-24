@@ -92,14 +92,7 @@ constructor(
             }
 
         val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == "title" }?.get(1)
-
-        val (title, titleSource) =
-            if (titleTag != null) {
-              titleTag to "tag"
-            } else {
-              val fetchedTitle = urlMetadataFetcher.fetchTitle(urls.first()).getOrNull()
-              fetchedTitle to "metadata"
-            }
+        val title = titleTag ?: urlMetadataFetcher.fetchTitle(urls.first()).getOrNull()
 
         val item =
             BookmarkItem(
@@ -108,7 +101,6 @@ constructor(
                 url = urls.first(),
                 urls = urls,
                 title = title,
-                titleSource = titleSource,
                 event =
                     BookmarkedEvent(
                         kind = event.kind,

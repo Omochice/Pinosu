@@ -87,5 +87,4 @@
 
     <!-- ブックマークカード内のUI文字列 -->
     <string name="url_count">URL (%1$d件)</string>
-    <string name="title_from_metadata">(OGメタデータから取得したタイトル)</string>
 </resources>

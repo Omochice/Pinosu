@@ -283,14 +283,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
-
-          if (bookmark.titleSource == "metadata") {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.title_from_metadata),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.tertiary)
-          }
         }
       }
 }
@@ -327,7 +319,6 @@ private fun BookmarkScreenWithDataPreview() {
               title = "Example Article Title",
               url = "https://example.com/article",
               urls = listOf("https://example.com/article", "https://example.com/related"),
-              titleSource = "tag",
               event =
                   BookmarkedEvent(
                       kind = 39701,
@@ -341,7 +332,6 @@ private fun BookmarkScreenWithDataPreview() {
               title = "Another Bookmark",
               url = "https://example.com/another",
               urls = listOf("https://example.com/another"),
-              titleSource = "metadata",
               event =
                   BookmarkedEvent(
                       kind = 39701,
