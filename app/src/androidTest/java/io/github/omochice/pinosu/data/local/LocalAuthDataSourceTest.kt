@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.google.crypto.tink.aead.AeadConfig
 import io.github.omochice.pinosu.data.crypto.TinkKeyManager
 import java.io.File
@@ -31,7 +31,7 @@ class LocalAuthDataSourceTest {
   @Before
   fun setup() {
     AeadConfig.register()
-    context = ApplicationProvider.getApplicationContext()
+    context = InstrumentationRegistry.getInstrumentation().targetContext
     tinkKeyManager = TinkKeyManager(context)
     testFile = File(context.filesDir, "test_init_auth_data_${System.currentTimeMillis()}.pb")
     testDataStore =

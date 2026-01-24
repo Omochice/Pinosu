@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.data.integration
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import io.github.omochice.pinosu.data.local.AuthData
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.local.TestAuthDataSerializer
@@ -44,7 +44,7 @@ class DataLayerIntegrationTest {
 
   @Before
   fun setup() {
-    context = ApplicationProvider.getApplicationContext()
+    context = InstrumentationRegistry.getInstrumentation().targetContext
     testFile = File(context.filesDir, "test_integration_auth_data_${System.currentTimeMillis()}.pb")
     testDataStore =
         DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
