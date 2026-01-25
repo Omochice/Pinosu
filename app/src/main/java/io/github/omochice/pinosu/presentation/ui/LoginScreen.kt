@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.presentation.viewmodel.LoginUiStateV2
+import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
 
 /**
  * Composable function for the login screen
@@ -36,21 +36,21 @@ import io.github.omochice.pinosu.presentation.viewmodel.LoginUiStateV2
  */
 @Composable
 fun LoginScreen(
-    uiState: LoginUiStateV2,
+    uiState: LoginUiState,
     onLoginButtonClick: () -> Unit,
     onDismissDialog: () -> Unit = {},
     onInstallNip55Signer: () -> Unit = {},
     onRetry: () -> Unit = {},
     onLoginSuccess: () -> Unit = {}
 ) {
-  val isSuccess = uiState is LoginUiStateV2.Success
+  val isSuccess = uiState is LoginUiState.Success
   LaunchedEffect(isSuccess) {
     if (isSuccess) {
       onLoginSuccess()
     }
   }
 
-  val isLoading = uiState is LoginUiStateV2.Loading
+  val isLoading = uiState is LoginUiState.Loading
 
   Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -82,7 +82,7 @@ fun LoginScreen(
     }
 
     when (uiState) {
-      is LoginUiStateV2.RequiresNip55Install -> {
+      is LoginUiState.RequiresNip55Install -> {
         AlertDialog(
             onDismissRequest = onDismissDialog,
             title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
@@ -96,7 +96,7 @@ fun LoginScreen(
               TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
             })
       }
-      is LoginUiStateV2.Error.Retryable -> {
+      is LoginUiState.Error.Retryable -> {
         AlertDialog(
             onDismissRequest = onDismissDialog,
             title = { Text(stringResource(R.string.dialog_title_error)) },
@@ -108,7 +108,7 @@ fun LoginScreen(
               TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_cancel)) }
             })
       }
-      is LoginUiStateV2.Error.NonRetryable -> {
+      is LoginUiState.Error.NonRetryable -> {
         AlertDialog(
             onDismissRequest = onDismissDialog,
             title = { Text(stringResource(R.string.dialog_title_error)) },
@@ -125,20 +125,20 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-  MaterialTheme { LoginScreen(uiState = LoginUiStateV2.Idle, onLoginButtonClick = {}) }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenLoadingPreview() {
-  MaterialTheme { LoginScreen(uiState = LoginUiStateV2.Loading, onLoginButtonClick = {}) }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Loading, onLoginButtonClick = {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenNip55InstallDialogPreview() {
   MaterialTheme {
-    LoginScreen(uiState = LoginUiStateV2.RequiresNip55Install, onLoginButtonClick = {})
+    LoginScreen(uiState = LoginUiState.RequiresNip55Install, onLoginButtonClick = {})
   }
 }
 
@@ -147,7 +147,7 @@ fun LoginScreenNip55InstallDialogPreview() {
 fun LoginScreenErrorDialogPreview() {
   MaterialTheme {
     LoginScreen(
-        uiState = LoginUiStateV2.Error.NonRetryable("Login was cancelled. Please try again."),
+        uiState = LoginUiState.Error.NonRetryable("Login was cancelled. Please try again."),
         onLoginButtonClick = {})
   }
 }
@@ -158,7 +158,7 @@ fun LoginScreenTimeoutDialogPreview() {
   MaterialTheme {
     LoginScreen(
         uiState =
-            LoginUiStateV2.Error.Retryable(
+            LoginUiState.Error.Retryable(
                 "Login process timed out. Please check the NIP-55 signer app and retry."),
         onLoginButtonClick = {})
   }
@@ -167,5 +167,5 @@ fun LoginScreenTimeoutDialogPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenSuccessPreview() {
-  MaterialTheme { LoginScreen(uiState = LoginUiStateV2.Success, onLoginButtonClick = {}) }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Success, onLoginButtonClick = {}) }
 }

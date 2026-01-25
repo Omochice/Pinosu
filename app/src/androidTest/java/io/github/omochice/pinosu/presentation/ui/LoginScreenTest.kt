@@ -5,7 +5,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.omochice.pinosu.presentation.viewmodel.LoginUiStateV2
+import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -25,7 +25,7 @@ class LoginScreenTest {
   @Test
   fun `LoginScreen should display login button`() {
     composeTestRule.setContent {
-      LoginScreen(uiState = LoginUiStateV2.Idle, onLoginButtonClick = {}, onDismissDialog = {})
+      LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
@@ -37,7 +37,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Idle,
+          uiState = LoginUiState.Idle,
           onLoginButtonClick = { clicked = true },
           onDismissDialog = {})
     }
@@ -49,7 +49,7 @@ class LoginScreenTest {
   @Test
   fun `LoginScreen should display loading indicator when loading`() {
     composeTestRule.setContent {
-      LoginScreen(uiState = LoginUiStateV2.Loading, onLoginButtonClick = {}, onDismissDialog = {})
+      LoginScreen(uiState = LoginUiState.Loading, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
     composeTestRule.onNodeWithText("読み込み中...").assertIsDisplayed()
@@ -58,7 +58,7 @@ class LoginScreenTest {
   @Test
   fun `LoginScreen should hide loading indicator when not loading`() {
     composeTestRule.setContent {
-      LoginScreen(uiState = LoginUiStateV2.Idle, onLoginButtonClick = {}, onDismissDialog = {})
+      LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
     composeTestRule.onNodeWithText("読み込み中...").assertIsNotDisplayed()
@@ -70,7 +70,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Loading,
+          uiState = LoginUiState.Loading,
           onLoginButtonClick = { clickCount++ },
           onDismissDialog = {})
     }
@@ -83,7 +83,7 @@ class LoginScreenTest {
   fun `LoginScreen should display Nip55Signer install dialog when requested`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.RequiresNip55Install,
+          uiState = LoginUiState.RequiresNip55Install,
           onLoginButtonClick = {},
           onDismissDialog = {})
     }
@@ -96,7 +96,7 @@ class LoginScreenTest {
   fun `LoginScreen should display generic error dialog when error message exists`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Error.NonRetryable("テストエラーメッセージ"),
+          uiState = LoginUiState.Error.NonRetryable("テストエラーメッセージ"),
           onLoginButtonClick = {},
           onDismissDialog = {})
     }
@@ -111,7 +111,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.RequiresNip55Install,
+          uiState = LoginUiState.RequiresNip55Install,
           onLoginButtonClick = {},
           onDismissDialog = { dismissCalled = true })
     }
@@ -126,7 +126,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.RequiresNip55Install,
+          uiState = LoginUiState.RequiresNip55Install,
           onLoginButtonClick = {},
           onDismissDialog = {},
           onInstallNip55Signer = { installCalled = true })
@@ -143,7 +143,7 @@ class LoginScreenTest {
     composeTestRule.setContent {
       LoginScreen(
           uiState =
-              LoginUiStateV2.Error.Retryable(
+              LoginUiState.Error.Retryable(
                   "Login process timed out. Please check the NIP-55 signer app and retry."),
           onLoginButtonClick = {},
           onDismissDialog = {},
@@ -158,7 +158,7 @@ class LoginScreenTest {
   fun `LoginScreen should display success message when login succeeds`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Success,
+          uiState = LoginUiState.Success,
           onLoginButtonClick = {},
           onDismissDialog = {},
           onLoginSuccess = {})
@@ -173,7 +173,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Success,
+          uiState = LoginUiState.Success,
           onLoginButtonClick = {},
           onDismissDialog = {},
           onLoginSuccess = { navigationTriggered = true })
@@ -189,7 +189,7 @@ class LoginScreenTest {
 
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Idle,
+          uiState = LoginUiState.Idle,
           onLoginButtonClick = {},
           onDismissDialog = {},
           onLoginSuccess = { navigationTriggered = true })
@@ -204,7 +204,7 @@ class LoginScreenTest {
   fun `LoginScreen should display user rejection error message`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiStateV2.Error.NonRetryable("ログインがキャンセルされました。再度お試しください。"),
+          uiState = LoginUiState.Error.NonRetryable("ログインがキャンセルされました。再度お試しください。"),
           onLoginButtonClick = {},
           onDismissDialog = {})
     }
@@ -219,7 +219,7 @@ class LoginScreenTest {
     composeTestRule.setContent {
       LoginScreen(
           uiState =
-              LoginUiStateV2.Error.Retryable(
+              LoginUiState.Error.Retryable(
                   "Login process timed out. Please check the NIP-55 signer app and retry."),
           onLoginButtonClick = {},
           onDismissDialog = {})

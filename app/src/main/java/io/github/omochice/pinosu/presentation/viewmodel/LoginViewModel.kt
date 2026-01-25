@@ -41,8 +41,8 @@ constructor(
     private const val TAG = "LoginViewModel"
   }
 
-  private val _uiState = MutableStateFlow<LoginUiStateV2>(LoginUiStateV2.Idle)
-  val uiState: StateFlow<LoginUiStateV2> = _uiState.asStateFlow()
+  private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+  val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
   private val _mainUiState = MutableStateFlow(MainUiState())
   val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
@@ -59,7 +59,7 @@ constructor(
   fun onLoginButtonClicked() {
     val isNip55SignerInstalled = loginUseCase.checkNip55SignerInstalled()
     if (!isNip55SignerInstalled) {
-      _uiState.value = LoginUiStateV2.RequiresNip55Install
+      _uiState.value = LoginUiState.RequiresNip55Install
     }
   }
 
@@ -78,7 +78,7 @@ constructor(
 
   /** Dismiss error dialog and reset error state */
   fun dismissError() {
-    _uiState.value = LoginUiStateV2.Idle
+    _uiState.value = LoginUiState.Idle
   }
 
   /** Retry login after an error occurred */
@@ -95,7 +95,7 @@ constructor(
    */
   fun processNip55Response(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
-      _uiState.value = LoginUiStateV2.Loading
+      _uiState.value = LoginUiState.Loading
 
       val result = authRepository.processNip55Response(resultCode, data)
 
@@ -112,43 +112,27 @@ constructor(
         }
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
-        _uiState.value = LoginUiStateV2.Success
+        _uiState.value = LoginUiState.Success
       } else {
         val error = result.exceptionOrNull()
         _uiState.value =
             when (error) {
               is LoginError.UserRejected ->
-                  LoginUiStateV2.Error.NonRetryable("Login was cancelled. Please try again.")
+                  LoginUiState.Error.NonRetryable("Login was cancelled. Please try again.")
               is LoginError.Timeout ->
-                  LoginUiStateV2.Error.Retryable(
+                  LoginUiState.Error.Retryable(
                       "Login process timed out. Please check the NIP-55 signer app and retry.")
               is LoginError.NetworkError ->
-                  LoginUiStateV2.Error.Retryable(
+                  LoginUiState.Error.Retryable(
                       "A network error occurred. Please check your connection.")
               is LoginError.UnknownError ->
-                  LoginUiStateV2.Error.NonRetryable("An error occurred. Please try again later.")
-              else ->
-                  LoginUiStateV2.Error.NonRetryable("An error occurred. Please try again later.")
+                  LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+              else -> LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
             }
       }
     }
   }
 }
-
-/**
- * Login screen UI state
- *
- * @property isLoading Whether currently loading
- * @property errorMessage Error message
- * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
- * @property loginSuccess Whether login was successful
- */
-data class LoginUiState(
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val showNip55InstallDialog: Boolean = false,
-    val loginSuccess: Boolean = false,
-)
 
 /**
  * Main screen UI state
@@ -162,21 +146,21 @@ data class MainUiState(
 )
 
 /** Login screen UI state using sealed interface for type-safe state management */
-sealed interface LoginUiStateV2 {
+sealed interface LoginUiState {
   /** Initial idle state, waiting for user action */
-  data object Idle : LoginUiStateV2
+  data object Idle : LoginUiState
 
   /** Loading state during login process */
-  data object Loading : LoginUiStateV2
+  data object Loading : LoginUiState
 
   /** Login completed successfully */
-  data object Success : LoginUiStateV2
+  data object Success : LoginUiState
 
   /** NIP-55 signer app is not installed */
-  data object RequiresNip55Install : LoginUiStateV2
+  data object RequiresNip55Install : LoginUiState
 
   /** Error state with retryable/non-retryable distinction */
-  sealed interface Error : LoginUiStateV2 {
+  sealed interface Error : LoginUiState {
     val message: String
 
     /** Retryable error (e.g., timeout) - shows retry button */
