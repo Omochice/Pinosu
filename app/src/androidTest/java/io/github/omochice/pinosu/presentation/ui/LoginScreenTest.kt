@@ -6,6 +6,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -41,7 +44,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    assert(clicked) { "Login button click should trigger callback" }
+    assertTrue("Login button click should trigger callback", clicked)
   }
 
   @Test
@@ -77,7 +80,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    assert(clickCount == 0) { "Login button should be disabled when loading" }
+    assertEquals("Login button should be disabled when loading", 0, clickCount)
   }
 
   @Test
@@ -117,7 +120,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("閉じる").performClick()
 
-    assert(dismissCalled) { "Dismiss dialog should trigger callback" }
+    assertTrue("Dismiss dialog should trigger callback", dismissCalled)
   }
 
   @Test
@@ -134,7 +137,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("インストール").performClick()
 
-    assert(installCalled) { "Install button should trigger callback" }
+    assertTrue("Install button should trigger callback", installCalled)
   }
 
   @Test
@@ -153,7 +156,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("再試行").performClick()
 
-    assert(retryCalled) { "Retry button should trigger callback" }
+    assertTrue("Retry button should trigger callback", retryCalled)
   }
 
   @Test
@@ -185,7 +188,7 @@ class LoginScreenTest {
     }
 
     composeTestRule.waitUntil(timeoutMillis = 1000) { navigationTriggered }
-    assert(navigationTriggered) { "Navigation should be triggered when login succeeds" }
+    assertTrue("Navigation should be triggered when login succeeds", navigationTriggered)
   }
 
   @Test
@@ -202,9 +205,8 @@ class LoginScreenTest {
     }
 
     composeTestRule.waitForIdle()
-    assert(!navigationTriggered) {
-      "Navigation should not be triggered when login is not successful"
-    }
+    assertFalse(
+        "Navigation should not be triggered when login is not successful", navigationTriggered)
   }
 
   @Test
