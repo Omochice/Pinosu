@@ -236,8 +236,9 @@ jobs:
       - check-actions
       - check-format
       - check-renovate
-      - test-android
+      - coverage-report
       - instrumentation-test
+      - test-android
       # keep-sorted end
     permissions: {}
     if: failure()
