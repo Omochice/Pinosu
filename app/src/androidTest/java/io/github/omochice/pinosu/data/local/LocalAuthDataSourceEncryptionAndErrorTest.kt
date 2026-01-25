@@ -54,7 +54,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `data should be stored in encrypted form`() = runTest {
-    val user = User("abcd1234".repeat(8))
+    val user = User("npub1" + "a".repeat(59))
 
     dataSource.saveUser(user)
 
@@ -67,7 +67,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `encrypted data should be correctly decrypted`() = runTest {
-    val user = User("1234abcd".repeat(8))
+    val user = User("npub1" + "b".repeat(59))
 
     dataSource.saveUser(user)
 
@@ -79,7 +79,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `encryption key should persist across instances`() = runTest {
-    val user = User("fedcba98".repeat(8))
+    val user = User("npub1" + "c".repeat(59))
 
     dataSource.saveUser(user)
 
@@ -95,7 +95,10 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `multiple encryption decryption cycles should work correctly`() = runTest {
     val users =
         listOf(
-            User("0".repeat(64)), User("1".repeat(64)), User("a".repeat(64)), User("f".repeat(64)))
+            User("npub1" + "0".repeat(59)),
+            User("npub1" + "1".repeat(59)),
+            User("npub1" + "a".repeat(59)),
+            User("npub1" + "f".repeat(59)))
 
     for (user in users) {
       dataSource.saveUser(user)
@@ -163,7 +166,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `getUser should handle timestamps correctly`() = runTest {
-    val user = User("deadbeef".repeat(8))
+    val user = User("npub1" + "d".repeat(59))
 
     dataSource.saveUser(user)
 
@@ -175,7 +178,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `clearLoginState should remove all data`() = runTest {
-    val user = User("cafe1234".repeat(8))
+    val user = User("npub1" + "e".repeat(59))
 
     dataSource.saveUser(user)
 
@@ -188,7 +191,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
   @Test
   fun `saveUser should validate error type`() = runTest {
-    val user = User("beef".repeat(16))
+    val user = User("npub1" + "f".repeat(59))
 
     try {
       dataSource.saveUser(user)

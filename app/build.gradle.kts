@@ -30,6 +30,7 @@ plugins {
   alias(libs.plugins.hilt)
   alias(libs.plugins.kover)
   alias(libs.plugins.aboutlibraries.android)
+  jacoco
 }
 
 android {
@@ -45,7 +46,7 @@ android {
 
     buildConfigField("String", "COMMIT_HASH", "\"$gitCommitHash\"")
 
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner = "io.github.omochice.pinosu.HiltTestRunner"
   }
 
   signingConfigs {
@@ -61,6 +62,7 @@ android {
   }
 
   buildTypes {
+    debug { enableAndroidTestCoverage = true }
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -99,6 +101,7 @@ dependencies {
   implementation(libs.androidx.compose.material.icons.extended)
   debugImplementation(libs.androidx.compose.ui.tooling)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
+  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -136,8 +139,9 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.androidx.junit)
+  androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
-  androidTestImplementation(libs.mockk)
+  androidTestImplementation(libs.mockk.android)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
 }
@@ -179,4 +183,39 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     xml.required.set(true)
     sarif.required.set(true)
   }
+}
+
+tasks.register<JacocoReport>("jacocoInstrumentationTestReport") {
+  dependsOn("connectedDebugAndroidTest")
+
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
+
+  val fileFilter =
+      listOf(
+          "**/R.class",
+          "**/R$*.class",
+          "**/BuildConfig.*",
+          "**/Manifest*.*",
+          "**/*Test*.*",
+          "**/Hilt_*",
+          "**/*_Hilt*",
+          "**/*_Factory*",
+          "**/*_MembersInjector*",
+          "**/ComposableSingletons*",
+      )
+
+  val debugTree =
+      fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug") { exclude(fileFilter) }
+  val kotlinDebugTree =
+      fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+
+  sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+  classDirectories.setFrom(files(debugTree, kotlinDebugTree))
+  executionData.setFrom(
+      fileTree(layout.buildDirectory) {
+        include("outputs/code_coverage/debugAndroidTest/connected/**/*.ec")
+      })
 }

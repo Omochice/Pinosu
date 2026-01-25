@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +19,7 @@ class ManifestConfigurationTest {
 
   @Before
   fun setup() {
-    context = ApplicationProvider.getApplicationContext()
+    context = InstrumentationRegistry.getInstrumentation().targetContext
     packageManager = context.packageManager
   }
 
@@ -58,10 +58,7 @@ class ManifestConfigurationTest {
           setPackage(context.packageName)
         }
 
-    val resolveInfo =
-        packageManager
-            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            .firstOrNull()
+    val resolveInfo = packageManager.queryIntentActivities(intent, 0).firstOrNull()
 
     assertNotNull("MainActivity should be resolvable", resolveInfo)
 

@@ -10,8 +10,6 @@ import io.github.omochice.pinosu.data.nip65.Nip65EventParser
 import io.github.omochice.pinosu.data.nip65.Nip65EventParserImpl
 import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcherImpl
-import io.github.omochice.pinosu.data.relay.RelayPool
-import io.github.omochice.pinosu.data.relay.RelayPoolImpl
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.LocalSettingsRepository
@@ -33,8 +31,6 @@ abstract class RepositoryModule {
   @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
 
   @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
-
-  @Binds abstract fun bindRelayPool(impl: RelayPoolImpl): RelayPool
 
   @Binds abstract fun bindNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser
 

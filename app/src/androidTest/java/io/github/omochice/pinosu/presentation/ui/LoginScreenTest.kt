@@ -6,6 +6,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.presentation.viewmodel.LoginUiState
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -41,7 +44,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    assert(clicked) { "Login button click should trigger callback" }
+    assertTrue("Login button click should trigger callback", clicked)
   }
 
   @Test
@@ -77,7 +80,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
 
-    assert(clickCount == 0) { "Login button should be disabled when loading" }
+    assertEquals("Login button should be disabled when loading", 0, clickCount)
   }
 
   @Test
@@ -117,7 +120,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("閉じる").performClick()
 
-    assert(dismissCalled) { "Dismiss dialog should trigger callback" }
+    assertTrue("Dismiss dialog should trigger callback", dismissCalled)
   }
 
   @Test
@@ -134,12 +137,14 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("インストール").performClick()
 
-    assert(installCalled) { "Install button should trigger callback" }
+    assertTrue("Install button should trigger callback", installCalled)
   }
 
   @Test
   fun `LoginScreen retry button should call callback`() {
-    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。")
+    val errorState =
+        LoginUiState(
+            errorMessage = "Login process timed out. Please check the NIP-55 signer app and retry.")
     var retryCalled = false
 
     composeTestRule.setContent {
@@ -151,7 +156,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText("再試行").performClick()
 
-    assert(retryCalled) { "Retry button should trigger callback" }
+    assertTrue("Retry button should trigger callback", retryCalled)
   }
 
   @Test
@@ -163,7 +168,7 @@ class LoginScreenTest {
           uiState = successState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = {})
+          onLoginSuccess = {})
     }
 
     composeTestRule.onNodeWithText("ログインに成功しました").assertIsDisplayed()
@@ -179,11 +184,11 @@ class LoginScreenTest {
           uiState = successState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = { navigationTriggered = true })
+          onLoginSuccess = { navigationTriggered = true })
     }
 
     composeTestRule.waitUntil(timeoutMillis = 1000) { navigationTriggered }
-    assert(navigationTriggered) { "Navigation should be triggered when login succeeds" }
+    assertTrue("Navigation should be triggered when login succeeds", navigationTriggered)
   }
 
   @Test
@@ -196,13 +201,12 @@ class LoginScreenTest {
           uiState = notSuccessState,
           onLoginButtonClick = {},
           onDismissDialog = {},
-          onNavigateToMain = { navigationTriggered = true })
+          onLoginSuccess = { navigationTriggered = true })
     }
 
     composeTestRule.waitForIdle()
-    assert(!navigationTriggered) {
-      "Navigation should not be triggered when login is not successful"
-    }
+    assertFalse(
+        "Navigation should not be triggered when login is not successful", navigationTriggered)
   }
 
   @Test
@@ -220,14 +224,16 @@ class LoginScreenTest {
 
   @Test
   fun `LoginScreen should display timeout error with retry option`() {
-    val errorState = LoginUiState(errorMessage = "ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
+    val errorState =
+        LoginUiState(
+            errorMessage = "Login process timed out. Please check the NIP-55 signer app and retry.")
 
     composeTestRule.setContent {
       LoginScreen(uiState = errorState, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
     composeTestRule
-        .onNodeWithText("ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。")
+        .onNodeWithText("Login process timed out. Please check the NIP-55 signer app and retry.")
         .assertIsDisplayed()
 
     composeTestRule.onNodeWithText("再試行").assertIsDisplayed()

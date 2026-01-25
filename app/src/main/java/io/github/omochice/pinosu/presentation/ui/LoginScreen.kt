@@ -92,7 +92,9 @@ fun LoginScreen(
     }
 
     if (uiState.errorMessage != null) {
-      val isTimeoutError = uiState.errorMessage.contains("timeout", ignoreCase = true)
+      val isTimeoutError =
+          uiState.errorMessage.contains("timeout", ignoreCase = true) ||
+              uiState.errorMessage.contains("timed out", ignoreCase = true)
 
       AlertDialog(
           onDismissRequest = onDismissDialog,

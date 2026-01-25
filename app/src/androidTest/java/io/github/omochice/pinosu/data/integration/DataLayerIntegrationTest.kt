@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.data.integration
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import io.github.omochice.pinosu.data.local.AuthData
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.local.TestAuthDataSerializer
@@ -44,7 +44,7 @@ class DataLayerIntegrationTest {
 
   @Before
   fun setup() {
-    context = ApplicationProvider.getApplicationContext()
+    context = InstrumentationRegistry.getInstrumentation().targetContext
     testFile = File(context.filesDir, "test_integration_auth_data_${System.currentTimeMillis()}.pb")
     testDataStore =
         DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
@@ -86,7 +86,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and get should work correctly`() = runTest {
-    val testPubkey = "b".repeat(64)
+    val testPubkey = "npub1" + "b".repeat(59)
     val testUser = User(testPubkey)
 
     localAuthDataSource.saveUser(testUser)
@@ -107,7 +107,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and delete should work correctly`() = runTest {
-    val testPubkey = "c".repeat(64)
+    val testPubkey = "npub1" + "c".repeat(59)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -133,9 +133,9 @@ class DataLayerIntegrationTest {
   fun `encrypted storage multiple save get delete cycles should work correctly`() = runTest {
     val users =
         listOf(
-            User("d".repeat(64)),
-            User("e".repeat(64)),
-            User("f".repeat(64)),
+            User("npub1" + "d".repeat(59)),
+            User("npub1" + "e".repeat(59)),
+            User("npub1" + "f".repeat(59)),
         )
 
     users.forEach { user ->
@@ -163,7 +163,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `logout flow should clear encrypted storage`() = runTest {
-    val testPubkey = "g".repeat(64)
+    val testPubkey = "npub1" + "g".repeat(59)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -192,7 +192,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `app restart should restore login state from encrypted storage`() = runTest {
-    val testPubkey = "h".repeat(64)
+    val testPubkey = "npub1" + "h".repeat(59)
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()

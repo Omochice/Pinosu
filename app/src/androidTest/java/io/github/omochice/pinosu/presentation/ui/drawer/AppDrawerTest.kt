@@ -23,7 +23,11 @@ class AppDrawerTest {
   fun `AppDrawer should display all menu items`() {
     composeTestRule.setContent {
       AppDrawer(
-          onNavigateToLicense = {}, onNavigateToAppInfo = {}, onLogout = {}, onCloseDrawer = {})
+          onNavigateToLicense = {},
+          onNavigateToAppInfo = {},
+          onNavigateToSettings = {},
+          onLogout = {},
+          onCloseDrawer = {})
     }
 
     composeTestRule.onNodeWithText("ライセンス").assertIsDisplayed()
@@ -40,6 +44,7 @@ class AppDrawerTest {
       AppDrawer(
           onNavigateToLicense = { licenseClicked = true },
           onNavigateToAppInfo = {},
+          onNavigateToSettings = {},
           onLogout = {},
           onCloseDrawer = { drawerClosed = true })
     }
@@ -58,6 +63,7 @@ class AppDrawerTest {
       AppDrawer(
           onNavigateToLicense = {},
           onNavigateToAppInfo = {},
+          onNavigateToSettings = {},
           onLogout = { logoutClicked = true },
           onCloseDrawer = { drawerClosed = true })
     }

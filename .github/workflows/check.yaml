@@ -89,8 +89,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
-      actions: write
     steps:
       - name: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -105,16 +103,54 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: devbox run ./gradlew detekt testDebugUnitTest koverXmlReportDebug
-      - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
-        if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+      - name: Run unit tests with coverage
+        run: devbox run ./gradlew detekt testDebugUnitTest koverXmlReportDebug
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
         with:
-          config: octocov.yaml
+          name: kover-coverage
+          path: app/build/reports/kover/reportDebug.xml
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: always()
         with:
           name: reports
           path: app/build/reports/
+  instrumentation-test:
+    timeout-minutes: 15
+    name: Test Android E2E
+    needs: path-filter
+    if: needs.path-filter.outputs.android == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
+      - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run instrumented tests with coverage
+        uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel
+          disable-animations: true
+          script: devbox run ./gradlew :app:connectedDebugAndroidTest :app:jacocoInstrumentationTestReport --stacktrace
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: jacoco-coverage
+          path: app/build/reports/jacoco/jacocoInstrumentationTestReport/jacocoInstrumentationTestReport.xml
   build-apk:
     timeout-minutes: 10
     name: Build Android APK
@@ -160,6 +196,37 @@ jobs:
         with:
           enable-cache: true
       - run: devbox run renovate-config-validator --strict
+  coverage-report:
+    timeout-minutes: 5
+    name: Report Coverage
+    needs:
+      - path-filter
+      - test-android
+      - instrumentation-test
+    if: |
+      needs.path-filter.outputs.android == 'true' &&
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: kover-coverage
+          path: coverage/kover
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: jacoco-coverage
+          path: coverage/jacoco
+      - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
+        with:
+          config: octocov.yaml
   status-check:
     timeout-minutes: 5
     name: Status Check
@@ -170,6 +237,8 @@ jobs:
       - check-actions
       - check-format
       - check-renovate
+      - coverage-report
+      - instrumentation-test
       - test-android
       # keep-sorted end
     permissions: {}

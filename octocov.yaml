@@ -1,6 +1,7 @@
 coverage:
   paths:
-    - app/build/reports/kover/reportDebug.xml
+    - coverage/kover/reportDebug.xml
+    - coverage/jacoco/jacocoInstrumentationTestReport.xml
 
 codeToTestRatio:
   code:
@@ -9,6 +10,11 @@ codeToTestRatio:
   test:
     - "app/src/test/**/*.kt"
     - "app/src/androidTest/**/*.kt"
+
+testExecutionTime:
+  steps:
+    - Run unit tests with coverage
+    - Run instrumented tests with coverage
 
 comment:
   hideFooterLink: false
