@@ -29,4 +29,4 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 - **NIP-55 Integration**: Secure external signing without key exposure (default: Amber)
 - **NIP-65 Integration**: Dynamic relay list discovery from user preferences
 - **Android Native**: Built with Jetpack Compose and Material Design 3
-- **Encrypted Storage**: Android Keystore with AES256-GCM for local caching
+- **Encrypted Storage**: Tink Android with DataStore for secure local caching

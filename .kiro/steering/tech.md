@@ -28,12 +28,12 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Android
 
-- **Min SDK**: 26
+- **Min SDK**: 30
 - **Target SDK**: 36
 - **Kotlin**: 2.3.0
 - **Compose BOM**: 2026.01.00
-- **Gradle Plugin**: 8.13.2
-- **Hilt**: 2.58 (requires metadata compatibility workaround for Kotlin 2.3.0)
+- **Gradle Plugin**: 9.0.0
+- **Hilt**: 2.59 (requires metadata compatibility workaround for Kotlin 2.3.0)
 
 ### Architecture
 
@@ -43,7 +43,9 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Security
 
-- **EncryptedSharedPreferences**: androidx.security:security-crypto
+- **Tink Android**: com.google.crypto.tink:tink-android (v1.20.0) for encryption
+- **DataStore**: androidx.datastore with encrypted serializer (TinkKeyManager)
+- **EncryptedSharedPreferences**: androidx.security:security-crypto (legacy, migrated to DataStore)
 - **Android Keystore**: Hardware-backed key storage with AES256_GCM
 - **Encryption Schemes**: AES256-SIV (keys) + AES256-GCM (values)
 

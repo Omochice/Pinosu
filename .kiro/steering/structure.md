@@ -111,8 +111,9 @@ graph TB
 
 **Subpackages**:
 
-- `repository/`: Repository implementations (Auth, Bookmark)
-- `local/`: EncryptedSharedPreferences data sources
+- `repository/`: Repository implementations (Auth, Bookmark, Settings)
+- `local/`: DataStore data sources with encrypted serializers (migrated from EncryptedSharedPreferences)
+- `crypto/`: Encryption utilities (TinkKeyManager for DataStore encryption)
 - `nip55/`: NIP-55 signer client
 - `nip65/`: NIP-65 relay list fetcher (Nip65RelayListFetcher, Nip65EventParser)
 - `relay/`: WebSocket relay client for Nostr events (RelayPool, PublishResult)
@@ -145,13 +146,14 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/di/`
 **Purpose**: Hilt modules for dependency provision
-**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`
+**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`, `DataStoreModule.kt`
 
-**Pattern**: Separate modules per layer (Repository, UseCase, Network)
+**Pattern**: Separate modules per layer (Repository, UseCase, Network, DataStore)
 
 - `NetworkModule`: Provides singleton OkHttpClient with timeout configuration
 - `RepositoryModule`: Binds repository interfaces to implementations
 - `UseCaseModule`: Binds use case interfaces to implementations
+- `DataStoreModule`: Provides encrypted DataStore instances
 
 ## Naming Conventions
 
@@ -168,8 +170,9 @@ io.github.omochice.pinosu/
 │   ├── model/       // Entities and value objects (User, Bookmark, AuthEvent)
 │   └── usecase/     // Business use cases (Login, Logout, GetBookmarkList, PostBookmark)
 ├── data/            // Data access implementations
-│   ├── repository/  // Repository implementations (Auth, Bookmark)
-│   ├── local/       // Local storage (EncryptedSharedPreferences)
+│   ├── repository/  // Repository implementations (Auth, Bookmark, Settings)
+│   ├── local/       // Local storage (DataStore with encrypted serializers)
+│   ├── crypto/      // Encryption utilities (TinkKeyManager)
 │   ├── nip55/       // NIP-55 signer client
 │   ├── nip65/       // NIP-65 relay list fetcher
 │   ├── relay/       // WebSocket relay client, PublishResult
@@ -182,7 +185,7 @@ io.github.omochice.pinosu/
 │   │   ├── component/   // Reusable dialogs (ErrorDialog, UrlSelectionDialog)
 │   │   └── drawer/      // Navigation drawer UI
 │   └── navigation/  // Navigation graphs
-├── di/              // Dependency injection (Network, Repository, UseCase)
+├── di/              // Dependency injection (Network, Repository, UseCase, DataStore)
 └── ui/              // Theme and design system
 ```
 
