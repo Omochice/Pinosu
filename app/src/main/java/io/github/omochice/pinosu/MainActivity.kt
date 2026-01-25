@@ -102,9 +102,13 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
 
   LaunchedEffect(mainUiState.userPubkey) {
     if (mainUiState.userPubkey != null) {
-      val currentRoute = navController.currentBackStackEntry?.destination?.route
-      if (currentRoute?.contains("Login") == true) {
-        navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+      val currentDestination = navController.currentBackStackEntry?.destination
+      if (currentDestination?.route == Login::class.qualifiedName ||
+          currentDestination?.route?.startsWith(Login::class.qualifiedName ?: "") == true) {
+        navController.navigate(Bookmark) {
+          popUpTo<Login> { inclusive = true }
+          launchSingleTop = true
+        }
       }
     }
   }
