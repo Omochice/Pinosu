@@ -30,6 +30,7 @@ plugins {
   alias(libs.plugins.hilt)
   alias(libs.plugins.kover)
   alias(libs.plugins.aboutlibraries.android)
+  jacoco
 }
 
 android {
