@@ -32,7 +32,7 @@ graph TB
     subgraph "Data Layer"
         Repo[AuthRepository<br/>Interface]
         RepoImpl[Nip55AuthRepository]
-        LocalDS[LocalAuthDataSource<br/>EncryptedSharedPreferences]
+        LocalDS[LocalAuthDataSource<br/>DataStore]
         Nip55Client[Nip55SignerClient<br/>NIP-55]
         Nip65Fetcher[Nip65RelayListFetcher<br/>Kind 10002]
         RelayPool[RelayPool<br/>WebSocket]
@@ -45,10 +45,12 @@ graph TB
 
     subgraph "External Dependencies"
         Nip55Signer[NIP-55 Signer App<br/>com.greenart7c3.nostrsigner]
-        Keystore[Android Keystore<br/>AES256-GCM]
+        TinkKeyManager[TinkKeyManager<br/>AES256-GCM AEAD]
+        AndroidKeystore[Android Keystore<br/>Master Key]
 
         Nip55Client -->|Intent/ActivityResult| Nip55Signer
-        LocalDS -->|encrypted storage| Keystore
+        LocalDS -->|encrypted via| TinkKeyManager
+        TinkKeyManager -->|master key from| AndroidKeystore
     end
 
     subgraph "Dependency Injection"
@@ -83,7 +85,7 @@ graph TB
     class UI,VM presentation
     class UC_Login,UC_Logout,UC_GetState,UC_PostBookmark,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,UC_PostBookmark_Impl,Model domain
     class Repo,RepoImpl,LocalDS,Nip55Client,Nip65Fetcher,RelayPool data
-    class Nip55Signer,Keystore external
+    class Nip55Signer,TinkKeyManager,AndroidKeystore external
     class Hilt,RepoModule,UCModule di
 ```
 
