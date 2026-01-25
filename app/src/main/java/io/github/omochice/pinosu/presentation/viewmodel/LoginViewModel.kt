@@ -76,7 +76,7 @@ constructor(
     }
   }
 
-  /** Dismiss error dialog and reset error state */
+  /** Dismiss any login-related dialog and reset the login UI state to Idle */
   fun dismissError() {
     _uiState.value = LoginUiState.Idle
   }
