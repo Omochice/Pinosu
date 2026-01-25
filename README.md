@@ -15,7 +15,7 @@ Your notes are synced across devices via Nostr relays, and you maintain full own
 
 ## Supports
 
-- Android 8.0 (API 26) or higher
+- Android 11 (API 30) or higher
 - NIP-55 compatible signer app (e.g., [greenart7c3/Amber](https://github.com/greenart7c3/Amber))
 
 ## Inspirations
