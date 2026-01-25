@@ -122,8 +122,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
-      actions: write
     steps:
       - name: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -138,7 +136,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Run instrumented tests on emulator
+      - name: Run instrumented tests with coverage
         uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
         with:
           api-level: 34
@@ -146,7 +144,12 @@ jobs:
           arch: x86_64
           profile: pixel
           disable-animations: true
-          script: devbox run ./gradlew :app:connectedAndroidTest --stacktrace
+          script: devbox run ./gradlew :app:connectedDebugAndroidTest :app:jacocoInstrumentationTestReport --stacktrace
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: jacoco-coverage
+          path: app/build/reports/jacoco/jacocoInstrumentationTestReport/jacocoInstrumentationTestReport.xml
   build-apk:
     timeout-minutes: 10
     name: Build Android APK
