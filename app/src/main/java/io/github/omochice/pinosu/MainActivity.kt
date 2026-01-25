@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -103,8 +104,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
   LaunchedEffect(mainUiState.userPubkey) {
     if (mainUiState.userPubkey != null) {
       val currentDestination = navController.currentBackStackEntry?.destination
-      if (currentDestination?.route == Login::class.qualifiedName ||
-          currentDestination?.route?.startsWith(Login::class.qualifiedName ?: "") == true) {
+      if (currentDestination?.hasRoute<Login>() ?: false) {
         navController.navigate(Bookmark) {
           popUpTo<Login> { inclusive = true }
           launchSingleTop = true
