@@ -5,6 +5,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -63,7 +65,7 @@ class MainScreenTest {
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
     composeTestRule.onNodeWithText("ログアウト").performClick()
 
-    assert(logoutCallbackCalled) { "onLogoutコールバックが呼ばれませんでした" }
+    assertTrue("onLogoutコールバックが呼ばれませんでした", logoutCallbackCalled)
   }
 
   @Test
@@ -92,7 +94,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
 
     // Verify logout button is not clickable（since it doesn't exist）
-    assert(!logoutCallbackCalled) { "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません" }
+    assertFalse("ログアウト処理中はonLogoutコールバックが呼ばれてはいけません", logoutCallbackCalled)
   }
 
   @Test
@@ -116,7 +118,7 @@ class MainScreenTest {
     // Wait for LaunchedEffect to execute
     composeTestRule.waitForIdle()
 
-    assert(navigateToLoginCalled) { "After logout completion, onNavigateToLogin should be called" }
+    assertTrue("After logout completion, onNavigateToLogin should be called", navigateToLoginCalled)
   }
 
   @Test
@@ -133,7 +135,7 @@ class MainScreenTest {
     }
 
     composeTestRule.waitForIdle()
-    assert(!navigateToLoginCalled) { "ログアウト処理中はナビゲーションが呼ばれてはいけません" }
+    assertFalse("ログアウト処理中はナビゲーションが呼ばれてはいけません", navigateToLoginCalled)
   }
 
   @Test
@@ -150,7 +152,7 @@ class MainScreenTest {
     }
 
     composeTestRule.waitForIdle()
-    assert(!navigateToLoginCalled) { "初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません" }
+    assertFalse("初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません", navigateToLoginCalled)
   }
 
   @Test
