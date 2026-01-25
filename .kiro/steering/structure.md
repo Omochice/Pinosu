@@ -12,8 +12,10 @@ graph TB
     subgraph "Presentation Layer"
         UI[LoginScreen<br/>Composable]
         VM[LoginViewModel<br/>StateFlow]
+        State[LoginUiState<br/>Sealed Interface]
         UI -->|observes state| VM
-        VM -->|emits| UI
+        VM -->|emits| State
+        State -->|renders| UI
     end
 
     subgraph "Domain Layer"
@@ -82,7 +84,7 @@ graph TB
     classDef external fill:#f1f8e9,stroke:#33691e
     classDef di fill:#fce4ec,stroke:#880e4f
 
-    class UI,VM presentation
+    class UI,VM,State presentation
     class UC_Login,UC_Logout,UC_GetState,UC_PostBookmark,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,UC_PostBookmark_Impl,Model domain
     class Repo,RepoImpl,LocalDS,Nip55Client,Nip65Fetcher,RelayPool data
     class Nip55Signer,TinkKeyManager,AndroidKeystore external
@@ -127,15 +129,17 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/`
 **Purpose**: ViewModels and UI state management
-**Example**: `viewmodel/LoginViewModel.kt` with `LoginUiState`, `viewmodel/PostBookmarkViewModel.kt` with `PostBookmarkUiState`
+**Example**: `viewmodel/LoginViewModel.kt`, `viewmodel/PostBookmarkViewModel.kt`
 
 **Pattern**: MVVM with StateFlow, Hilt-injected ViewModels
+
+**UI State Pattern**: Separate files for UI state classes (e.g., `LoginUiState.kt`, `MainUiState.kt`, `BookmarkUiState.kt`). Use sealed interfaces for type-safe state management with exhaustive when expressions.
 
 ### UI Layer (`presentation/ui/`)
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/presentation/ui/`
 **Purpose**: Jetpack Compose screens and components
-**Example**: `LoginScreen.kt`, `MainScreen.kt`, `BookmarkScreen.kt`, `PostBookmarkScreen.kt`
+**Example**: `LoginScreen.kt`, `MainScreen.kt`, `BookmarkScreen.kt`, `PostBookmarkScreen.kt`, `SettingsScreen.kt`, `AppInfoScreen.kt`, `LicenseScreen.kt`
 
 **Pattern**: Composable functions observing ViewModel state
 
@@ -150,12 +154,13 @@ graph TB
 **Purpose**: Hilt modules for dependency provision
 **Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`, `DataStoreModule.kt`
 
-**Pattern**: Separate modules per layer (Repository, UseCase, Network, DataStore)
+**Pattern**: Separate modules per layer (Repository, UseCase, Network, DataStore, RelayPool)
 
 - `NetworkModule`: Provides singleton OkHttpClient with timeout configuration
 - `RepositoryModule`: Binds repository interfaces to implementations
 - `UseCaseModule`: Binds use case interfaces to implementations
 - `DataStoreModule`: Provides encrypted DataStore instances
+- `RelayPoolModule`: Binds RelayPool interface to implementation (separated for test replacement)
 
 ## Naming Conventions
 
@@ -182,12 +187,12 @@ io.github.omochice.pinosu/
 │   ├── model/       // Data transfer objects (NostrEvent, UnsignedNostrEvent)
 │   └── util/        // Utilities (Bech32)
 ├── presentation/    // UI layer
-│   ├── viewmodel/   // State management (Login, Bookmark, PostBookmark ViewModels)
-│   ├── ui/          // Compose screens (Login, Main, Bookmark, PostBookmark)
+│   ├── viewmodel/   // State management (ViewModels + separate *UiState files)
+│   ├── ui/          // Compose screens (Login, Main, Bookmark, PostBookmark, Settings, AppInfo, License)
 │   │   ├── component/   // Reusable dialogs (ErrorDialog, UrlSelectionDialog)
 │   │   └── drawer/      // Navigation drawer UI
 │   └── navigation/  // Navigation graphs
-├── di/              // Dependency injection (Network, Repository, UseCase, DataStore)
+├── di/              // Dependency injection (Network, Repository, UseCase, DataStore, RelayPool)
 └── ui/              // Theme and design system
 ```
 
