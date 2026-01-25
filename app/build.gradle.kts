@@ -183,3 +183,38 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     sarif.required.set(true)
   }
 }
+
+tasks.register<JacocoReport>("jacocoInstrumentationTestReport") {
+  dependsOn("connectedDebugAndroidTest")
+
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
+
+  val fileFilter =
+      listOf(
+          "**/R.class",
+          "**/R$*.class",
+          "**/BuildConfig.*",
+          "**/Manifest*.*",
+          "**/*Test*.*",
+          "**/Hilt_*",
+          "**/*_Hilt*",
+          "**/*_Factory*",
+          "**/*_MembersInjector*",
+          "**/ComposableSingletons*",
+      )
+
+  val debugTree =
+      fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug") { exclude(fileFilter) }
+  val kotlinDebugTree =
+      fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+
+  sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+  classDirectories.setFrom(files(debugTree, kotlinDebugTree))
+  executionData.setFrom(
+      fileTree(layout.buildDirectory) {
+        include("outputs/code_coverage/debugAndroidTest/connected/**/*.ec")
+      })
+}
