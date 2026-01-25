@@ -82,7 +82,10 @@ fun LoginScreen(
     }
 
     when (uiState) {
-      is LoginUiState.RequiresNip55Install -> {
+      LoginUiState.Idle,
+      LoginUiState.Loading,
+      LoginUiState.Success -> Unit
+      LoginUiState.RequiresNip55Install -> {
         AlertDialog(
             onDismissRequest = onDismissDialog,
             title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
@@ -117,7 +120,6 @@ fun LoginScreen(
               TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
             })
       }
-      else -> {}
     }
   }
 }
