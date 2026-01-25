@@ -95,11 +95,10 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
-    assertFalse("isLoading should be false", state.isLoading)
-    assertNull("errorMessage should be null", state.errorMessage)
+    assertTrue(
+        "state should be RequiresNip55Install",
+        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.RequiresNip55Install)
 
-    // AuthRepositoryのcheckNip55SignerInstalled()が呼ばれることを確認
     // Verify AuthRepository.checkNip55SignerInstalled() is called
     io.mockk.verify { authRepository.checkNip55SignerInstalled() }
   }
@@ -128,9 +127,9 @@ class PresentationDomainIntegrationTest {
         val loginState = viewModel.uiState.first()
         val mainState = viewModel.mainUiState.first()
 
-        assertTrue("loginSuccess should be true", loginState.loginSuccess)
-        assertFalse("isLoading should be false", loginState.isLoading)
-        assertNull("errorMessage should be null", loginState.errorMessage)
+        assertTrue(
+            "state should be Success",
+            loginState is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Success)
         assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
 
         coVerify { authRepository.processNip55Response(any(), any()) }
@@ -203,9 +202,10 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val stateAfterError = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", stateAfterError.errorMessage)
-    assertFalse("loginSuccess should be false", stateAfterError.loginSuccess)
-    assertFalse("isLoading should be false", stateAfterError.isLoading)
+    assertTrue(
+        "state should be NonRetryable error",
+        stateAfterError
+            is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.NonRetryable)
 
     viewModel.onRetryLogin()
     advanceUntilIdle()
@@ -223,7 +223,7 @@ class PresentationDomainIntegrationTest {
    * 4. ViewModel sets timeout message
    */
   @Test
-  fun `error flow - when timeout - should show timeout error message`() = runTest {
+  fun `error flow - when timeout - should show Retryable error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.Timeout
     coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
@@ -232,12 +232,9 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
     assertTrue(
-        "errorMessage should contain timeout info",
-        state.errorMessage?.contains("timed out") == true)
-    assertFalse("loginSuccess should be false", state.loginSuccess)
-    assertFalse("isLoading should be false", state.isLoading)
+        "state should be Retryable error",
+        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.Retryable)
   }
 
   /**
@@ -250,7 +247,7 @@ class PresentationDomainIntegrationTest {
    * 4. ViewModel sets error message
    */
   @Test
-  fun `error flow - when network error - should show network error message`() = runTest {
+  fun `error flow - when network error - should show Retryable error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val error = LoginError.NetworkError("Connection failed")
     coEvery { authRepository.processNip55Response(any(), any()) } returns Result.failure(error)
@@ -259,9 +256,9 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
-    assertFalse("loginSuccess should be false", state.loginSuccess)
-    assertFalse("isLoading should be false", state.isLoading)
+    assertTrue(
+        "state should be Retryable error",
+        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.Retryable)
   }
 
   /**
@@ -273,20 +270,24 @@ class PresentationDomainIntegrationTest {
    * 3. ViewModel clears error state
    */
   @Test
-  fun `error flow - when error dismissed - should clear error state`() = runTest {
+  fun `error flow - when error dismissed - should reset state to Idle`() = runTest {
     every { authRepository.checkNip55SignerInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
 
     val stateBeforeDismiss = viewModel.uiState.first()
-    assertTrue("showNip55InstallDialog should be true", stateBeforeDismiss.showNip55InstallDialog)
+    assertTrue(
+        "state should be RequiresNip55Install",
+        stateBeforeDismiss
+            is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.RequiresNip55Install)
 
     viewModel.dismissError()
     advanceUntilIdle()
 
     val stateAfterDismiss = viewModel.uiState.first()
-    assertNull("errorMessage should be null", stateAfterDismiss.errorMessage)
-    assertFalse("showNip55InstallDialog should be false", stateAfterDismiss.showNip55InstallDialog)
+    assertTrue(
+        "state should be Idle after dismissError",
+        stateAfterDismiss is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Idle)
   }
 
   /**
