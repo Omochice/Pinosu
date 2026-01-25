@@ -16,6 +16,7 @@ jobs:
       actions: ${{steps.changes.outputs.actions}}
       android: ${{steps.changes.outputs.android}}
       renovate: ${{steps.changes.outputs.renovate}}
+      version: ${{steps.changes.outputs.version}}
       # keep-sorted end
     runs-on: ubuntu-latest
     permissions:
@@ -46,6 +47,8 @@ jobs:
               - renovate.json5
               - devbox.json
               - devbox.lock
+            version:
+              - version.json
   check-actions:
     needs: path-filter
     if: needs.path-filter.outputs.actions == 'true'
@@ -196,6 +199,37 @@ jobs:
         with:
           enable-cache: true
       - run: devbox run renovate-config-validator --strict
+  check-version-code:
+    timeout-minutes: 5
+    name: Check versionCode increment
+    needs: path-filter
+    if: needs.path-filter.outputs.version == 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Check versionCode is incremented
+        run: |
+          PR_VERSION_CODE=$(jq -r '.versionCode' version.json)
+          BASE_VERSION_CODE=$(gh api "repos/${{ github.repository }}/contents/version.json?ref=${{ github.base_ref }}" \
+            --jq '.content' | base64 -d | jq -r '.versionCode')
+
+          echo "PR versionCode: $PR_VERSION_CODE"
+          echo "Base versionCode: $BASE_VERSION_CODE"
+
+          if [[ "$PR_VERSION_CODE" -ge $((BASE_VERSION_CODE + 1)) ]]; then
+            echo "versionCode is properly incremented"
+            exit 0
+          else
+            echo "Error: versionCode must be incremented (expected >= $((BASE_VERSION_CODE + 1)), got $PR_VERSION_CODE)"
+            exit 1
+          fi
   coverage-report:
     timeout-minutes: 5
     name: Report Coverage
@@ -237,6 +271,7 @@ jobs:
       - check-actions
       - check-format
       - check-renovate
+      - check-version-code
       - coverage-report
       - instrumentation-test
       - test-android
