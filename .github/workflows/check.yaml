@@ -195,6 +195,37 @@ jobs:
         with:
           enable-cache: true
       - run: devbox run renovate-config-validator --strict
+  coverage-report:
+    timeout-minutes: 5
+    name: Report Coverage
+    needs:
+      - path-filter
+      - test-android
+      - instrumentation-test
+    if: |
+      needs.path-filter.outputs.android == 'true' &&
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: kover-coverage
+          path: coverage/kover
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: jacoco-coverage
+          path: coverage/jacoco
+      - uses: k1LoW/octocov-action@73d561f65d59e66899ed5c87e4621a913b5d5c20 # v1.5.0
+        with:
+          config: octocov.yaml
   status-check:
     timeout-minutes: 5
     name: Status Check

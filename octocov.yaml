@@ -1,6 +1,7 @@
 coverage:
   paths:
-    - app/build/reports/kover/reportDebug.xml
+    - coverage/kover/reportDebug.xml
+    - coverage/jacoco/jacocoInstrumentationTestReport.xml
 
 codeToTestRatio:
   code:
