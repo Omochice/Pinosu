@@ -12,7 +12,8 @@
           "path": "version.json",
           "jsonpath": "$.versionName"
         }
-      ]
+      ],
+      "always-update": true
     }
   }
 }
