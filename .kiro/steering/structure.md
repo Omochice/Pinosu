@@ -32,7 +32,7 @@ graph TB
     subgraph "Data Layer"
         Repo[AuthRepository<br/>Interface]
         RepoImpl[Nip55AuthRepository]
-        LocalDS[LocalAuthDataSource<br/>EncryptedSharedPreferences]
+        LocalDS[LocalAuthDataSource<br/>DataStore]
         Nip55Client[Nip55SignerClient<br/>NIP-55]
         Nip65Fetcher[Nip65RelayListFetcher<br/>Kind 10002]
         RelayPool[RelayPool<br/>WebSocket]
@@ -45,10 +45,12 @@ graph TB
 
     subgraph "External Dependencies"
         Nip55Signer[NIP-55 Signer App<br/>com.greenart7c3.nostrsigner]
-        Keystore[Android Keystore<br/>AES256-GCM]
+        TinkKeyManager[TinkKeyManager<br/>AES256-GCM AEAD]
+        AndroidKeystore[Android Keystore<br/>Master Key]
 
         Nip55Client -->|Intent/ActivityResult| Nip55Signer
-        LocalDS -->|encrypted storage| Keystore
+        LocalDS -->|encrypted via| TinkKeyManager
+        TinkKeyManager -->|master key from| AndroidKeystore
     end
 
     subgraph "Dependency Injection"
@@ -83,7 +85,7 @@ graph TB
     class UI,VM presentation
     class UC_Login,UC_Logout,UC_GetState,UC_PostBookmark,UC_Login_Impl,UC_Logout_Impl,UC_GetState_Impl,UC_PostBookmark_Impl,Model domain
     class Repo,RepoImpl,LocalDS,Nip55Client,Nip65Fetcher,RelayPool data
-    class Nip55Signer,Keystore external
+    class Nip55Signer,TinkKeyManager,AndroidKeystore external
     class Hilt,RepoModule,UCModule di
 ```
 
@@ -111,8 +113,9 @@ graph TB
 
 **Subpackages**:
 
-- `repository/`: Repository implementations (Auth, Bookmark)
-- `local/`: EncryptedSharedPreferences data sources
+- `repository/`: Repository implementations (Auth, Bookmark, Settings)
+- `local/`: DataStore data sources with encrypted serializers (migrated from EncryptedSharedPreferences)
+- `crypto/`: Encryption utilities (TinkKeyManager for DataStore encryption)
 - `nip55/`: NIP-55 signer client
 - `nip65/`: NIP-65 relay list fetcher (Nip65RelayListFetcher, Nip65EventParser)
 - `relay/`: WebSocket relay client for Nostr events (RelayPool, PublishResult)
@@ -145,13 +148,14 @@ graph TB
 
 **Location**: `app/src/main/java/io/github/omochice/pinosu/di/`
 **Purpose**: Hilt modules for dependency provision
-**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`
+**Example**: `RepositoryModule.kt`, `UseCaseModule.kt`, `NetworkModule.kt`, `DataStoreModule.kt`
 
-**Pattern**: Separate modules per layer (Repository, UseCase, Network)
+**Pattern**: Separate modules per layer (Repository, UseCase, Network, DataStore)
 
 - `NetworkModule`: Provides singleton OkHttpClient with timeout configuration
 - `RepositoryModule`: Binds repository interfaces to implementations
 - `UseCaseModule`: Binds use case interfaces to implementations
+- `DataStoreModule`: Provides encrypted DataStore instances
 
 ## Naming Conventions
 
@@ -168,8 +172,9 @@ io.github.omochice.pinosu/
 │   ├── model/       // Entities and value objects (User, Bookmark, AuthEvent)
 │   └── usecase/     // Business use cases (Login, Logout, GetBookmarkList, PostBookmark)
 ├── data/            // Data access implementations
-│   ├── repository/  // Repository implementations (Auth, Bookmark)
-│   ├── local/       // Local storage (EncryptedSharedPreferences)
+│   ├── repository/  // Repository implementations (Auth, Bookmark, Settings)
+│   ├── local/       // Local storage (DataStore with encrypted serializers)
+│   ├── crypto/      // Encryption utilities (TinkKeyManager)
 │   ├── nip55/       // NIP-55 signer client
 │   ├── nip65/       // NIP-65 relay list fetcher
 │   ├── relay/       // WebSocket relay client, PublishResult
@@ -182,7 +187,7 @@ io.github.omochice.pinosu/
 │   │   ├── component/   // Reusable dialogs (ErrorDialog, UrlSelectionDialog)
 │   │   └── drawer/      // Navigation drawer UI
 │   └── navigation/  // Navigation graphs
-├── di/              // Dependency injection (Network, Repository, UseCase)
+├── di/              // Dependency injection (Network, Repository, UseCase, DataStore)
 └── ui/              // Theme and design system
 ```
 
