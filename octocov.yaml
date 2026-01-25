@@ -11,6 +11,11 @@ codeToTestRatio:
     - "app/src/test/**/*.kt"
     - "app/src/androidTest/**/*.kt"
 
+testExecutionTime:
+  steps:
+    - Run unit tests with coverage
+    - Run instrumented tests with coverage
+
 comment:
   hideFooterLink: false
 
