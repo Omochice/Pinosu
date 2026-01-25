@@ -93,7 +93,6 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user = User("npub1" + "f".repeat(59))
 
     dataSource.saveUser(user)
-    Thread.sleep(10)
 
     val retrieved = dataSource.getUser()
     assertNotNull("User should be retrievable after save", retrieved)
@@ -104,10 +103,8 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   fun `getUser should update lastAccessed timestamp`() = runTest {
     val user = User("npub1" + "1".repeat(59))
     dataSource.saveUser(user)
-    Thread.sleep(10)
 
     val firstRetrieval = dataSource.getUser()
-    Thread.sleep(10)
     val secondRetrieval = dataSource.getUser()
 
     assertNotNull("First retrieval should succeed", firstRetrieval)
