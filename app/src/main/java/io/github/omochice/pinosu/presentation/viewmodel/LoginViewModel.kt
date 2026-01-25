@@ -163,3 +163,29 @@ data class MainUiState(
     val userPubkey: String? = null,
     val isLoggingOut: Boolean = false,
 )
+
+/** Login screen UI state using sealed interface for type-safe state management */
+sealed interface LoginUiStateV2 {
+  /** Initial idle state, waiting for user action */
+  data object Idle : LoginUiStateV2
+
+  /** Loading state during login process */
+  data object Loading : LoginUiStateV2
+
+  /** Login completed successfully */
+  data object Success : LoginUiStateV2
+
+  /** NIP-55 signer app is not installed */
+  data object RequiresNip55Install : LoginUiStateV2
+
+  /** Error state with retryable/non-retryable distinction */
+  sealed interface Error : LoginUiStateV2 {
+    val message: String
+
+    /** Retryable error (e.g., timeout) - shows retry button */
+    data class Retryable(override val message: String) : Error
+
+    /** Non-retryable error (e.g., user rejection) - shows OK button only */
+    data class NonRetryable(override val message: String) : Error
+  }
+}
