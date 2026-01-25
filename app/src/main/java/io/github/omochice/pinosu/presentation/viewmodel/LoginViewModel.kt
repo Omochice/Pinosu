@@ -41,8 +41,8 @@ constructor(
     private const val TAG = "LoginViewModel"
   }
 
-  private val _uiState = MutableStateFlow(LoginUiState())
-  val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+  private val _uiState = MutableStateFlow<LoginUiStateV2>(LoginUiStateV2.Idle)
+  val uiState: StateFlow<LoginUiStateV2> = _uiState.asStateFlow()
 
   private val _mainUiState = MutableStateFlow(MainUiState())
   val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
@@ -59,8 +59,7 @@ constructor(
   fun onLoginButtonClicked() {
     val isNip55SignerInstalled = loginUseCase.checkNip55SignerInstalled()
     if (!isNip55SignerInstalled) {
-      _uiState.value =
-          _uiState.value.copy(showNip55InstallDialog = true, errorMessage = null, isLoading = false)
+      _uiState.value = LoginUiStateV2.RequiresNip55Install
     }
   }
 
@@ -79,9 +78,7 @@ constructor(
 
   /** Dismiss error dialog and reset error state */
   fun dismissError() {
-    _uiState.value =
-        _uiState.value.copy(
-            errorMessage = null, showNip55InstallDialog = false, loginSuccess = false)
+    _uiState.value = LoginUiStateV2.Idle
   }
 
   /** Retry login after an error occurred */
@@ -98,8 +95,7 @@ constructor(
    */
   fun processNip55Response(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
-      _uiState.value =
-          _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
+      _uiState.value = LoginUiStateV2.Loading
 
       val result = authRepository.processNip55Response(resultCode, data)
 
@@ -116,23 +112,24 @@ constructor(
         }
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
-        _uiState.value =
-            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
+        _uiState.value = LoginUiStateV2.Success
       } else {
         val error = result.exceptionOrNull()
-        val errorMessage =
-            when (error) {
-              is LoginError.UserRejected -> "Login was cancelled. Please try again."
-              is LoginError.Timeout ->
-                  "Login process timed out. Please check the NIP-55 signer app and retry."
-              is LoginError.NetworkError ->
-                  "A network error occurred. Please check your connection."
-              is LoginError.UnknownError -> "An error occurred. Please try again later."
-              else -> "An error occurred. Please try again later."
-            }
         _uiState.value =
-            _uiState.value.copy(
-                isLoading = false, errorMessage = errorMessage, loginSuccess = false)
+            when (error) {
+              is LoginError.UserRejected ->
+                  LoginUiStateV2.Error.NonRetryable("Login was cancelled. Please try again.")
+              is LoginError.Timeout ->
+                  LoginUiStateV2.Error.Retryable(
+                      "Login process timed out. Please check the NIP-55 signer app and retry.")
+              is LoginError.NetworkError ->
+                  LoginUiStateV2.Error.Retryable(
+                      "A network error occurred. Please check your connection.")
+              is LoginError.UnknownError ->
+                  LoginUiStateV2.Error.NonRetryable("An error occurred. Please try again later.")
+              else ->
+                  LoginUiStateV2.Error.NonRetryable("An error occurred. Please try again later.")
+            }
       }
     }
   }
