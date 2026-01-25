@@ -41,7 +41,7 @@ constructor(
     private const val TAG = "LoginViewModel"
   }
 
-  private val _uiState = MutableStateFlow(LoginUiState())
+  private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
   val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
   private val _mainUiState = MutableStateFlow(MainUiState())
@@ -59,8 +59,7 @@ constructor(
   fun onLoginButtonClicked() {
     val isNip55SignerInstalled = loginUseCase.checkNip55SignerInstalled()
     if (!isNip55SignerInstalled) {
-      _uiState.value =
-          _uiState.value.copy(showNip55InstallDialog = true, errorMessage = null, isLoading = false)
+      _uiState.value = LoginUiState.RequiresNip55Install
     }
   }
 
@@ -77,11 +76,9 @@ constructor(
     }
   }
 
-  /** Dismiss error dialog and reset error state */
+  /** Dismiss any login-related dialog and reset the login UI state to Idle */
   fun dismissError() {
-    _uiState.value =
-        _uiState.value.copy(
-            errorMessage = null, showNip55InstallDialog = false, loginSuccess = false)
+    _uiState.value = LoginUiState.Idle
   }
 
   /** Retry login after an error occurred */
@@ -98,8 +95,7 @@ constructor(
    */
   fun processNip55Response(resultCode: Int, data: Intent?) {
     viewModelScope.launch {
-      _uiState.value =
-          _uiState.value.copy(isLoading = true, errorMessage = null, loginSuccess = false)
+      _uiState.value = LoginUiState.Loading
 
       val result = authRepository.processNip55Response(resultCode, data)
 
@@ -116,50 +112,24 @@ constructor(
         }
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey)
-        _uiState.value =
-            _uiState.value.copy(isLoading = false, loginSuccess = true, errorMessage = null)
+        _uiState.value = LoginUiState.Success
       } else {
         val error = result.exceptionOrNull()
-        val errorMessage =
-            when (error) {
-              is LoginError.UserRejected -> "Login was cancelled. Please try again."
-              is LoginError.Timeout ->
-                  "Login process timed out. Please check the NIP-55 signer app and retry."
-              is LoginError.NetworkError ->
-                  "A network error occurred. Please check your connection."
-              is LoginError.UnknownError -> "An error occurred. Please try again later."
-              else -> "An error occurred. Please try again later."
-            }
         _uiState.value =
-            _uiState.value.copy(
-                isLoading = false, errorMessage = errorMessage, loginSuccess = false)
+            when (error) {
+              is LoginError.UserRejected ->
+                  LoginUiState.Error.NonRetryable("Login was cancelled. Please try again.")
+              is LoginError.Timeout ->
+                  LoginUiState.Error.Retryable(
+                      "Login process timed out. Please check the NIP-55 signer app and retry.")
+              is LoginError.NetworkError ->
+                  LoginUiState.Error.Retryable(
+                      "A network error occurred. Please check your connection.")
+              is LoginError.UnknownError ->
+                  LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+              else -> LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+            }
       }
     }
   }
 }
-
-/**
- * Login screen UI state
- *
- * @property isLoading Whether currently loading
- * @property errorMessage Error message
- * @property showNip55InstallDialog Whether to show NIP-55 signer not installed dialog
- * @property loginSuccess Whether login was successful
- */
-data class LoginUiState(
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val showNip55InstallDialog: Boolean = false,
-    val loginSuccess: Boolean = false,
-)
-
-/**
- * Main screen UI state
- *
- * @property userPubkey Logged-in user's public key
- * @property isLoggingOut Whether logout process is in progress
- */
-data class MainUiState(
-    val userPubkey: String? = null,
-    val isLoggingOut: Boolean = false,
-)

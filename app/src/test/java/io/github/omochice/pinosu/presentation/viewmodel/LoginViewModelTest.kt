@@ -64,13 +64,10 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `initial LoginUiState should have default values`() = runTest {
+  fun `initial LoginUiState should be Idle`() = runTest {
     val state = viewModel.uiState.first()
 
-    assertFalse("isLoading should be false", state.isLoading)
-    assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("showNip55InstallDialog should be false", state.showNip55InstallDialog)
-    assertFalse("loginSuccess should be false", state.loginSuccess)
+    assertTrue("state should be Idle", state is LoginUiState.Idle)
   }
 
   @Test
@@ -126,7 +123,8 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.first()
-        assertTrue("showNip55InstallDialog should be true", state.showNip55InstallDialog)
+        assertTrue(
+            "state should be RequiresNip55Install", state is LoginUiState.RequiresNip55Install)
       }
 
   @Test
@@ -155,7 +153,7 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `dismissError should clear error message`() = runTest {
+  fun `dismissError should reset state to Idle`() = runTest {
     every { loginUseCase.checkNip55SignerInstalled() } returns false
     viewModel.onLoginButtonClicked()
     advanceUntilIdle()
@@ -164,8 +162,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("showNip55InstallDialog should be false", state.showNip55InstallDialog)
+    assertTrue("state should be Idle after dismissError", state is LoginUiState.Idle)
   }
 
   @Test
@@ -209,7 +206,7 @@ class LoginViewModelTest {
   }
 
   @Test
-  fun `processNip55Response should set loginSuccess on success`() = runTest {
+  fun `processNip55Response should set Success state on success`() = runTest {
     val testPubkey = "npub1" + "d".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
@@ -232,13 +229,12 @@ class LoginViewModelTest {
 
     val loginState = viewModelWithMock.uiState.first()
     val mainState = viewModelWithMock.mainUiState.first()
-    assertTrue("loginSuccess should be true", loginState.loginSuccess)
-    assertFalse("isLoading should be false after success", loginState.isLoading)
+    assertTrue("state should be Success", loginState is LoginUiState.Success)
     assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
   }
 
   @Test
-  fun `processNip55Response should set error message on UserRejected error`() = runTest {
+  fun `processNip55Response should set NonRetryable error on UserRejected error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.UserRejected
@@ -259,13 +255,11 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
-    assertFalse("isLoading should be false", state.isLoading)
-    assertFalse("loginSuccess should be false", state.loginSuccess)
+    assertTrue("state should be NonRetryable error", state is LoginUiState.Error.NonRetryable)
   }
 
   @Test
-  fun `processNip55Response should set error message on Timeout error`() = runTest {
+  fun `processNip55Response should set Retryable error on Timeout error`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error = io.github.omochice.pinosu.domain.model.error.LoginError.Timeout
@@ -286,15 +280,11 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
-    assertTrue(
-        "errorMessage should contain timeout info",
-        state.errorMessage?.contains("timed out") == true)
-    assertFalse("isLoading should be false", state.isLoading)
+    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
   }
 
   @Test
-  fun `processNip55Response should handle NetworkError`() = runTest {
+  fun `processNip55Response should set Retryable error on NetworkError`() = runTest {
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<io.github.omochice.pinosu.data.repository.AuthRepository>()
     val error =
@@ -316,12 +306,11 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
-    assertFalse("isLoading should be false", state.isLoading)
+    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
   }
 
   @Test
-  fun `processNip55Response should wait for relay list fetch before setting loginSuccess`() =
+  fun `processNip55Response should wait for relay list fetch before setting Success state`() =
       runTest {
         val testPubkey = "npub1" + "e".repeat(59)
         val testUser = User(testPubkey)
@@ -355,12 +344,12 @@ class LoginViewModelTest {
         coVerify { fetchRelayListUseCase(testPubkey) }
 
         val state = viewModelWithMock.uiState.first()
-        assertTrue("loginSuccess should be true after relay fetch completes", state.loginSuccess)
-        assertFalse("isLoading should be false", state.isLoading)
+        assertTrue(
+            "state should be Success after relay fetch completes", state is LoginUiState.Success)
       }
 
   @Test
-  fun `processNip55Response should succeed even if relay list fetch fails`() = runTest {
+  fun `processNip55Response should set Success state even if relay list fetch fails`() = runTest {
     val testPubkey = "npub1" + "f".repeat(59)
     val testUser = User(testPubkey)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
@@ -387,10 +376,6 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("loginSuccess should be true even if relay fetch fails", state.loginSuccess)
-    assertFalse("isLoading should be false", state.isLoading)
-    assertNull(
-        "errorMessage should be null (relay fetch failure is logged, not shown)",
-        state.errorMessage)
+    assertTrue("state should be Success even if relay fetch fails", state is LoginUiState.Success)
   }
 }

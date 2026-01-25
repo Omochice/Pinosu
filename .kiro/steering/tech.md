@@ -95,6 +95,13 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Coroutine Contexts**: IO operations use `Dispatchers.IO`, safe time API (java.time) instead of Date
 - **Resource Cleanup**: Flow cleanup with `awaitClose {}` for WebSocket connections
 
+### UI State Pattern
+
+- **Sealed Interface**: Use sealed interfaces for UI state (e.g., `LoginUiState`, `PostBookmarkUiState`)
+- **Separate Files**: Extract UI state classes to dedicated `*UiState.kt` files for clarity
+- **Exhaustive When**: Sealed interfaces enable exhaustive when expressions for type-safe state handling
+- **State Variants**: Common states include `Idle`, `Loading`, `Success`, and nested `Error` sealed interfaces
+
 ### Code Quality
 
 - **Documentation**: Public APIs documented with KDoc comments

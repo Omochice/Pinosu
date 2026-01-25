@@ -43,11 +43,14 @@ fun LoginScreen(
     onRetry: () -> Unit = {},
     onLoginSuccess: () -> Unit = {}
 ) {
-  LaunchedEffect(uiState.loginSuccess) {
-    if (uiState.loginSuccess) {
+  val isSuccess = uiState is LoginUiState.Success
+  LaunchedEffect(isSuccess) {
+    if (isSuccess) {
       onLoginSuccess()
     }
   }
+
+  val isLoading = uiState is LoginUiState.Loading
 
   Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -55,7 +58,7 @@ fun LoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center,
           modifier = Modifier.padding(16.dp)) {
-            if (uiState.loginSuccess) {
+            if (isSuccess) {
               Text(
                   text = stringResource(R.string.message_login_success),
                   style = MaterialTheme.typography.headlineSmall,
@@ -63,7 +66,7 @@ fun LoginScreen(
               Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (uiState.isLoading) {
+            if (isLoading) {
               CircularProgressIndicator()
               Spacer(modifier = Modifier.height(16.dp))
               Text(
@@ -72,48 +75,51 @@ fun LoginScreen(
               Spacer(modifier = Modifier.height(32.dp))
             }
 
-            Button(onClick = onLoginButtonClick, enabled = !uiState.isLoading) {
+            Button(onClick = onLoginButtonClick, enabled = !isLoading) {
               Text(stringResource(R.string.button_login_with_nip55))
             }
           }
     }
 
-    if (uiState.showNip55InstallDialog) {
-      AlertDialog(
-          onDismissRequest = onDismissDialog,
-          title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
-          text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
-          confirmButton = {
-            Button(onClick = onInstallNip55Signer) { Text(stringResource(R.string.button_install)) }
-          },
-          dismissButton = {
-            TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
-          })
-    }
-
-    if (uiState.errorMessage != null) {
-      val isTimeoutError =
-          uiState.errorMessage.contains("timeout", ignoreCase = true) ||
-              uiState.errorMessage.contains("timed out", ignoreCase = true)
-
-      AlertDialog(
-          onDismissRequest = onDismissDialog,
-          title = { Text(stringResource(R.string.dialog_title_error)) },
-          text = { Text(uiState.errorMessage) },
-          confirmButton = {
-            if (isTimeoutError) {
+    when (uiState) {
+      LoginUiState.Idle,
+      LoginUiState.Loading,
+      LoginUiState.Success -> {}
+      LoginUiState.RequiresNip55Install -> {
+        AlertDialog(
+            onDismissRequest = onDismissDialog,
+            title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
+            text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
+            confirmButton = {
+              Button(onClick = onInstallNip55Signer) {
+                Text(stringResource(R.string.button_install))
+              }
+            },
+            dismissButton = {
+              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
+            })
+      }
+      is LoginUiState.Error.Retryable -> {
+        AlertDialog(
+            onDismissRequest = onDismissDialog,
+            title = { Text(stringResource(R.string.dialog_title_error)) },
+            text = { Text(uiState.message) },
+            confirmButton = {
               Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
-            } else {
-              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
-            }
-          },
-          dismissButton = {
-            if (isTimeoutError) {
+            },
+            dismissButton = {
               TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_cancel)) }
-            } else {
-              null
-            }
-          })
+            })
+      }
+      is LoginUiState.Error.NonRetryable -> {
+        AlertDialog(
+            onDismissRequest = onDismissDialog,
+            title = { Text(stringResource(R.string.dialog_title_error)) },
+            text = { Text(uiState.message) },
+            confirmButton = {
+              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
+            })
+      }
     }
   }
 }
@@ -121,20 +127,20 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-  MaterialTheme { LoginScreen(uiState = LoginUiState(), onLoginButtonClick = {}) }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenLoadingPreview() {
-  MaterialTheme { LoginScreen(uiState = LoginUiState(isLoading = true), onLoginButtonClick = {}) }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Loading, onLoginButtonClick = {}) }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenNip55InstallDialogPreview() {
   MaterialTheme {
-    LoginScreen(uiState = LoginUiState(showNip55InstallDialog = true), onLoginButtonClick = {})
+    LoginScreen(uiState = LoginUiState.RequiresNip55Install, onLoginButtonClick = {})
   }
 }
 
@@ -143,7 +149,7 @@ fun LoginScreenNip55InstallDialogPreview() {
 fun LoginScreenErrorDialogPreview() {
   MaterialTheme {
     LoginScreen(
-        uiState = LoginUiState(errorMessage = "Login was cancelled. Please try again."),
+        uiState = LoginUiState.Error.NonRetryable("Login was cancelled. Please try again."),
         onLoginButtonClick = {})
   }
 }
@@ -154,9 +160,8 @@ fun LoginScreenTimeoutDialogPreview() {
   MaterialTheme {
     LoginScreen(
         uiState =
-            LoginUiState(
-                errorMessage =
-                    "Login process timed out. Please check the NIP-55 signer app and retry."),
+            LoginUiState.Error.Retryable(
+                "Login process timed out. Please check the NIP-55 signer app and retry."),
         onLoginButtonClick = {})
   }
 }
@@ -164,7 +169,5 @@ fun LoginScreenTimeoutDialogPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenSuccessPreview() {
-  MaterialTheme {
-    LoginScreen(uiState = LoginUiState(loginSuccess = true), onLoginButtonClick = {})
-  }
+  MaterialTheme { LoginScreen(uiState = LoginUiState.Success, onLoginButtonClick = {}) }
 }
