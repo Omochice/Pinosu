@@ -13,7 +13,6 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,13 +41,9 @@ class UserFlowTest {
 
   @Before
   fun setup() {
-    hiltRule.inject()
-  }
-
-  @After
-  fun teardown() {
     clearMocks(mockLocalAuthDataSource, mockNip55SignerClient, answers = false)
     coEvery { mockLocalAuthDataSource.getUser() } returns null
+    hiltRule.inject()
   }
 
   @Test
