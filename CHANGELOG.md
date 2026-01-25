@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/Omochice/Pinosu/compare/v0.1.2...v0.2.0) (2026-01-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* set minsdk=30 ([#129](https://github.com/Omochice/Pinosu/issues/129))
+
+### Code Refactoring
+
+* use LoginUiState sealed interface for type-safe error handling ([#133](https://github.com/Omochice/Pinosu/issues/133)) ([9ec2fbb](https://github.com/Omochice/Pinosu/commit/9ec2fbb11d10dad0d80a7ad7977820f7bb976d2d))
+
+
+### Build System
+
+* set minsdk=30 ([#129](https://github.com/Omochice/Pinosu/issues/129)) ([98a5e49](https://github.com/Omochice/Pinosu/commit/98a5e49247a01b976b7d4f584d05db39e8e4d6f5))
+
 ## [0.1.2](https://github.com/Omochice/Pinosu/compare/v0.1.1...v0.1.2) (2026-01-23)
 
 
