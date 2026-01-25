@@ -84,7 +84,7 @@ fun LoginScreen(
     when (uiState) {
       LoginUiState.Idle,
       LoginUiState.Loading,
-      LoginUiState.Success -> Unit
+      LoginUiState.Success -> {}
       LoginUiState.RequiresNip55Install -> {
         AlertDialog(
             onDismissRequest = onDismissDialog,
