@@ -217,6 +217,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BASE_REF: ${{ github.base_ref }}
         run: |
+          set -euo pipefail
           PR_VERSION_CODE=$(jq -r '.versionCode' version.json)
           BASE_VERSION_CODE=$(gh api "repos/${{ github.repository }}/contents/version.json?ref=${BASE_REF}" \
             --jq '.content' | base64 -d | jq -r '.versionCode')
