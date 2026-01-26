@@ -1,9 +1,14 @@
 package io.github.omochice.pinosu.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
+import io.github.omochice.pinosu.data.repository.AuthRepository
+import io.github.omochice.pinosu.data.repository.BookmarkRepository
+import io.github.omochice.pinosu.data.repository.SettingsRepository
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
@@ -20,36 +25,52 @@ import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCaseImpl
+import javax.inject.Singleton
 
 /**
  * Hilt module for UseCase dependency injection
  *
- * Binds UseCase interfaces to their concrete implementations.
+ * Provides UseCase interfaces with their concrete implementations.
  */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class UseCaseModule {
+object UseCaseModule {
 
-  @Binds abstract fun bindLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase
+  @Provides
+  fun provideLoginUseCase(authRepository: AuthRepository): LoginUseCase =
+      Nip55LoginUseCase(authRepository)
 
-  @Binds abstract fun bindLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase
+  @Provides
+  fun provideLogoutUseCase(authRepository: AuthRepository): LogoutUseCase =
+      Nip55LogoutUseCase(authRepository)
 
-  @Binds
-  abstract fun bindGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase
+  @Provides
+  fun provideGetLoginStateUseCase(authRepository: AuthRepository): GetLoginStateUseCase =
+      Nip55GetLoginStateUseCase(authRepository)
 
-  @Binds
-  abstract fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
+  @Provides
+  fun provideGetBookmarkListUseCase(
+      bookmarkRepository: BookmarkRepository
+  ): GetBookmarkListUseCase = GetBookmarkListUseCaseImpl(bookmarkRepository)
 
-  @Binds
-  abstract fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
+  @Provides
+  fun provideFetchRelayListUseCase(
+      fetcher: Nip65RelayListFetcher,
+      localAuthDataSource: LocalAuthDataSource
+  ): FetchRelayListUseCase = FetchRelayListUseCaseImpl(fetcher, localAuthDataSource)
 
-  @Binds abstract fun bindPostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase
+  @Provides
+  @Singleton
+  fun providePostBookmarkUseCase(
+      bookmarkRepository: BookmarkRepository,
+      getLoginStateUseCase: GetLoginStateUseCase
+  ): PostBookmarkUseCase = PostBookmarkUseCaseImpl(bookmarkRepository, getLoginStateUseCase)
 
-  @Binds
-  abstract fun bindSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase
+  @Provides
+  fun provideSetDisplayModeUseCase(settingsRepository: SettingsRepository): SetDisplayModeUseCase =
+      SetDisplayModeUseCaseImpl(settingsRepository)
 
-  @Binds
-  abstract fun bindObserveDisplayModeUseCase(
-      impl: ObserveDisplayModeUseCaseImpl
-  ): ObserveDisplayModeUseCase
+  @Provides
+  fun provideObserveDisplayMode(settingsRepository: SettingsRepository): ObserveDisplayModeUseCase =
+      ObserveDisplayModeUseCaseImpl(settingsRepository)
 }
