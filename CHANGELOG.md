@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Omochice/Pinosu/compare/v0.2.0...v0.2.1) (2026-01-26)
+
+
+### Continuous Integration
+
+* add versionCode increment check for PRs ([#137](https://github.com/Omochice/Pinosu/issues/137)) ([fc75591](https://github.com/Omochice/Pinosu/commit/fc755913e25f5a5b2955971edf45950f33fc4335))
+
 ## [0.2.0](https://github.com/Omochice/Pinosu/compare/v0.1.2...v0.2.0) (2026-01-25)
 
 
