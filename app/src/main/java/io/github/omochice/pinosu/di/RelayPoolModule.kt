@@ -1,11 +1,13 @@
 package io.github.omochice.pinosu.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.relay.RelayPoolImpl
+import javax.inject.Singleton
+import okhttp3.OkHttpClient
 
 /**
  * Hilt module for RelayPool dependency injection
@@ -14,6 +16,8 @@ import io.github.omochice.pinosu.data.relay.RelayPoolImpl
  */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RelayPoolModule {
-  @Binds abstract fun bindRelayPool(impl: RelayPoolImpl): RelayPool
+object RelayPoolModule {
+  @Provides
+  @Singleton
+  fun provideRelayPool(okHttpClient: OkHttpClient): RelayPool = RelayPoolImpl(okHttpClient)
 }
