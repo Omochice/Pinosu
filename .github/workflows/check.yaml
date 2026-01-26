@@ -207,17 +207,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
       - name: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Check versionCode is incremented
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
           PR_VERSION_CODE=$(jq -r '.versionCode' version.json)
-          BASE_VERSION_CODE=$(gh api "repos/${{ github.repository }}/contents/version.json?ref=${{ github.base_ref }}" \
+          BASE_VERSION_CODE=$(gh api "repos/${{ github.repository }}/contents/version.json?ref=${BASE_REF}" \
             --jq '.content' | base64 -d | jq -r '.versionCode')
 
           echo "PR versionCode: $PR_VERSION_CODE"
