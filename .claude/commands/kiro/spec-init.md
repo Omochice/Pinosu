@@ -26,13 +26,13 @@ Generate a unique feature name from the project description ($ARGUMENTS) and ini
 1. **Check Uniqueness**: Verify `.kiro/specs/` for naming conflicts (append number suffix if needed)
 2. **Create Directory**: `.kiro/specs/[feature-name]/`
 3. **Initialize Files Using Templates**:
-    - Read `.kiro/settings/templates/specs/init.json`
-    - Read `.kiro/settings/templates/specs/requirements-init.md`
-    - Replace placeholders:
+   - Read `.kiro/settings/templates/specs/init.json`
+   - Read `.kiro/settings/templates/specs/requirements-init.md`
+   - Replace placeholders:
         - `{{FEATURE_NAME}}` → generated feature name
         - `{{TIMESTAMP}}` → current ISO 8601 timestamp
         - `{{PROJECT_DESCRIPTION}}` → $ARGUMENTS
-    - Write `spec.json` and `requirements.md` to spec directory
+   - Write `spec.json` and `requirements.md` to spec directory
 
 ## Important Constraints
 
