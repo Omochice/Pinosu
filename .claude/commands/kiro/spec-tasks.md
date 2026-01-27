@@ -91,13 +91,13 @@ Provide brief summary in the language specified in spec.json:
 
 1. **Status**: Confirm tasks generated at `.kiro/specs/$1/tasks.md`
 2. **Task Summary**:
-    - Total: X major tasks, Y sub-tasks
-    - All Z requirements covered
-    - Average task size: 1-3 hours per sub-task
+   - Total: X major tasks, Y sub-tasks
+   - All Z requirements covered
+   - Average task size: 1-3 hours per sub-task
 3. **Quality Validation**:
-    - ✅ All requirements mapped to tasks
-    - ✅ Task dependencies verified
-    - ✅ Testing tasks included
+   - ✅ All requirements mapped to tasks
+   - ✅ Task dependencies verified
+   - ✅ Testing tasks included
 4. **Next Action**: Review tasks and proceed when ready
 
 **Format**: Concise (under 200 words)

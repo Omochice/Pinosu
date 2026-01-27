@@ -1,6 +1,7 @@
 # Design Document Template
 
 ---
+
 **Purpose**: Provide sufficient detail to ensure implementation consistency across different implementers, preventing interpretation drift.
 
 **Approach**:
@@ -102,9 +103,9 @@ Provide a quick reference before diving into per-component details.
 
 - Summaries can be a table or compact list. Example table:
 
-| Component | Domain/Layer | Intent | Req Coverage | Key Dependencies (P0/P1) | Contracts |
-| ----------- | -------------- | -------- | -------------- | -------------------------- | ----------- |
-| ExampleComponent | UI | Displays XYZ | 1, 2 | GameProvider (P0), MapPanel (P1) | Service, State |
+| Component        | Domain/Layer | Intent       | Req Coverage | Key Dependencies (P0/P1)         | Contracts      |
+| ---------------- | ------------ | ------------ | ------------ | -------------------------------- | -------------- |
+| ExampleComponent | UI           | Displays XYZ | 1, 2         | GameProvider (P0), MapPanel (P1) | Service, State |
 
 - Only components introducing new boundaries (e.g., logic hooks, external integrations, persistence) require full detail blocks. Simple presentation components can rely on the summary row plus a short Implementation Note.
 
@@ -134,7 +135,7 @@ Group detailed blocks by domain or architectural layer. For each detailed compon
 
 Summarize external dependency findings here; deeper investigation (API signatures, rate limits, migration notes) lives in `research.md`.
 
-**Contracts**: Service [ ] / API [ ] / Event [ ] / Batch [ ] / State [ ]  ← check only the ones that apply.
+**Contracts**: Service [ ] / API [ ] / Event [ ] / Batch [ ] / State [ ] ← check only the ones that apply.
 
 ##### Service Interface
 

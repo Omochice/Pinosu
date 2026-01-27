@@ -44,31 +44,32 @@ Generate technical design document for feature **$1** based on approved requirem
 **Critical: This phase ensures design is based on complete, accurate information.**
 
 1. **Classify Feature Type**:
-    - **New Feature** (greenfield) → Full discovery required
-    - **Extension** (existing system) → Integration-focused discovery
-    - **Simple Addition** (CRUD/UI) → Minimal or no discovery
-    - **Complex Integration** → Comprehensive analysis required
+   - **New Feature** (greenfield) → Full discovery required
+   - **Extension** (existing system) → Integration-focused discovery
+   - **Simple Addition** (CRUD/UI) → Minimal or no discovery
+   - **Complex Integration** → Comprehensive analysis required
 
 2. **Execute Appropriate Discovery Process**:
 
    **For Complex/New Features**:
 
-    - Read and execute `.kiro/settings/rules/design-discovery-full.md`
-    - Conduct thorough research using WebSearch/WebFetch:
+   - Read and execute `.kiro/settings/rules/design-discovery-full.md`
+   - Conduct thorough research using WebSearch/WebFetch:
         - Latest architectural patterns and best practices
         - External dependency verification (APIs, libraries, versions, compatibility)
         - Official documentation, migration guides, known issues
         - Performance benchmarks and security considerations
 
    **For Extensions**:
-    - Read and execute `.kiro/settings/rules/design-discovery-light.md`
-    - Focus on integration points, existing patterns, compatibility
-    - Use Grep to analyze existing codebase patterns
+   - Read and execute `.kiro/settings/rules/design-discovery-light.md`
+   - Focus on integration points, existing patterns, compatibility
+   - Use Grep to analyze existing codebase patterns
 
    **For Simple Additions**:
-    - Skip formal discovery, quick pattern check only
+   - Skip formal discovery, quick pattern check only
 
 3. **Retain Discovery Findings for Step 3**:
+
 - External API contracts and constraints
 - Technology decisions with rationale
 - Existing patterns to follow or extend
@@ -78,6 +79,7 @@ Generate technical design document for feature **$1** based on approved requirem
 - Parallelization considerations for future tasks (capture dependencies in `research.md`)
 
 4. **Persist Findings to Research Log**:
+
 - Create or update `.kiro/specs/$1/research.md` using the shared template
 - Summarize discovery scope and key findings (Summary section)
 - Record investigations in Research Log topics with sources and implications
@@ -87,10 +89,12 @@ Generate technical design document for feature **$1** based on approved requirem
 ### Step 3: Generate Design Document
 
 1. **Load Design Template and Rules**:
+
 - Read `.kiro/settings/templates/specs/design.md` for structure
 - Read `.kiro/settings/rules/design-principles.md` for principles
 
 2. **Generate Design Document**:
+
 - **Follow specs/design.md template structure and generation instructions strictly**
 - **Integrate all discovery findings**: Use researched information (APIs, patterns, technologies) throughout component definitions, architecture decisions, and integration points
 - If existing design.md found in Step 1, use it as reference context (merge mode)
@@ -99,6 +103,7 @@ Generate technical design document for feature **$1** based on approved requirem
 - Ensure sections reflect updated headings ("Architecture Pattern & Boundary Map", "Technology Stack & Alignment", "Components & Interface Contracts") and reference supporting details from `research.md`
 
 3. **Update Metadata** in spec.json:
+
 - Set `phase: "design-generated"`
 - Set `approvals.design.generated: true, approved: false`
 - Set `approvals.requirements.approved: true`

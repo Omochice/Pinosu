@@ -25,27 +25,27 @@ Generate complete requirements for feature **$1** based on the project descripti
 ## Execution Steps
 
 1. **Load Context**:
-    - Read `.kiro/specs/$1/spec.json` for language and metadata
-    - Read `.kiro/specs/$1/requirements.md` for project description
-    - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
+   - Read `.kiro/specs/$1/spec.json` for language and metadata
+   - Read `.kiro/specs/$1/requirements.md` for project description
+   - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
         - Default files: `structure.md`, `tech.md`, `product.md`
         - All custom steering files (regardless of mode settings)
         - This provides complete project memory and context
 
 2. **Read Guidelines**:
-    - Read `.kiro/settings/rules/ears-format.md` for EARS syntax rules
-    - Read `.kiro/settings/templates/specs/requirements.md` for document structure
+   - Read `.kiro/settings/rules/ears-format.md` for EARS syntax rules
+   - Read `.kiro/settings/templates/specs/requirements.md` for document structure
 
 3. **Generate Requirements**:
-    - Create initial requirements based on project description
-    - Group related functionality into logical requirement areas
-    - Apply EARS format to all acceptance criteria
-    - Use language specified in spec.json
+   - Create initial requirements based on project description
+   - Group related functionality into logical requirement areas
+   - Apply EARS format to all acceptance criteria
+   - Use language specified in spec.json
 
 4. **Update Metadata**:
-    - Set `phase: "requirements-generated"`
-    - Set `approvals.requirements.generated: true`
-    - Update `updated_at` timestamp
+   - Set `phase: "requirements-generated"`
+   - Set `approvals.requirements.generated: true`
+   - Update `updated_at` timestamp
 
 ## Important Constraints
 
