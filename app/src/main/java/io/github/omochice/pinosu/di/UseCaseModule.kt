@@ -4,11 +4,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
-import io.github.omochice.pinosu.data.repository.AuthRepository
-import io.github.omochice.pinosu.data.repository.BookmarkRepository
-import io.github.omochice.pinosu.data.repository.SettingsRepository
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
@@ -36,41 +31,28 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
 
-  @Provides
-  fun provideLoginUseCase(authRepository: AuthRepository): LoginUseCase =
-      Nip55LoginUseCase(authRepository)
+  @Provides fun provideLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase = impl
+
+  @Provides fun provideLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase = impl
 
   @Provides
-  fun provideLogoutUseCase(authRepository: AuthRepository): LogoutUseCase =
-      Nip55LogoutUseCase(authRepository)
+  fun provideGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase = impl
 
   @Provides
-  fun provideGetLoginStateUseCase(authRepository: AuthRepository): GetLoginStateUseCase =
-      Nip55GetLoginStateUseCase(authRepository)
+  fun provideGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase = impl
 
   @Provides
-  fun provideGetBookmarkListUseCase(
-      bookmarkRepository: BookmarkRepository
-  ): GetBookmarkListUseCase = GetBookmarkListUseCaseImpl(bookmarkRepository)
-
-  @Provides
-  fun provideFetchRelayListUseCase(
-      fetcher: Nip65RelayListFetcher,
-      localAuthDataSource: LocalAuthDataSource
-  ): FetchRelayListUseCase = FetchRelayListUseCaseImpl(fetcher, localAuthDataSource)
+  fun provideFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase = impl
 
   @Provides
   @Singleton
-  fun providePostBookmarkUseCase(
-      bookmarkRepository: BookmarkRepository,
-      getLoginStateUseCase: GetLoginStateUseCase
-  ): PostBookmarkUseCase = PostBookmarkUseCaseImpl(bookmarkRepository, getLoginStateUseCase)
+  fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl
 
   @Provides
-  fun provideSetDisplayModeUseCase(settingsRepository: SettingsRepository): SetDisplayModeUseCase =
-      SetDisplayModeUseCaseImpl(settingsRepository)
+  fun provideSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase = impl
 
   @Provides
-  fun provideObserveDisplayMode(settingsRepository: SettingsRepository): ObserveDisplayModeUseCase =
-      ObserveDisplayModeUseCaseImpl(settingsRepository)
+  fun provideObserveDisplayModeUseCase(
+      impl: ObserveDisplayModeUseCaseImpl
+  ): ObserveDisplayModeUseCase = impl
 }
