@@ -7,7 +7,6 @@ import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.relay.RelayPool
 import io.github.omochice.pinosu.data.relay.RelayPoolImpl
 import javax.inject.Singleton
-import okhttp3.OkHttpClient
 
 /**
  * Hilt module for RelayPool dependency injection
@@ -17,7 +16,5 @@ import okhttp3.OkHttpClient
 @Module
 @InstallIn(SingletonComponent::class)
 object RelayPoolModule {
-  @Provides
-  @Singleton
-  fun provideRelayPool(okHttpClient: OkHttpClient): RelayPool = RelayPoolImpl(okHttpClient)
+  @Provides @Singleton fun provideRelayPool(impl: RelayPoolImpl): RelayPool = impl
 }
