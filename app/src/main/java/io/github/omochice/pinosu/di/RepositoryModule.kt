@@ -16,7 +16,6 @@ import io.github.omochice.pinosu.data.repository.LocalSettingsRepository
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 import io.github.omochice.pinosu.data.repository.SettingsRepository
-import javax.inject.Singleton
 
 /**
  * Hilt module for Repository dependency injection
@@ -29,23 +28,14 @@ object RepositoryModule {
 
   @Provides fun provideAuthRepository(impl: Nip55AuthRepository): AuthRepository = impl
 
-  @Provides
-  @Singleton
-  fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
+  @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
+
+  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
+
+  @Provides fun provideNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser = impl
 
   @Provides
-  @Singleton
-  fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
-
-  @Provides
-  @Singleton
-  fun provideNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser = impl
-
-  @Provides
-  @Singleton
   fun provideNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher = impl
 
-  @Provides
-  @Singleton
-  fun provideSettingsRepository(impl: LocalSettingsRepository): SettingsRepository = impl
+  @Provides fun provideSettingsRepository(impl: LocalSettingsRepository): SettingsRepository = impl
 }

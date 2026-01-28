@@ -20,7 +20,6 @@ import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCaseImpl
-import javax.inject.Singleton
 
 /**
  * Hilt module for UseCase dependency injection
@@ -45,7 +44,6 @@ object UseCaseModule {
   fun provideFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase = impl
 
   @Provides
-  @Singleton
   fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl
 
   @Provides
