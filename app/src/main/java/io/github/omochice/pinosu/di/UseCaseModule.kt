@@ -50,7 +50,6 @@ object UseCaseModule {
   fun provideSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase = impl
 
   @Provides
-  fun provideObserveDisplayModeUseCase(
-      impl: ObserveDisplayModeUseCaseImpl
-  ): ObserveDisplayModeUseCase = impl
+  fun provideObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase =
+      impl
 }
