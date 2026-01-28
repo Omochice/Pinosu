@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
@@ -24,32 +24,32 @@ import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCaseImpl
 /**
  * Hilt module for UseCase dependency injection
  *
- * Binds UseCase interfaces to their concrete implementations.
+ * Provides UseCase interfaces with their concrete implementations.
  */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class UseCaseModule {
+object UseCaseModule {
 
-  @Binds abstract fun bindLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase
+  @Provides fun provideLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase = impl
 
-  @Binds abstract fun bindLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase
+  @Provides fun provideLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase = impl
 
-  @Binds
-  abstract fun bindGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase
+  @Provides
+  fun provideGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase = impl
 
-  @Binds
-  abstract fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
+  @Provides
+  fun provideGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase = impl
 
-  @Binds
-  abstract fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
+  @Provides
+  fun provideFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase = impl
 
-  @Binds abstract fun bindPostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase
+  @Provides
+  fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl
 
-  @Binds
-  abstract fun bindSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase
+  @Provides
+  fun provideSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase = impl
 
-  @Binds
-  abstract fun bindObserveDisplayModeUseCase(
-      impl: ObserveDisplayModeUseCaseImpl
-  ): ObserveDisplayModeUseCase
+  @Provides
+  fun provideObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase =
+      impl
 }

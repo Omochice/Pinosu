@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
@@ -20,22 +20,22 @@ import io.github.omochice.pinosu.data.repository.SettingsRepository
 /**
  * Hilt module for Repository dependency injection
  *
- * Binds Repository interfaces to their concrete implementations.
+ * Provides Repository interfaces with their concrete implementations.
  */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+object RepositoryModule {
 
-  @Binds abstract fun bindAuthRepository(impl: Nip55AuthRepository): AuthRepository
+  @Provides fun provideAuthRepository(impl: Nip55AuthRepository): AuthRepository = impl
 
-  @Binds abstract fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
+  @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
 
-  @Binds abstract fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
+  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
 
-  @Binds abstract fun bindNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser
+  @Provides fun provideNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser = impl
 
-  @Binds
-  abstract fun bindNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher
+  @Provides
+  fun provideNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher = impl
 
-  @Binds abstract fun bindSettingsRepository(impl: LocalSettingsRepository): SettingsRepository
+  @Provides fun provideSettingsRepository(impl: LocalSettingsRepository): SettingsRepository = impl
 }
