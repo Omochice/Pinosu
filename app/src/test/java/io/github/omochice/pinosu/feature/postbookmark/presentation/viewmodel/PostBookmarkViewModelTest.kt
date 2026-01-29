@@ -1,11 +1,11 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
 
 import android.content.Intent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
+import io.github.omochice.pinosu.feature.postbookmark.domain.usecase.PostBookmarkUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

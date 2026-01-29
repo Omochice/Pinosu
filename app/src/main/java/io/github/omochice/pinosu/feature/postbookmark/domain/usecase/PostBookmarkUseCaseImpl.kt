@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.usecase
+package io.github.omochice.pinosu.feature.postbookmark.domain.usecase
 
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult

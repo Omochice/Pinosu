@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
 
 /**
  * UI state for post bookmark screen

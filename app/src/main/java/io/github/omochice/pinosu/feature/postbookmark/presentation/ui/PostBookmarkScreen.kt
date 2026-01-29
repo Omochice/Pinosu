@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.postbookmark.presentation.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +30,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkUiState
+import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
 import io.github.omochice.pinosu.ui.component.ErrorDialog
 
 /**

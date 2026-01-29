@@ -39,13 +39,13 @@ import io.github.omochice.pinosu.feature.auth.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.feature.bookmark.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkViewModel
+import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
+import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
 import io.github.omochice.pinosu.presentation.ui.AppInfoScreen
 import io.github.omochice.pinosu.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
-import io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen
-import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
