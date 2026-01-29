@@ -10,9 +10,9 @@ import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 
 /**
- * Hilt module for Repository dependency injection
+ * Hilt module for NIP-65 dependency injection
  *
- * Provides Repository interfaces with their concrete implementations.
+ * Provides NIP-65 relay list parser and fetcher implementations.
  */
 @Module
 @InstallIn(SingletonComponent::class)
