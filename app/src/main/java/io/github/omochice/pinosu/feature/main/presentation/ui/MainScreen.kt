@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.main.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

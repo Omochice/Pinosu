@@ -1,10 +1,10 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.main.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.omochice.pinosu.presentation.viewmodel.MainUiState
+import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.MainUiState
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule

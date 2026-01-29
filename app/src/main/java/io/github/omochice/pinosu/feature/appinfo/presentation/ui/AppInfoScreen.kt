@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.appinfo.presentation.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
