@@ -17,15 +17,6 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28])
 class PubkeyTest {
 
-  companion object {
-    /**
-     * Valid test npub for testing. This is fiatjaf's npub (well-known Nostr developer) which is a
-     * real Bech32-encoded public key that passes checksum validation.
-     */
-    const val TEST_VALID_NPUB = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
-    const val TEST_VALID_HEX = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
-  }
-
   @Test
   fun `parse returns Pubkey for valid npub`() {
     val pubkey = Pubkey.parse(TEST_VALID_NPUB)
@@ -112,5 +103,14 @@ class PubkeyTest {
     assertNotNull("Should parse first npub", pubkey1)
     assertNotNull("Should parse second npub", pubkey2)
     assertEquals(false, pubkey1 == pubkey2)
+  }
+
+  companion object {
+    /**
+     * Valid test npub for testing. This is fiatjaf's npub (well-known Nostr developer) which is a
+     * real Bech32-encoded public key that passes checksum validation.
+     */
+    const val TEST_VALID_NPUB = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+    const val TEST_VALID_HEX = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
   }
 }

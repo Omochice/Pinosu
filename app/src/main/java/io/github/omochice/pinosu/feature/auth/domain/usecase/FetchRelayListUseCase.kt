@@ -37,21 +37,12 @@ constructor(
     private val localAuthDataSource: LocalAuthDataSource,
 ) : FetchRelayListUseCase {
 
-  companion object {
-    private const val TAG = "FetchRelayListUseCase"
-  }
-
+  @Suppress("ReturnCount")
   override suspend fun invoke(npubPubkey: String): Result<List<RelayConfig>> {
-    val pubkey = Pubkey.parse(npubPubkey)
-    if (pubkey == null) {
-      return Result.failure(
-          IllegalArgumentException("Invalid npub format: must be Bech32-encoded (npub1...)"))
-    }
-
     val hexPubkey =
-        pubkey.hex
+        Pubkey.parse(npubPubkey)?.hex
             ?: return Result.failure(
-                IllegalArgumentException("Invalid npub checksum: Bech32 decoding failed"))
+                IllegalArgumentException("Invalid npub format: must be Bech32-encoded (npub1...)"))
 
     val fetchResult = fetcher.fetchRelayList(hexPubkey)
 
@@ -68,5 +59,9 @@ constructor(
     }
 
     return Result.success(relays)
+  }
+
+  companion object {
+    private const val TAG = "FetchRelayListUseCase"
   }
 }
