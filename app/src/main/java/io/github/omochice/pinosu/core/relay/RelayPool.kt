@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.relay
 
 import android.util.Log
-import io.github.omochice.pinosu.data.model.NostrEvent
+import io.github.omochice.pinosu.core.model.NostrEvent
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton

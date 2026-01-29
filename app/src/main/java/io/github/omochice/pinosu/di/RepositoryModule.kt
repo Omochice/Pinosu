@@ -4,12 +4,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParser
+import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParserImpl
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.data.nip65.Nip65EventParser
-import io.github.omochice.pinosu.data.nip65.Nip65EventParserImpl
-import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
-import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.data.repository.LocalSettingsRepository

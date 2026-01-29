@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.util
+package io.github.omochice.pinosu.core.util
 
 import com.vitorpamplona.quartz.nip19Bech32.decodePublicKeyAsHexOrNull
 

@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.model
+package io.github.omochice.pinosu.core.model
 
 import com.vitorpamplona.quartz.nip01Core.crypto.EventHasher
 import kotlinx.serialization.json.Json

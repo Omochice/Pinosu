@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.MainActivity
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import javax.inject.Inject
 import org.junit.Before
 import org.junit.Rule

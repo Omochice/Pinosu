@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.nip55
+package io.github.omochice.pinosu.core.nip.nip55
 
 import android.app.Activity
 import android.content.Context

@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.core.relay
 
-import io.github.omochice.pinosu.data.model.NostrEvent
+import io.github.omochice.pinosu.core.model.NostrEvent
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException

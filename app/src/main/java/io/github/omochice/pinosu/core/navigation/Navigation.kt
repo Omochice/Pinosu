@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.navigation
+package io.github.omochice.pinosu.core.navigation
 
 import kotlinx.serialization.Serializable
 

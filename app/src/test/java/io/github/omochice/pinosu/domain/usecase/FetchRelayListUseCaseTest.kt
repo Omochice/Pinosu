@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.domain.usecase
 
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.domain.model.error.StorageError
 import io.mockk.coEvery
 import io.mockk.coVerify

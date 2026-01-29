@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

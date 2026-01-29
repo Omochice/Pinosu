@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.model
+package io.github.omochice.pinosu.core.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

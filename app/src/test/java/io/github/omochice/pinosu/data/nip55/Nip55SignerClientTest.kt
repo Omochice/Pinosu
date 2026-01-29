@@ -2,6 +2,8 @@ package io.github.omochice.pinosu.data.nip55
 
 import android.content.Context
 import android.content.pm.PackageManager
+import io.github.omochice.pinosu.core.nip.nip55.Nip55Error
+import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.*

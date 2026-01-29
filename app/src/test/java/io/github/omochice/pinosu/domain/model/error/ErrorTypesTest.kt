@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.domain.model.error
 
-import io.github.omochice.pinosu.data.nip55.Nip55Error
+import io.github.omochice.pinosu.core.nip.nip55.Nip55Error
 import org.junit.Assert.*
 import org.junit.Test
 

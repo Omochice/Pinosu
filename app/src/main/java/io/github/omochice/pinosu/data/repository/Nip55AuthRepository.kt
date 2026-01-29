@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.nip.nip55.Nip55Error
+import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.nip55.Nip55Error
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError

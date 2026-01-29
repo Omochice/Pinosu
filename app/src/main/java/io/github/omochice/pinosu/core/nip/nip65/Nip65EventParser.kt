@@ -1,7 +1,7 @@
-package io.github.omochice.pinosu.data.nip65
+package io.github.omochice.pinosu.core.nip.nip65
 
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.data.model.NostrEvent
 import javax.inject.Inject
 
 /**

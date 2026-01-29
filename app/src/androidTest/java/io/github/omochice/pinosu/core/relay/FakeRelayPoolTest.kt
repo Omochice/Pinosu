@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.relay
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.omochice.pinosu.data.model.NostrEvent
+import io.github.omochice.pinosu.core.model.NostrEvent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

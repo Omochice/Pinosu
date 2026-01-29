@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.data.repository
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.nip.nip55.Nip55Response
+import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.data.nip55.Nip55Response
-import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.LoginError
 import io.github.omochice.pinosu.domain.model.error.LogoutError
@@ -133,7 +133,7 @@ class Nip55AuthRepositoryTest {
   fun `processNip55Response when user rejected should return LoginError`() = runTest {
     val intent = Intent().apply { putExtra("rejected", true) }
     every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
-        Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.UserRejected)
+        Result.failure(io.github.omochice.pinosu.core.nip.nip55.Nip55Error.UserRejected)
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
@@ -147,7 +147,7 @@ class Nip55AuthRepositoryTest {
       runTest {
         val intent = Intent()
         every { nip55SignerClient.handleNip55Response(any(), any()) } returns
-            Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.NotInstalled)
+            Result.failure(io.github.omochice.pinosu.core.nip.nip55.Nip55Error.NotInstalled)
 
         val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
@@ -162,7 +162,7 @@ class Nip55AuthRepositoryTest {
   fun `processNip55Response on timeout should return TimeoutError`() = runTest {
     val intent = Intent()
     every { nip55SignerClient.handleNip55Response(any(), any()) } returns
-        Result.failure(io.github.omochice.pinosu.data.nip55.Nip55Error.Timeout)
+        Result.failure(io.github.omochice.pinosu.core.nip.nip55.Nip55Error.Timeout)
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
@@ -176,7 +176,7 @@ class Nip55AuthRepositoryTest {
     val intent = Intent()
     every { nip55SignerClient.handleNip55Response(any(), any()) } returns
         Result.failure(
-            io.github.omochice.pinosu.data.nip55.Nip55Error.InvalidResponse("Invalid data"))
+            io.github.omochice.pinosu.core.nip.nip55.Nip55Error.InvalidResponse("Invalid data"))
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
