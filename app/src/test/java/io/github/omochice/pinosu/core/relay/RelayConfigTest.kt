@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.relay
+package io.github.omochice.pinosu.core.relay
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

@@ -1,10 +1,10 @@
 package io.github.omochice.pinosu.presentation.viewmodel
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.data.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.data.nip55.SignedEventResponse
-import io.github.omochice.pinosu.data.relay.PublishResult
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify

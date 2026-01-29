@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.relay
+package io.github.omochice.pinosu.core.relay
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.omochice.pinosu.data.model.NostrEvent

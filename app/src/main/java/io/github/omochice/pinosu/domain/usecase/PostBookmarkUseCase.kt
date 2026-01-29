@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.domain.usecase
 
+import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.data.model.UnsignedNostrEvent
-import io.github.omochice.pinosu.data.relay.PublishResult
 
 /**
  * Use case interface for posting bookmarks

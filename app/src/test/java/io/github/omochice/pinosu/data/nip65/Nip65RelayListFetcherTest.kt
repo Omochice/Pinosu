@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.data.nip65
 
+import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.data.model.NostrEvent
-import io.github.omochice.pinosu.data.relay.RelayPool
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

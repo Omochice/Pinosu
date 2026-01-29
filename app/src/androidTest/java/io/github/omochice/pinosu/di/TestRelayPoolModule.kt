@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import io.github.omochice.pinosu.data.relay.FakeRelayPool
-import io.github.omochice.pinosu.data.relay.RelayPool
+import io.github.omochice.pinosu.core.relay.FakeRelayPool
+import io.github.omochice.pinosu.core.relay.RelayPool
 
 /**
  * Test module that replaces RelayPoolModule with FakeRelayPool for instrumented tests.

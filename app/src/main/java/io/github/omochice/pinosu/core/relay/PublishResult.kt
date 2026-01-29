@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.relay
+package io.github.omochice.pinosu.core.relay
 
 /**
  * Result of publishing an event to relays

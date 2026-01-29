@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.data.local
 
-import io.github.omochice.pinosu.data.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import kotlinx.serialization.Serializable
 
 /**

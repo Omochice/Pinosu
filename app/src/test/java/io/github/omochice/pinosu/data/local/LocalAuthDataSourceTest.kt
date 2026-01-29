@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.data.local
 
 import androidx.datastore.core.DataStore
-import io.github.omochice.pinosu.data.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.data.nip65
 
-import io.github.omochice.pinosu.data.relay.RelayConfig
-import io.github.omochice.pinosu.data.relay.RelayPool
+import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayPool
 import javax.inject.Inject
 import javax.inject.Singleton
 

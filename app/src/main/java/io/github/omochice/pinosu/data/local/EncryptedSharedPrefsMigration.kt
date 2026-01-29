@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import io.github.omochice.pinosu.data.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import kotlinx.serialization.json.Json
 
 /**

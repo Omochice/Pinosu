@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.domain.usecase
 
 import android.util.Log
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.nip65.Nip65RelayListFetcher
-import io.github.omochice.pinosu.data.relay.RelayConfig
 import io.github.omochice.pinosu.data.util.Bech32
 import javax.inject.Inject
 

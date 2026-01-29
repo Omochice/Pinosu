@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.relay
+package io.github.omochice.pinosu.core.relay
 
 import io.github.omochice.pinosu.data.model.NostrEvent
 

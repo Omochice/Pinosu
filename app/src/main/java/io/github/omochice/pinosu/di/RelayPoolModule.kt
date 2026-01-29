@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.data.relay.RelayPool
-import io.github.omochice.pinosu.data.relay.RelayPoolImpl
+import io.github.omochice.pinosu.core.relay.RelayPool
+import io.github.omochice.pinosu.core.relay.RelayPoolImpl
 
 /**
  * Hilt module for RelayPool dependency injection
