@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/Omochice/Pinosu/compare/v0.2.1...v0.2.2) (2026-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.9.7 ([#145](https://github.com/Omochice/Pinosu/issues/145)) ([1ba5e44](https://github.com/Omochice/Pinosu/commit/1ba5e443d23e59218751fe3b6b1afee72abfe020))
+* **deps:** update mockk to v1.14.9 ([#140](https://github.com/Omochice/Pinosu/issues/140)) ([44a1e5b](https://github.com/Omochice/Pinosu/commit/44a1e5b49136307fd221acf1e3e78a370317a71d))
+
 ## [0.2.1](https://github.com/Omochice/Pinosu/compare/v0.2.0...v0.2.1) (2026-01-26)
 
 
