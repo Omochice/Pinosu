@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui.component
+package io.github.omochice.pinosu.ui.component
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

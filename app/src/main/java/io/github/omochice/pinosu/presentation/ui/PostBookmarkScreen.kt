@@ -30,8 +30,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
 import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkUiState
+import io.github.omochice.pinosu.ui.component.ErrorDialog
 
 /**
  * Post bookmark screen

@@ -45,11 +45,11 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
-import io.github.omochice.pinosu.presentation.ui.component.ErrorDialog
-import io.github.omochice.pinosu.presentation.ui.component.UrlSelectionDialog
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
+import io.github.omochice.pinosu.ui.component.ErrorDialog
+import io.github.omochice.pinosu.ui.component.UrlSelectionDialog
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

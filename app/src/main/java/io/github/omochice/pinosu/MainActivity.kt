@@ -42,11 +42,11 @@ import io.github.omochice.pinosu.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.presentation.ui.MainScreen
 import io.github.omochice.pinosu.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.presentation.ui.SettingsScreen
-import io.github.omochice.pinosu.presentation.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.presentation.viewmodel.SettingsViewModel
+import io.github.omochice.pinosu.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
 import kotlinx.coroutines.launch

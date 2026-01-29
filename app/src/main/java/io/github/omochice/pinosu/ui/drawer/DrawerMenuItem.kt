@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui.drawer
+package io.github.omochice.pinosu.ui.drawer
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
