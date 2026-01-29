@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.di
+package io.github.omochice.pinosu.core.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
