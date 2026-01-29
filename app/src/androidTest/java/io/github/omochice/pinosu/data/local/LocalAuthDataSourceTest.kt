@@ -6,7 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.crypto.tink.aead.AeadConfig
-import io.github.omochice.pinosu.data.crypto.TinkKeyManager
+import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import java.io.File
 import org.junit.After
 import org.junit.Assert.*

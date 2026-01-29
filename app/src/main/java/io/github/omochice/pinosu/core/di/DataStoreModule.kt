@@ -8,7 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.data.crypto.TinkKeyManager
+import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import io.github.omochice.pinosu.data.local.AuthData
 import io.github.omochice.pinosu.data.local.AuthDataSerializer
 import java.io.File

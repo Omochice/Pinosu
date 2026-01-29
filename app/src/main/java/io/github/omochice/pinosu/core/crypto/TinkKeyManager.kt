@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.crypto
+package io.github.omochice.pinosu.core.crypto
 
 import android.content.Context
 import com.google.crypto.tink.Aead

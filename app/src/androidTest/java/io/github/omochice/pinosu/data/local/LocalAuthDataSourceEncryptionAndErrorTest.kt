@@ -6,7 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.crypto.tink.aead.AeadConfig
-import io.github.omochice.pinosu.data.crypto.TinkKeyManager
+import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.model.error.StorageError
 import java.io.File
