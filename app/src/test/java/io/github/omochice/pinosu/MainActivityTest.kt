@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.mockk.coEvery
@@ -20,7 +21,7 @@ class MainActivityTest {
   @Test
   fun `when logged in on startup, should show main screen`() = runTest {
     val mockGetLoginStateUseCase = mockk<GetLoginStateUseCase>()
-    val loggedInUser = User("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
+    val loggedInUser = User(Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")!!)
     coEvery { mockGetLoginStateUseCase() } returns loggedInUser
 
     val initialDestination = determineInitialDestination(mockGetLoginStateUseCase)

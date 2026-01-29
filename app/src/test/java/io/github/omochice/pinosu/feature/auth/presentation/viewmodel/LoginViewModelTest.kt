@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.presentation.viewmodel
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
@@ -81,7 +82,7 @@ class LoginViewModelTest {
   @Test
   fun `checkLoginState should update mainUiState when user is logged in`() = runTest {
     val testPubkey = "npub1" + "a".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { getLoginStateUseCase() } returns testUser
 
     viewModel.checkLoginState()
@@ -179,7 +180,7 @@ class LoginViewModelTest {
   @Test
   fun `processNip55Response should set loading state during processing`() = runTest {
     val testPubkey = "npub1" + "c".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<AuthRepository>()
     coEvery { authRepository.processNip55Response(any(), any()) } coAnswers
@@ -209,7 +210,7 @@ class LoginViewModelTest {
   @Test
   fun `processNip55Response should set Success state on success`() = runTest {
     val testPubkey = "npub1" + "d".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<AuthRepository>()
     coEvery { authRepository.processNip55Response(any(), any()) } returns Result.success(testUser)
@@ -315,7 +316,7 @@ class LoginViewModelTest {
   fun `processNip55Response should wait for relay list fetch before setting Success state`() =
       runTest {
         val testPubkey = "npub1" + "e".repeat(59)
-        val testUser = User(testPubkey)
+        val testUser = User(Pubkey.parse(testPubkey)!!)
         val mockIntent = mockk<android.content.Intent>(relaxed = true)
         val authRepository = mockk<AuthRepository>()
         val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()
@@ -352,7 +353,7 @@ class LoginViewModelTest {
   @Test
   fun `processNip55Response should set Success state even if relay list fetch fails`() = runTest {
     val testPubkey = "npub1" + "f".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     val mockIntent = mockk<android.content.Intent>(relaxed = true)
     val authRepository = mockk<AuthRepository>()
     val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()

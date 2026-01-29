@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.data.repository
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55Response
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
@@ -42,7 +43,7 @@ class Nip55AuthRepositoryTest {
 
   @Test
   fun `getLoginState when user exists should return user`() = runTest {
-    val expectedUser = User("npub1" + "a".repeat(59))
+    val expectedUser = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     coEvery { localAuthDataSource.getUser() } returns expectedUser
 
     val result = authRepository.getLoginState()
@@ -63,7 +64,7 @@ class Nip55AuthRepositoryTest {
 
   @Test
   fun `saveLoginState on success should return success`() = runTest {
-    val user = User("npub1" + "a".repeat(59))
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     coEvery { localAuthDataSource.saveUser(user) } returns Unit
 
     val result = authRepository.saveLoginState(user)
@@ -74,7 +75,7 @@ class Nip55AuthRepositoryTest {
 
   @Test
   fun `saveLoginState on failure should return StorageError`() = runTest {
-    val user = User("npub1" + "a".repeat(59))
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     val storageError = StorageError.WriteError("Failed to save")
     coEvery { localAuthDataSource.saveUser(user) } throws storageError
 
@@ -125,7 +126,7 @@ class Nip55AuthRepositoryTest {
     assertTrue("Should return success", result.isSuccess)
     val user = result.getOrNull()
     assertNotNull("User should not be null", user)
-    assertEquals("Pubkey should match", pubkey, user?.pubkey)
+    assertEquals("Pubkey should match", pubkey, user?.pubkey?.npub)
     coVerify { localAuthDataSource.saveUser(any()) }
   }
 

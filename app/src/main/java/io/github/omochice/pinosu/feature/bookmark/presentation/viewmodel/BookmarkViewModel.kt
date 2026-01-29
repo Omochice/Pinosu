@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.core.util.Bech32
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
@@ -72,9 +71,9 @@ constructor(
                 return@launch
               }
 
-      val userHexPubkey = Bech32.npubToHex(user.pubkey)
+      val userHexPubkey = user.pubkey.hex
 
-      val result = getBookmarkListUseCase(user.pubkey)
+      val result = getBookmarkListUseCase(user.pubkey.npub)
       result.fold(
           onSuccess = { bookmarkList ->
             val allItems = bookmarkList?.items ?: emptyList()

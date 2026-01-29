@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.feature.postbookmark.domain.usecase
 
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.core.util.Bech32
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.bookmark.data.repository.BookmarkRepository
 import javax.inject.Inject
@@ -32,8 +31,7 @@ constructor(
         getLoginStateUseCase() ?: return Result.failure(IllegalStateException("User not logged in"))
 
     val hexPubkey =
-        Bech32.npubToHex(user.pubkey)
-            ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
+        user.pubkey.hex ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
     return Result.success(
         bookmarkRepository.createBookmarkEvent(

@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.feature.auth.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.core.util.isValidNostrPubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
@@ -52,7 +52,7 @@ constructor(
       val currentTime = System.currentTimeMillis()
       activeDataStore.updateData { current ->
         current.copy(
-            userPubkey = user.pubkey,
+            userPubkey = user.pubkey.npub,
             createdAt = currentTime,
             lastAccessed = currentTime,
             relayList = current.relayList)
@@ -71,11 +71,9 @@ constructor(
     ensureMigrated()
     return try {
       val data = activeDataStore.data.first()
-      val pubkey = data.userPubkey ?: return null
+      val pubkeyStr = data.userPubkey ?: return null
 
-      if (!pubkey.isValidNostrPubkey()) {
-        return null
-      }
+      val pubkey = Pubkey.parse(pubkeyStr) ?: return null
 
       activeDataStore.updateData { current ->
         current.copy(lastAccessed = System.currentTimeMillis())

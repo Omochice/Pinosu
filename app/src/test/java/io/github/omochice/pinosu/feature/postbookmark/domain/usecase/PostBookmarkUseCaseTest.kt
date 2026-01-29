@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.postbookmark.domain.usecase
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.auth.domain.model.User
@@ -7,7 +8,6 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.bookmark.data.repository.BookmarkRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
@@ -55,10 +55,11 @@ class PostBookmarkUseCaseTest {
   }
 
   @Test
-  fun `createUnsignedEvent returns failure when npub format is invalid`() = runTest {
-    val mockUser = mockk<User>()
-    every { mockUser.pubkey } returns "invalid_npub_format"
-    coEvery { getLoginStateUseCase() } returns mockUser
+  fun `createUnsignedEvent returns failure when npub has invalid checksum`() = runTest {
+    val invalidChecksumNpub = "npub1" + "a".repeat(58)
+    val pubkeyWithInvalidChecksum = Pubkey.parse(invalidChecksumNpub)!!
+    val user = User(pubkeyWithInvalidChecksum)
+    coEvery { getLoginStateUseCase() } returns user
 
     val result =
         postBookmarkUseCase.createUnsignedEvent(
@@ -85,7 +86,7 @@ class PostBookmarkUseCaseTest {
             tags = listOf(listOf("r", "https://example.com/article")),
             content = "Great article")
 
-    coEvery { getLoginStateUseCase() } returns User(validNpub)
+    coEvery { getLoginStateUseCase() } returns User(Pubkey.parse(validNpub)!!)
     coEvery {
       bookmarkRepository.createBookmarkEvent(
           hexPubkey = any(),

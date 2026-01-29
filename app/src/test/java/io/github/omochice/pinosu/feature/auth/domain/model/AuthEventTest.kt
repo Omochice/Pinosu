@@ -1,6 +1,10 @@
 package io.github.omochice.pinosu.feature.auth.domain.model
 
-import org.junit.Assert.*
+import io.github.omochice.pinosu.core.model.Pubkey
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AuthEventTest {
@@ -8,7 +12,7 @@ class AuthEventTest {
   /** Test that UserLoggedIn event can be created */
   @Test
   fun `create UserLoggedIn event`() {
-    val user = User("npub1" + "a".repeat(59))
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     val event = AuthEvent.UserLoggedIn(user)
 
     assertTrue(event is AuthEvent)
@@ -28,7 +32,7 @@ class AuthEventTest {
   /** Test UserLoggedIn event equality */
   @Test
   fun `UserLoggedIn events with same user are equal`() {
-    val user = User("npub1" + "a".repeat(59))
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     val event1 = AuthEvent.UserLoggedIn(user)
     val event2 = AuthEvent.UserLoggedIn(user)
 
@@ -38,8 +42,8 @@ class AuthEventTest {
   /** Test UserLoggedIn events with different users are not equal */
   @Test
   fun `UserLoggedIn events with different users are not equal`() {
-    val user1 = User("npub1" + "a".repeat(59))
-    val user2 = User("npub1" + "b".repeat(59))
+    val user1 = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
+    val user2 = User(Pubkey.parse("npub1" + "b".repeat(59))!!)
     val event1 = AuthEvent.UserLoggedIn(user1)
     val event2 = AuthEvent.UserLoggedIn(user2)
 
@@ -58,7 +62,7 @@ class AuthEventTest {
   /** Test AuthEvent sealed class properties（when expression exhaustiveness） */
   @Test
   fun `AuthEvent sealed class allows exhaustive when`() {
-    val user = User("npub1" + "a".repeat(59))
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     val loggedInEvent: AuthEvent = AuthEvent.UserLoggedIn(user)
     val loggedOutEvent: AuthEvent = AuthEvent.UserLoggedOut
 

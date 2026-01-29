@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.integration
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
@@ -115,7 +116,7 @@ class PresentationDomainIntegrationTest {
   fun `login flow - when NIP-55 signer response success - should update UI state and navigate to main`() =
       runTest {
         val testPubkey = "npub1" + "a".repeat(59)
-        val testUser = User(testPubkey)
+        val testUser = User(Pubkey.parse(testPubkey)!!)
         val mockIntent = mockk<android.content.Intent>(relaxed = true)
         coEvery { authRepository.processNip55Response(any(), any()) } returns
             Result.success(testUser)
@@ -144,7 +145,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `startup flow - when user logged in - should restore login state`() = runTest {
     val testPubkey = "npub1" + "b".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { authRepository.getLoginState() } returns testUser
 
     viewModel.checkLoginState()
@@ -290,7 +291,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `logout flow - when logout success - should clear login state`() = runTest {
     val testPubkey = "npub1" + "c".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { authRepository.getLoginState() } returns testUser
     viewModel.checkLoginState()
     advanceUntilIdle()
@@ -322,7 +323,7 @@ class PresentationDomainIntegrationTest {
   @Test
   fun `logout flow - when logout fails - should handle error gracefully`() = runTest {
     val testPubkey = "npub1" + "d".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { authRepository.getLoginState() } returns testUser
     viewModel.checkLoginState()
     advanceUntilIdle()

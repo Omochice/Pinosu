@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.mockk.coEvery
@@ -32,7 +33,7 @@ class GetLoginStateUseCaseTest {
   @Test
   fun `invoke returns logged in user when user is logged in`() = runTest {
     val testPubkey = "npub1" + "a".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { authRepository.getLoginState() } returns testUser
 
     val result = getLoginStateUseCase()
@@ -54,7 +55,7 @@ class GetLoginStateUseCaseTest {
   @Test
   fun `invoke is read-only operation`() = runTest {
     val testPubkey = "npub1" + "b".repeat(59)
-    val testUser = User(testPubkey)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { authRepository.getLoginState() } returns testUser
 
     getLoginStateUseCase()

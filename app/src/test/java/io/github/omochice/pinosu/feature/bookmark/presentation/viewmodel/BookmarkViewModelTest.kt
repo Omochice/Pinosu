@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
@@ -247,7 +248,7 @@ class BookmarkViewModelTest {
 
   @Test
   fun `loadBookmarks should set isLoading to true initially`() = runTest {
-    val testUser = User("npub1test")
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any()) } coAnswers
         {
@@ -264,7 +265,7 @@ class BookmarkViewModelTest {
 
   @Test
   fun `loadBookmarks should store bookmarks in allBookmarks`() = runTest {
-    val testUser = User("npub1test")
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
     val testBookmarks =
         listOf(
             BookmarkItem(
@@ -301,7 +302,7 @@ class BookmarkViewModelTest {
 
   @Test
   fun `loadBookmarks should set error on failure`() = runTest {
-    val testUser = User("npub1test")
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
     val errorMessage = "Network error"
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any()) } returns Result.failure(Exception(errorMessage))
@@ -316,7 +317,7 @@ class BookmarkViewModelTest {
 
   @Test
   fun `refresh should call loadBookmarks`() = runTest {
-    val testUser = User("npub1test")
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any()) } returns
         Result.success(BookmarkList("test", emptyList(), 0L))

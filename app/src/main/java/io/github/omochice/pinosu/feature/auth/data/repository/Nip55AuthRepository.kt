@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.data.repository
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55Error
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
@@ -76,7 +77,10 @@ constructor(
 
     return if (nip55Result.isSuccess) {
       val nip55Response = nip55Result.getOrNull()!!
-      val user = User(nip55Response.pubkey)
+      val pubkey =
+          Pubkey.parse(nip55Response.pubkey)
+              ?: return Result.failure(LoginError.NetworkError("Invalid pubkey format from signer"))
+      val user = User(pubkey)
 
       try {
         localAuthDataSource.saveUser(user)
