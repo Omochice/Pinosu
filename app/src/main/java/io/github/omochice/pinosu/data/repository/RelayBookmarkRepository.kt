@@ -6,11 +6,11 @@ import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.core.util.Bech32
-import io.github.omochice.pinosu.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton

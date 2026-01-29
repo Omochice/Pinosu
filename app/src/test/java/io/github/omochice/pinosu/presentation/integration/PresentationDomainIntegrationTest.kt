@@ -1,16 +1,18 @@
 package io.github.omochice.pinosu.presentation.integration
 
-import io.github.omochice.pinosu.data.repository.AuthRepository
-import io.github.omochice.pinosu.domain.model.User
-import io.github.omochice.pinosu.domain.model.error.LoginError
-import io.github.omochice.pinosu.domain.model.error.LogoutError
-import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.LoginUseCase
-import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
-import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
-import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
-import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
+import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
+import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
+import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.LogoutUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55LoginUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55LogoutUseCase
+import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiState
+import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -47,8 +49,7 @@ class PresentationDomainIntegrationTest {
   private lateinit var loginUseCase: LoginUseCase
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
-  private lateinit var fetchRelayListUseCase:
-      io.github.omochice.pinosu.domain.usecase.FetchRelayListUseCase
+  private lateinit var fetchRelayListUseCase: FetchRelayListUseCase
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -95,9 +96,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue(
-        "state should be RequiresNip55Install",
-        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.RequiresNip55Install)
+    assertTrue("state should be RequiresNip55Install", state is LoginUiState.RequiresNip55Install)
 
     // Verify AuthRepository.checkNip55SignerInstalled() is called
     io.mockk.verify { authRepository.checkNip55SignerInstalled() }
@@ -127,9 +126,7 @@ class PresentationDomainIntegrationTest {
         val loginState = viewModel.uiState.first()
         val mainState = viewModel.mainUiState.first()
 
-        assertTrue(
-            "state should be Success",
-            loginState is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Success)
+        assertTrue("state should be Success", loginState is LoginUiState.Success)
         assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
 
         coVerify { authRepository.processNip55Response(any(), any()) }
@@ -203,9 +200,7 @@ class PresentationDomainIntegrationTest {
 
     val stateAfterError = viewModel.uiState.first()
     assertTrue(
-        "state should be NonRetryable error",
-        stateAfterError
-            is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.NonRetryable)
+        "state should be NonRetryable error", stateAfterError is LoginUiState.Error.NonRetryable)
 
     viewModel.onRetryLogin()
     advanceUntilIdle()
@@ -232,9 +227,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue(
-        "state should be Retryable error",
-        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.Retryable)
+    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
   }
 
   /**
@@ -256,9 +249,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue(
-        "state should be Retryable error",
-        state is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Error.Retryable)
+    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
   }
 
   /**
@@ -278,16 +269,13 @@ class PresentationDomainIntegrationTest {
     val stateBeforeDismiss = viewModel.uiState.first()
     assertTrue(
         "state should be RequiresNip55Install",
-        stateBeforeDismiss
-            is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.RequiresNip55Install)
+        stateBeforeDismiss is LoginUiState.RequiresNip55Install)
 
     viewModel.dismissError()
     advanceUntilIdle()
 
     val stateAfterDismiss = viewModel.uiState.first()
-    assertTrue(
-        "state should be Idle after dismissError",
-        stateAfterDismiss is io.github.omochice.pinosu.presentation.viewmodel.LoginUiState.Idle)
+    assertTrue("state should be Idle after dismissError", stateAfterDismiss is LoginUiState.Idle)
   }
 
   /**

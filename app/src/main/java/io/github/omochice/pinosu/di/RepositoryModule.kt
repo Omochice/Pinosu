@@ -10,9 +10,7 @@ import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
-import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 
 /**
@@ -23,8 +21,6 @@ import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
-
-  @Provides fun provideAuthRepository(impl: Nip55AuthRepository): AuthRepository = impl
 
   @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
 

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu
 
-import io.github.omochice.pinosu.domain.model.User
-import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

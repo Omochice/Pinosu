@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.omochice.pinosu.domain.model.isValidNostrPubkey
+import io.github.omochice.pinosu.feature.auth.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
 
