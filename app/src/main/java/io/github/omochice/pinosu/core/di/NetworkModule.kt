@@ -8,6 +8,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 
+/**
+ * Hilt module for Network dependency injection
+ *
+ * Provides OkHttpClient instance for HTTP communication.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
