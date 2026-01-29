@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.omochice.pinosu.presentation.viewmodel.LoginViewModel
+import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
