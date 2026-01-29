@@ -1,11 +1,11 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.core.util.Bech32
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
@@ -59,7 +59,7 @@ constructor(
   override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
     return try {
       val hexPubkey =
-          Bech32.npubToHex(pubkey)
+          Pubkey.parse(pubkey)?.hex
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
       val relays = getRelaysForQuery()
