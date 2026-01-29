@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
 import android.util.Log
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.core.util.Bech32
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import javax.inject.Inject
 
@@ -42,19 +42,16 @@ constructor(
   }
 
   override suspend fun invoke(npubPubkey: String): Result<List<RelayConfig>> {
-    if (!npubPubkey.startsWith("npub1") || npubPubkey.length != 63) {
+    val pubkey = Pubkey.parse(npubPubkey)
+    if (pubkey == null) {
       return Result.failure(
           IllegalArgumentException("Invalid npub format: must be Bech32-encoded (npub1...)"))
     }
 
     val hexPubkey =
-        try {
-          Bech32.npubToHex(npubPubkey)
-        } catch (e: Exception) {
-          null
-        }
+        pubkey.hex
             ?: return Result.failure(
-                IllegalArgumentException("Invalid npub format: must be Bech32-encoded (npub1...)"))
+                IllegalArgumentException("Invalid npub checksum: Bech32 decoding failed"))
 
     val fetchResult = fetcher.fetchRelayList(hexPubkey)
 
