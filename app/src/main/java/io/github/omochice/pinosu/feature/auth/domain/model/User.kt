@@ -1,5 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.domain.model
 
+import io.github.omochice.pinosu.core.util.isValidNostrPubkey
+
 /**
  * User entity (aggregate root)
  *
@@ -15,15 +17,4 @@ data class User(val pubkey: String) {
       "Invalid Nostr pubkey format: must be Bech32-encoded (npub1...)"
     }
   }
-}
-
-/**
- * Extension function for validating Nostr public key
- *
- * Validates that the public key is in Bech32-encoded format (starts with npub1).
- *
- * @return true if the public key format is valid, false otherwise
- */
-fun String.isValidNostrPubkey(): Boolean {
-  return this.startsWith("npub1")
 }

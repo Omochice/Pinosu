@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.util.isValidNostrPubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
-import io.github.omochice.pinosu.feature.auth.domain.model.isValidNostrPubkey
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
