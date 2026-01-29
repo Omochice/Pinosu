@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.local
+package io.github.omochice.pinosu.feature.auth.data.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore

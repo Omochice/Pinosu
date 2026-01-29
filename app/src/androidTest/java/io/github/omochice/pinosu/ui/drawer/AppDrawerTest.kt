@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui.drawer
+package io.github.omochice.pinosu.ui.drawer
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule

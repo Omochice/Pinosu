@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.integration
+package io.github.omochice.pinosu.feature.auth.presentation.integration
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText

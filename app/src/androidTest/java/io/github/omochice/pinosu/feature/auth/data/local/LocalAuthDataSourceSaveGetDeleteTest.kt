@@ -1,11 +1,11 @@
-package io.github.omochice.pinosu.data.local
+package io.github.omochice.pinosu.feature.auth.data.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import io.github.omochice.pinosu.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.After
