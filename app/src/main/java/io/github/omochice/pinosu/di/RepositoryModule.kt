@@ -12,10 +12,8 @@ import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.data.repository.AuthRepository
 import io.github.omochice.pinosu.data.repository.BookmarkRepository
-import io.github.omochice.pinosu.data.repository.LocalSettingsRepository
 import io.github.omochice.pinosu.data.repository.Nip55AuthRepository
 import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
-import io.github.omochice.pinosu.data.repository.SettingsRepository
 
 /**
  * Hilt module for Repository dependency injection
@@ -36,6 +34,4 @@ object RepositoryModule {
 
   @Provides
   fun provideNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher = impl
-
-  @Provides fun provideSettingsRepository(impl: LocalSettingsRepository): SettingsRepository = impl
 }

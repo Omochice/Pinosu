@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.repository
+package io.github.omochice.pinosu.feature.settings.data.repository
 
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import kotlinx.coroutines.flow.StateFlow

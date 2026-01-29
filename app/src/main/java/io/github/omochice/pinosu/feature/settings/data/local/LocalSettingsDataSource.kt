@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.local
+package io.github.omochice.pinosu.feature.settings.data.local
 
 import android.content.Context
 import android.content.SharedPreferences

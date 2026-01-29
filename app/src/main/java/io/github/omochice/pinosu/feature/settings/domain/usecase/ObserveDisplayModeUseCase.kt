@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.usecase
+package io.github.omochice.pinosu.feature.settings.domain.usecase
 
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 import kotlinx.coroutines.flow.StateFlow

@@ -7,7 +7,7 @@ import io.github.omochice.pinosu.core.util.Bech32
 import io.github.omochice.pinosu.domain.model.BookmarkItem
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

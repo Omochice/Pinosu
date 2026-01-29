@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
 

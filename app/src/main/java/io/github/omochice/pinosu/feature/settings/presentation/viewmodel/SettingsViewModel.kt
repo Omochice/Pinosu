@@ -1,11 +1,11 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
-import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
-import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

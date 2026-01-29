@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.settings.presentation.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
-import io.github.omochice.pinosu.presentation.viewmodel.SettingsUiState
+import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsUiState
 
 /**
  * Settings screen

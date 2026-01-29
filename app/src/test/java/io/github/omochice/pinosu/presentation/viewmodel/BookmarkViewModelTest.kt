@@ -6,7 +6,7 @@ import io.github.omochice.pinosu.domain.model.BookmarkList
 import io.github.omochice.pinosu.domain.model.User
 import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

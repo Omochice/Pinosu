@@ -14,12 +14,8 @@ import io.github.omochice.pinosu.domain.usecase.LogoutUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55GetLoginStateUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LoginUseCase
 import io.github.omochice.pinosu.domain.usecase.Nip55LogoutUseCase
-import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCase
-import io.github.omochice.pinosu.domain.usecase.ObserveDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
-import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCase
-import io.github.omochice.pinosu.domain.usecase.SetDisplayModeUseCaseImpl
 
 /**
  * Hilt module for UseCase dependency injection
@@ -45,11 +41,4 @@ object UseCaseModule {
 
   @Provides
   fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl
-
-  @Provides
-  fun provideSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase = impl
-
-  @Provides
-  fun provideObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase =
-      impl
 }
