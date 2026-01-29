@@ -1,7 +1,7 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
-import io.github.omochice.pinosu.domain.model.BookmarkItem
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 
 /**
  * UI state for bookmark list screen

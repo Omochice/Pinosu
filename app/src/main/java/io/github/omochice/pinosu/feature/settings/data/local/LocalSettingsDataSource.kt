@@ -3,7 +3,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow

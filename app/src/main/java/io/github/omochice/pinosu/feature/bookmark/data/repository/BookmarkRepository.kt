@@ -1,8 +1,8 @@
-package io.github.omochice.pinosu.data.repository
+package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.domain.model.BookmarkList
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 
 /**
  * Repository interface for bookmark data access

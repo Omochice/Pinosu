@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.ui
+package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,12 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
-import io.github.omochice.pinosu.domain.model.BookmarkItem
-import io.github.omochice.pinosu.domain.model.BookmarkedEvent
-import io.github.omochice.pinosu.presentation.viewmodel.BookmarkFilterMode
-import io.github.omochice.pinosu.presentation.viewmodel.BookmarkUiState
-import io.github.omochice.pinosu.presentation.viewmodel.BookmarkViewModel
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.ui.component.ErrorDialog
 import io.github.omochice.pinosu.ui.component.UrlSelectionDialog
 import java.time.Instant

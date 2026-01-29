@@ -1,11 +1,12 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
-import io.github.omochice.pinosu.domain.model.BookmarkItem
-import io.github.omochice.pinosu.domain.model.BookmarkList
-import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -150,7 +151,7 @@ class BookmarkViewModelTest {
         title = "Test $eventId",
         urls = listOf("https://example.com/$eventId"),
         event =
-            io.github.omochice.pinosu.domain.model.BookmarkedEvent(
+            BookmarkedEvent(
                 kind = 39701,
                 content = "content",
                 author = author,

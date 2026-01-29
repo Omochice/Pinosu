@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.model
+package io.github.omochice.pinosu.feature.bookmark.domain.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

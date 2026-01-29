@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.repository
+package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import android.util.Log
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
@@ -6,11 +6,11 @@ import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.core.util.Bech32
-import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.domain.model.BookmarkItem
-import io.github.omochice.pinosu.domain.model.BookmarkList
-import io.github.omochice.pinosu.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton

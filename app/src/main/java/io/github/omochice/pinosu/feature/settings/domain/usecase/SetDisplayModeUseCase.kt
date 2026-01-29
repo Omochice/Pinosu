@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.feature.settings.domain.usecase
 
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 
 /**
  * UseCase interface for saving bookmark display mode preference.

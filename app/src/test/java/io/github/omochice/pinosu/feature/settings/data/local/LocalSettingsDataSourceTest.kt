@@ -2,7 +2,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

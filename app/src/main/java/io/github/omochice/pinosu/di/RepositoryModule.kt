@@ -8,10 +8,6 @@ import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParser
 import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParserImpl
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
-import io.github.omochice.pinosu.data.metadata.OkHttpUrlMetadataFetcher
-import io.github.omochice.pinosu.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.data.repository.BookmarkRepository
-import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 
 /**
  * Hilt module for Repository dependency injection
@@ -21,10 +17,6 @@ import io.github.omochice.pinosu.data.repository.RelayBookmarkRepository
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
-
-  @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
-
-  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
 
   @Provides fun provideNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser = impl
 

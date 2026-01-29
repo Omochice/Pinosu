@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.data.metadata
+package io.github.omochice.pinosu.feature.bookmark.data.metadata
 
 import android.util.Log
 import android.util.LruCache

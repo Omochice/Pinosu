@@ -4,8 +4,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
-import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCaseImpl
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCase
 import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 
@@ -17,9 +15,6 @@ import io.github.omochice.pinosu.domain.usecase.PostBookmarkUseCaseImpl
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
-
-  @Provides
-  fun provideGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase = impl
 
   @Provides
   fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl

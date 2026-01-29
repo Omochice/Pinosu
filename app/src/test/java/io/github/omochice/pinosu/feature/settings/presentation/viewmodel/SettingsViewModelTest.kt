@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 
-import io.github.omochice.pinosu.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.mockk.every

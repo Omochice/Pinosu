@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.model
+package io.github.omochice.pinosu.feature.bookmark.domain.model
 
 /**
  * Display mode for bookmark list screen.

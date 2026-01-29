@@ -1,7 +1,7 @@
-package io.github.omochice.pinosu.domain.usecase
+package io.github.omochice.pinosu.feature.bookmark.domain.usecase
 
-import io.github.omochice.pinosu.data.repository.BookmarkRepository
-import io.github.omochice.pinosu.domain.model.BookmarkList
+import io.github.omochice.pinosu.feature.bookmark.data.repository.BookmarkRepository
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import javax.inject.Inject
 
 /**

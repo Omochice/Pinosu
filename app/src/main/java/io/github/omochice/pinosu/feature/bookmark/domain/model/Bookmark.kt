@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.domain.model
+package io.github.omochice.pinosu.feature.bookmark.domain.model
 
 /**
  * Bookmark item from kind:39701

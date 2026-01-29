@@ -1,12 +1,12 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.core.util.Bech32
-import io.github.omochice.pinosu.domain.model.BookmarkItem
-import io.github.omochice.pinosu.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

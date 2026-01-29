@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.presentation.viewmodel
+package io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel
 
 /**
  * Filter mode for bookmark list display
