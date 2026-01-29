@@ -105,6 +105,56 @@ class PubkeyTest {
     assertEquals(false, pubkey1 == pubkey2)
   }
 
+  @Test
+  fun `isValidFormat returns true for valid npub`() {
+    val result = Pubkey.isValidFormat(TEST_VALID_NPUB)
+
+    assertEquals("Should return true for valid npub", true, result)
+  }
+
+  @Test
+  fun `isValidFormat returns false for hex pubkey`() {
+    val hexPubkey = "a".repeat(64)
+
+    val result = Pubkey.isValidFormat(hexPubkey)
+
+    assertEquals("Should return false for hex format pubkey", false, result)
+  }
+
+  @Test
+  fun `isValidFormat returns false for empty string`() {
+    val result = Pubkey.isValidFormat("")
+
+    assertEquals("Should return false for empty string", false, result)
+  }
+
+  @Test
+  fun `isValidFormat returns false for nsec`() {
+    val nsec = "nsec1" + "a".repeat(59)
+
+    val result = Pubkey.isValidFormat(nsec)
+
+    assertEquals("Should return false for nsec format", false, result)
+  }
+
+  @Test
+  fun `isValidFormat returns false for nprofile`() {
+    val nprofile = "nprofile1" + "a".repeat(54)
+
+    val result = Pubkey.isValidFormat(nprofile)
+
+    assertEquals("Should return false for nprofile format", false, result)
+  }
+
+  @Test
+  fun `isValidFormat returns false for uppercase NPUB1`() {
+    val uppercaseNpub = "NPUB1" + "a".repeat(59)
+
+    val result = Pubkey.isValidFormat(uppercaseNpub)
+
+    assertEquals("Should return false for uppercase NPUB1", false, result)
+  }
+
   companion object {
     /**
      * Valid test npub for testing. This is fiatjaf's npub (well-known Nostr developer) which is a

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.omochice.pinosu.core.model.Pubkey
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,7 +71,7 @@ constructor(@param:ApplicationContext private val context: Context) {
       return Result.failure(Nip55Error.InvalidResponse("Result is null or empty"))
     }
 
-    if (!pubkey.startsWith("npub1")) {
+    if (!Pubkey.isValidFormat(pubkey)) {
       return Result.failure(
           Nip55Error.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
     }

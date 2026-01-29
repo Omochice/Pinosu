@@ -22,12 +22,22 @@ value class Pubkey private constructor(val npub: String) {
     get() = decodePublicKeyAsHexOrNull(npub)
 
   companion object {
+    private const val NPUB_PREFIX = "npub1"
+
     /**
      * Parse a string as Pubkey
      *
      * @param value String to parse (expected to be npub1...)
      * @return Pubkey if the string starts with "npub1", null otherwise
      */
-    fun parse(value: String): Pubkey? = if (value.startsWith("npub1")) Pubkey(value) else null
+    fun parse(value: String): Pubkey? = if (isValidFormat(value)) Pubkey(value) else null
+
+    /**
+     * Check if a string has valid npub format
+     *
+     * @param value String to check
+     * @return true if the string starts with "npub1", false otherwise
+     */
+    fun isValidFormat(value: String): Boolean = value.startsWith(NPUB_PREFIX)
   }
 }
