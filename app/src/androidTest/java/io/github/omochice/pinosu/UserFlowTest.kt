@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.domain.model.User
@@ -80,7 +81,8 @@ class UserFlowTest {
 
   @Test
   fun `logout flow step1 should navigate to login screen on logout`() {
-    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
+    val testUser =
+        User(pubkey = Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")!!)
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
     coEvery { mockLocalAuthDataSource.clearLoginState() } returns Unit
 
@@ -106,7 +108,8 @@ class UserFlowTest {
 
   @Test
   fun `app restart when logged in should display bookmark screen`() {
-    val testUser = User(pubkey = "npub1" + "1234567890abcdef".repeat(3) + "1234567890a")
+    val testUser =
+        User(pubkey = Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")!!)
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
     composeTestRule.activityRule.scenario.recreate()

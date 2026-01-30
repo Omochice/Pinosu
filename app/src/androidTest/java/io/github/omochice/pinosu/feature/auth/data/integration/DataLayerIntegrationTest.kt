@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.AuthData
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
@@ -86,7 +87,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and get should work correctly`() = runTest {
-    val testPubkey = "npub1" + "b".repeat(59)
+    val testPubkey = Pubkey.parse("npub1" + "b".repeat(59))!!
     val testUser = User(testPubkey)
 
     localAuthDataSource.saveUser(testUser)
@@ -107,7 +108,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and delete should work correctly`() = runTest {
-    val testPubkey = "npub1" + "c".repeat(59)
+    val testPubkey = Pubkey.parse("npub1" + "c".repeat(59))!!
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -133,9 +134,9 @@ class DataLayerIntegrationTest {
   fun `encrypted storage multiple save get delete cycles should work correctly`() = runTest {
     val users =
         listOf(
-            User("npub1" + "d".repeat(59)),
-            User("npub1" + "e".repeat(59)),
-            User("npub1" + "f".repeat(59)),
+            User(Pubkey.parse("npub1" + "d".repeat(59))!!),
+            User(Pubkey.parse("npub1" + "e".repeat(59))!!),
+            User(Pubkey.parse("npub1" + "f".repeat(59))!!),
         )
 
     users.forEach { user ->
@@ -163,7 +164,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `logout flow should clear encrypted storage`() = runTest {
-    val testPubkey = "npub1" + "g".repeat(59)
+    val testPubkey = Pubkey.parse("npub1" + "g".repeat(59))!!
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -192,7 +193,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `app restart should restore login state from encrypted storage`() = runTest {
-    val testPubkey = "npub1" + "h".repeat(59)
+    val testPubkey = Pubkey.parse("npub1" + "h".repeat(59))!!
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -217,13 +218,8 @@ class DataLayerIntegrationTest {
   fun `invalid data should be rejected by User validation`() = runTest {
     val invalidPubkey = "invalid_pubkey_format"
 
-    try {
-      val invalidUser = User(invalidPubkey)
-      localAuthDataSource.saveUser(invalidUser)
-      fail("Should throw exception for invalid pubkey")
-    } catch (e: IllegalArgumentException) {
-      assertTrue("Should contain validation error", e.message?.contains("Invalid") == true)
-    }
+    val parsed = Pubkey.parse(invalidPubkey)
+    assertNull("Pubkey.parse should return null for invalid pubkey format", parsed)
   }
 
   private suspend fun advanceUntilIdle() {
