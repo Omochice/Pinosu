@@ -17,7 +17,7 @@ import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractShare
 object ShareIntentModule {
 
   @Provides
-  fun provideExtractSharedContentUseCase(
+  fun provideExtractSharedContent(
       impl: ExtractSharedContentUseCaseImpl
   ): ExtractSharedContentUseCase = impl
 }
