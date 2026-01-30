@@ -191,7 +191,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
-                    onAddBookmark = { navController.navigate(PostBookmark) },
+                    onAddBookmark = { navController.navigate(PostBookmark()) },
                     viewModel = bookmarkViewModel)
               }
 
