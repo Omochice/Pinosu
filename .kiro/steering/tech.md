@@ -85,7 +85,9 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Singleton Pattern**: Network clients (OkHttpClient, RelayPool) are @Singleton scoped
 - **Constructor Injection**: Prefer @Inject constructor over field injection
 - **Interface Binding**: Repositories and use cases defined as interfaces, bound in Hilt modules
-- **Module Organization**: Separate modules by technical concern (Network, Repository, UseCase)
+- **Feature-Scoped Modules**: Each feature has its own Hilt module (e.g., `AuthModule`, `BookmarkModule`, `SettingsModule`)
+- **Core Modules**: Cross-feature infrastructure in `core/di/` (NetworkModule, RelayPoolModule)
+- **Root Modules**: Cross-feature bindings in `di/` (RepositoryModule for NIP-65)
 
 ### Network & Async Patterns
 
