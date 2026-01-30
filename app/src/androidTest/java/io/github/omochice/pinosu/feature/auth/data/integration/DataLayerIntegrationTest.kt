@@ -87,7 +87,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and get should work correctly`() = runTest {
-    val testPubkey = Pubkey.parse("npub1" + "b".repeat(59))!!
+    val testPubkey = requireNotNull(Pubkey.parse("npub1" + "b".repeat(59)))
     val testUser = User(testPubkey)
 
     localAuthDataSource.saveUser(testUser)
@@ -108,7 +108,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `encrypted storage save and delete should work correctly`() = runTest {
-    val testPubkey = Pubkey.parse("npub1" + "c".repeat(59))!!
+    val testPubkey = requireNotNull(Pubkey.parse("npub1" + "c".repeat(59)))
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -134,9 +134,9 @@ class DataLayerIntegrationTest {
   fun `encrypted storage multiple save get delete cycles should work correctly`() = runTest {
     val users =
         listOf(
-            User(Pubkey.parse("npub1" + "d".repeat(59))!!),
-            User(Pubkey.parse("npub1" + "e".repeat(59))!!),
-            User(Pubkey.parse("npub1" + "f".repeat(59))!!),
+            User(requireNotNull(Pubkey.parse("npub1" + "d".repeat(59)))),
+            User(requireNotNull(Pubkey.parse("npub1" + "e".repeat(59)))),
+            User(requireNotNull(Pubkey.parse("npub1" + "f".repeat(59)))),
         )
 
     users.forEach { user ->
@@ -164,7 +164,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `logout flow should clear encrypted storage`() = runTest {
-    val testPubkey = Pubkey.parse("npub1" + "g".repeat(59))!!
+    val testPubkey = requireNotNull(Pubkey.parse("npub1" + "g".repeat(59)))
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
@@ -193,7 +193,7 @@ class DataLayerIntegrationTest {
    */
   @Test
   fun `app restart should restore login state from encrypted storage`() = runTest {
-    val testPubkey = Pubkey.parse("npub1" + "h".repeat(59))!!
+    val testPubkey = requireNotNull(Pubkey.parse("npub1" + "h".repeat(59)))
     val testUser = User(testPubkey)
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()

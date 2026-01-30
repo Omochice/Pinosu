@@ -82,7 +82,10 @@ class UserFlowTest {
   @Test
   fun `logout flow step1 should navigate to login screen on logout`() {
     val testUser =
-        User(pubkey = Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")!!)
+        User(
+            pubkey =
+                requireNotNull(
+                    Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")))
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
     coEvery { mockLocalAuthDataSource.clearLoginState() } returns Unit
 
@@ -109,7 +112,10 @@ class UserFlowTest {
   @Test
   fun `app restart when logged in should display bookmark screen`() {
     val testUser =
-        User(pubkey = Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")!!)
+        User(
+            pubkey =
+                requireNotNull(
+                    Pubkey.parse("npub1" + "1234567890abcdef".repeat(3) + "1234567890a")))
     coEvery { mockLocalAuthDataSource.getUser() } returns testUser
 
     composeTestRule.activityRule.scenario.recreate()

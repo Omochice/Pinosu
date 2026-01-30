@@ -44,13 +44,13 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `saveUser should succeed`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "a".repeat(59))))
     dataSource.saveUser(user)
   }
 
   @Test
   fun `saveUser should set timestamps`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "b".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "b".repeat(59))))
     val beforeSave = System.currentTimeMillis()
 
     dataSource.saveUser(user)
@@ -61,8 +61,8 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `saveUser should overwrite existing user`() = runTest {
-    val user1 = User(Pubkey.parse("npub1" + "c".repeat(59))!!)
-    val user2 = User(Pubkey.parse("npub1" + "d".repeat(59))!!)
+    val user1 = User(requireNotNull(Pubkey.parse("npub1" + "c".repeat(59))))
+    val user2 = User(requireNotNull(Pubkey.parse("npub1" + "d".repeat(59))))
 
     dataSource.saveUser(user1)
     dataSource.saveUser(user2)
@@ -73,7 +73,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `getUser after save should return saved user`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "e".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "e".repeat(59))))
     dataSource.saveUser(user)
 
     val retrieved = dataSource.getUser()
@@ -91,7 +91,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `getUser should preserve createdAt timestamp`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "f".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "f".repeat(59))))
 
     dataSource.saveUser(user)
 
@@ -102,7 +102,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `getUser should update lastAccessed timestamp`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "1".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "1".repeat(59))))
     dataSource.saveUser(user)
 
     val firstRetrieval = dataSource.getUser()
@@ -115,7 +115,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `clearLoginState should succeed`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "2".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "2".repeat(59))))
     dataSource.saveUser(user)
 
     dataSource.clearLoginState()
@@ -129,7 +129,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
   @Test
   fun `clearLoginState should remove all data`() = runTest {
-    val user = User(Pubkey.parse("npub1" + "3".repeat(59))!!)
+    val user = User(requireNotNull(Pubkey.parse("npub1" + "3".repeat(59))))
     dataSource.saveUser(user)
 
     dataSource.clearLoginState()
