@@ -72,7 +72,8 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var extractSharedContentUseCase: ExtractSharedContentUseCase
 
-  private var pendingSharedContent by mutableStateOf<SharedContent?>(null)
+  @androidx.annotation.VisibleForTesting
+  internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -192,7 +193,8 @@ fun PinosuApp(
                       }
                     },
                     onLoginSuccess = {
-                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+                      // Navigation is handled by LaunchedEffect(mainUiState.userPubkey)
+                      // to avoid conflicting with share-intent navigation to PostBookmark.
                       viewModel.dismissError()
                     })
               }
