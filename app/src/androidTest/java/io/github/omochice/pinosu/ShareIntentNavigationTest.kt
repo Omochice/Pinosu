@@ -21,6 +21,7 @@ import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractShare
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -198,9 +199,10 @@ class ShareIntentNavigationTest {
     // A second recreate() is not used because ActivityScenario.recreate() hangs
     // when Compose navigation has PostBookmark on the back stack.
     composeTestRule.activityRule.scenario.onActivity { activity ->
-      assert(activity.contentConsumed) {
-        "contentConsumed should be true after shared content is consumed"
-      }
+      assertTrue(
+          "contentConsumed should be true after shared content is consumed",
+          activity.contentConsumed,
+      )
     }
   }
 }
