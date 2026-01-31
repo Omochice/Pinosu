@@ -18,7 +18,10 @@ class ExtractSharedContentUseCaseImpl @Inject constructor() : ExtractSharedConte
   override operator fun invoke(intent: Intent?): SharedContent? {
     if (intent == null) return null
     if (intent.action != Intent.ACTION_SEND) return null
-    if (!ClipDescription.compareMimeTypes(intent.type ?: "", "text/plain")) return null
+    if (!ClipDescription.compareMimeTypes(
+        intent.type?.substringBefore(';')?.trim() ?: "", "text/plain")) {
+      return null
+    }
 
     val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()?.trim()
     if (text.isNullOrBlank()) return null
