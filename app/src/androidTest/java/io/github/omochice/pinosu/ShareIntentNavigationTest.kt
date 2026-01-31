@@ -28,10 +28,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Verifies that pending shared content is consumed after login completes.
+ * Verifies share-intent navigation under different app states.
  *
- * When the app receives ACTION_SEND while logged out, the shared content must be held until login
- * completes and then navigate to PostBookmark.
+ * Covers three scenarios:
+ * - Logged-out user receives a share intent, content is held until login completes, then navigates
+ *   to PostBookmark.
+ * - Already logged-in user receives a share intent at launch and navigates to PostBookmark
+ *   immediately.
+ * - Running app receives a share intent via [MainActivity.onNewIntent] and navigates to
+ *   PostBookmark.
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -84,6 +89,43 @@ class ShareIntentNavigationTest {
 
     val loginViewModel = ViewModelProvider(composeTestRule.activity)[LoginViewModel::class.java]
     loginViewModel.processNip55Response(Activity.RESULT_OK, Intent())
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+  }
+
+  @Test
+  fun `logged-in user with share intent navigates to PostBookmark immediately`() {
+    coEvery { mockLocalAuthDataSource.getUser() } returns testUser
+    coEvery { mockAuthRepository.getLoginState() } returns testUser
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+  }
+
+  @Test
+  fun `onNewIntent with share intent navigates to PostBookmark`() {
+    coEvery { mockLocalAuthDataSource.getUser() } returns testUser
+    coEvery { mockAuthRepository.getLoginState() } returns testUser
+    every { mockExtractSharedContentUseCase(any<Intent>()) } returns null
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
+
+    every { mockExtractSharedContentUseCase(any<Intent>()) } returns
+        SharedContent(url = "https://example.com")
+
+    composeTestRule.activityRule.scenario.onActivity { activity -> activity.onNewIntent(Intent()) }
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
