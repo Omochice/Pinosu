@@ -121,7 +121,10 @@ class ShareIntentNavigationTest {
     every { mockExtractSharedContentUseCase(any<Intent>()) } returns
         SharedContent(url = "https://example.com")
 
-    composeTestRule.activityRule.scenario.onActivity { activity -> activity.onNewIntent(Intent()) }
+    composeTestRule.activityRule.scenario.onActivity { activity ->
+      androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+          .callActivityOnNewIntent(activity, Intent())
+    }
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
