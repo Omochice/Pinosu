@@ -75,12 +75,17 @@ class MainActivity : ComponentActivity() {
   @androidx.annotation.VisibleForTesting
   internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
 
+  @androidx.annotation.VisibleForTesting internal var contentConsumed = false
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     loginViewModel.checkLoginState()
 
-    pendingSharedContent = extractSharedContentUseCase(intent)
+    contentConsumed = savedInstanceState?.getBoolean(KEY_CONTENT_CONSUMED) == true
+    if (!contentConsumed) {
+      pendingSharedContent = extractSharedContentUseCase(intent)
+    }
 
     setContent {
       PinosuTheme {
@@ -88,15 +93,28 @@ class MainActivity : ComponentActivity() {
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
             pendingSharedContent = pendingSharedContent,
-            onSharedContentConsumed = { pendingSharedContent = null })
+            onSharedContentConsumed = {
+              pendingSharedContent = null
+              contentConsumed = true
+            })
       }
     }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putBoolean(KEY_CONTENT_CONSUMED, contentConsumed)
   }
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     setIntent(intent)
+    contentConsumed = false
     pendingSharedContent = extractSharedContentUseCase(intent)
+  }
+
+  companion object {
+    private const val KEY_CONTENT_CONSUMED = "shared_content_consumed"
   }
 }
 

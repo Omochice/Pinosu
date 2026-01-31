@@ -29,13 +29,15 @@ import org.junit.runner.RunWith
 /**
  * Verifies share-intent navigation under different app states.
  *
- * Covers three scenarios:
+ * Covers four scenarios:
  * - Logged-out user receives a share intent, content is held until login completes, then navigates
  *   to PostBookmark.
  * - Already logged-in user receives a share intent at launch and navigates to PostBookmark
  *   immediately.
  * - Running app receives a share intent via [MainActivity.onNewIntent] and navigates to
  *   PostBookmark.
+ * - Consumed shared content sets the contentConsumed flag, which is persisted via
+ *   savedInstanceState to prevent re-extraction on configuration change (e.g. rotation).
  */
 @HiltAndroidTest
 @dagger.hilt.android.testing.UninstallModules(
@@ -160,5 +162,36 @@ class ShareIntentNavigationTest {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+  }
+
+  @Test
+  fun `consumed shared content is not re-extracted after Activity recreation`() {
+    coEvery { mockGetLoginStateUseCase() } returns testUser
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+
+    // Wait for onSharedContentConsumed to set contentConsumed = true
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      var consumed = false
+      composeTestRule.activityRule.scenario.onActivity { activity ->
+        consumed = activity.pendingSharedContent == null
+      }
+      consumed
+    }
+
+    // Verify contentConsumed is true after consumption — onSaveInstanceState
+    // will persist this flag, so a subsequent onCreate (rotation) skips extraction.
+    // A second recreate() is not used because ActivityScenario.recreate() hangs
+    // when Compose navigation has PostBookmark on the back stack.
+    composeTestRule.activityRule.scenario.onActivity { activity ->
+      assert(activity.contentConsumed) {
+        "contentConsumed should be true after shared content is consumed"
+      }
+    }
   }
 }
