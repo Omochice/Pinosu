@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.KeysetHandle
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,7 +32,7 @@ class TinkKeyManager @Inject constructor(@param:ApplicationContext private val c
    *
    * @return Aead primitive configured with AES256-GCM
    */
-  fun getAead(): Aead = keysetHandle.getPrimitive(Aead::class.java)
+  fun getAead(): Aead = keysetHandle.getPrimitive(RegistryConfiguration.get(), Aead::class.java)
 
   private fun createOrLoadKeysetHandle(): KeysetHandle =
       AndroidKeysetManager.Builder()
