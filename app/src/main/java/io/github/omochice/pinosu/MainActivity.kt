@@ -15,7 +15,9 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -70,19 +72,22 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var extractSharedContentUseCase: ExtractSharedContentUseCase
 
+  private var pendingSharedContent by mutableStateOf<SharedContent?>(null)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     loginViewModel.checkLoginState()
 
-    val sharedContent = extractSharedContentUseCase(intent)
+    pendingSharedContent = extractSharedContentUseCase(intent)
 
     setContent {
       PinosuTheme {
         PinosuApp(
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
-            sharedContent = sharedContent)
+            pendingSharedContent = pendingSharedContent,
+            onSharedContentConsumed = { pendingSharedContent = null })
       }
     }
   }
@@ -90,7 +95,7 @@ class MainActivity : ComponentActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     setIntent(intent)
-    recreate()
+    pendingSharedContent = extractSharedContentUseCase(intent)
   }
 }
 
@@ -102,13 +107,15 @@ class MainActivity : ComponentActivity() {
  *
  * @param viewModel ViewModel managing login/logout state
  * @param nip55SignerClient Client for NIP-55 communication
- * @param sharedContent Content received from an external share intent, or null
+ * @param pendingSharedContent Content received from an external share intent, or null
+ * @param onSharedContentConsumed Callback invoked after navigating to consume the shared content
  */
 @Composable
 fun PinosuApp(
     viewModel: LoginViewModel,
     nip55SignerClient: Nip55SignerClient,
-    sharedContent: SharedContent? = null
+    pendingSharedContent: SharedContent? = null,
+    onSharedContentConsumed: () -> Unit = {}
 ) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -137,12 +144,14 @@ fun PinosuApp(
     }
   }
 
-  LaunchedEffect(sharedContent, mainUiState.userPubkey) {
-    if (sharedContent != null && mainUiState.userPubkey != null) {
+  LaunchedEffect(pendingSharedContent) {
+    val content = pendingSharedContent
+    if (content != null && mainUiState.userPubkey != null) {
       navController.navigate(
-          PostBookmark(sharedUrl = sharedContent.url, sharedComment = sharedContent.comment)) {
+          PostBookmark(sharedUrl = content.url, sharedComment = content.comment)) {
             launchSingleTop = true
           }
+      onSharedContentConsumed()
     }
   }
 
@@ -258,7 +267,7 @@ fun PinosuApp(
                   }
                 }
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(postBookmarkRoute) {
                   postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
                   postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
                 }

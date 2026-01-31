@@ -12,10 +12,10 @@
     <ID>ClassOrdering:RelayPool.kt$RelayPoolImpl$Companion</ID>
     <ID>ClassOrdering:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$Companion</ID>
     <ID>CognitiveComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
-    <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, sharedContent: SharedContent? = null )</ID>
+    <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
     <ID>CyclomaticComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
-    <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, sharedContent: SharedContent? = null )</ID>
+    <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CyclomaticComplexMethod:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
     <ID>ExpressionBodySyntax:GetBookmarkListUseCaseImpl.kt$GetBookmarkListUseCaseImpl$return bookmarkRepository.getBookmarkList(pubkey)</ID>
     <ID>ExpressionBodySyntax:Nip55AuthRepository.kt$Nip55AuthRepository$return localAuthDataSource.getUser()</ID>
@@ -37,7 +37,7 @@
     <ID>LabeledExpression:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$@withContext</ID>
     <ID>LongMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
     <ID>LongMethod:LoginScreen.kt$@Composable fun LoginScreen( uiState: LoginUiState, onLoginButtonClick: () -&gt; Unit, onDismissDialog: () -&gt; Unit = {}, onInstallNip55Signer: () -&gt; Unit = {}, onRetry: () -&gt; Unit = {}, onLoginSuccess: () -&gt; Unit = {} )</ID>
-    <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, sharedContent: SharedContent? = null )</ID>
+    <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:PostBookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PostBookmarkScreen( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
     <ID>LongMethod:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
     <ID>LongParameterList:PostBookmarkScreen.kt$( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
