@@ -97,6 +97,7 @@ graph TB
 - `bookmark/` - Bookmark listing and display
 - `postbookmark/` - Creating and posting new bookmarks
 - `settings/` - User preferences and display mode
+- `shareintent/` - Android share intent handling (receive shared URLs/text from other apps)
 - `main/` - Main screen container
 - `appinfo/` - Application information
 - `license/` - Open source license display
@@ -180,6 +181,7 @@ io.github.omochice.pinosu/
 │   ├── bookmark/            // Bookmark list feature
 │   ├── postbookmark/        // Post bookmark feature
 │   ├── settings/            // Settings feature
+│   ├── shareintent/         // Share intent handling
 │   ├── main/                // Main screen
 │   ├── appinfo/             // App info screen
 │   └── license/             // License screen
@@ -202,4 +204,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-01-30 - Migrated from layer-based to package-by-feature architecture_
+_Updated: 2026-01-31 - Added shareintent feature module_
