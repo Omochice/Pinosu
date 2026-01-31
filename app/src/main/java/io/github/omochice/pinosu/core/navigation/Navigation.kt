@@ -19,8 +19,14 @@ sealed interface Route
 /** App info screen route */
 @Serializable object AppInfo : Route
 
-/** Post bookmark screen route */
-@Serializable object PostBookmark : Route
+/**
+ * Post bookmark screen route
+ *
+ * @property sharedUrl Pre-filled URL from share intent, or null
+ * @property sharedComment Pre-filled comment from share intent, or null
+ */
+@Serializable
+data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String? = null) : Route
 
 /** Settings screen route */
 @Serializable object Settings : Route

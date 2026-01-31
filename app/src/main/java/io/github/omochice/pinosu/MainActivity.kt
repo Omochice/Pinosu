@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,13 +15,16 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.omochice.pinosu.core.navigation.AppInfo
 import io.github.omochice.pinosu.core.navigation.Bookmark
@@ -46,6 +50,8 @@ import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookma
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
+import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
+import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractSharedContentUseCase
 import io.github.omochice.pinosu.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
 import javax.inject.Inject
@@ -55,7 +61,7 @@ import kotlinx.coroutines.launch
  * Main Activity for Pinosu application
  *
  * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles NIP-55
- * signer integration for Nostr authentication.
+ * signer integration for Nostr authentication and ACTION_SEND intents for shared content.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -64,14 +70,51 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
+  @Inject lateinit var extractSharedContentUseCase: ExtractSharedContentUseCase
+
+  @androidx.annotation.VisibleForTesting
+  internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
+
+  @androidx.annotation.VisibleForTesting internal var contentConsumed = false
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     loginViewModel.checkLoginState()
 
-    setContent {
-      PinosuTheme { PinosuApp(viewModel = loginViewModel, nip55SignerClient = nip55SignerClient) }
+    contentConsumed = savedInstanceState?.getBoolean(KEY_CONTENT_CONSUMED) == true
+    if (!contentConsumed) {
+      pendingSharedContent = extractSharedContentUseCase(intent)
     }
+
+    setContent {
+      PinosuTheme {
+        PinosuApp(
+            viewModel = loginViewModel,
+            nip55SignerClient = nip55SignerClient,
+            pendingSharedContent = pendingSharedContent,
+            onSharedContentConsumed = {
+              pendingSharedContent = null
+              contentConsumed = true
+            })
+      }
+    }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putBoolean(KEY_CONTENT_CONSUMED, contentConsumed)
+  }
+
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    contentConsumed = false
+    pendingSharedContent = extractSharedContentUseCase(intent)
+  }
+
+  companion object {
+    private const val KEY_CONTENT_CONSUMED = "shared_content_consumed"
   }
 }
 
@@ -83,9 +126,16 @@ class MainActivity : ComponentActivity() {
  *
  * @param viewModel ViewModel managing login/logout state
  * @param nip55SignerClient Client for NIP-55 communication
+ * @param pendingSharedContent Content received from an external share intent, or null
+ * @param onSharedContentConsumed Callback invoked after navigating to consume the shared content
  */
 @Composable
-fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
+fun PinosuApp(
+    viewModel: LoginViewModel,
+    nip55SignerClient: Nip55SignerClient,
+    pendingSharedContent: SharedContent? = null,
+    onSharedContentConsumed: () -> Unit = {}
+) {
   val navController = rememberNavController()
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
@@ -110,6 +160,17 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
           launchSingleTop = true
         }
       }
+    }
+  }
+
+  LaunchedEffect(pendingSharedContent, mainUiState.userPubkey) {
+    val content = pendingSharedContent
+    if (content != null && mainUiState.userPubkey != null) {
+      navController.navigate(
+          PostBookmark(sharedUrl = content.url, sharedComment = content.comment)) {
+            launchSingleTop = true
+          }
+      onSharedContentConsumed()
     }
   }
 
@@ -150,7 +211,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                       }
                     },
                     onLoginSuccess = {
-                      navController.navigate(Bookmark) { popUpTo<Login> { inclusive = true } }
+                      // Navigation is handled by LaunchedEffect(mainUiState.userPubkey)
+                      // to avoid conflicting with share-intent navigation to PostBookmark.
                       viewModel.dismissError()
                     })
               }
@@ -191,7 +253,7 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
-                    onAddBookmark = { navController.navigate(PostBookmark) },
+                    onAddBookmark = { navController.navigate(PostBookmark()) },
                     viewModel = bookmarkViewModel)
               }
 
@@ -199,7 +261,8 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
               enterTransition = { defaultEnterTransition },
               exitTransition = { defaultExitTransition },
               popEnterTransition = { defaultPopEnterTransition },
-              popExitTransition = { defaultPopExitTransition }) {
+              popExitTransition = { defaultPopExitTransition }) { backStackEntry ->
+                val postBookmarkRoute = backStackEntry.toRoute<PostBookmark>()
                 val postBookmarkViewModel: PostBookmarkViewModel = hiltViewModel()
                 val postBookmarkUiState by
                     postBookmarkViewModel.uiState.collectAsStateWithLifecycle()
@@ -222,6 +285,11 @@ fun PinosuApp(viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient) {
                     postBookmarkViewModel.resetPostSuccess()
                     navController.navigateUp()
                   }
+                }
+
+                LaunchedEffect(postBookmarkRoute) {
+                  postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
+                  postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
                 }
 
                 PostBookmarkScreen(

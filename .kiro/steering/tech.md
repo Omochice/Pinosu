@@ -31,7 +31,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Min SDK**: 30
 - **Target SDK**: 36
 - **Kotlin**: 2.3.0
-- **Compose BOM**: 2026.01.00
+- **Compose BOM**: 2026.01.01
 - **Gradle Plugin**: 9.0.0
 - **Hilt**: 2.59 (requires metadata compatibility workaround for Kotlin 2.3.0)
 
@@ -60,7 +60,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Serialization
 
-- **kotlinx-serialization-json**: 1.10.0-RC for type-safe JSON handling
+- **kotlinx-serialization-json**: 1.10.0 for type-safe JSON handling
 - **Custom Serializers**: `KSerializer<T>` for Nostr protocol array-based messages
 - **Lazy Initialization**: Use `by lazy { }` for Json instances interacting with EncryptedSharedPreferences
 
