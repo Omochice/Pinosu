@@ -143,4 +143,28 @@ class ExtractSharedContentUseCaseTest {
     val result = useCase(intent)
     assertNull(result)
   }
+
+  @Test
+  fun `ACTION_SEND text plain with CharSequence EXTRA_TEXT extracts URL`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, StringBuilder("https://example.com/charseq") as CharSequence)
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://example.com/charseq", comment = null), result)
+  }
+
+  @Test
+  fun `ACTION_SEND with charset-parameterized MIME type extracts URL`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain; charset=UTF-8"
+          putExtra(Intent.EXTRA_TEXT, "https://example.com/charset")
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://example.com/charset", comment = null), result)
+  }
 }
