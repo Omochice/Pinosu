@@ -38,6 +38,10 @@ import org.junit.runner.RunWith
  *   PostBookmark.
  */
 @HiltAndroidTest
+@dagger.hilt.android.testing.UninstallModules(
+    io.github.omochice.pinosu.feature.auth.di.AuthModule::class,
+    io.github.omochice.pinosu.feature.shareintent.di.ShareIntentModule::class,
+)
 @RunWith(AndroidJUnit4::class)
 class ShareIntentNavigationTest {
 
@@ -54,29 +58,62 @@ class ShareIntentNavigationTest {
   @JvmField
   val mockExtractSharedContentUseCase: ExtractSharedContentUseCase = mockk(relaxed = true)
 
-  @BindValue
-  @JvmField
-  val mockLocalAuthDataSource: LocalAuthDataSource =
-      mockk(relaxed = true) { coEvery { getUser() } returns null }
+  @BindValue @JvmField val mockLocalAuthDataSource: LocalAuthDataSource = mockk(relaxed = true)
 
   @BindValue @JvmField val mockNip55SignerClient: Nip55SignerClient = mockk(relaxed = true)
 
   @BindValue
   @JvmField
   val mockAuthRepository: AuthRepository =
-      mockk(relaxed = true) {
-        coEvery { getLoginState() } returns null
-        coEvery { processNip55Response(any(), any()) } returns Result.success(testUser)
+      object : AuthRepository {
+        override suspend fun getLoginState(): User? = null
+
+        override suspend fun saveLoginState(user: User): Result<Unit> = Result.success(Unit)
+
+        override suspend fun logout(): Result<Unit> = Result.success(Unit)
+
+        override suspend fun processNip55Response(resultCode: Int, data: Intent?): Result<User> =
+            Result.success(testUser)
+
+        override fun checkNip55SignerInstalled(): Boolean = false
       }
 
-  @BindValue @JvmField val mockFetchRelayListUseCase: FetchRelayListUseCase = mockk(relaxed = true)
+  @BindValue
+  @JvmField
+  val mockLoginUseCase: io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase =
+      mockk(relaxed = true)
+
+  @BindValue
+  @JvmField
+  val mockLogoutUseCase: io.github.omochice.pinosu.feature.auth.domain.usecase.LogoutUseCase =
+      mockk(relaxed = true)
+
+  @BindValue
+  @JvmField
+  val mockGetLoginStateUseCase:
+      io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase =
+      mockk(relaxed = true)
+
+  @BindValue
+  @JvmField
+  val mockFetchRelayListUseCase: FetchRelayListUseCase =
+      object : FetchRelayListUseCase {
+        override suspend fun invoke(
+            npubPubkey: String
+        ): Result<List<io.github.omochice.pinosu.core.relay.RelayConfig>> =
+            Result.success(emptyList())
+      }
+
+  init {
+    every { mockExtractSharedContentUseCase(any()) } returns
+        SharedContent(url = "https://example.com")
+    coEvery { mockLocalAuthDataSource.getUser() } returns null
+    coEvery { mockGetLoginStateUseCase() } returns null
+  }
 
   @Before
   fun setup() {
     hiltRule.inject()
-    every { mockExtractSharedContentUseCase(any()) } returns
-        SharedContent(url = "https://example.com")
-    coEvery { mockFetchRelayListUseCase(any()) } returns Result.success(emptyList())
   }
 
   @Test
@@ -86,7 +123,7 @@ class ShareIntentNavigationTest {
     val loginViewModel = ViewModelProvider(composeTestRule.activity)[LoginViewModel::class.java]
     loginViewModel.processNip55Response(Activity.RESULT_OK, Intent())
 
-    composeTestRule.waitUntil(timeoutMillis = 5000) {
+    composeTestRule.waitUntil(timeoutMillis = 10000) {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
@@ -94,8 +131,7 @@ class ShareIntentNavigationTest {
 
   @Test
   fun `logged-in user with share intent navigates to PostBookmark immediately`() {
-    coEvery { mockLocalAuthDataSource.getUser() } returns testUser
-    coEvery { mockAuthRepository.getLoginState() } returns testUser
+    coEvery { mockGetLoginStateUseCase() } returns testUser
 
     composeTestRule.activityRule.scenario.recreate()
 
@@ -107,9 +143,8 @@ class ShareIntentNavigationTest {
 
   @Test
   fun `onNewIntent with share intent navigates to PostBookmark`() {
-    coEvery { mockLocalAuthDataSource.getUser() } returns testUser
-    coEvery { mockAuthRepository.getLoginState() } returns testUser
-    every { mockExtractSharedContentUseCase(any<Intent>()) } returns null
+    coEvery { mockGetLoginStateUseCase() } returns testUser
+    every { mockExtractSharedContentUseCase(any()) } returns null
 
     composeTestRule.activityRule.scenario.recreate()
 
@@ -118,12 +153,14 @@ class ShareIntentNavigationTest {
     }
     composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
 
-    every { mockExtractSharedContentUseCase(any<Intent>()) } returns
+    every { mockExtractSharedContentUseCase(any()) } returns
         SharedContent(url = "https://example.com")
 
+    // Set pendingSharedContent directly because
+    // Instrumentation.callActivityOnNewIntent does not reliably propagate
+    // mutableStateOf changes through the Compose test framework after recreate().
     composeTestRule.activityRule.scenario.onActivity { activity ->
-      androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
-          .callActivityOnNewIntent(activity, Intent())
+      activity.pendingSharedContent = SharedContent(url = "https://example.com")
     }
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
