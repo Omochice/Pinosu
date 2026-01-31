@@ -500,51 +500,51 @@
         }
       }
     },
-    "temurin-bin@21.0.8": {
-      "last_modified": "2025-10-22T20:59:19Z",
-      "resolved": "github:NixOS/nixpkgs/01b6809f7f9d1183a2b3e081f0a1e6f8f415cb09#temurin-bin",
+    "temurin-bin@22.0.1": {
+      "last_modified": "2024-10-13T23:44:06Z",
+      "resolved": "github:NixOS/nixpkgs/d4f247e89f6e10120f911e2e2d2254a050d0f732#temurin-bin",
       "source": "devbox-search",
-      "version": "21.0.8",
+      "version": "22.0.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/x39311498bh7sb2ag1fjikgv7i0ll5qb-temurin-bin-21.0.8",
+              "path": "/nix/store/2sjasf507spm5swg53c0a6dxabcxqkz2-temurin-bin-22.0.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/x39311498bh7sb2ag1fjikgv7i0ll5qb-temurin-bin-21.0.8"
+          "store_path": "/nix/store/2sjasf507spm5swg53c0a6dxabcxqkz2-temurin-bin-22.0.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/3q60g6x4qf2wfvbalnyx1510n9gwbd5j-temurin-bin-21.0.8",
+              "path": "/nix/store/m3jdxn5kh2b51aqlwmm655f03lbhq4ms-temurin-bin-22.0.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/3q60g6x4qf2wfvbalnyx1510n9gwbd5j-temurin-bin-21.0.8"
+          "store_path": "/nix/store/m3jdxn5kh2b51aqlwmm655f03lbhq4ms-temurin-bin-22.0.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/q0y2plx55rmhyqbindyfg01xwjj45da6-temurin-bin-21.0.8",
+              "path": "/nix/store/b9fmvshgzi8masd6pdwab21xy416sxbc-temurin-bin-22.0.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/q0y2plx55rmhyqbindyfg01xwjj45da6-temurin-bin-21.0.8"
+          "store_path": "/nix/store/b9fmvshgzi8masd6pdwab21xy416sxbc-temurin-bin-22.0.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/x1f6yd37mb7lfp61xh585vrfjs3cgw99-temurin-bin-21.0.8",
+              "path": "/nix/store/p3fbssw0vk4afv4fby00g2sh33r74cam-temurin-bin-22.0.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/x1f6yd37mb7lfp61xh585vrfjs3cgw99-temurin-bin-21.0.8"
+          "store_path": "/nix/store/p3fbssw0vk4afv4fby00g2sh33r74cam-temurin-bin-22.0.1"
         }
       }
     },
