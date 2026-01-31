@@ -88,7 +88,10 @@ class MainActivity : ComponentActivity() {
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
             pendingSharedContent = pendingSharedContent,
-            onSharedContentConsumed = { pendingSharedContent = null })
+            onSharedContentConsumed = {
+              pendingSharedContent = null
+              setIntent(Intent())
+            })
       }
     }
   }

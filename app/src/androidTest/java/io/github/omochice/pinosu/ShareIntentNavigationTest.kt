@@ -161,4 +161,38 @@ class ShareIntentNavigationTest {
     }
     composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
   }
+
+  @Test
+  fun `consumed shared content is not re-extracted after Activity recreation`() {
+    every { mockExtractSharedContentUseCase(any()) } answers
+        {
+          val intent = firstArg<Intent>()
+          if (intent.action == Intent.ACTION_SEND) SharedContent(url = "https://example.com")
+          else null
+        }
+    coEvery { mockGetLoginStateUseCase() } returns testUser
+
+    composeTestRule.activityRule.scenario.onActivity { activity ->
+      activity.intent =
+          Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, "https://example.com")
+          }
+    }
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.activityRule.scenario.onActivity { activity ->
+      assert(activity.pendingSharedContent == null) {
+        "pendingSharedContent should be null after recreation because the intent was cleared"
+      }
+    }
+  }
 }
