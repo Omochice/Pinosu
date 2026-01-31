@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.shareintent.domain.usecase
 
+import android.content.ClipDescription
 import android.content.Intent
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
 import javax.inject.Inject
@@ -17,9 +18,9 @@ class ExtractSharedContentUseCaseImpl @Inject constructor() : ExtractSharedConte
   override operator fun invoke(intent: Intent?): SharedContent? {
     if (intent == null) return null
     if (intent.action != Intent.ACTION_SEND) return null
-    if (intent.type != "text/plain") return null
+    if (!ClipDescription.compareMimeTypes(intent.type ?: "", "text/plain")) return null
 
-    val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.trim()
+    val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()?.trim()
     if (text.isNullOrBlank()) return null
 
     return if (text.startsWith("http://", ignoreCase = true) ||
