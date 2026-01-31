@@ -11,7 +11,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
-import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
@@ -53,9 +52,7 @@ class ShareIntentNavigationTest {
 
   @BindValue
   @JvmField
-  val mockExtractSharedContentUseCase: ExtractSharedContentUseCase = mockk {
-    every { invoke(any<Intent>()) } returns SharedContent(url = "https://example.com")
-  }
+  val mockExtractSharedContentUseCase: ExtractSharedContentUseCase = mockk(relaxed = true)
 
   @BindValue
   @JvmField
@@ -72,15 +69,14 @@ class ShareIntentNavigationTest {
         coEvery { processNip55Response(any(), any()) } returns Result.success(testUser)
       }
 
-  @BindValue
-  @JvmField
-  val mockFetchRelayListUseCase: FetchRelayListUseCase = mockk {
-    coEvery { invoke(any<String>()) } returns Result.success(emptyList<RelayConfig>())
-  }
+  @BindValue @JvmField val mockFetchRelayListUseCase: FetchRelayListUseCase = mockk(relaxed = true)
 
   @Before
   fun setup() {
     hiltRule.inject()
+    every { mockExtractSharedContentUseCase(any()) } returns
+        SharedContent(url = "https://example.com")
+    coEvery { mockFetchRelayListUseCase(any()) } returns Result.success(emptyList())
   }
 
   @Test
