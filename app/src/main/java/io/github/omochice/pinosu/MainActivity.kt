@@ -144,7 +144,7 @@ fun PinosuApp(
     }
   }
 
-  LaunchedEffect(pendingSharedContent) {
+  LaunchedEffect(pendingSharedContent, mainUiState.userPubkey) {
     val content = pendingSharedContent
     if (content != null && mainUiState.userPubkey != null) {
       navController.navigate(
