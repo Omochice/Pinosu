@@ -167,4 +167,66 @@ class ExtractSharedContentUseCaseTest {
     val result = useCase(intent)
     assertEquals(SharedContent(url = "https://example.com/charset", comment = null), result)
   }
+
+  @Test
+  fun `URL after text extracts both url and comment`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "Check out https://example.com")
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://example.com", comment = "Check out"), result)
+  }
+
+  @Test
+  fun `URL before text extracts both url and comment`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "https://example.com is great")
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://example.com", comment = "is great"), result)
+  }
+
+  @Test
+  fun `URL in middle of text extracts both url and comment`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "See https://example.com/path for details")
+        }
+
+    val result = useCase(intent)
+    assertEquals(
+        SharedContent(url = "https://example.com/path", comment = "See for details"), result)
+  }
+
+  @Test
+  fun `multiple URLs extracts first URL only`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "https://a.com and https://b.com")
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://a.com", comment = "and https://b.com"), result)
+  }
+
+  @Test
+  fun `URL with query params in text extracts full URL`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "Check https://example.com/p?q=1&r=2 out")
+        }
+
+    val result = useCase(intent)
+    assertEquals(
+        SharedContent(url = "https://example.com/p?q=1&r=2", comment = "Check out"), result)
+  }
 }
