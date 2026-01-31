@@ -149,9 +149,6 @@ class ShareIntentNavigationTest {
     }
     composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
 
-    every { mockExtractSharedContentUseCase(any()) } returns
-        SharedContent(url = "https://example.com")
-
     // Set pendingSharedContent directly because
     // Instrumentation.callActivityOnNewIntent does not reliably propagate
     // mutableStateOf changes through the Compose test framework after recreate().
