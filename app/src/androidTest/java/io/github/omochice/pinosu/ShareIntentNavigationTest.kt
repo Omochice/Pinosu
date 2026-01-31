@@ -65,17 +65,13 @@ class ShareIntentNavigationTest {
   @BindValue
   @JvmField
   val mockAuthRepository: AuthRepository =
-      object : AuthRepository {
-        override suspend fun getLoginState(): User? = null
-
+      object : AuthRepository by mockk(relaxed = true) {
         override suspend fun saveLoginState(user: User): Result<Unit> = Result.success(Unit)
 
         override suspend fun logout(): Result<Unit> = Result.success(Unit)
 
         override suspend fun processNip55Response(resultCode: Int, data: Intent?): Result<User> =
             Result.success(testUser)
-
-        override fun checkNip55SignerInstalled(): Boolean = false
       }
 
   @BindValue
@@ -97,7 +93,7 @@ class ShareIntentNavigationTest {
   @BindValue
   @JvmField
   val mockFetchRelayListUseCase: FetchRelayListUseCase =
-      object : FetchRelayListUseCase {
+      object : FetchRelayListUseCase by mockk(relaxed = true) {
         override suspend fun invoke(
             npubPubkey: String
         ): Result<List<io.github.omochice.pinosu.core.relay.RelayConfig>> =
