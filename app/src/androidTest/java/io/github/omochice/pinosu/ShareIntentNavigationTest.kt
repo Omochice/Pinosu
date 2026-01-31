@@ -104,7 +104,7 @@ class ShareIntentNavigationTest {
 
   init {
     every { mockExtractSharedContentUseCase(any()) } returns
-        SharedContent(url = "https://example.com")
+        SharedContent(url = "https://example.com", comment = "Check this out")
     coEvery { mockLocalAuthDataSource.getUser() } returns null
     coEvery { mockGetLoginStateUseCase() } returns null
   }
@@ -125,6 +125,11 @@ class ShareIntentNavigationTest {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+
+    // URL field: "https://example.com" → stripUrlScheme → "example.com"
+    // The OutlinedTextField shows "example.com", "https://" is a separate Text prefix
+    composeTestRule.onNodeWithText("example.com").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Check this out").assertIsDisplayed()
   }
 
   @Test
@@ -155,13 +160,17 @@ class ShareIntentNavigationTest {
     // Instrumentation.callActivityOnNewIntent does not reliably propagate
     // mutableStateOf changes through the Compose test framework after recreate().
     composeTestRule.activityRule.scenario.onActivity { activity ->
-      activity.pendingSharedContent = SharedContent(url = "https://example.com")
+      activity.pendingSharedContent =
+          SharedContent(url = "https://example.com", comment = "Check this out")
     }
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
       composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
     }
     composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+
+    composeTestRule.onNodeWithText("example.com").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Check this out").assertIsDisplayed()
   }
 
   @Test
