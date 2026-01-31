@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/Omochice/Pinosu/compare/v0.2.1...v0.3.0) (2026-01-31)
+
+
+### Features
+
+* receive shared url ([#155](https://github.com/Omochice/Pinosu/issues/155)) ([367ef50](https://github.com/Omochice/Pinosu/commit/367ef5059570fe39d7744dee14a43e0716d1649d))
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.activity:activity-compose to v1.12.3 ([#154](https://github.com/Omochice/Pinosu/issues/154)) ([6635c4a](https://github.com/Omochice/Pinosu/commit/6635c4aaa5e8952864fcba472080aba6762baa65))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.01.01 ([#144](https://github.com/Omochice/Pinosu/issues/144)) ([c25158b](https://github.com/Omochice/Pinosu/commit/c25158b2153f48fd555dd07bba8f1c5982524e26))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.9.7 ([#145](https://github.com/Omochice/Pinosu/issues/145)) ([1ba5e44](https://github.com/Omochice/Pinosu/commit/1ba5e443d23e59218751fe3b6b1afee72abfe020))
+* **deps:** update mockk to v1.14.9 ([#140](https://github.com/Omochice/Pinosu/issues/140)) ([44a1e5b](https://github.com/Omochice/Pinosu/commit/44a1e5b49136307fd221acf1e3e78a370317a71d))
+
 ## [0.2.1](https://github.com/Omochice/Pinosu/compare/v0.2.0...v0.2.1) (2026-01-26)
 
 
