@@ -45,7 +45,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
         DataStoreFactory.create(
             serializer = AuthDataSerializer(tinkKeyManager.getAead()), produceFile = { testFile })
 
-    dataSource = LocalAuthDataSource(context, testDataStore)
+    dataSource = LocalAuthDataSource(testDataStore)
   }
 
   @After
@@ -84,7 +84,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     dataSource.saveUser(user)
 
-    val newDataSource = LocalAuthDataSource(context, testDataStore)
+    val newDataSource = LocalAuthDataSource(testDataStore)
 
     val retrieved = newDataSource.getUser()
 
@@ -119,7 +119,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
             produceFile = {
               File(context.filesDir, "test_no_encrypt_auth_data_${System.currentTimeMillis()}.pb")
             })
-    val dataSourceNoEncrypt = LocalAuthDataSource(context, testDataStoreNoEncrypt)
+    val dataSourceNoEncrypt = LocalAuthDataSource(testDataStoreNoEncrypt)
 
     val invalidPubkeys =
         listOf(
@@ -156,7 +156,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
             produceFile = {
               File(context.filesDir, "test_empty_pubkey_${System.currentTimeMillis()}.pb")
             })
-    val dataSourceNoEncrypt = LocalAuthDataSource(context, testDataStoreNoEncrypt)
+    val dataSourceNoEncrypt = LocalAuthDataSource(testDataStoreNoEncrypt)
 
     testDataStoreNoEncrypt.updateData { AuthData(userPubkey = "") }
 

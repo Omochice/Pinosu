@@ -51,8 +51,8 @@ sealed class LogoutError : Exception() {
 /**
  * Local storage operation errors
  *
- * Represents errors that can occur during local storage operations such as
- * EncryptedSharedPreferences. Used by LocalAuthDataSource and AuthRepository.
+ * Represents errors that can occur during local storage operations such as DataStore. Used by
+ * LocalAuthDataSource and AuthRepository.
  */
 sealed class StorageError : Exception() {
   /**

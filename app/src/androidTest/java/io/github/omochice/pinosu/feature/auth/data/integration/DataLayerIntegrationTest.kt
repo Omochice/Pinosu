@@ -50,7 +50,7 @@ class DataLayerIntegrationTest {
     testDataStore =
         DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
 
-    localAuthDataSource = LocalAuthDataSource(context, testDataStore)
+    localAuthDataSource = LocalAuthDataSource(testDataStore)
     nip55SignerClient = Nip55SignerClient(context)
     authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
@@ -198,7 +198,7 @@ class DataLayerIntegrationTest {
     localAuthDataSource.saveUser(testUser)
     advanceUntilIdle()
 
-    val newLocalAuthDataSource = LocalAuthDataSource(context, testDataStore)
+    val newLocalAuthDataSource = LocalAuthDataSource(testDataStore)
     val newAuthRepository = Nip55AuthRepository(nip55SignerClient, newLocalAuthDataSource)
 
     val restoredUser = newAuthRepository.getLoginState()

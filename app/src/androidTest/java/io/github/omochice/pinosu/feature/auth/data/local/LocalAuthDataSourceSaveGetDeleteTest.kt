@@ -31,10 +31,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     testDataStore =
         DataStoreFactory.create(serializer = TestAuthDataSerializer(), produceFile = { testFile })
 
-    dataSource =
-        LocalAuthDataSource(
-            context, testDataStore // Use test DataStore directly as production one
-            )
+    dataSource = LocalAuthDataSource(testDataStore)
   }
 
   @After
