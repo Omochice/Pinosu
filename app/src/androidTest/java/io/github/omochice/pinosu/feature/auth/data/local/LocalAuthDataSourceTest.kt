@@ -38,7 +38,7 @@ class LocalAuthDataSourceTest {
         DataStoreFactory.create(
             serializer = AuthDataSerializer(tinkKeyManager.getAead()), produceFile = { testFile })
 
-    dataSource = LocalAuthDataSource(context, testDataStore)
+    dataSource = LocalAuthDataSource(testDataStore)
   }
 
   @After
@@ -78,8 +78,8 @@ class LocalAuthDataSourceTest {
     val testDataStore2 =
         DataStoreFactory.create(
             serializer = AuthDataSerializer(tinkKeyManager.getAead()), produceFile = { testFile2 })
-    val dataSource1 = LocalAuthDataSource(context, testDataStore)
-    val dataSource2 = LocalAuthDataSource(context, testDataStore2)
+    val dataSource1 = LocalAuthDataSource(testDataStore)
+    val dataSource2 = LocalAuthDataSource(testDataStore2)
 
     assertNotNull("First initialization should succeed", dataSource1)
     assertNotNull("Second initialization should succeed", dataSource2)

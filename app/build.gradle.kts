@@ -115,7 +115,6 @@ dependencies {
 
   implementation(libs.quartz)
 
-  implementation(libs.androidx.security.crypto)
   implementation(libs.androidx.datastore)
   implementation(libs.tink.android)
 

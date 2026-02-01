@@ -20,7 +20,6 @@ androidx-lifecycle-viewmodel-ktx = {group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle"}
 androidx-activity-compose = {group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose"}
 quartz = {group = "com.vitorpamplona.quartz", name = "quartz", version.ref = "quartz"}
-androidx-security-crypto = {group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto"}
 hilt-android = {group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
 hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
 okhttp = {group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp"}
@@ -62,7 +61,6 @@ composeBom = "2026.01.01"
 lifecycle = "2.10.0"
 activityCompose = "1.12.3"
 quartz = "1.05.1"
-securityCrypto = "1.1.0"
 hilt = "2.59"
 ksp = "2.3.5"
 okhttp = "5.3.2"

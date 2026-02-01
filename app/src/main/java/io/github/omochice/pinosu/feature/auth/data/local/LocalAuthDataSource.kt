@@ -1,8 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.data.local
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.domain.model.User
@@ -10,8 +8,6 @@ import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 /**
  * Local authentication data data source
@@ -20,15 +16,7 @@ import kotlinx.coroutines.sync.withLock
  * is encrypted using AES256-GCM before being written to disk.
  */
 @Singleton
-class LocalAuthDataSource
-@Inject
-constructor(
-    @param:ApplicationContext private val context: Context,
-    private val dataStore: DataStore<AuthData>
-) {
-
-  private val migrationMutex = Mutex()
-  private var migrationCompleted = false
+class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<AuthData>) {
 
   private var testDataStore: DataStore<AuthData>? = null
 
@@ -47,7 +35,6 @@ constructor(
    * @throws StorageError.WriteError when save fails
    */
   suspend fun saveUser(user: User) {
-    ensureMigrated()
     try {
       val currentTime = System.currentTimeMillis()
       activeDataStore.updateData { current ->
@@ -68,7 +55,6 @@ constructor(
    * @return Saved user, null if not exists or invalid
    */
   suspend fun getUser(): User? {
-    ensureMigrated()
     return try {
       val data = activeDataStore.data.first()
       val pubkeyStr = data.userPubkey ?: return null
@@ -92,7 +78,6 @@ constructor(
    * @throws StorageError.WriteError when save fails
    */
   suspend fun saveRelayList(relays: List<RelayConfig>) {
-    ensureMigrated()
     try {
       activeDataStore.updateData { current -> current.copy(relayList = relays) }
     } catch (e: Exception) {
@@ -106,7 +91,6 @@ constructor(
    * @return Saved relay list, null if not exists
    */
   suspend fun getRelayList(): List<RelayConfig>? {
-    ensureMigrated()
     return try {
       activeDataStore.data.first().relayList
     } catch (_: Exception) {
@@ -120,34 +104,10 @@ constructor(
    * @throws StorageError.WriteError when clear fails
    */
   suspend fun clearLoginState() {
-    ensureMigrated()
     try {
       activeDataStore.updateData { AuthData.DEFAULT }
     } catch (e: Exception) {
       throw StorageError.WriteError("Failed to clear login state: ${e.message}")
-    }
-  }
-
-  private suspend fun ensureMigrated() {
-    if (migrationCompleted || testDataStore != null) return
-
-    migrationMutex.withLock {
-      if (migrationCompleted) return
-
-      try {
-        val migration = EncryptedSharedPrefsMigration(context)
-        if (migration.needsMigration()) {
-          val legacyData = migration.readLegacyData()
-          if (legacyData != null) {
-            activeDataStore.updateData { legacyData }
-          }
-          migration.clearLegacyData()
-        }
-      } catch (_: Exception) {
-        // Migration failed, continue with empty data
-      }
-
-      migrationCompleted = true
     }
   }
 }

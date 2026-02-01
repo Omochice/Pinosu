@@ -12,10 +12,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
 /**
  * Unit tests for [LocalAuthDataSource]
@@ -23,8 +19,6 @@ import org.robolectric.annotation.Config
  * Tests relay list caching functionality including save, retrieve, and clear operations. Uses mock
  * DataStore to test data operations without encryption.
  */
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [28])
 class LocalAuthDataSourceTest {
 
   private lateinit var localAuthDataSource: LocalAuthDataSource
@@ -33,7 +27,6 @@ class LocalAuthDataSourceTest {
 
   @Before
   fun setup() {
-    val context = RuntimeEnvironment.getApplication()
     dataFlow = MutableStateFlow(AuthData.DEFAULT)
 
     testDataStore = mockk {
@@ -48,7 +41,7 @@ class LocalAuthDataSourceTest {
     }
 
     val productionDataStore = mockk<DataStore<AuthData>>()
-    localAuthDataSource = LocalAuthDataSource(context, productionDataStore)
+    localAuthDataSource = LocalAuthDataSource(productionDataStore)
     localAuthDataSource.setTestDataStore(testDataStore)
   }
 
