@@ -37,7 +37,7 @@ data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String
  * @property title Bookmark title, or null if not available
  * @property content Bookmark event content (author's comment)
  * @property createdAt Unix timestamp of the bookmark event
- * @property urls Comma-separated list of bookmark URLs
+ * @property urls List of bookmark URLs
  */
 @Serializable
 data class BookmarkDetail(
@@ -47,7 +47,7 @@ data class BookmarkDetail(
     val title: String? = null,
     val content: String = "",
     val createdAt: Long = 0L,
-    val urls: String = "",
+    val urls: List<String> = emptyList(),
 ) : Route
 
 /** Settings screen route */

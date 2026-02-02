@@ -335,7 +335,7 @@ fun PinosuApp(
                       }
                 }
 
-                LaunchedEffect(route) {
+                val loadComments = {
                   detailViewModel.loadComments(
                       rootPubkey = route.authorPubkey,
                       dTag = route.dTag,
@@ -344,24 +344,19 @@ fun PinosuApp(
                       authorCreatedAt = route.createdAt)
                 }
 
+                LaunchedEffect(route) { loadComments() }
+
                 LaunchedEffect(detailUiState.postSuccess) {
                   if (detailUiState.postSuccess) {
                     detailViewModel.resetPostSuccess()
-                    detailViewModel.loadComments(
-                        rootPubkey = route.authorPubkey,
-                        dTag = route.dTag,
-                        rootEventId = route.eventId,
-                        authorContent = route.content,
-                        authorCreatedAt = route.createdAt)
+                    loadComments()
                   }
                 }
-
-                val urls = route.urls.split(",").filter { it.isNotEmpty() }
 
                 BookmarkDetailScreen(
                     uiState = detailUiState,
                     title = route.title,
-                    urls = urls,
+                    urls = route.urls,
                     createdAt = route.createdAt,
                     onCommentInputChange = { detailViewModel.updateCommentInput(it) },
                     onPostComment = {
@@ -373,7 +368,8 @@ fun PinosuApp(
                           }
                     },
                     onNavigateBack = { navController.navigateUp() },
-                    onDismissError = { detailViewModel.dismissError() })
+                    onDismissError = { detailViewModel.dismissError() },
+                    onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() })
               }
 
           composable<License>(
@@ -437,6 +433,6 @@ private fun navigateToBookmarkDetail(
           title = bookmark.title,
           content = event.content,
           createdAt = event.createdAt,
-          urls = bookmark.urls.joinToString(","),
+          urls = bookmark.urls,
       ))
 }
