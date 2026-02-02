@@ -37,6 +37,7 @@ import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiSta
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// ClipboardManager.setText() is deprecated in Compose BOM 2026.01.01
 @Suppress("DEPRECATION")
 fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
   val clipboardManager = LocalClipboardManager.current
