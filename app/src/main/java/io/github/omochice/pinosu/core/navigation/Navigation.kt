@@ -28,5 +28,27 @@ sealed interface Route
 @Serializable
 data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String? = null) : Route
 
+/**
+ * Bookmark detail screen route
+ *
+ * @property eventId Event ID of the kind 39701 bookmark
+ * @property authorPubkey Hex-encoded public key of the bookmark author
+ * @property dTag The d-tag of the bookmark event (URL without scheme)
+ * @property title Bookmark title, or null if not available
+ * @property content Bookmark event content (author's comment)
+ * @property createdAt Unix timestamp of the bookmark event
+ * @property urls Comma-separated list of bookmark URLs
+ */
+@Serializable
+data class BookmarkDetail(
+    val eventId: String,
+    val authorPubkey: String,
+    val dTag: String,
+    val title: String? = null,
+    val content: String = "",
+    val createdAt: Long = 0L,
+    val urls: String = "",
+) : Route
+
 /** Settings screen route */
 @Serializable object Settings : Route
