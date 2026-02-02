@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.comment.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
@@ -81,6 +82,20 @@ constructor(
         kind = KIND_COMMENT,
         tags = tags,
         content = content)
+  }
+
+  override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
+    return try {
+      val relays = getRelaysForQuery()
+      val idsJson = ids.joinToString(",") { "\"$it\"" }
+      val filter = """{"ids":[$idsJson]}"""
+
+      val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
+      Result.success(events)
+    } catch (e: Exception) {
+      Log.e(TAG, "Error fetching events by IDs", e)
+      Result.failure(e)
+    }
   }
 
   override suspend fun publishComment(signedEventJson: String): Result<PublishResult> {

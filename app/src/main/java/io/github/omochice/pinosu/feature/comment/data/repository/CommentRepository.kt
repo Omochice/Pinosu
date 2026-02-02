@@ -1,13 +1,14 @@
 package io.github.omochice.pinosu.feature.comment.data.repository
 
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
 /**
- * Repository interface for NIP-22 comment data access
+ * Repository interface for comment and event data access
  *
- * Provides access to kind 1111 comment events from relays.
+ * Provides access to kind 1111 comment events and arbitrary events by ID from relays.
  */
 interface CommentRepository {
 
@@ -24,6 +25,14 @@ interface CommentRepository {
       dTag: String,
       rootEventId: String
   ): Result<List<Comment>>
+
+  /**
+   * Fetch Nostr events by their hex-encoded IDs
+   *
+   * @param ids List of hex-encoded event IDs
+   * @return Result containing list of NostrEvents on success or error on failure
+   */
+  suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>>
 
   /**
    * Create an unsigned kind 1111 comment event with NIP-22 tags
