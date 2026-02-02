@@ -17,24 +17,30 @@ class Nip19EventResolverTest {
 
   private val resolver = Nip19EventResolver()
 
+  // Known valid nevent from Quartz test suite
+  private val validNevent =
+      "nostr:nevent1qy2hwumn8ghj7un9d3shjtnyv9kh2uewd9hj7qgwwaehxw309ahx7uewd3hkctcpr9mhxue69uhhyetvv9ujuumwdae8gtnnda3kjctv9uq36amnwvaz7tmjv4kxz7fwvd5xjcmpvahhqmr9vfejucm0d5hsz9mhwden5te0wfjkccte9ec8y6tdv9kzumn9wshsz8thwden5te0dehhxarj9ekh2arfdeuhwctvd3jhgtnrdakj7qg3waehxw309ucngvpwvcmh5tnfduhszythwden5te0dehhxarj9emkjmn99uq3jamnwvaz7tmhv4kxxmmdv5hxummnw3ezuamfdejj7qpqvsup5xk3e2quedxjvn2gjppc0lqny5dmnr2ypc9tftwmdxta0yjqrd6n50"
+  private val validNeventHex = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"
+
   @Test
   fun `extractEventIds returns hex ID for single nevent reference`() {
-    val content =
-        "Check this out: nostr:nevent1qqs2qfg5f9jr5dwd6eyqnlsm85s68u9pnggvgprn0vq4hthkw32sssprpmhxue69uhhyetvv9ujumt0wd68ytnsw43z7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qpqylm6evwdnp8qdmrfnpnfhq7kzjjjxagat72tav8h76c2k6kaxnqxlzmyg"
+    val content = "Check this out: $validNevent"
 
     val ids = resolver.extractEventIds(content)
 
     assertEquals(1, ids.size)
+    assertEquals(validNeventHex, ids[0])
   }
 
   @Test
   fun `extractEventIds returns multiple hex IDs for multiple nevent references`() {
-    val content =
-        "nostr:nevent1qqs2qfg5f9jr5dwd6eyqnlsm85s68u9pnggvgprn0vq4hthkw32sssprpmhxue69uhhyetvv9ujumt0wd68ytnsw43z7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qpqylm6evwdnp8qdmrfnpnfhq7kzjjjxagat72tav8h76c2k6kaxnqxlzmyg and nostr:nevent1qqs2qfg5f9jr5dwd6eyqnlsm85s68u9pnggvgprn0vq4hthkw32sssprpmhxue69uhhyetvv9ujumt0wd68ytnsw43z7qghwaehxw309aex2mrp0yhxummnw3ezucnpdejz7qpqylm6evwdnp8qdmrfnpnfhq7kzjjjxagat72tav8h76c2k6kaxnqxlzmyg"
+    val content = "$validNevent and $validNevent"
 
     val ids = resolver.extractEventIds(content)
 
     assertEquals(2, ids.size)
+    assertEquals(validNeventHex, ids[0])
+    assertEquals(validNeventHex, ids[1])
   }
 
   @Test
