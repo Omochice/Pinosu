@@ -25,6 +25,7 @@ import org.junit.Test
  * 3. getCommentsForBookmark constructs correct NIP-22 A-tag filter
  * 4. createCommentEvent builds correct NIP-22 tags
  * 5. publishComment delegates to relayPool
+ * 6. getEventsByIds sends ids filter and returns NostrEvent list
  */
 class RelayCommentRepositoryTest {
 
@@ -145,5 +146,33 @@ class RelayCommentRepositoryTest {
     assertTrue(result.isSuccess)
     assertEquals(expectedResult, result.getOrNull())
     coVerify(exactly = 1) { relayPool.publishEvent(any(), signedJson, any()) }
+  }
+
+  @Test
+  fun `getEventsByIds sends ids filter and returns NostrEvent list`() = runTest {
+    val event =
+        NostrEvent(
+            id = "abc123",
+            pubkey = "author-pubkey",
+            createdAt = 1_700_000_000L,
+            kind = 1,
+            tags = emptyList(),
+            content = "Hello world")
+
+    val filterSlot = slot<String>()
+    coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns
+        listOf(event)
+
+    val result = repository.getEventsByIds(listOf("abc123"))
+
+    assertTrue(result.isSuccess)
+    val events = result.getOrNull()!!
+    assertEquals(1, events.size)
+    assertEquals("abc123", events[0].id)
+    assertEquals("Hello world", events[0].content)
+    assertEquals(1, events[0].kind)
+
+    val filter = filterSlot.captured
+    assertTrue(filter.contains(""""ids":["abc123"]"""))
   }
 }
