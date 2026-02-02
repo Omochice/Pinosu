@@ -100,6 +100,7 @@ class RelayCommentRepositoryTest {
     val filter = filterSlot.captured
     assertTrue(filter.contains("\"kinds\":[1111]"))
     assertTrue(filter.contains(""""#A":["39701:abc123:example.com/article"]"""))
+    assertTrue(filter.contains(""""#E":["event123"]"""))
   }
 
   @Test

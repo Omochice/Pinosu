@@ -10,6 +10,10 @@ import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Relay-based implementation of CommentRepository
@@ -33,7 +37,13 @@ constructor(
     return try {
       val relays = getRelaysForQuery()
       val aTagValue = "$KIND_BOOKMARK_LIST:$rootPubkey:$dTag"
-      val filter = """{"kinds":[$KIND_COMMENT],"#A":["$aTagValue"]}"""
+      val filter =
+          buildJsonObject {
+                put("kinds", JsonArray(listOf(JsonPrimitive(KIND_COMMENT))))
+                put("#A", JsonArray(listOf(JsonPrimitive(aTagValue))))
+                put("#E", JsonArray(listOf(JsonPrimitive(rootEventId))))
+              }
+              .toString()
 
       val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
 
@@ -87,8 +97,8 @@ constructor(
   override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
     return try {
       val relays = getRelaysForQuery()
-      val idsJson = ids.joinToString(",") { "\"$it\"" }
-      val filter = """{"ids":[$idsJson]}"""
+      val filter =
+          buildJsonObject { put("ids", JsonArray(ids.map { JsonPrimitive(it) })) }.toString()
 
       val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
       Result.success(events)
