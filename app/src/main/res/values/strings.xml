@@ -84,5 +84,6 @@
     <string name="cd_navigate_up">戻る</string>
     <string name="cd_open_menu">メニューを開く</string>
     <string name="cd_add_bookmark">ブックマークを追加</string>
+    <string name="cd_copy_version">バージョン情報をコピー</string>
 
 </resources>

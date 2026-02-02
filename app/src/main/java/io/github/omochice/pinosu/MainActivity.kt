@@ -39,6 +39,7 @@ import io.github.omochice.pinosu.core.navigation.defaultExitTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopExitTransition
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
 import io.github.omochice.pinosu.feature.appinfo.presentation.ui.AppInfoScreen
 import io.github.omochice.pinosu.feature.auth.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
@@ -320,7 +321,14 @@ fun PinosuApp(
               exitTransition = { ExitTransition.None },
               popEnterTransition = { EnterTransition.None },
               popExitTransition = { ExitTransition.None }) {
-                AppInfoScreen(onNavigateUp = { navController.navigateUp() })
+                AppInfoScreen(
+                    uiState =
+                        AppInfoUiState(
+                            versionName = BuildConfig.VERSION_NAME,
+                            commitHash = BuildConfig.COMMIT_HASH,
+                        ),
+                    onNavigateUp = { navController.navigateUp() },
+                )
               }
 
           composable<Settings>(
