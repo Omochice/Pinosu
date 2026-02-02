@@ -11,6 +11,7 @@ import org.junit.Test
  * Test scenarios:
  * 1. Comment holds all required fields
  * 2. isAuthorComment flag distinguishes author content from relay comments
+ * 3. kind field preserves the Nostr event kind value
  */
 class CommentTest {
 
@@ -42,5 +43,30 @@ class CommentTest {
             isAuthorComment = true)
 
     assertTrue(authorComment.isAuthorComment)
+  }
+
+  @Test
+  fun `kind field preserves Nostr event kind value`() {
+    val kind1Comment =
+        Comment(
+            id = "text-note-1",
+            content = "A text note",
+            authorPubkey = "pubkey",
+            createdAt = 1_700_000_000L,
+            isAuthorComment = true,
+            kind = 1)
+
+    assertEquals(1, kind1Comment.kind)
+
+    val kind1111Comment =
+        Comment(
+            id = "comment-1",
+            content = "A NIP-22 comment",
+            authorPubkey = "pubkey",
+            createdAt = 1_700_000_000L,
+            isAuthorComment = false,
+            kind = 1111)
+
+    assertEquals(1111, kind1111Comment.kind)
   }
 }
