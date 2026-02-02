@@ -10,10 +10,22 @@ import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+@Serializable
+private data class CommentFilter(
+    val kinds: List<Int>,
+    @SerialName("#A") val aTag: List<String>,
+    @SerialName("#E") val eTag: List<String>,
+)
+
+@Serializable
+private data class EventIdFilter(
+    val ids: List<String>,
+)
 
 /**
  * Relay-based implementation of CommentRepository
@@ -38,12 +50,12 @@ constructor(
       val relays = getRelaysForQuery()
       val aTagValue = "$KIND_BOOKMARK_LIST:$rootPubkey:$dTag"
       val filter =
-          buildJsonObject {
-                put("kinds", JsonArray(listOf(JsonPrimitive(KIND_COMMENT))))
-                put("#A", JsonArray(listOf(JsonPrimitive(aTagValue))))
-                put("#E", JsonArray(listOf(JsonPrimitive(rootEventId))))
-              }
-              .toString()
+          Json.encodeToString(
+              CommentFilter(
+                  kinds = listOf(KIND_COMMENT),
+                  aTag = listOf(aTagValue),
+                  eTag = listOf(rootEventId),
+              ))
 
       val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
 
@@ -97,8 +109,7 @@ constructor(
   override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
     return try {
       val relays = getRelaysForQuery()
-      val filter =
-          buildJsonObject { put("ids", JsonArray(ids.map { JsonPrimitive(it) })) }.toString()
+      val filter = Json.encodeToString(EventIdFilter(ids = ids))
 
       val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
       Result.success(events)
