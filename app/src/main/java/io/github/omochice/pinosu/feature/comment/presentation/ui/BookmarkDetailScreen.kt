@@ -178,6 +178,14 @@ private fun CommentCard(comment: Comment) {
             Spacer(modifier = Modifier.height(4.dp))
           }
 
+          if (comment.kind == Comment.KIND_TEXT_NOTE) {
+            Text(
+                text = stringResource(R.string.label_text_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.tertiary)
+            Spacer(modifier = Modifier.height(4.dp))
+          }
+
           Text(text = comment.content, style = MaterialTheme.typography.bodyMedium)
 
           Spacer(modifier = Modifier.height(4.dp))
@@ -247,6 +255,13 @@ private fun BookmarkDetailScreenPreview() {
                           authorPubkey = "pk1",
                           createdAt = 1_700_000_000L,
                           isAuthorComment = true),
+                      Comment(
+                          id = "text-note",
+                          content = "This is a referenced text note",
+                          authorPubkey = "pk1",
+                          createdAt = 1_700_000_050L,
+                          isAuthorComment = true,
+                          kind = Comment.KIND_TEXT_NOTE),
                       Comment(
                           id = "c1",
                           content = "Nice bookmark!",

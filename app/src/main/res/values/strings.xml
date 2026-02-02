@@ -83,6 +83,7 @@
     <!-- ブックマーク詳細画面 -->
     <string name="title_bookmark_detail">ブックマーク詳細</string>
     <string name="label_author_comment">投稿者のコメント</string>
+    <string name="label_text_note">テキストノート</string>
     <string name="hint_comment_input">コメントを入力</string>
     <string name="button_post_comment">投稿</string>
     <string name="message_no_comments">コメントはありません</string>
