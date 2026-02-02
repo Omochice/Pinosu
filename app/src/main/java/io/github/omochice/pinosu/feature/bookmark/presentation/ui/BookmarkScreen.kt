@@ -210,17 +210,6 @@ private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> 
             Spacer(modifier = Modifier.height(8.dp))
           }
 
-          bookmark.event?.content?.let { description ->
-            if (description.isNotEmpty()) {
-              Text(
-                  text = description,
-                  style = MaterialTheme.typography.bodyMedium,
-                  maxLines = 3,
-                  overflow = TextOverflow.Ellipsis)
-              Spacer(modifier = Modifier.height(12.dp))
-            }
-          }
-
           if (bookmark.urls.isNotEmpty()) {
             bookmark.urls.forEach { url ->
               Text(
