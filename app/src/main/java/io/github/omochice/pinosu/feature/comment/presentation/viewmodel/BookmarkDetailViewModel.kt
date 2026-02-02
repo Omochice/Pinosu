@@ -4,8 +4,10 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.ui.UiText
 import io.github.omochice.pinosu.feature.comment.domain.usecase.GetCommentsForBookmarkUseCase
 import io.github.omochice.pinosu.feature.comment.domain.usecase.PostCommentUseCase
 import javax.inject.Inject
@@ -66,7 +68,11 @@ constructor(
           }
           .onFailure { error ->
             _uiState.update {
-              it.copy(isLoading = false, error = error.message ?: "Failed to load comments")
+              it.copy(
+                  isLoading = false,
+                  error =
+                      error.message?.let { msg -> UiText.DynamicString(msg) }
+                          ?: UiText.StringResource(R.string.error_comments_load_failed))
             }
           }
     }
@@ -98,7 +104,7 @@ constructor(
     val content = _uiState.value.commentInput
 
     if (content.isBlank()) {
-      _uiState.update { it.copy(error = "コメントを入力してください") }
+      _uiState.update { it.copy(error = UiText.StringResource(R.string.error_comment_empty)) }
       onReady(null)
       return
     }
@@ -117,7 +123,11 @@ constructor(
           }
           .onFailure { error ->
             _uiState.update {
-              it.copy(isSubmitting = false, error = error.message ?: "コメント作成に失敗しました")
+              it.copy(
+                  isSubmitting = false,
+                  error =
+                      error.message?.let { msg -> UiText.DynamicString(msg) }
+                          ?: UiText.StringResource(R.string.error_comment_create_failed))
             }
             onReady(null)
           }
@@ -137,7 +147,11 @@ constructor(
           viewModelScope.launch {
             val signedEventJson = buildSignedEventJson(response.signedEventJson)
             if (signedEventJson == null) {
-              _uiState.update { it.copy(isSubmitting = false, error = "署名済みイベントの構築に失敗しました") }
+              _uiState.update {
+                it.copy(
+                    isSubmitting = false,
+                    error = UiText.StringResource(R.string.error_signed_event_build_failed))
+              }
             } else {
               postCommentUseCase
                   .publishSignedEvent(signedEventJson)
@@ -148,7 +162,11 @@ constructor(
                   }
                   .onFailure { error ->
                     _uiState.update {
-                      it.copy(isSubmitting = false, error = error.message ?: "コメントの投稿に失敗しました")
+                      it.copy(
+                          isSubmitting = false,
+                          error =
+                              error.message?.let { msg -> UiText.DynamicString(msg) }
+                                  ?: UiText.StringResource(R.string.error_comment_post_failed))
                     }
                   }
             }
@@ -156,7 +174,11 @@ constructor(
         }
         .onFailure { error ->
           _uiState.update {
-            it.copy(isSubmitting = false, error = error.message ?: "署名がキャンセルされました")
+            it.copy(
+                isSubmitting = false,
+                error =
+                    error.message?.let { msg -> UiText.DynamicString(msg) }
+                        ?: UiText.StringResource(R.string.error_signing_cancelled))
           }
         }
   }
@@ -164,6 +186,11 @@ constructor(
   /** Reset post success state */
   fun resetPostSuccess() {
     _uiState.update { it.copy(postSuccess = false) }
+  }
+
+  /** Report URL open failure */
+  fun onOpenUrlFailed() {
+    _uiState.update { it.copy(error = UiText.StringResource(R.string.error_url_open_failed)) }
   }
 
   /** Dismiss error message */

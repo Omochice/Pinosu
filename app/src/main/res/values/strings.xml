@@ -86,7 +86,12 @@
     <string name="hint_comment_input">コメントを入力</string>
     <string name="button_post_comment">投稿</string>
     <string name="message_no_comments">コメントはありません</string>
+    <string name="error_comment_empty">コメントを入力してください</string>
+    <string name="error_comment_create_failed">コメント作成に失敗しました</string>
     <string name="error_comment_post_failed">コメントの投稿に失敗しました</string>
+    <string name="error_signed_event_build_failed">署名済みイベントの構築に失敗しました</string>
+    <string name="error_signing_cancelled">署名がキャンセルされました</string>
+    <string name="error_comments_load_failed">コメントの読み込みに失敗しました</string>
 
     <!-- アクセシビリティ用contentDescription -->
     <string name="cd_navigate_up">戻る</string>

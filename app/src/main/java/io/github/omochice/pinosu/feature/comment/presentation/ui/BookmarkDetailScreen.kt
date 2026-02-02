@@ -58,6 +58,7 @@ import java.time.format.DateTimeFormatter
  * @param onPostComment Callback when post button is clicked
  * @param onNavigateBack Callback to navigate back
  * @param onDismissError Callback to dismiss error dialog
+ * @param onOpenUrlFailed Callback when opening a URL fails
  */
 @Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,6 +72,7 @@ fun BookmarkDetailScreen(
     onPostComment: () -> Unit,
     onNavigateBack: () -> Unit,
     onDismissError: () -> Unit,
+    onOpenUrlFailed: () -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -96,43 +98,63 @@ fun BookmarkDetailScreen(
             onPost = onPostComment,
             isSubmitting = uiState.isSubmitting)
       }) { paddingValues ->
-        if (uiState.isLoading) {
-          Box(
-              modifier = Modifier.fillMaxSize().padding(paddingValues),
-              contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-              }
-        } else {
-          LazyColumn(
-              modifier = Modifier.fillMaxSize().padding(paddingValues),
-              contentPadding = PaddingValues(16.dp),
-              verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { BookmarkInfoSection(urls = urls, createdAt = createdAt) }
+        BookmarkDetailContent(
+            uiState = uiState,
+            urls = urls,
+            createdAt = createdAt,
+            paddingValues = paddingValues,
+            onOpenUrlFailed = onOpenUrlFailed)
 
-                item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
-
-                if (uiState.comments.isEmpty()) {
-                  item {
-                    Text(
-                        text = stringResource(R.string.message_no_comments),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 16.dp))
-                  }
-                } else {
-                  items(uiState.comments, key = { it.id }) { comment ->
-                    CommentCard(comment = comment)
-                  }
-                }
-              }
+        uiState.error?.let { error ->
+          ErrorDialog(message = error.asString(), onDismiss = onDismissError)
         }
-
-        uiState.error?.let { error -> ErrorDialog(message = error, onDismiss = onDismissError) }
       }
 }
 
+@Suppress("LongParameterList")
 @Composable
-private fun BookmarkInfoSection(urls: List<String>, createdAt: Long) {
+private fun BookmarkDetailContent(
+    uiState: BookmarkDetailUiState,
+    urls: List<String>,
+    createdAt: Long,
+    paddingValues: PaddingValues,
+    onOpenUrlFailed: () -> Unit,
+) {
+  if (uiState.isLoading) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
+  } else {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          item {
+            BookmarkInfoSection(
+                urls = urls, createdAt = createdAt, onOpenUrlFailed = onOpenUrlFailed)
+          }
+
+          item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+          if (uiState.comments.isEmpty()) {
+            item {
+              Text(
+                  text = stringResource(R.string.message_no_comments),
+                  style = MaterialTheme.typography.bodyLarge,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  modifier = Modifier.padding(vertical = 16.dp))
+            }
+          } else {
+            items(uiState.comments, key = { it.id }) { comment -> CommentCard(comment = comment) }
+          }
+        }
+  }
+}
+
+@Composable
+private fun BookmarkInfoSection(urls: List<String>, createdAt: Long, onOpenUrlFailed: () -> Unit) {
   val uriHandler = LocalUriHandler.current
   Column {
     urls.forEach { url ->
@@ -143,7 +165,15 @@ private fun BookmarkInfoSection(urls: List<String>, createdAt: Long) {
           color = MaterialTheme.colorScheme.primary,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
-          modifier = Modifier.clickable { uriHandler.openUri(url) }.padding(vertical = 2.dp))
+          modifier =
+              Modifier.clickable {
+                    try {
+                      uriHandler.openUri(url)
+                    } catch (_: Exception) {
+                      onOpenUrlFailed()
+                    }
+                  }
+                  .padding(vertical = 2.dp))
     }
 
     if (createdAt > 0) {
