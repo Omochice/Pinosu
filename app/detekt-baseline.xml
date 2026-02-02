@@ -11,10 +11,10 @@
     <ID>ClassOrdering:RelayBookmarkRepository.kt$RelayBookmarkRepository$Companion</ID>
     <ID>ClassOrdering:RelayPool.kt$RelayPoolImpl$Companion</ID>
     <ID>ClassOrdering:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$Companion</ID>
-    <ID>CognitiveComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
+    <ID>CognitiveComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
-    <ID>CyclomaticComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
+    <ID>CyclomaticComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CyclomaticComplexMethod:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
     <ID>ExpressionBodySyntax:GetBookmarkListUseCaseImpl.kt$GetBookmarkListUseCaseImpl$return bookmarkRepository.getBookmarkList(pubkey)</ID>
@@ -35,7 +35,7 @@
     <ID>LabeledExpression:PostBookmarkViewModel.kt$PostBookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:RelayBookmarkRepository.kt$RelayBookmarkRepository$@forEach</ID>
     <ID>LabeledExpression:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$@withContext</ID>
-    <ID>LongMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
+    <ID>LongMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>LongMethod:LoginScreen.kt$@Composable fun LoginScreen( uiState: LoginUiState, onLoginButtonClick: () -&gt; Unit, onDismissDialog: () -&gt; Unit = {}, onInstallNip55Signer: () -&gt; Unit = {}, onRetry: () -&gt; Unit = {}, onLoginSuccess: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:PostBookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PostBookmarkScreen( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
@@ -67,7 +67,7 @@
     <ID>NoWildcardImports:PostBookmarkUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:PresentationDomainIntegrationTest.kt$import org.junit.Assert.*</ID>
     <ID>OutdatedDocumentation:BookmarkFilterMode.kt$BookmarkFilterMode</ID>
-    <ID>OutdatedDocumentation:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, viewModel: BookmarkViewModel? = null, )</ID>
+    <ID>OutdatedDocumentation:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>OutdatedDocumentation:BookmarkViewModel.kt$BookmarkViewModel : ViewModel</ID>
     <ID>OutdatedDocumentation:FetchRelayListUseCase.kt$FetchRelayListUseCaseImpl : FetchRelayListUseCase</ID>
     <ID>OutdatedDocumentation:GetBookmarkListUseCaseImpl.kt$GetBookmarkListUseCaseImpl : GetBookmarkListUseCase</ID>
@@ -107,6 +107,7 @@
     <ID>TooGenericExceptionCaught:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayBookmarkRepository.kt$RelayBookmarkRepository$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:RelayCommentRepository.kt$RelayCommentRepository$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$e: Exception</ID>
     <ID>TooGenericExceptionCaught:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$e: Exception</ID>
