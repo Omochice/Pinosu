@@ -57,170 +57,183 @@ class BookmarkDetailViewModelTest {
   }
 
   @Test
-  fun `initial state has isLoading false and empty comments`() = runTest {
-    val state = viewModel.uiState.first()
+  fun `initial state has isLoading false and empty comments`() =
+      runTest(testDispatcher) {
+        val state = viewModel.uiState.first()
 
-    assertFalse(state.isLoading)
-    assertTrue(state.comments.isEmpty())
-    assertEquals("", state.commentInput)
-    assertNull(state.error)
-    assertFalse(state.postSuccess)
-  }
+        assertFalse(state.isLoading)
+        assertTrue(state.comments.isEmpty())
+        assertEquals("", state.commentInput)
+        assertNull(state.error)
+        assertFalse(state.postSuccess)
+      }
 
   @Test
-  fun `loadComments populates comments from use case`() = runTest {
-    val comments =
-        listOf(
+  fun `loadComments populates comments from use case`() =
+      runTest(testDispatcher) {
+        val comments =
+            listOf(
+                Comment(
+                    id = "c1",
+                    content = "Hello",
+                    authorPubkey = "p1",
+                    createdAt = 1_700_000_000L,
+                    isAuthorComment = false))
+
+        coEvery {
+          getCommentsUseCase(
+              rootPubkey = "author-pk",
+              dTag = "example.com",
+              rootEventId = "evt-1",
+              authorContent = "My note",
+              authorCreatedAt = 1_699_999_999L)
+        } returns Result.success(comments)
+
+        viewModel.loadComments(
+            rootPubkey = "author-pk",
+            dTag = "example.com",
+            rootEventId = "evt-1",
+            authorContent = "My note",
+            authorCreatedAt = 1_699_999_999L)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        assertFalse(state.isLoading)
+        assertEquals(1, state.comments.size)
+        assertEquals("Hello", state.comments[0].content)
+      }
+
+  @Test
+  fun `loadComments sets error on failure`() =
+      runTest(testDispatcher) {
+        coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
+            Result.failure(RuntimeException("Network error"))
+
+        viewModel.loadComments(
+            rootPubkey = "pk",
+            dTag = "d",
+            rootEventId = "e",
+            authorContent = "",
+            authorCreatedAt = 0L)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        assertFalse(state.isLoading)
+        assertNotNull(state.error)
+      }
+
+  @Test
+  fun `author content appears as first comment`() =
+      runTest(testDispatcher) {
+        val authorComment =
+            Comment(
+                id = "author-content-evt-1",
+                content = "Author note",
+                authorPubkey = "author-pk",
+                createdAt = 1_699_999_999L,
+                isAuthorComment = true)
+        val relayComment =
             Comment(
                 id = "c1",
-                content = "Hello",
-                authorPubkey = "p1",
+                content = "Reply",
+                authorPubkey = "other-pk",
                 createdAt = 1_700_000_000L,
-                isAuthorComment = false))
+                isAuthorComment = false)
 
-    coEvery {
-      getCommentsUseCase(
-          rootPubkey = "author-pk",
-          dTag = "example.com",
-          rootEventId = "evt-1",
-          authorContent = "My note",
-          authorCreatedAt = 1_699_999_999L)
-    } returns Result.success(comments)
+        coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
+            Result.success(listOf(authorComment, relayComment))
 
-    viewModel.loadComments(
-        rootPubkey = "author-pk",
-        dTag = "example.com",
-        rootEventId = "evt-1",
-        authorContent = "My note",
-        authorCreatedAt = 1_699_999_999L)
-    advanceUntilIdle()
+        viewModel.loadComments(
+            rootPubkey = "author-pk",
+            dTag = "example.com",
+            rootEventId = "evt-1",
+            authorContent = "Author note",
+            authorCreatedAt = 1_699_999_999L)
+        advanceUntilIdle()
 
-    val state = viewModel.uiState.first()
-    assertFalse(state.isLoading)
-    assertEquals(1, state.comments.size)
-    assertEquals("Hello", state.comments[0].content)
-  }
+        val state = viewModel.uiState.first()
+        assertEquals(2, state.comments.size)
+        assertTrue(state.comments[0].isAuthorComment)
+        assertFalse(state.comments[1].isAuthorComment)
+      }
 
   @Test
-  fun `loadComments sets error on failure`() = runTest {
-    coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
-        Result.failure(RuntimeException("Network error"))
+  fun `updateCommentInput updates commentInput in state`() =
+      runTest(testDispatcher) {
+        viewModel.updateCommentInput("New comment text")
+        advanceUntilIdle()
 
-    viewModel.loadComments(
-        rootPubkey = "pk", dTag = "d", rootEventId = "e", authorContent = "", authorCreatedAt = 0L)
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertFalse(state.isLoading)
-    assertNotNull(state.error)
-  }
+        val state = viewModel.uiState.first()
+        assertEquals("New comment text", state.commentInput)
+      }
 
   @Test
-  fun `author content appears as first comment`() = runTest {
-    val authorComment =
-        Comment(
-            id = "author-content-evt-1",
-            content = "Author note",
-            authorPubkey = "author-pk",
-            createdAt = 1_699_999_999L,
-            isAuthorComment = true)
-    val relayComment =
-        Comment(
-            id = "c1",
-            content = "Reply",
-            authorPubkey = "other-pk",
-            createdAt = 1_700_000_000L,
-            isAuthorComment = false)
+  fun `prepareSignCommentIntent creates Intent via callback`() =
+      runTest(testDispatcher) {
+        val unsignedEvent =
+            UnsignedNostrEvent(
+                pubkey = "my-pk",
+                createdAt = 1_700_000_000L,
+                kind = 1111,
+                tags = emptyList(),
+                content = "My comment")
+        val mockIntent = mockk<Intent>()
 
-    coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
-        Result.success(listOf(authorComment, relayComment))
+        coEvery {
+          postCommentUseCase.createUnsignedEvent(
+              content = "My comment",
+              rootPubkey = "root-pk",
+              dTag = "example.com",
+              rootEventId = "evt-1")
+        } returns Result.success(unsignedEvent)
+        every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
 
-    viewModel.loadComments(
-        rootPubkey = "author-pk",
-        dTag = "example.com",
-        rootEventId = "evt-1",
-        authorContent = "Author note",
-        authorCreatedAt = 1_699_999_999L)
-    advanceUntilIdle()
+        viewModel.updateCommentInput("My comment")
+        advanceUntilIdle()
 
-    val state = viewModel.uiState.first()
-    assertEquals(2, state.comments.size)
-    assertTrue(state.comments[0].isAuthorComment)
-    assertFalse(state.comments[1].isAuthorComment)
-  }
+        var receivedIntent: Intent? = null
+        viewModel.prepareSignCommentIntent(
+            rootPubkey = "root-pk", dTag = "example.com", rootEventId = "evt-1") {
+              receivedIntent = it
+            }
+        advanceUntilIdle()
 
-  @Test
-  fun `updateCommentInput updates commentInput in state`() = runTest {
-    viewModel.updateCommentInput("New comment text")
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertEquals("New comment text", state.commentInput)
-  }
+        assertEquals(mockIntent, receivedIntent)
+      }
 
   @Test
-  fun `prepareSignCommentIntent creates Intent via callback`() = runTest {
-    val unsignedEvent =
-        UnsignedNostrEvent(
-            pubkey = "my-pk",
-            createdAt = 1_700_000_000L,
-            kind = 1111,
-            tags = emptyList(),
-            content = "My comment")
-    val mockIntent = mockk<Intent>()
+  fun `processSignedComment publishes and refreshes on success`() =
+      runTest(testDispatcher) {
+        val signedJson = """{"id":"evt-signed","sig":"abc"}"""
+        val publishResult = PublishResult("evt-signed", listOf("wss://relay.test.com"), emptyList())
+        val mockIntent = mockk<Intent>()
 
-    coEvery {
-      postCommentUseCase.createUnsignedEvent(
-          content = "My comment",
-          rootPubkey = "root-pk",
-          dTag = "example.com",
-          rootEventId = "evt-1")
-    } returns Result.success(unsignedEvent)
-    every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
+        every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
+            Result.success(SignedEventResponse(signedJson))
+        coEvery { postCommentUseCase.publishSignedEvent(any()) } returns
+            Result.success(publishResult)
 
-    viewModel.updateCommentInput("My comment")
-    advanceUntilIdle()
+        viewModel.processSignedComment(-1, mockIntent)
+        advanceUntilIdle()
 
-    var receivedIntent: Intent? = null
-    viewModel.prepareSignCommentIntent(
-        rootPubkey = "root-pk", dTag = "example.com", rootEventId = "evt-1") {
-          receivedIntent = it
-        }
-    advanceUntilIdle()
-
-    assertEquals(mockIntent, receivedIntent)
-  }
+        val state = viewModel.uiState.first()
+        assertTrue(state.postSuccess)
+        assertFalse(state.isSubmitting)
+      }
 
   @Test
-  fun `processSignedComment publishes and refreshes on success`() = runTest {
-    val signedJson = """{"id":"evt-signed","sig":"abc"}"""
-    val publishResult = PublishResult("evt-signed", listOf("wss://relay.test.com"), emptyList())
-    val mockIntent = mockk<Intent>()
+  fun `processSignedComment sets error on failure`() =
+      runTest(testDispatcher) {
+        val mockIntent = mockk<Intent>()
 
-    every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
-        Result.success(SignedEventResponse(signedJson))
-    coEvery { postCommentUseCase.publishSignedEvent(any()) } returns Result.success(publishResult)
+        every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
+            Result.failure(RuntimeException("Signing failed"))
 
-    viewModel.processSignedComment(-1, mockIntent)
-    advanceUntilIdle()
+        viewModel.processSignedComment(-1, mockIntent)
+        advanceUntilIdle()
 
-    val state = viewModel.uiState.first()
-    assertTrue(state.postSuccess)
-    assertFalse(state.isSubmitting)
-  }
-
-  @Test
-  fun `processSignedComment sets error on failure`() = runTest {
-    val mockIntent = mockk<Intent>()
-
-    every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
-        Result.failure(RuntimeException("Signing failed"))
-
-    viewModel.processSignedComment(-1, mockIntent)
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertNotNull(state.error)
-    assertFalse(state.isSubmitting)
-  }
+        val state = viewModel.uiState.first()
+        assertNotNull(state.error)
+        assertFalse(state.isSubmitting)
+      }
 }
