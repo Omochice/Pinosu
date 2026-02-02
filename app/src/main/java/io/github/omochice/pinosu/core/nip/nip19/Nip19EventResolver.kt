@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.core.nip.nip19
 
 import com.vitorpamplona.quartz.nip19Bech32.Nip19Parser
 import com.vitorpamplona.quartz.nip19Bech32.entities.NEvent
+import javax.inject.Inject
 
 /**
  * Resolves NIP-19 nevent references from text content
@@ -9,7 +10,7 @@ import com.vitorpamplona.quartz.nip19Bech32.entities.NEvent
  * Finds `nostr:nevent1...` patterns in a string and decodes each into a hex event ID using Quartz's
  * [Nip19Parser].
  */
-class Nip19EventResolver {
+class Nip19EventResolver @Inject constructor() {
 
   /**
    * Extract hex event IDs from all `nostr:nevent1...` references in [content]
