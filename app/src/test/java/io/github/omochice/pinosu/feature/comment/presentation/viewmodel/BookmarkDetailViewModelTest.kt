@@ -1,10 +1,12 @@
 package io.github.omochice.pinosu.feature.comment.presentation.viewmodel
 
 import android.content.Intent
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
 import io.github.omochice.pinosu.core.relay.PublishResult
+import io.github.omochice.pinosu.core.ui.UiText
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.domain.usecase.GetCommentsForBookmarkUseCase
 import io.github.omochice.pinosu.feature.comment.domain.usecase.PostCommentUseCase
@@ -22,7 +24,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -104,7 +105,7 @@ class BookmarkDetailViewModelTest {
       }
 
   @Test
-  fun `loadComments sets error on failure`() =
+  fun `loadComments sets StringResource error on failure`() =
       runTest(testDispatcher) {
         coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
             Result.failure(RuntimeException("Network error"))
@@ -119,7 +120,9 @@ class BookmarkDetailViewModelTest {
 
         val state = viewModel.uiState.first()
         assertFalse(state.isLoading)
-        assertNotNull(state.error)
+        val error = state.error
+        assertTrue(error is UiText.StringResource)
+        assertEquals(R.string.error_comments_load_failed, (error as UiText.StringResource).resId)
       }
 
   @Test
@@ -222,7 +225,7 @@ class BookmarkDetailViewModelTest {
       }
 
   @Test
-  fun `processSignedComment sets error on failure`() =
+  fun `processSignedComment sets StringResource error on signing failure`() =
       runTest(testDispatcher) {
         val mockIntent = mockk<Intent>()
 
@@ -233,7 +236,30 @@ class BookmarkDetailViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.first()
-        assertNotNull(state.error)
+        val error = state.error
+        assertTrue(error is UiText.StringResource)
+        assertEquals(R.string.error_signing_cancelled, (error as UiText.StringResource).resId)
+        assertFalse(state.isSubmitting)
+      }
+
+  @Test
+  fun `processSignedComment sets StringResource error on publish failure`() =
+      runTest(testDispatcher) {
+        val signedJson = """{"id":"evt-signed","sig":"abc"}"""
+        val mockIntent = mockk<Intent>()
+
+        every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
+            Result.success(SignedEventResponse(signedJson))
+        coEvery { postCommentUseCase.publishSignedEvent(any()) } returns
+            Result.failure(RuntimeException("Publish failed"))
+
+        viewModel.processSignedComment(-1, mockIntent)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        val error = state.error
+        assertTrue(error is UiText.StringResource)
+        assertEquals(R.string.error_comment_post_failed, (error as UiText.StringResource).resId)
         assertFalse(state.isSubmitting)
       }
 }
