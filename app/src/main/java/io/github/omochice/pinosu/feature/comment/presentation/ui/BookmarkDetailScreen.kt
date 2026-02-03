@@ -145,7 +145,13 @@ private fun BookmarkDetailContent(
                   modifier = Modifier.padding(vertical = 16.dp))
             }
           } else {
-            items(uiState.comments, key = { it.id }) { comment -> CommentCard(comment = comment) }
+            items(uiState.comments, key = { it.id }) { comment ->
+              if (comment.kind == Comment.KIND_TEXT_NOTE) {
+                QuoteCard(comment = comment)
+              } else {
+                CommentCard(comment = comment)
+              }
+            }
           }
         }
   }

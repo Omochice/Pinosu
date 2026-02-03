@@ -3,9 +3,11 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -44,5 +46,40 @@ class BookmarkDetailScreenTest {
     composeTestRule.onNodeWithText(testUrl).performClick()
 
     assertEquals(listOf(testUrl), openedUris)
+  }
+
+  @Test
+  fun displaysBothKind1AndKind1111Comments() {
+    val quoteComment =
+        Comment(
+            id = "q1",
+            content = "Quoted text note content",
+            authorPubkey = "pk1",
+            createdAt = 1_700_000_000L,
+            isAuthorComment = false,
+            kind = Comment.KIND_TEXT_NOTE)
+    val regularComment =
+        Comment(
+            id = "c1",
+            content = "Regular NIP-22 comment",
+            authorPubkey = "pk2",
+            createdAt = 1_700_000_100L,
+            isAuthorComment = false,
+            kind = Comment.KIND_COMMENT)
+
+    composeTestRule.setContent {
+      BookmarkDetailScreen(
+          uiState = BookmarkDetailUiState(comments = listOf(quoteComment, regularComment)),
+          title = "Test Bookmark",
+          urls = listOf("https://example.com"),
+          createdAt = 1_700_000_000L,
+          onCommentInputChange = {},
+          onPostComment = {},
+          onNavigateBack = {},
+          onDismissError = {})
+    }
+
+    composeTestRule.onNodeWithText("Quoted text note content").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Regular NIP-22 comment").assertIsDisplayed()
   }
 }
