@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/Omochice/Pinosu/compare/v0.3.0...v0.4.0) (2026-02-03)
+
+
+### Features
+
+* show comments for kind 39701 event ([#168](https://github.com/Omochice/Pinosu/issues/168)) ([7378f94](https://github.com/Omochice/Pinosu/commit/7378f9410f5fd5025dd88120046f30efea37f64b))
+
 ## [0.3.0](https://github.com/Omochice/Pinosu/compare/v0.2.1...v0.3.0) (2026-01-31)
 
 
