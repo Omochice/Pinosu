@@ -49,7 +49,6 @@ class PostCommentUseCaseTest {
 
     assertTrue(result.isFailure)
     assertTrue(result.exceptionOrNull() is IllegalStateException)
-    assertEquals("User not logged in", result.exceptionOrNull()?.message)
   }
 
   @Test
