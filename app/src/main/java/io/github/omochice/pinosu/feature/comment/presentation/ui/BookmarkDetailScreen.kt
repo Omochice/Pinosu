@@ -166,14 +166,13 @@ private fun BookmarkInfoSection(urls: List<String>, createdAt: Long, onOpenUrlFa
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           modifier =
-              Modifier.clickable {
-                    try {
-                      uriHandler.openUri(url)
-                    } catch (_: Exception) {
-                      onOpenUrlFailed()
-                    }
-                  }
-                  .padding(vertical = 2.dp))
+              Modifier.padding(vertical = 2.dp).clickable {
+                try {
+                  uriHandler.openUri(url)
+                } catch (_: Exception) {
+                  onOpenUrlFailed()
+                }
+              })
     }
 
     if (createdAt > 0) {
