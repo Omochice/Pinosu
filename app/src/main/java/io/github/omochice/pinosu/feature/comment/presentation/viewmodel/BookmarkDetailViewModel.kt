@@ -66,13 +66,11 @@ constructor(
           .onSuccess { comments ->
             _uiState.update { it.copy(isLoading = false, comments = comments) }
           }
-          .onFailure { error ->
+          .onFailure {
             _uiState.update {
               it.copy(
                   isLoading = false,
-                  error =
-                      error.message?.let { msg -> UiText.DynamicString(msg) }
-                          ?: UiText.StringResource(R.string.error_comments_load_failed))
+                  error = UiText.StringResource(R.string.error_comments_load_failed))
             }
           }
     }
@@ -160,25 +158,21 @@ constructor(
                       it.copy(isSubmitting = false, postSuccess = true, commentInput = "")
                     }
                   }
-                  .onFailure { error ->
+                  .onFailure {
                     _uiState.update {
                       it.copy(
                           isSubmitting = false,
-                          error =
-                              error.message?.let { msg -> UiText.DynamicString(msg) }
-                                  ?: UiText.StringResource(R.string.error_comment_post_failed))
+                          error = UiText.StringResource(R.string.error_comment_post_failed))
                     }
                   }
             }
           }
         }
-        .onFailure { error ->
+        .onFailure {
           _uiState.update {
             it.copy(
                 isSubmitting = false,
-                error =
-                    error.message?.let { msg -> UiText.DynamicString(msg) }
-                        ?: UiText.StringResource(R.string.error_signing_cancelled))
+                error = UiText.StringResource(R.string.error_signing_cancelled))
           }
         }
   }
