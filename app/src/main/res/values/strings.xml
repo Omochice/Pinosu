@@ -80,10 +80,24 @@
     <string name="display_mode_list">リスト</string>
     <string name="display_mode_grid">グリッド</string>
 
+    <!-- ブックマーク詳細画面 -->
+    <string name="title_bookmark_detail">ブックマーク詳細</string>
+    <string name="label_author_comment">投稿者のコメント</string>
+    <string name="hint_comment_input">コメントを入力</string>
+    <string name="button_post_comment">投稿</string>
+    <string name="message_no_comments">コメントはありません</string>
+    <string name="error_comment_empty">コメントを入力してください</string>
+    <string name="error_comment_create_failed">コメント作成に失敗しました</string>
+    <string name="error_comment_post_failed">コメントの投稿に失敗しました</string>
+    <string name="error_signed_event_build_failed">署名済みイベントの構築に失敗しました</string>
+    <string name="error_signing_cancelled">署名がキャンセルされました</string>
+    <string name="error_comments_load_failed">コメントの読み込みに失敗しました</string>
+
     <!-- アクセシビリティ用contentDescription -->
     <string name="cd_navigate_up">戻る</string>
     <string name="cd_open_menu">メニューを開く</string>
     <string name="cd_add_bookmark">ブックマークを追加</string>
     <string name="cd_copy_version">バージョン情報をコピー</string>
+    <string name="cd_post_comment">コメントを投稿</string>
 
 </resources>

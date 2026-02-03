@@ -28,6 +28,7 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.omochice.pinosu.core.navigation.AppInfo
 import io.github.omochice.pinosu.core.navigation.Bookmark
+import io.github.omochice.pinosu.core.navigation.BookmarkDetail
 import io.github.omochice.pinosu.core.navigation.License
 import io.github.omochice.pinosu.core.navigation.Login
 import io.github.omochice.pinosu.core.navigation.Main
@@ -45,6 +46,8 @@ import io.github.omochice.pinosu.feature.auth.presentation.ui.LoginScreen
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.feature.bookmark.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkViewModel
+import io.github.omochice.pinosu.feature.comment.presentation.ui.BookmarkDetailScreen
+import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailViewModel
 import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
@@ -255,7 +258,9 @@ fun PinosuApp(
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
                     onAddBookmark = { navController.navigate(PostBookmark()) },
-                    viewModel = bookmarkViewModel)
+                    onBookmarkDetailNavigate = { bookmark ->
+                      navigateToBookmarkDetail(navController, bookmark)
+                    })
               }
 
           composable<PostBookmark>(
@@ -308,6 +313,65 @@ fun PinosuApp(
                     onDismissError = { postBookmarkViewModel.dismissError() })
               }
 
+          composable<BookmarkDetail>(
+              enterTransition = { defaultEnterTransition },
+              exitTransition = { defaultExitTransition },
+              popEnterTransition = { defaultPopEnterTransition },
+              popExitTransition = { defaultPopExitTransition }) { backStackEntry ->
+                val route = backStackEntry.toRoute<BookmarkDetail>()
+                val detailViewModel: BookmarkDetailViewModel = hiltViewModel()
+                val detailUiState by detailViewModel.uiState.collectAsStateWithLifecycle()
+
+                val signCommentLauncher =
+                    rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartActivityForResult()) { result ->
+                          detailViewModel.processSignedComment(result.resultCode, result.data)
+                        }
+
+                LaunchedEffect(mainUiState.userPubkey) {
+                  mainUiState.userPubkey
+                      ?: navController.navigate(Login) {
+                        popUpTo<BookmarkDetail> { inclusive = true }
+                      }
+                }
+
+                val loadComments = {
+                  detailViewModel.loadComments(
+                      rootPubkey = route.authorPubkey,
+                      dTag = route.dTag,
+                      rootEventId = route.eventId,
+                      authorContent = route.content,
+                      authorCreatedAt = route.createdAt)
+                }
+
+                LaunchedEffect(route) { loadComments() }
+
+                LaunchedEffect(detailUiState.postSuccess) {
+                  if (detailUiState.postSuccess) {
+                    detailViewModel.resetPostSuccess()
+                    loadComments()
+                  }
+                }
+
+                BookmarkDetailScreen(
+                    uiState = detailUiState,
+                    title = route.title,
+                    urls = route.urls,
+                    createdAt = route.createdAt,
+                    onCommentInputChange = { detailViewModel.updateCommentInput(it) },
+                    onPostComment = {
+                      detailViewModel.prepareSignCommentIntent(
+                          rootPubkey = route.authorPubkey,
+                          dTag = route.dTag,
+                          rootEventId = route.eventId) { intent ->
+                            intent?.let { signCommentLauncher.launch(it) }
+                          }
+                    },
+                    onNavigateBack = { navController.navigateUp() },
+                    onDismissError = { detailViewModel.dismissError() },
+                    onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() })
+              }
+
           composable<License>(
               enterTransition = { EnterTransition.None },
               exitTransition = { ExitTransition.None },
@@ -346,4 +410,29 @@ fun PinosuApp(
               }
         }
       }
+}
+
+/**
+ * Navigate to bookmark detail screen if the bookmark has valid event data
+ *
+ * @param navController Navigation controller for navigation
+ * @param bookmark Bookmark item to navigate to
+ */
+private fun navigateToBookmarkDetail(
+    navController: androidx.navigation.NavController,
+    bookmark: io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem,
+) {
+  val event = bookmark.event ?: return
+  val dTag = event.tags.firstOrNull { it.isNotEmpty() && it[0] == "d" }?.getOrNull(1) ?: return
+  val eventId = bookmark.eventId ?: return
+  navController.navigate(
+      BookmarkDetail(
+          eventId = eventId,
+          authorPubkey = event.author,
+          dTag = dTag,
+          title = bookmark.title,
+          content = event.content,
+          createdAt = event.createdAt,
+          urls = bookmark.urls,
+      ))
 }
