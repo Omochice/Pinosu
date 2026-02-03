@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -183,40 +181,6 @@ private fun BookmarkInfoSection(urls: List<String>, createdAt: Long, onOpenUrlFa
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
-}
-
-@Composable
-private fun CommentCard(comment: Comment) {
-  Card(
-      modifier = Modifier.fillMaxWidth(),
-      elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-      colors =
-          CardDefaults.cardColors(
-              containerColor =
-                  if (comment.isAuthorComment) {
-                    MaterialTheme.colorScheme.primaryContainer
-                  } else {
-                    MaterialTheme.colorScheme.surface
-                  })) {
-        Column(modifier = Modifier.padding(12.dp)) {
-          if (comment.isAuthorComment) {
-            Text(
-                text = stringResource(R.string.label_author_comment),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.height(4.dp))
-          }
-
-          Text(text = comment.content, style = MaterialTheme.typography.bodyMedium)
-
-          Spacer(modifier = Modifier.height(4.dp))
-
-          Text(
-              text = formatTimestamp(comment.createdAt),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-      }
 }
 
 @Composable
