@@ -4,9 +4,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import org.junit.Rule
 import org.junit.Test
 
@@ -14,9 +11,6 @@ import org.junit.Test
 class CommentCardTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-
-  private val formatter: DateTimeFormatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
 
   @Test
   fun displaysCommentContent() {
@@ -46,7 +40,7 @@ class CommentCardTest {
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 
-    val expected = formatter.format(Instant.ofEpochSecond(timestamp))
+    val expected = formatTimestamp(timestamp)
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
   }
 
