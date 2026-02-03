@@ -256,10 +256,10 @@ private fun CommentInputBar(
       }
 }
 
-private val timestampFormatter =
+internal val timestampFormatter: DateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
 
-private fun formatTimestamp(timestamp: Long): String =
+internal fun formatTimestamp(timestamp: Long): String =
     timestampFormatter.format(Instant.ofEpochSecond(timestamp))
 
 @Preview(showBackground = true)
