@@ -35,7 +35,7 @@ constructor(
         }
     val sorted = relayComments.sortedBy { it.createdAt }
 
-    return if (authorContent.isNotEmpty()) {
+    return if (authorContent.isNotBlank()) {
       val authorComments =
           resolveAuthorContent(authorContent, rootPubkey, rootEventId, authorCreatedAt)
       Result.success(authorComments + sorted)
