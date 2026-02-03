@@ -107,6 +107,7 @@ constructor(
   }
 
   override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
+    if (ids.isEmpty()) return Result.success(emptyList())
     return try {
       val relays = getRelaysForQuery()
       val filter = Json.encodeToString(EventIdFilter(ids = ids))
