@@ -54,9 +54,10 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.05.1)
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
+- **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
-- **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata)
+- **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
 
 ### Serialization
 
