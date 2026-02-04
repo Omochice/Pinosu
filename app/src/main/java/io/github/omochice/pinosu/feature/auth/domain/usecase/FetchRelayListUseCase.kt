@@ -25,10 +25,10 @@ interface FetchRelayListUseCase {
 }
 
 /**
- * Implementation of FetchRelayListUseCase
+ * Implementation of [FetchRelayListUseCase]
  *
- * @property fetcher NIP-65 relay list fetcher
- * @property localAuthDataSource Local data source for caching relay list
+ * @param fetcher Fetcher for NIP-65 relay list metadata
+ * @param localAuthDataSource Local data source for caching relay list
  */
 class FetchRelayListUseCaseImpl
 @Inject

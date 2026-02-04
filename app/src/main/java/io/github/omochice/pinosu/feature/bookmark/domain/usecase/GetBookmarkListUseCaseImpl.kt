@@ -5,11 +5,11 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import javax.inject.Inject
 
 /**
- * Implementation of GetBookmarkListUseCase
+ * Implementation of [GetBookmarkListUseCase]
  *
- * Delegates to BookmarkRepository to fetch bookmark events from relays.
+ * Delegates to [BookmarkRepository] to fetch bookmark events from relays.
  *
- * @property bookmarkRepository Repository for bookmark data access
+ * @param bookmarkRepository Repository for bookmark operations
  */
 class GetBookmarkListUseCaseImpl
 @Inject

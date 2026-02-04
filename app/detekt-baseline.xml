@@ -66,22 +66,6 @@
     <ID>NoWildcardImports:Nip55SignerClientTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:PostBookmarkUseCaseTest.kt$import org.junit.Assert.*</ID>
     <ID>NoWildcardImports:PresentationDomainIntegrationTest.kt$import org.junit.Assert.*</ID>
-    <ID>OutdatedDocumentation:BookmarkFilterMode.kt$BookmarkFilterMode</ID>
-    <ID>OutdatedDocumentation:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
-    <ID>OutdatedDocumentation:BookmarkViewModel.kt$BookmarkViewModel : ViewModel</ID>
-    <ID>OutdatedDocumentation:FetchRelayListUseCase.kt$FetchRelayListUseCaseImpl : FetchRelayListUseCase</ID>
-    <ID>OutdatedDocumentation:GetBookmarkListUseCaseImpl.kt$GetBookmarkListUseCaseImpl : GetBookmarkListUseCase</ID>
-    <ID>OutdatedDocumentation:LoginViewModel.kt$LoginViewModel : ViewModel</ID>
-    <ID>OutdatedDocumentation:Nip55AuthRepository.kt$Nip55AuthRepository : AuthRepository</ID>
-    <ID>OutdatedDocumentation:Nip55GetLoginStateUseCase.kt$Nip55GetLoginStateUseCase : GetLoginStateUseCase</ID>
-    <ID>OutdatedDocumentation:Nip55LoginUseCase.kt$Nip55LoginUseCase : LoginUseCase</ID>
-    <ID>OutdatedDocumentation:Nip55LogoutUseCase.kt$Nip55LogoutUseCase : LogoutUseCase</ID>
-    <ID>OutdatedDocumentation:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl : Nip65RelayListFetcher</ID>
-    <ID>OutdatedDocumentation:PostBookmarkUseCaseImpl.kt$PostBookmarkUseCaseImpl : PostBookmarkUseCase</ID>
-    <ID>OutdatedDocumentation:PostBookmarkViewModel.kt$PostBookmarkViewModel : ViewModel</ID>
-    <ID>OutdatedDocumentation:RelayBookmarkRepository.kt$RelayBookmarkRepository : BookmarkRepository</ID>
-    <ID>OutdatedDocumentation:RelayPool.kt$RelayPoolImpl : RelayPool</ID>
-    <ID>OutdatedDocumentation:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher : UrlMetadataFetcher</ID>
     <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>

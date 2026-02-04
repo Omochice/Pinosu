@@ -23,10 +23,10 @@ interface Nip65RelayListFetcher {
 }
 
 /**
- * Implementation of Nip65RelayListFetcher
+ * Implementation of [Nip65RelayListFetcher]
  *
- * @property relayPool Pool for querying Nostr relays
- * @property parser Parser for NIP-65 events
+ * @param relayPool Pool for querying Nostr relays
+ * @param parser Parser for NIP-65 events
  */
 @Singleton
 class Nip65RelayListFetcherImpl

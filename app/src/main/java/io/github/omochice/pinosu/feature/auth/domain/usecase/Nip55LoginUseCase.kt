@@ -4,9 +4,9 @@ import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * NIP-55 based LoginUseCase implementation
+ * NIP-55 based [LoginUseCase] implementation
  *
- * @property authRepository Authentication repository
+ * @param authRepository Repository for authentication operations
  */
 class Nip55LoginUseCase @Inject constructor(private val authRepository: AuthRepository) :
     LoginUseCase {

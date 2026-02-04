@@ -20,11 +20,11 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for login/logout screen
  *
- * @property loginUseCase UseCase for login processing
- * @property logoutUseCase UseCase for logout processing
- * @property getLoginStateUseCase UseCase for retrieving login state
- * @property authRepository Authentication repository (for NIP-55 signer response processing)
- * @property fetchRelayListUseCase UseCase for fetching NIP-65 relay list
+ * @param loginUseCase UseCase for login operations
+ * @param logoutUseCase UseCase for logout operations
+ * @param getLoginStateUseCase UseCase for retrieving current login state
+ * @param authRepository Repository for processing NIP-55 signer responses
+ * @param fetchRelayListUseCase UseCase for fetching NIP-65 relay list after login
  */
 @HiltViewModel
 class LoginViewModel
