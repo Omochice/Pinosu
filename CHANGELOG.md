@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/Omochice/Pinosu/compare/v0.5.0...v0.5.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* **comment:** draw QuoteCard left bar above Surface background ([#177](https://github.com/Omochice/Pinosu/issues/177)) ([86a9c6e](https://github.com/Omochice/Pinosu/commit/86a9c6ecaac7dc9259b21c9b87966a625871b79c))
+
 ## [0.5.0](https://github.com/Omochice/Pinosu/compare/v0.4.0...v0.5.0) (2026-02-04)
 
 
