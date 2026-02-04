@@ -24,11 +24,6 @@ interface UrlMetadataFetcher {
 class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkHttpClient) :
     UrlMetadataFetcher {
 
-  companion object {
-    private const val TAG = "UrlMetadataFetcher"
-    private const val MAX_CACHE_SIZE = 100
-  }
-
   // Simple in-memory cache: URL -> Title
   private val cache = LruCache<String, String>(MAX_CACHE_SIZE)
 
@@ -100,5 +95,10 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
       Log.w(TAG, "Failed to parse HTML: ${e.message}")
       return null
     }
+  }
+
+  companion object {
+    private const val TAG = "UrlMetadataFetcher"
+    private const val MAX_CACHE_SIZE = 100
   }
 }

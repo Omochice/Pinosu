@@ -34,22 +34,6 @@ constructor(
     private val urlMetadataFetcher: UrlMetadataFetcher
 ) : BookmarkRepository {
 
-  companion object {
-    private const val TAG = "RelayBookmarkRepository"
-    const val KIND_BOOKMARK_LIST = 39701
-    const val PER_RELAY_TIMEOUT_MS = 10000L
-    const val DEFAULT_RELAY_URL = "wss://yabu.me"
-
-    private fun isValidUrl(url: String): Boolean {
-      return try {
-        val uri = URI(url)
-        uri.scheme in listOf("http", "https") && uri.host != null
-      } catch (e: Exception) {
-        false
-      }
-    }
-  }
-
   /**
    * Retrieve bookmark list for the specified public key
    *
@@ -213,6 +197,22 @@ constructor(
     } catch (e: Exception) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
+    }
+  }
+
+  companion object {
+    private const val TAG = "RelayBookmarkRepository"
+    const val KIND_BOOKMARK_LIST = 39701
+    const val PER_RELAY_TIMEOUT_MS = 10000L
+    const val DEFAULT_RELAY_URL = "wss://yabu.me"
+
+    private fun isValidUrl(url: String): Boolean {
+      return try {
+        val uri = URI(url)
+        uri.scheme in listOf("http", "https") && uri.host != null
+      } catch (e: Exception) {
+        false
+      }
     }
   }
 }

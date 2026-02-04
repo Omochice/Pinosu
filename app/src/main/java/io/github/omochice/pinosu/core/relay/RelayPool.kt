@@ -72,10 +72,6 @@ interface RelayPool {
  */
 @Singleton
 class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) : RelayPool {
-  companion object {
-    private const val TAG = "RelayPool"
-    private val json = Json { ignoreUnknownKeys = true }
-  }
 
   override suspend fun subscribeWithTimeout(
       relays: List<RelayConfig>,
@@ -257,5 +253,10 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     val webSocket = okHttpClient.newWebSocket(request, listener)
 
     awaitClose { webSocket.close(1000, "Flow cancelled") }
+  }
+
+  companion object {
+    private const val TAG = "RelayPool"
+    private val json = Json { ignoreUnknownKeys = true }
   }
 }

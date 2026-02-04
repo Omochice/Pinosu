@@ -25,15 +25,6 @@ interface Nip65EventParser {
 /** Implementation of Nip65EventParser */
 class Nip65EventParserImpl @Inject constructor() : Nip65EventParser {
 
-  companion object {
-    /** NIP-65 Relay List Metadata event kind */
-    const val KIND_RELAY_LIST_METADATA = 10002
-
-    private const val TAG_RELAY = "r"
-    private const val MARKER_READ = "read"
-    private const val MARKER_WRITE = "write"
-  }
-
   override fun parseRelayListEvent(event: NostrEvent): List<RelayConfig> {
     if (event.kind != KIND_RELAY_LIST_METADATA) {
       return emptyList()
@@ -72,5 +63,14 @@ class Nip65EventParserImpl @Inject constructor() : Nip65EventParser {
   /** Validate relay URL has WebSocket scheme (wss:// or ws://) */
   private fun isValidRelayUrl(url: String): Boolean {
     return url.startsWith("wss://") || url.startsWith("ws://")
+  }
+
+  companion object {
+    /** NIP-65 Relay List Metadata event kind */
+    const val KIND_RELAY_LIST_METADATA = 10002
+
+    private const val TAG_RELAY = "r"
+    private const val MARKER_READ = "read"
+    private const val MARKER_WRITE = "write"
   }
 }

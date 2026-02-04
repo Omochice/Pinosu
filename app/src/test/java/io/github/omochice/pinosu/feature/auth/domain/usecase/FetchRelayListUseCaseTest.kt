@@ -31,15 +31,6 @@ class FetchRelayListUseCaseTest {
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var useCase: FetchRelayListUseCase
 
-  companion object {
-    /**
-     * Valid test npub for testing. This is fiatjaf's npub (well-known Nostr developer) which is a
-     * real Bech32-encoded public key that passes checksum validation.
-     */
-    const val TEST_VALID_NPUB = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
-    const val TEST_VALID_HEX = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
-  }
-
   @Before
   fun setup() {
     fetcher = mockk(relaxed = true)
@@ -116,5 +107,14 @@ class FetchRelayListUseCaseTest {
     val result = useCase(hexPubkey)
 
     assertTrue("Should return failure for hex pubkey (not npub format)", result.isFailure)
+  }
+
+  companion object {
+    /**
+     * Valid test npub for testing. This is fiatjaf's npub (well-known Nostr developer) which is a
+     * real Bech32-encoded public key that passes checksum validation.
+     */
+    const val TEST_VALID_NPUB = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+    const val TEST_VALID_HEX = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
   }
 }
