@@ -8,10 +8,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of PostBookmarkUseCase
+ * Implementation of [PostBookmarkUseCase]
  *
- * @property bookmarkRepository Repository for bookmark operations
- * @property getLoginStateUseCase Use case for getting current user
+ * @param bookmarkRepository Repository for bookmark operations
+ * @param getLoginStateUseCase UseCase for retrieving current login state
  */
 @Singleton
 class PostBookmarkUseCaseImpl

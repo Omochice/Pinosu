@@ -22,9 +22,9 @@ import kotlinx.coroutines.launch
  * Manages bookmark data loading and UI state for the bookmark list display. Observes display mode
  * changes for immediate UI updates.
  *
- * @property getBookmarkListUseCase UseCase for fetching bookmark list
- * @property getLoginStateUseCase UseCase for retrieving current login state
- * @property observeDisplayModeUseCase UseCase for observing display mode preference changes
+ * @param getBookmarkListUseCase UseCase for fetching bookmark list from relays
+ * @param getLoginStateUseCase UseCase for retrieving current login state
+ * @param observeDisplayModeUseCase UseCase for observing display mode preference changes
  */
 @HiltViewModel
 class BookmarkViewModel

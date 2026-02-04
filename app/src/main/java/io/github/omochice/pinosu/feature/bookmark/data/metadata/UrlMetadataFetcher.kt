@@ -16,9 +16,9 @@ interface UrlMetadataFetcher {
 }
 
 /**
- * Implementation of UrlMetadataFetcher using OkHttp and Jsoup
+ * Implementation of [UrlMetadataFetcher] using OkHttp and Jsoup
  *
- * @property okHttpClient OkHttp client for HTTP requests
+ * @param okHttpClient HTTP client for fetching URL content
  */
 @Singleton
 class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkHttpClient) :

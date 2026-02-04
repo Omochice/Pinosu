@@ -12,13 +12,13 @@ import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
- * NIP-55 based AuthRepository implementation
+ * NIP-55 based [AuthRepository] implementation
  *
- * Integrates Nip55SignerClient and LocalAuthDataSource to provide authentication flow and local
+ * Integrates [Nip55SignerClient] and [LocalAuthDataSource] to provide authentication flow and local
  * state management.
  *
- * @property nip55SignerClient NIP-55 signer communication client
- * @property localAuthDataSource Local storage data source
+ * @param nip55SignerClient Client for NIP-55 signer interaction
+ * @param localAuthDataSource Local data source for user authentication state
  */
 class Nip55AuthRepository
 @Inject

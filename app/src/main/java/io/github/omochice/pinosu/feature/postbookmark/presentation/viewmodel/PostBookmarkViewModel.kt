@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
  *
  * Manages form state and handles bookmark posting flow including NIP-55 signing.
  *
- * @property postBookmarkUseCase Use case for creating and publishing bookmarks
- * @property nip55SignerClient Client for NIP-55 signing operations
+ * @param postBookmarkUseCase UseCase for creating and publishing bookmark events
+ * @param nip55SignerClient Client for NIP-55 signer interaction
  */
 @HiltViewModel
 class PostBookmarkViewModel

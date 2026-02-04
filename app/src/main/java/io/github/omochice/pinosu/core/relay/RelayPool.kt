@@ -66,9 +66,9 @@ interface RelayPool {
 }
 
 /**
- * Implementation of RelayPool that manages parallel connections to multiple Nostr relays
+ * Implementation of [RelayPool] that manages parallel connections to multiple Nostr relays
  *
- * @property okHttpClient OkHttpClient for WebSocket connections
+ * @param okHttpClient HTTP client for WebSocket connections
  */
 @Singleton
 class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) : RelayPool {

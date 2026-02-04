@@ -16,14 +16,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Relay-based implementation of BookmarkRepository
+ * Relay-based implementation of [BookmarkRepository]
  *
  * Fetches kind:39701 bookmark events from multiple Nostr relays in parallel, deduplicates results,
  * and enriches them with URL metadata (og:title) when title tags are not present.
  *
- * @property relayPool Pool for parallel relay queries
- * @property localAuthDataSource Local data source for cached relay list
- * @property urlMetadataFetcher Fetcher for URL Open Graph metadata
+ * @param relayPool Pool for querying Nostr relays
+ * @param localAuthDataSource Local data source for cached authentication and relay data
+ * @param urlMetadataFetcher Fetcher for URL metadata (og:title)
  */
 @Singleton
 class RelayBookmarkRepository
