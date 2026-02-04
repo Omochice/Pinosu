@@ -10,7 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -28,7 +28,8 @@ internal fun QuoteCard(comment: Comment) {
   val primaryColor = MaterialTheme.colorScheme.primary
   Surface(
       modifier =
-          Modifier.fillMaxWidth().drawBehind {
+          Modifier.fillMaxWidth().drawWithContent {
+            drawContent()
             val barWidth = 4.dp.toPx()
             drawRect(
                 color = primaryColor, topLeft = Offset.Zero, size = size.copy(width = barWidth))
