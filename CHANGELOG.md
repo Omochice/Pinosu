@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/Omochice/Pinosu/compare/v0.4.0...v0.5.0) (2026-02-04)
+
+
+### Features
+
+* display kind 1 events as quotes in bookmark detail ([#170](https://github.com/Omochice/Pinosu/issues/170)) ([7797625](https://github.com/Omochice/Pinosu/commit/77976259db3291433f80bb9aa6363023b073bd90))
+
+
+### Bug Fixes
+
+* **deps:** update hilt to v2.59.1 ([#172](https://github.com/Omochice/Pinosu/issues/172)) ([6d599e9](https://github.com/Omochice/Pinosu/commit/6d599e9b6eab0a8c57613baadec66260c97eac39))
+
 ## [0.4.0](https://github.com/Omochice/Pinosu/compare/v0.3.0...v0.4.0) (2026-02-03)
 
 
