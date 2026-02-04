@@ -96,6 +96,7 @@ graph TB
 - `auth/` - Login, logout, session management
 - `bookmark/` - Bookmark listing and display
 - `postbookmark/` - Creating and posting new bookmarks
+- `comment/` - Bookmark detail screen with kind 1111/1 comments viewing and posting
 - `settings/` - User preferences and display mode
 - `shareintent/` - Android share intent handling (receive shared URLs/text from other apps)
 - `main/` - Main screen container
@@ -180,6 +181,7 @@ io.github.omochice.pinosu/
 │   ├── auth/                // Authentication feature
 │   ├── bookmark/            // Bookmark list feature
 │   ├── postbookmark/        // Post bookmark feature
+│   ├── comment/             // Bookmark detail with comments (kind 1111/1)
 │   ├── settings/            // Settings feature
 │   ├── shareintent/         // Share intent handling
 │   ├── main/                // Main screen
@@ -204,4 +206,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-01-31 - Added shareintent feature module_
+_Updated: 2026-02-04 - Added comment feature module for NIP-22 kind 1111/1 support_
