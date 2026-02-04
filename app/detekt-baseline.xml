@@ -49,16 +49,6 @@
     <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surface</ID>
     <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surfaceVariant</ID>
     <ID>NoEmptyFirstLineInMethodBlock:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$ </ID>
-    <ID>NoWildcardImports:BookmarkViewModelTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:ErrorTypesTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:GetLoginStateUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:LoginUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:LoginViewModelTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:LogoutUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:Nip55AuthRepositoryTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:Nip55SignerClientTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:PostBookmarkUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>NoWildcardImports:PresentationDomainIntegrationTest.kt$import org.junit.Assert.*</ID>
     <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>
@@ -106,15 +96,5 @@
     <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
     <ID>UnnecessaryParentheses:Nip55SignerClientTest.kt$Nip55SignerClientTest$(intent.flags and expectedFlags)</ID>
-    <ID>WildcardImport:BookmarkViewModelTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:ErrorTypesTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:GetLoginStateUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:LoginUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:LoginViewModelTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:LogoutUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:Nip55AuthRepositoryTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:Nip55SignerClientTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:PostBookmarkUseCaseTest.kt$import org.junit.Assert.*</ID>
-    <ID>WildcardImport:PresentationDomainIntegrationTest.kt$import org.junit.Assert.*</ID>
   </CurrentIssues>
 </SmellBaseline>
