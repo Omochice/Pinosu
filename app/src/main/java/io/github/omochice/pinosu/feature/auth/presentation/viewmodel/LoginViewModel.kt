@@ -37,10 +37,6 @@ constructor(
     private val fetchRelayListUseCase: FetchRelayListUseCase,
 ) : ViewModel() {
 
-  companion object {
-    private const val TAG = "LoginViewModel"
-  }
-
   private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
   val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -131,5 +127,9 @@ constructor(
             }
       }
     }
+  }
+
+  companion object {
+    private const val TAG = "LoginViewModel"
   }
 }

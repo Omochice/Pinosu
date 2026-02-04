@@ -4,13 +4,6 @@
   <CurrentIssues>
     <ID>BracesOnIfStatements:BookmarkScreen.kt$if</ID>
     <ID>BracesOnWhenStatements:BookmarkViewModel.kt$BookmarkViewModel$when</ID>
-    <ID>ClassOrdering:FetchRelayListUseCaseTest.kt$FetchRelayListUseCaseTest$Companion</ID>
-    <ID>ClassOrdering:LoginViewModel.kt$LoginViewModel$Companion</ID>
-    <ID>ClassOrdering:Nip65EventParser.kt$Nip65EventParserImpl$Companion</ID>
-    <ID>ClassOrdering:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$Companion</ID>
-    <ID>ClassOrdering:RelayBookmarkRepository.kt$RelayBookmarkRepository$Companion</ID>
-    <ID>ClassOrdering:RelayPool.kt$RelayPoolImpl$Companion</ID>
-    <ID>ClassOrdering:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$Companion</ID>
     <ID>CognitiveComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>

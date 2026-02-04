@@ -36,20 +36,6 @@ constructor(
     private val parser: Nip65EventParser,
 ) : Nip65RelayListFetcher {
 
-  companion object {
-    /** Bootstrap relay URL used to fetch NIP-65 events */
-    const val BOOTSTRAP_RELAY_URL = "wss://yabu.me"
-
-    /** Timeout for relay queries in milliseconds */
-    const val RELAY_TIMEOUT_MS = 10000L
-
-    /** Expected length of hex-encoded public key */
-    private const val HEX_PUBKEY_LENGTH = 64
-
-    /** Valid hex characters */
-    private val HEX_CHARS = "0123456789abcdefABCDEF".toSet()
-  }
-
   override suspend fun fetchRelayList(hexPubkey: String): Result<List<RelayConfig>> {
     if (!isValidHexPubkey(hexPubkey)) {
       return Result.failure(
@@ -80,5 +66,19 @@ constructor(
   /** Validate that the pubkey is a valid 64-character hex string */
   private fun isValidHexPubkey(pubkey: String): Boolean {
     return pubkey.length == HEX_PUBKEY_LENGTH && pubkey.all { it in HEX_CHARS }
+  }
+
+  companion object {
+    /** Bootstrap relay URL used to fetch NIP-65 events */
+    const val BOOTSTRAP_RELAY_URL = "wss://yabu.me"
+
+    /** Timeout for relay queries in milliseconds */
+    const val RELAY_TIMEOUT_MS = 10000L
+
+    /** Expected length of hex-encoded public key */
+    private const val HEX_PUBKEY_LENGTH = 64
+
+    /** Valid hex characters */
+    private val HEX_CHARS = "0123456789abcdefABCDEF".toSet()
   }
 }
