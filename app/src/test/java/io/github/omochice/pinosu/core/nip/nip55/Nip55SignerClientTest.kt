@@ -114,7 +114,7 @@ class Nip55SignerClientTest {
 
     assertTrue(
         "Intent should have SINGLE_TOP and CLEAR_TOP flags",
-        (intent.flags and expectedFlags) == expectedFlags)
+        intent.flags and expectedFlags == expectedFlags)
   }
 
   @Test
