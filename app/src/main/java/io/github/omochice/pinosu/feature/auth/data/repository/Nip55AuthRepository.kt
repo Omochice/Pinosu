@@ -32,9 +32,7 @@ constructor(
    *
    * @return User if logged in, null if not logged in
    */
-  override suspend fun getLoginState(): User? {
-    return localAuthDataSource.getUser()
-  }
+  override suspend fun getLoginState(): User? = localAuthDataSource.getUser()
 
   /**
    * Save login state
@@ -108,7 +106,5 @@ constructor(
    *
    * @return true if NIP-55 signer is installed
    */
-  override fun checkNip55SignerInstalled(): Boolean {
-    return nip55SignerClient.checkNip55SignerInstalled()
-  }
+  override fun checkNip55SignerInstalled(): Boolean = nip55SignerClient.checkNip55SignerInstalled()
 }
