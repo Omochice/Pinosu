@@ -64,9 +64,8 @@ constructor(
   }
 
   /** Validate that the pubkey is a valid 64-character hex string */
-  private fun isValidHexPubkey(pubkey: String): Boolean {
-    return pubkey.length == HEX_PUBKEY_LENGTH && pubkey.all { it in HEX_CHARS }
-  }
+  private fun isValidHexPubkey(pubkey: String): Boolean =
+      pubkey.length == HEX_PUBKEY_LENGTH && pubkey.all { it in HEX_CHARS }
 
   companion object {
     /** Bootstrap relay URL used to fetch NIP-65 events */
