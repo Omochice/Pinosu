@@ -17,7 +17,5 @@ class Nip55GetLoginStateUseCase @Inject constructor(private val authRepository: 
    *
    * @return User if logged in, null if not logged in
    */
-  override suspend fun invoke(): User? {
-    return authRepository.getLoginState()
-  }
+  override suspend fun invoke(): User? = authRepository.getLoginState()
 }
