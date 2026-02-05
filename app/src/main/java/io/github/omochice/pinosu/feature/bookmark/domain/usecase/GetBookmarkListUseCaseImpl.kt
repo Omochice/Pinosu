@@ -21,7 +21,6 @@ constructor(private val bookmarkRepository: BookmarkRepository) : GetBookmarkLis
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun invoke(pubkey: String): Result<BookmarkList?> {
-    return bookmarkRepository.getBookmarkList(pubkey)
-  }
+  override suspend fun invoke(pubkey: String): Result<BookmarkList?> =
+      bookmarkRepository.getBookmarkList(pubkey)
 }
