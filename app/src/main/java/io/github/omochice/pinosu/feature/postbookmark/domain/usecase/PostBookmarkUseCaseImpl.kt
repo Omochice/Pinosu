@@ -42,7 +42,6 @@ constructor(
             comment = comment))
   }
 
-  override suspend fun publishSignedEvent(signedEventJson: String): Result<PublishResult> {
-    return bookmarkRepository.publishBookmark(signedEventJson)
-  }
+  override suspend fun publishSignedEvent(signedEventJson: String): Result<PublishResult> =
+      bookmarkRepository.publishBookmark(signedEventJson)
 }
