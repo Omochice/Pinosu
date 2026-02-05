@@ -16,7 +16,5 @@ class Nip55LoginUseCase @Inject constructor(private val authRepository: AuthRepo
    *
    * @return true if NIP-55 signer is installed
    */
-  override fun checkNip55SignerInstalled(): Boolean {
-    return authRepository.checkNip55SignerInstalled()
-  }
+  override fun checkNip55SignerInstalled(): Boolean = authRepository.checkNip55SignerInstalled()
 }

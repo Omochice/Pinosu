@@ -10,15 +10,6 @@
     <ID>CyclomaticComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CyclomaticComplexMethod:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
-    <ID>ExpressionBodySyntax:GetBookmarkListUseCaseImpl.kt$GetBookmarkListUseCaseImpl$return bookmarkRepository.getBookmarkList(pubkey)</ID>
-    <ID>ExpressionBodySyntax:Nip55AuthRepository.kt$Nip55AuthRepository$return localAuthDataSource.getUser()</ID>
-    <ID>ExpressionBodySyntax:Nip55AuthRepository.kt$Nip55AuthRepository$return nip55SignerClient.checkNip55SignerInstalled()</ID>
-    <ID>ExpressionBodySyntax:Nip55GetLoginStateUseCase.kt$Nip55GetLoginStateUseCase$return authRepository.getLoginState()</ID>
-    <ID>ExpressionBodySyntax:Nip55LoginUseCase.kt$Nip55LoginUseCase$return authRepository.checkNip55SignerInstalled()</ID>
-    <ID>ExpressionBodySyntax:Nip55LogoutUseCase.kt$Nip55LogoutUseCase$return authRepository.logout()</ID>
-    <ID>ExpressionBodySyntax:Nip65EventParser.kt$Nip65EventParserImpl$return url.startsWith("wss://") || url.startsWith("ws://")</ID>
-    <ID>ExpressionBodySyntax:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$return pubkey.length == HEX_PUBKEY_LENGTH &amp;&amp; pubkey.all { it in HEX_CHARS }</ID>
-    <ID>ExpressionBodySyntax:PostBookmarkUseCaseImpl.kt$PostBookmarkUseCaseImpl$return bookmarkRepository.publishBookmark(signedEventJson)</ID>
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenNip55InstallDialogPreview()</ID>
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenTimeoutDialogPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>

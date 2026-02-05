@@ -61,9 +61,8 @@ class Nip65EventParserImpl @Inject constructor() : Nip65EventParser {
   }
 
   /** Validate relay URL has WebSocket scheme (wss:// or ws://) */
-  private fun isValidRelayUrl(url: String): Boolean {
-    return url.startsWith("wss://") || url.startsWith("ws://")
-  }
+  private fun isValidRelayUrl(url: String): Boolean =
+      url.startsWith("wss://") || url.startsWith("ws://")
 
   companion object {
     /** NIP-65 Relay List Metadata event kind */

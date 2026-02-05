@@ -16,7 +16,5 @@ class Nip55LogoutUseCase @Inject constructor(private val authRepository: AuthRep
    *
    * @return Success on success, Failure(LogoutError) on failure
    */
-  override suspend fun invoke(): Result<Unit> {
-    return authRepository.logout()
-  }
+  override suspend fun invoke(): Result<Unit> = authRepository.logout()
 }
