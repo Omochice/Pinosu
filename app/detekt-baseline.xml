@@ -95,6 +95,5 @@
     <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$10000L</ID>
     <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
-    <ID>UnnecessaryParentheses:Nip55SignerClientTest.kt$Nip55SignerClientTest$(intent.flags and expectedFlags)</ID>
   </CurrentIssues>
 </SmellBaseline>
