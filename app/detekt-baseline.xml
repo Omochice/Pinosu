@@ -39,7 +39,6 @@
     <ID>MaximumLineLength:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState$ </ID>
     <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surface</ID>
     <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surfaceVariant</ID>
-    <ID>NoEmptyFirstLineInMethodBlock:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$ </ID>
     <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>

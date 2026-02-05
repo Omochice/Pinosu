@@ -35,7 +35,6 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
 
     return withContext(Dispatchers.IO) {
       try {
-
         val request =
             Request.Builder().url(url).header("User-Agent", "Pinosu/1.0 (Android)").build()
 
