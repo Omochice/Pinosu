@@ -85,7 +85,8 @@ class RelayPoolTest {
                       currentListener.onMessage(ws, """["EOSE","$subId"]""")
                     }
                   }
-                } catch (_: InterruptedException) {}
+                } catch (_: InterruptedException) {
+                }
               }
             }
             true
@@ -102,7 +103,8 @@ class RelayPoolTest {
                 try {
                   Thread.sleep(30)
                   currentListener.onClosed(ws, code, reason)
-                } catch (_: InterruptedException) {}
+                } catch (_: InterruptedException) {
+                }
               }
             }
             true
@@ -130,7 +132,8 @@ class RelayPoolTest {
           Thread.sleep(30)
           val mockResponse = mockk<Response>(relaxed = true)
           wsListener?.onOpen(ws, mockResponse)
-        } catch (_: InterruptedException) {}
+        } catch (_: InterruptedException) {
+        }
       }
     }
   }
@@ -332,7 +335,8 @@ class RelayPoolTest {
                     val okResponse = """["OK","$eventId",$accepted,"$message"]"""
                     currentListener.onMessage(ws, okResponse)
                   }
-                } catch (_: InterruptedException) {}
+                } catch (_: InterruptedException) {
+                }
               }
             }
             true
@@ -349,7 +353,8 @@ class RelayPoolTest {
                 try {
                   Thread.sleep(30)
                   currentListener.onClosed(ws, code, reason)
-                } catch (_: InterruptedException) {}
+                } catch (_: InterruptedException) {
+                }
               }
             }
             true
@@ -366,7 +371,8 @@ class RelayPoolTest {
           Thread.sleep(30)
           val mockResponse = mockk<Response>(relaxed = true)
           wsListener?.onOpen(ws, mockResponse)
-        } catch (_: InterruptedException) {}
+        } catch (_: InterruptedException) {
+        }
       }
     }
   }

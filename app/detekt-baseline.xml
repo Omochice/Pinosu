@@ -66,8 +66,6 @@
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$e: Exception</ID>
     <ID>TooGenericExceptionCaught:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$e: Exception</ID>
-    <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockPublishWebSocketState${}</ID>
-    <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState${}</ID>
     <ID>UnderscoresInNumericLiterals:BookmarkScreen.kt$39701</ID>
     <ID>UnderscoresInNumericLiterals:BookmarkViewModelTest.kt$BookmarkViewModelTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:Nip65EventParser.kt$Nip65EventParserImpl.Companion$10002</ID>
