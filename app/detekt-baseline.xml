@@ -44,9 +44,6 @@
     <ID>ReturnCount:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
     <ID>ReturnCount:RelayPool.kt$RelayPoolImpl$override suspend fun publishEvent( relays: List&lt;RelayConfig&gt;, signedEventJson: String, timeoutMs: Long ): Result&lt;PublishResult&gt;</ID>
     <ID>ReturnCount:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$private fun parseOgTitle(html: String): String?</ID>
-    <ID>StringLiteralDuplication:NostrRelayMessage.kt$NostrRelayMessageSerializer$"Subscription ID must be a string"</ID>
-    <ID>StringLiteralDuplication:RelayBookmarkRepository.kt$RelayBookmarkRepository$"http://"</ID>
-    <ID>StringLiteralDuplication:RelayBookmarkRepository.kt$RelayBookmarkRepository$"https://"</ID>
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>
     <ID>StringTemplate:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$${createdAt}</ID>
     <ID>SwallowedException:LocalAuthDataSource.kt$LocalAuthDataSource$e: Exception</ID>

@@ -79,6 +79,8 @@ sealed class NostrRelayMessage {
  * Handles the array-based Nostr protocol message format.
  */
 internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
+  private const val ERROR_SUBSCRIPTION_ID_NOT_STRING = "Subscription ID must be a string"
+
   override val descriptor: SerialDescriptor = buildClassSerialDescriptor("NostrRelayMessage")
 
   override fun serialize(encoder: Encoder, value: NostrRelayMessage) {
@@ -117,7 +119,7 @@ internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
     }
     val subscriptionId =
         array[1].jsonPrimitive.contentOrNull
-            ?: throw SerializationException("Subscription ID must be a string")
+            ?: throw SerializationException(ERROR_SUBSCRIPTION_ID_NOT_STRING)
     val event = jsonDecoder.json.decodeFromJsonElement(NostrEvent.serializer(), array[2])
     return NostrRelayMessage.Event(subscriptionId, event)
   }
@@ -140,7 +142,7 @@ internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
     }
     val subscriptionId =
         array[1].jsonPrimitive.contentOrNull
-            ?: throw SerializationException("Subscription ID must be a string")
+            ?: throw SerializationException(ERROR_SUBSCRIPTION_ID_NOT_STRING)
     return NostrRelayMessage.Eose(subscriptionId)
   }
 
@@ -150,7 +152,7 @@ internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
     }
     val subscriptionId =
         array[1].jsonPrimitive.contentOrNull
-            ?: throw SerializationException("Subscription ID must be a string")
+            ?: throw SerializationException(ERROR_SUBSCRIPTION_ID_NOT_STRING)
     val message = if (array.size > 2) array[2].jsonPrimitive.contentOrNull ?: "" else ""
     return NostrRelayMessage.Closed(subscriptionId, message)
   }
