@@ -83,7 +83,7 @@ jobs:
         with:
           enable-cache: true
       - run: devbox run fmt
-      - run: git diff
+      - run: git diff --exit-code
   test-android:
     timeout-minutes: 15
     name: Test Android code
