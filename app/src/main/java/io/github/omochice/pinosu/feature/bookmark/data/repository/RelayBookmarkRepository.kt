@@ -168,13 +168,7 @@ constructor(
         .filter { it.isNotBlank() }
         .forEach { category -> tags.add(listOf("t", category.trim())) }
 
-    val fullUrl =
-        if (rawUrl.startsWith(SCHEME_HTTP, ignoreCase = true) ||
-            rawUrl.startsWith(SCHEME_HTTPS, ignoreCase = true)) {
-          rawUrl
-        } else {
-          "$SCHEME_HTTPS$normalizedUrl"
-        }
+    val fullUrl = if (rawUrl != normalizedUrl) rawUrl else "$SCHEME_HTTPS$normalizedUrl"
     tags.add(listOf("r", fullUrl))
 
     return UnsignedNostrEvent(
