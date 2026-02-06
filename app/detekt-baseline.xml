@@ -4,10 +4,8 @@
   <CurrentIssues>
     <ID>BracesOnIfStatements:BookmarkScreen.kt$if</ID>
     <ID>BracesOnWhenStatements:BookmarkViewModel.kt$BookmarkViewModel$when</ID>
-    <ID>CognitiveComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
-    <ID>CyclomaticComplexMethod:BookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun BookmarkScreen( uiState: BookmarkUiState, onRefresh: () -&gt; Unit, onLoad: () -&gt; Unit, onOpenDrawer: () -&gt; Unit = {}, onTabSelected: (BookmarkFilterMode) -&gt; Unit = {}, onAddBookmark: () -&gt; Unit = {}, onBookmarkDetailNavigate: (BookmarkItem) -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CyclomaticComplexMethod:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenNip55InstallDialogPreview()</ID>
@@ -55,7 +53,6 @@
     <ID>SwallowedException:Nip55SignerClient.kt$Nip55SignerClient$e: Exception</ID>
     <ID>SwallowedException:Nip55SignerClient.kt$Nip55SignerClient$e: PackageManager.NameNotFoundException</ID>
     <ID>SwallowedException:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:BookmarkScreen.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:FetchRelayListUseCase.kt$FetchRelayListUseCaseImpl$e: Exception</ID>
     <ID>TooGenericExceptionCaught:LocalAuthDataSource.kt$LocalAuthDataSource$e: Exception</ID>
     <ID>TooGenericExceptionCaught:Nip55SignerClient.kt$Nip55SignerClient$e: Exception</ID>
@@ -66,6 +63,8 @@
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$e: Exception</ID>
     <ID>TooGenericExceptionCaught:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$e: Exception</ID>
+    <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockPublishWebSocketState${}</ID>
+    <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState${}</ID>
     <ID>UnderscoresInNumericLiterals:BookmarkScreen.kt$39701</ID>
     <ID>UnderscoresInNumericLiterals:BookmarkViewModelTest.kt$BookmarkViewModelTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:Nip65EventParser.kt$Nip65EventParserImpl.Companion$10002</ID>
