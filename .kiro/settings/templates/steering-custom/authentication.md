@@ -75,4 +75,5 @@ if (!user.can('resource:action')) throw ForbiddenError(); // domain
 - Rate limit by identity (user/key)
 
 ---
+
 _Focus on patterns and decisions. No library-specific code._

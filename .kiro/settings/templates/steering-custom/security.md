@@ -62,4 +62,5 @@ if (!user.hasPermission('resource:action')) throw ForbiddenError();
 - Educate team on common classes; encode as patterns above
 
 ---
+
 _Focus on patterns and principles. Link concrete configs to ops docs._

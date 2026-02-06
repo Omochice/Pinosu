@@ -42,7 +42,9 @@ Steering files are **project memory**, not exhaustive specifications.
 
 ```markdown
 ## UI Components (`/components/ui/`)
+
 Reusable, design-system aligned primitives
+
 - Named by function (Button, Input, Modal)
 - Export component + TypeScript interface
 - No business logic

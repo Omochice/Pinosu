@@ -41,4 +41,5 @@ import { Local } from './local'     // Relative
 [Key architectural patterns and dependency rules]
 
 ---
+
 _Document patterns, not file trees. New files following patterns shouldn't require updates_

@@ -65,4 +65,5 @@ Track: error rates by code/category, latency, saturation; alert on spikes/SLI br
 Expose health: `/health` (live), `/health/ready` (ready). Link errors to traces.
 
 ---
+
 _Focus on patterns and decisions. No implementation details or exhaustive lists._
