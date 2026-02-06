@@ -30,10 +30,10 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 - **Min SDK**: 30
 - **Target SDK**: 36
-- **Kotlin**: 2.3.0
+- **Kotlin**: 2.3.10
 - **Compose BOM**: 2026.01.01
 - **Gradle Plugin**: 9.0.0
-- **Hilt**: 2.59 (requires metadata compatibility workaround for Kotlin 2.3.0)
+- **Hilt**: 2.59.1 (requires metadata compatibility workaround for Kotlin 2.3.x)
 
 ### Architecture
 

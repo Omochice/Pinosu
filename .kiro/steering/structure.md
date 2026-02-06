@@ -49,6 +49,7 @@ graph TB
         RelayPool[RelayPool<br/>WebSocket]
         TinkKeyManager[TinkKeyManager<br/>AES256-GCM AEAD]
         Navigation[Navigation<br/>NavHost]
+        UiText[UiText<br/>Context-free text]
     end
 
     subgraph "External Dependencies"
@@ -75,7 +76,7 @@ graph TB
     class UI,VM,State presentation
     class UC_Login,UC_Logout,UC_Login_Impl,UC_Logout_Impl,Model domain
     class Repo,RepoImpl,LocalDS data
-    class Nip55Client,Nip65Fetcher,RelayPool,TinkKeyManager,Navigation core
+    class Nip55Client,Nip65Fetcher,RelayPool,TinkKeyManager,Navigation,UiText core
     class Nip55Signer,AndroidKeystore external
     class AuthMod di
 ```
@@ -135,6 +136,7 @@ feature/{name}/
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
+- `ui/` - Core UI abstractions (UiText for context-free text handling)
 
 ### Shared UI (`ui/`)
 
@@ -176,7 +178,8 @@ io.github.omochice.pinosu/
 │   ├── nip/                 // NIP protocol implementations
 │   │   ├── nip55/           // Signer client
 │   │   └── nip65/           // Relay list fetcher
-│   └── relay/               // RelayPool, PublishResult
+│   ├── relay/               // RelayPool, PublishResult
+│   └── ui/                  // UiText abstraction
 ├── feature/                 // Feature modules (vertical slices)
 │   ├── auth/                // Authentication feature
 │   ├── bookmark/            // Bookmark list feature
