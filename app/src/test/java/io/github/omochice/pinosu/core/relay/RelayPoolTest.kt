@@ -57,6 +57,7 @@ class RelayPoolTest {
   private inner class MockWebSocketState(private val events: List<NostrEvent>) {
     val ws: WebSocket = mockk(relaxed = true)
     private val closed = java.util.concurrent.atomic.AtomicBoolean(false)
+
     @Volatile private var wsListener: WebSocketListener? = null
 
     init {
@@ -311,6 +312,7 @@ class RelayPoolTest {
   ) {
     val ws: WebSocket = mockk(relaxed = true)
     private val closed = java.util.concurrent.atomic.AtomicBoolean(false)
+
     @Volatile private var wsListener: WebSocketListener? = null
 
     init {
