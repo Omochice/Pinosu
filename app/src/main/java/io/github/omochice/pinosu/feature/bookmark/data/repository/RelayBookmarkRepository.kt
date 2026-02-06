@@ -152,8 +152,9 @@ constructor(
     val rawUrl = url.trim()
     val normalizedUrl =
         when {
-          rawUrl.startsWith("https://", ignoreCase = true) -> rawUrl.substring("https://".length)
-          rawUrl.startsWith("http://", ignoreCase = true) -> rawUrl.substring("http://".length)
+          rawUrl.startsWith(SCHEME_HTTPS, ignoreCase = true) ->
+              rawUrl.substring(SCHEME_HTTPS.length)
+          rawUrl.startsWith(SCHEME_HTTP, ignoreCase = true) -> rawUrl.substring(SCHEME_HTTP.length)
           else -> rawUrl
         }
 
@@ -168,11 +169,11 @@ constructor(
         .forEach { category -> tags.add(listOf("t", category.trim())) }
 
     val fullUrl =
-        if (rawUrl.startsWith("http://", ignoreCase = true) ||
-            rawUrl.startsWith("https://", ignoreCase = true)) {
+        if (rawUrl.startsWith(SCHEME_HTTP, ignoreCase = true) ||
+            rawUrl.startsWith(SCHEME_HTTPS, ignoreCase = true)) {
           rawUrl
         } else {
-          "https://$normalizedUrl"
+          "$SCHEME_HTTPS$normalizedUrl"
         }
     tags.add(listOf("r", fullUrl))
 
@@ -202,6 +203,8 @@ constructor(
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
+    private const val SCHEME_HTTPS = "https://"
+    private const val SCHEME_HTTP = "http://"
     const val KIND_BOOKMARK_LIST = 39701
     const val PER_RELAY_TIMEOUT_MS = 10000L
     const val DEFAULT_RELAY_URL = "wss://yabu.me"
