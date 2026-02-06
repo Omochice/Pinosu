@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/Omochice/Pinosu/compare/v0.5.1...v0.5.2) (2026-02-06)
+
+
+### Bug Fixes
+
+* **deps:** update kotlin monorepo to v2.3.10 ([#182](https://github.com/Omochice/Pinosu/issues/182)) ([c15ade9](https://github.com/Omochice/Pinosu/commit/c15ade955426dbeedbf989aa6e18e306dad14a8a))
+
 ## [0.5.1](https://github.com/Omochice/Pinosu/compare/v0.5.0...v0.5.1) (2026-02-04)
 
 
