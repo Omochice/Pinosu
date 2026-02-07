@@ -406,7 +406,8 @@ fun PinosuApp(
                 SettingsScreen(
                     uiState = settingsUiState,
                     onNavigateUp = { navController.navigateUp() },
-                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) })
+                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) },
+                    onLocaleChange = { locale -> settingsViewModel.setLocale(locale) })
               }
         }
       }
