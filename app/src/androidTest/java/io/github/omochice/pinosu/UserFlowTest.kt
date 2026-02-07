@@ -3,6 +3,7 @@ package io.github.omochice.pinosu
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,9 +22,9 @@ import org.junit.runner.RunWith
 
 /**
  * Test scenarios:
- * 1. Login flow (login screen → login button tap → loading display → main screen navigate)
+ * 1. Login flow (login screen -> login button tap -> loading display -> main screen navigate)
  * 2. NIP-55 signer not installed error flow
- * 3. Logout flow (main screen → logout button tap → login screen navigate)
+ * 3. Logout flow (main screen -> logout button tap -> login screen navigate)
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -40,6 +41,8 @@ class UserFlowTest {
   val mockLocalAuthDataSource: LocalAuthDataSource =
       mockk(relaxed = true) { coEvery { getUser() } returns null }
 
+  private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
   @Before
   fun setup() {
     clearMocks(mockLocalAuthDataSource, mockNip55SignerClient, answers = false)
@@ -49,34 +52,48 @@ class UserFlowTest {
 
   @Test
   fun `login flow step1 should display login screen`() {
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   @Test
   fun `Nip55Signer not installed flow step1 should display error dialog`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .performClick()
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_title_nip55_signer_required))
+        .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("インストール").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_install)).assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("閉じる").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_close)).assertIsDisplayed()
   }
 
   @Test
   fun `Nip55Signer not installed flow step2 should dismiss dialog`() {
     every { mockNip55SignerClient.checkNip55SignerInstalled() } returns false
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
-    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .performClick()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_title_nip55_signer_required))
+        .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("閉じる").performClick()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_close)).performClick()
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_title_nip55_signer_required))
+        .assertDoesNotExist()
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -92,21 +109,34 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(context.getString(R.string.title_bookmarks))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.title_bookmarks)).assertIsDisplayed()
 
-    composeTestRule.onNodeWithContentDescription("メニューを開く").performClick()
+    composeTestRule
+        .onNodeWithContentDescription(context.getString(R.string.cd_open_menu))
+        .performClick()
 
     composeTestRule.waitUntil(timeoutMillis = 3000) {
-      composeTestRule.onAllNodesWithText("ログアウト").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(context.getString(R.string.menu_logout))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ログアウト").performClick()
+    composeTestRule.onNodeWithText(context.getString(R.string.menu_logout)).performClick()
 
     composeTestRule.waitUntil(timeoutMillis = 3000) {
-      composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(context.getString(R.string.button_login_with_nip55))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -121,11 +151,16 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(context.getString(R.string.title_bookmarks))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.title_bookmarks)).assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertDoesNotExist()
   }
 
   @Test
@@ -135,10 +170,15 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("NIP-55対応アプリでログイン").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(context.getString(R.string.button_login_with_nip55))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("ブックマーク").assertDoesNotExist()
+    composeTestRule.onNodeWithText(context.getString(R.string.title_bookmarks)).assertDoesNotExist()
   }
 }

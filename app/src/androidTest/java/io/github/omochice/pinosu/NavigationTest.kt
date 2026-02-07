@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
@@ -29,6 +30,8 @@ class NavigationTest {
 
   private lateinit var viewModel: LoginViewModel
 
+  private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
   @Before
   fun setup() {
     hiltRule.inject()
@@ -37,7 +40,9 @@ class NavigationTest {
   @Test
   fun `navigation when not logged in should display login screen`() {
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   /** This test simulates the state where LoginViewModel.mainUiState.userPubkey is not null */
