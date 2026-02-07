@@ -28,12 +28,13 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 ## Technical Foundation
 
 - **Nostr Protocol**: Kind 39701 (bookmarks), Kind 10002 (relay metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **NIP-19 Integration**: Bech32-encoded entity resolution (nevent references)
+- **NIP-22 Integration**: Comment system for bookmark discussions with kind 1111 and kind 1 support
 - **NIP-55 Integration**: Secure external signing without key exposure (default: Amber)
 - **NIP-65 Integration**: Dynamic relay list discovery from user preferences
-- **NIP-22 Integration**: Comment system for bookmark discussions with kind 1111 and kind 1 support
 - **Android Native**: Built with Jetpack Compose and Material Design 3
 - **Encrypted Storage**: Tink Android with DataStore for secure local caching
 
 ---
 
-_Updated: 2026-02-04 - Added comment capabilities (kind 1111/1) and share intent integration_
+_Updated: 2026-02-07 - Added NIP-19 support for nevent references_
