@@ -84,6 +84,33 @@ jobs:
           enable-cache: true
       - run: devbox run fmt
       - run: git diff --exit-code
+  check-android:
+    timeout-minutes: 5
+    needs: path-filter
+    if: needs.path-filter.outputs.android == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
+      - uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - run: devbox run check
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: reports
+          path: app/build/reports/
   test-android:
     timeout-minutes: 15
     name: Test Android code
@@ -107,7 +134,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run unit tests with coverage
-        run: devbox run ./gradlew detekt testDebugUnitTest koverXmlReportDebug
+        run: devbox run ./gradlew testDebugUnitTest koverXmlReportDebug
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: always()
         with:
@@ -271,6 +298,7 @@ jobs:
       # keep-sorted start
       - build-apk
       - check-actions
+      - check-android
       - check-format
       - check-renovate
       - check-version-code
