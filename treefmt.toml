@@ -34,7 +34,7 @@ options = ["--in-place"]
 command = "typos"
 options = ["--write-changes", "--force-exclude"]
 includes = ["*"]
-excludes = ["CHANGELOG.md"]
+excludes = ["CHANGELOG.md", "detekt-baseline.xml"]
 
 [formatter.yamlfmt]
 command = "yamlfmt"
