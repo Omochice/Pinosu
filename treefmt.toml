@@ -30,6 +30,12 @@ command = "toml-sort"
 includes = ["*.toml"]
 options = ["--in-place"]
 
+[formatter.typos]
+command = "typos"
+options = ["--write-changes", "--force-exclude"]
+includes = ["*"]
+excludes = ["CHANGELOG.md"]
+
 [formatter.yamlfmt]
 command = "yamlfmt"
 includes = ["*.yaml", "*.yml"]
