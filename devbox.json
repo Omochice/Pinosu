@@ -26,7 +26,9 @@
     ],
     "scripts": {
       "fmt": ["treefmt"],
-      "check": ["./gradlew lint"],
+      "check": ["./gradlew :app:lint :app:detekt"],
+      "test": ["./gradlew :app:test"],
+      "test:connectedAndroidTest": ["./gradlew :app:connectedAndroidTest"],
       "version-up": [
         "VERSION_CODE=$(gojq -r '.versionCode' version.json)",
         "NEW_VERSION_CODE=$((VERSION_CODE + 1))",
