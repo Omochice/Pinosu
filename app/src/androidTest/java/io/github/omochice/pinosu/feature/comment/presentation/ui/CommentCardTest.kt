@@ -3,6 +3,8 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.platform.app.InstrumentationRegistry
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import org.junit.Rule
 import org.junit.Test
@@ -11,6 +13,8 @@ import org.junit.Test
 class CommentCardTest {
 
   @get:Rule val composeTestRule = createComposeRule()
+
+  private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
   @Test
   fun displaysCommentContent() {
@@ -56,7 +60,9 @@ class CommentCardTest {
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 
-    composeTestRule.onNodeWithText("投稿者のコメント").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.label_author_comment))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -71,6 +77,8 @@ class CommentCardTest {
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 
-    composeTestRule.onNodeWithText("投稿者のコメント").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.label_author_comment))
+        .assertDoesNotExist()
   }
 }

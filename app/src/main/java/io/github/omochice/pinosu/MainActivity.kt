@@ -2,11 +2,11 @@ package io.github.omochice.pinosu
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.DrawerValue
@@ -68,7 +68,7 @@ import kotlinx.coroutines.launch
  * signer integration for Nostr authentication and ACTION_SEND intents for shared content.
  */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
   private val loginViewModel: LoginViewModel by viewModels()
 
@@ -406,7 +406,8 @@ fun PinosuApp(
                 SettingsScreen(
                     uiState = settingsUiState,
                     onNavigateUp = { navController.navigateUp() },
-                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) })
+                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) },
+                    onLocaleChange = { locale -> settingsViewModel.setLocale(locale) })
               }
         }
       }

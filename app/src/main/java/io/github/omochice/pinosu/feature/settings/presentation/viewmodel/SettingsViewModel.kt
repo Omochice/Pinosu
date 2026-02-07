@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.AppLocale
+import io.github.omochice.pinosu.feature.settings.domain.usecase.GetCurrentLocaleUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLocaleUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +29,8 @@ class SettingsViewModel
 constructor(
     observeDisplayModeUseCase: ObserveDisplayModeUseCase,
     private val setDisplayModeUseCase: SetDisplayModeUseCase,
+    getCurrentLocaleUseCase: GetCurrentLocaleUseCase,
+    private val setLocaleUseCase: SetLocaleUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(SettingsUiState())
@@ -37,6 +42,8 @@ constructor(
     observeDisplayModeUseCase()
         .onEach { displayMode -> _uiState.update { it.copy(displayMode = displayMode) } }
         .launchIn(viewModelScope)
+
+    _uiState.update { it.copy(locale = getCurrentLocaleUseCase()) }
   }
 
   /**
@@ -46,5 +53,15 @@ constructor(
    */
   fun setDisplayMode(mode: BookmarkDisplayMode) {
     setDisplayModeUseCase(mode)
+  }
+
+  /**
+   * Update application locale preference.
+   *
+   * @param locale New [AppLocale] to apply
+   */
+  fun setLocale(locale: AppLocale) {
+    setLocaleUseCase(locale)
+    _uiState.update { it.copy(locale = locale) }
   }
 }

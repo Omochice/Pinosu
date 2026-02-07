@@ -1,9 +1,16 @@
 package io.github.omochice.pinosu.feature.settings.data.local
 
+import android.app.LocaleManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import android.os.LocaleList
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.AppLocale
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +58,54 @@ constructor(@param:ApplicationContext private val context: Context) {
   fun setDisplayMode(mode: BookmarkDisplayMode) {
     sharedPreferences.edit().putString(KEY_DISPLAY_MODE, mode.name).apply()
     _displayModeFlow.value = mode
+  }
+
+  /**
+   * Retrieve current application locale.
+   *
+   * Uses [LocaleManager] on API 33+ for direct platform integration, falls back to
+   * [AppCompatDelegate] on older API levels.
+   *
+   * @return Current [AppLocale], defaults to [AppLocale.System] if none set
+   */
+  fun getLocale(): AppLocale {
+    val tag =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          val locales = context.getSystemService(LocaleManager::class.java).applicationLocales
+          if (locales.isEmpty) null else locales[0].toLanguageTag()
+        } else {
+          val locales = AppCompatDelegate.getApplicationLocales()
+          if (locales.isEmpty) null else locales[0]?.toLanguageTag()
+        }
+    return AppLocale.fromTag(tag)
+  }
+
+  /**
+   * Apply application locale.
+   *
+   * Uses [LocaleManager] on API 33+ for direct platform integration, falls back to
+   * [AppCompatDelegate] on older API levels.
+   *
+   * @param locale [AppLocale] to apply
+   */
+  fun setLocale(locale: AppLocale) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val localeManager = context.getSystemService(LocaleManager::class.java)
+      localeManager.applicationLocales =
+          if (locale == AppLocale.System) {
+            LocaleList.getEmptyLocaleList()
+          } else {
+            LocaleList(Locale.forLanguageTag(locale.tag))
+          }
+      return
+    }
+    val localeList =
+        if (locale == AppLocale.System) {
+          LocaleListCompat.getEmptyLocaleList()
+        } else {
+          LocaleListCompat.forLanguageTags(locale.tag)
+        }
+    AppCompatDelegate.setApplicationLocales(localeList)
   }
 
   companion object {

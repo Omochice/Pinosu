@@ -1,4 +1,5 @@
 [libraries]
+androidx-appcompat = {group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat"}
 androidx-core-ktx = {group = "androidx.core", name = "core-ktx", version.ref = "coreKtx"}
 junit = {group = "junit", name = "junit", version.ref = "junit"}
 androidx-junit = {group = "androidx.test.ext", name = "junit", version.ref = "junitVersion"}
@@ -71,4 +72,5 @@ coroutines = "1.10.2"
 kover = "0.9.6"
 aboutlibraries = "13.2.1"
 serializationJson = "1.10.0"
+appcompat = "1.7.0"
 tink = "1.20.0"

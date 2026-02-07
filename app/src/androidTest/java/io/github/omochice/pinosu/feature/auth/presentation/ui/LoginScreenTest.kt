@@ -5,6 +5,8 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -22,13 +24,17 @@ class LoginScreenTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
+  private val context = InstrumentationRegistry.getInstrumentation().targetContext
+
   @Test
   fun `LoginScreen should display login button`() {
     composeTestRule.setContent {
       LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -41,7 +47,9 @@ class LoginScreenTest {
           onLoginButtonClick = { clicked = true },
           onDismissDialog = {})
     }
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .performClick()
 
     assertTrue("Login button click should trigger callback", clicked)
   }
@@ -52,7 +60,7 @@ class LoginScreenTest {
       LoginScreen(uiState = LoginUiState.Loading, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("読み込み中...").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.message_loading)).assertIsDisplayed()
   }
 
   @Test
@@ -61,7 +69,9 @@ class LoginScreenTest {
       LoginScreen(uiState = LoginUiState.Idle, onLoginButtonClick = {}, onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("読み込み中...").assertIsNotDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.message_loading))
+        .assertIsNotDisplayed()
   }
 
   @Test
@@ -74,7 +84,9 @@ class LoginScreenTest {
           onLoginButtonClick = { clickCount++ },
           onDismissDialog = {})
     }
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").performClick()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.button_login_with_nip55))
+        .performClick()
 
     assertEquals("Login button should be disabled when loading", 0, clickCount)
   }
@@ -88,21 +100,27 @@ class LoginScreenTest {
           onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリが必要です").assertIsDisplayed()
-    composeTestRule.onNodeWithText("このアプリを使用するにはNIP-55対応アプリのインストールが必要です。").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_title_nip55_signer_required))
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_message_nip55_signer_required))
+        .assertIsDisplayed()
   }
 
   @Test
   fun `LoginScreen should display generic error dialog when error message exists`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiState.Error.NonRetryable("テストエラーメッセージ"),
+          uiState = LoginUiState.Error.NonRetryable("Test error message"),
           onLoginButtonClick = {},
           onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("エラー").assertIsDisplayed()
-    composeTestRule.onNodeWithText("テストエラーメッセージ").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.dialog_title_error))
+        .assertIsDisplayed()
+    composeTestRule.onNodeWithText("Test error message").assertIsDisplayed()
   }
 
   @Test
@@ -115,7 +133,7 @@ class LoginScreenTest {
           onLoginButtonClick = {},
           onDismissDialog = { dismissCalled = true })
     }
-    composeTestRule.onNodeWithText("閉じる").performClick()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_close)).performClick()
 
     assertTrue("Dismiss dialog should trigger callback", dismissCalled)
   }
@@ -131,7 +149,7 @@ class LoginScreenTest {
           onDismissDialog = {},
           onInstallNip55Signer = { installCalled = true })
     }
-    composeTestRule.onNodeWithText("インストール").performClick()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_install)).performClick()
 
     assertTrue("Install button should trigger callback", installCalled)
   }
@@ -149,7 +167,7 @@ class LoginScreenTest {
           onDismissDialog = {},
           onRetry = { retryCalled = true })
     }
-    composeTestRule.onNodeWithText("再試行").performClick()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_retry)).performClick()
 
     assertTrue("Retry button should trigger callback", retryCalled)
   }
@@ -164,7 +182,9 @@ class LoginScreenTest {
           onLoginSuccess = {})
     }
 
-    composeTestRule.onNodeWithText("ログインに成功しました").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.message_login_success))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -204,14 +224,17 @@ class LoginScreenTest {
   fun `LoginScreen should display user rejection error message`() {
     composeTestRule.setContent {
       LoginScreen(
-          uiState = LoginUiState.Error.NonRetryable("ログインがキャンセルされました。再度お試しください。"),
+          uiState =
+              LoginUiState.Error.NonRetryable(context.getString(R.string.error_user_rejected)),
           onLoginButtonClick = {},
           onDismissDialog = {})
     }
 
-    composeTestRule.onNodeWithText("ログインがキャンセルされました。再度お試しください。").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(context.getString(R.string.error_user_rejected))
+        .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("OK").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_ok)).assertIsDisplayed()
   }
 
   @Test
@@ -229,8 +252,8 @@ class LoginScreenTest {
         .onNodeWithText("Login process timed out. Please check the NIP-55 signer app and retry.")
         .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("再試行").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_retry)).assertIsDisplayed()
 
-    composeTestRule.onNodeWithText("キャンセル").assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.button_cancel)).assertIsDisplayed()
   }
 }
