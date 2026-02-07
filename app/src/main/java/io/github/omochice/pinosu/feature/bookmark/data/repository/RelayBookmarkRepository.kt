@@ -14,6 +14,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.serialization.json.Json
 
 /**
  * Relay-based implementation of [BookmarkRepository]
@@ -91,7 +92,8 @@ constructor(
                         content = event.content,
                         author = event.pubkey,
                         createdAt = event.createdAt,
-                        tags = event.tags))
+                        tags = event.tags),
+                rawJson = Json.encodeToString(event))
 
         allItems.add(item)
       }
