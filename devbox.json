@@ -26,7 +26,7 @@
     ],
     "scripts": {
       "fmt": ["treefmt"],
-      "check": ["./gradlew lint"],
+      "check": ["./gradlew :app:lint :app:detekt"],
       "test": ["./gradlew :app:test"],
       "test:connectedAndroidTest": ["./gradlew :app:connectedAndroidTest"],
       "version-up": [
