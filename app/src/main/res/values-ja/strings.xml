@@ -1,0 +1,90 @@
+<resources>
+    <string name="app_name">Pinosu</string>
+
+    <string name="button_login_with_nip55">NIP-55対応アプリでログイン</string>
+
+    <string name="button_logout">ログアウト</string>
+
+    <string name="message_logging_out">ログアウト中...</string>
+
+    <string name="message_login_success">ログインに成功しました</string>
+
+    <string name="message_loading">読み込み中...</string>
+
+    <string name="error_nip55_signer_not_installed">NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。</string>
+
+    <string name="error_user_rejected">ログインがキャンセルされました。再度お試しください。</string>
+
+    <string name="error_timeout">ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。</string>
+
+    <string name="error_invalid_response">NIP-55対応アプリからの応答が不正です。アプリを更新してください。</string>
+
+    <string name="error_storage_write">ログイン状態の保存に失敗しました。</string>
+    <string name="error_storage_read">ログイン状態の読み込みに失敗しました。</string>
+    <string name="error_generic">エラーが発生しました。しばらくしてから再試行してください。</string>
+    <string name="error_url_open_failed">URLを開けませんでした</string>
+
+    <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
+
+    <string name="dialog_title_nip55_signer_required">NIP-55対応アプリが必要です</string>
+    <string name="dialog_message_nip55_signer_required">このアプリを使用するにはNIP-55対応アプリのインストールが必要です。</string>
+    <string name="button_install">インストール</string>
+    <string name="button_close">閉じる</string>
+    <string name="button_retry">再試行</string>
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">キャンセル</string>
+
+    <string name="dialog_title_error">エラー</string>
+
+    <string name="text_logged_in">ログイン済み</string>
+    <string name="text_not_logged_in">未ログイン</string>
+
+    <string name="title_bookmarks">ブックマーク</string>
+    <string name="label_event_id">イベントID</string>
+    <string name="label_relay">リレー</string>
+    <string name="message_no_bookmarks">ブックマークがありません</string>
+    <string name="tab_local">Local</string>
+    <string name="tab_global">Global</string>
+
+    <string name="dialog_title_select_url">URLを選択</string>
+    <string name="button_open">開く</string>
+
+    <string name="title_licenses">オープンソースライセンス</string>
+
+    <string name="menu_licenses">ライセンス</string>
+    <string name="menu_app_info">アプリ情報</string>
+    <string name="menu_logout">ログアウト</string>
+
+    <string name="title_app_info">アプリ情報</string>
+    <string name="label_version">バージョン</string>
+
+    <string name="title_settings">設定</string>
+    <string name="menu_settings">設定</string>
+    <string name="settings_display_mode">ブックマーク表示</string>
+    <string name="display_mode_list">リスト</string>
+    <string name="display_mode_grid">グリッド</string>
+
+    <string name="title_bookmark_detail">ブックマーク詳細</string>
+    <string name="label_author_comment">投稿者のコメント</string>
+    <string name="hint_comment_input">コメントを入力</string>
+    <string name="button_post_comment">投稿</string>
+    <string name="message_no_comments">コメントはありません</string>
+    <string name="error_comment_empty">コメントを入力してください</string>
+    <string name="error_comment_create_failed">コメント作成に失敗しました</string>
+    <string name="error_comment_post_failed">コメントの投稿に失敗しました</string>
+    <string name="error_signed_event_build_failed">署名済みイベントの構築に失敗しました</string>
+    <string name="error_signing_cancelled">署名がキャンセルされました</string>
+    <string name="error_comments_load_failed">コメントの読み込みに失敗しました</string>
+
+    <string name="cd_navigate_up">戻る</string>
+    <string name="cd_open_menu">メニューを開く</string>
+    <string name="cd_add_bookmark">ブックマークを追加</string>
+    <string name="cd_copy_version">バージョン情報をコピー</string>
+    <string name="cd_post_comment">コメントを投稿</string>
+
+    <string name="settings_language">言語</string>
+    <string name="locale_system_default">端末の設定に従う</string>
+    <string name="locale_english">English</string>
+    <string name="locale_japanese">日本語</string>
+
+</resources>

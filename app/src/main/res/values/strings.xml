@@ -1,103 +1,90 @@
 <resources>
     <string name="app_name">Pinosu</string>
 
-                             
+    <string name="button_login_with_nip55">Login with NIP-55 app</string>
 
-    <string name="button_login_with_nip55">NIP-55対応アプリでログイン</string>
+    <string name="button_logout">Logout</string>
 
-    <string name="button_logout">ログアウト</string>
+    <string name="message_logging_out">Logging out…</string>
 
-    <string name="message_logging_out">ログアウト中...</string>
+    <string name="message_login_success">Login successful</string>
 
-    <string name="message_login_success">ログインに成功しました</string>
+    <string name="message_loading">Loading…</string>
 
-    <string name="message_loading">読み込み中...</string>
+    <string name="error_nip55_signer_not_installed">NIP-55 signer app is not installed. Please install it from Google Play Store.</string>
 
-                                       
+    <string name="error_user_rejected">Login was cancelled. Please try again.</string>
 
-    <string name="error_nip55_signer_not_installed">NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。</string>
+    <string name="error_timeout">Login timed out. Please check the NIP-55 app and try again.</string>
 
-    <string name="error_user_rejected">ログインがキャンセルされました。再度お試しください。</string>
+    <string name="error_invalid_response">Invalid response from NIP-55 app. Please update the app.</string>
 
-    <string name="error_timeout">ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。</string>
+    <string name="error_storage_write">Failed to save login state.</string>
+    <string name="error_storage_read">Failed to load login state.</string>
+    <string name="error_generic">An error occurred. Please try again later.</string>
+    <string name="error_url_open_failed">Failed to open URL</string>
 
-    <string name="error_invalid_response">NIP-55対応アプリからの応答が不正です。アプリを更新してください。</string>
+    <string name="error_invalid_pubkey">Invalid public key format.</string>
 
-                                    
-
-    <string name="error_storage_write">ログイン状態の保存に失敗しました。</string>
-    <string name="error_storage_read">ログイン状態の読み込みに失敗しました。</string>
-    <string name="error_generic">エラーが発生しました。しばらくしてから再試行してください。</string>
-    <string name="error_url_open_failed">URLを開けませんでした</string>
-
-
-    <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
-
-    <!-- NIP-55対応アプリ未インストールダイアログ -->
-    <string name="dialog_title_nip55_signer_required">NIP-55対応アプリが必要です</string>
-    <string name="dialog_message_nip55_signer_required">このアプリを使用するにはNIP-55対応アプリのインストールが必要です。</string>
-    <string name="button_install">インストール</string>
-    <string name="button_close">閉じる</string>
-    <string name="button_retry">再試行</string>
+    <string name="dialog_title_nip55_signer_required">NIP-55 signer app required</string>
+    <string name="dialog_message_nip55_signer_required">A NIP-55 signer app is required to use this app.</string>
+    <string name="button_install">Install</string>
+    <string name="button_close">Close</string>
+    <string name="button_retry">Retry</string>
     <string name="button_ok">OK</string>
-    <string name="button_cancel">キャンセル</string>
+    <string name="button_cancel">Cancel</string>
 
-    <!-- エラーダイアログ -->
-    <string name="dialog_title_error">エラー</string>
+    <string name="dialog_title_error">Error</string>
 
-    <!-- メイン画面テキスト -->
-    <string name="text_logged_in">ログイン済み</string>
-    <string name="text_not_logged_in">未ログイン</string>
+    <string name="text_logged_in">Logged in</string>
+    <string name="text_not_logged_in">Not logged in</string>
 
-    <!-- ブックマーク画面 -->
-    <string name="title_bookmarks">ブックマーク</string>
-    <string name="label_event_id">イベントID</string>
-    <string name="label_relay">リレー</string>
-    <string name="message_no_bookmarks">ブックマークがありません</string>
+    <string name="title_bookmarks">Bookmarks</string>
+    <string name="label_event_id">Event ID</string>
+    <string name="label_relay">Relay</string>
+    <string name="message_no_bookmarks">No bookmarks</string>
     <string name="tab_local">Local</string>
     <string name="tab_global">Global</string>
 
-    <!-- URL選択ダイアログ -->
-    <string name="dialog_title_select_url">URLを選択</string>
-    <string name="button_open">開く</string>
+    <string name="dialog_title_select_url">Select URL</string>
+    <string name="button_open">Open</string>
 
-    <!-- ライセンス画面 -->
-    <string name="title_licenses">オープンソースライセンス</string>
+    <string name="title_licenses">Open Source Licenses</string>
 
-    <!-- ドロワーメニュー -->
-    <string name="menu_licenses">ライセンス</string>
-    <string name="menu_app_info">アプリ情報</string>
-    <string name="menu_logout">ログアウト</string>
+    <string name="menu_licenses">Licenses</string>
+    <string name="menu_app_info">App Info</string>
+    <string name="menu_logout">Logout</string>
 
-    <!-- アプリ情報画面 -->
-    <string name="title_app_info">アプリ情報</string>
-    <string name="label_version">バージョン</string>
+    <string name="title_app_info">App Info</string>
+    <string name="label_version">Version</string>
 
-    <!-- 設定画面 -->
-    <string name="title_settings">設定</string>
-    <string name="menu_settings">設定</string>
-    <string name="settings_display_mode">ブックマーク表示</string>
-    <string name="display_mode_list">リスト</string>
-    <string name="display_mode_grid">グリッド</string>
+    <string name="title_settings">Settings</string>
+    <string name="menu_settings">Settings</string>
+    <string name="settings_display_mode">Bookmark Display</string>
+    <string name="display_mode_list">List</string>
+    <string name="display_mode_grid">Grid</string>
 
-    <!-- ブックマーク詳細画面 -->
-    <string name="title_bookmark_detail">ブックマーク詳細</string>
-    <string name="label_author_comment">投稿者のコメント</string>
-    <string name="hint_comment_input">コメントを入力</string>
-    <string name="button_post_comment">投稿</string>
-    <string name="message_no_comments">コメントはありません</string>
-    <string name="error_comment_empty">コメントを入力してください</string>
-    <string name="error_comment_create_failed">コメント作成に失敗しました</string>
-    <string name="error_comment_post_failed">コメントの投稿に失敗しました</string>
-    <string name="error_signed_event_build_failed">署名済みイベントの構築に失敗しました</string>
-    <string name="error_signing_cancelled">署名がキャンセルされました</string>
-    <string name="error_comments_load_failed">コメントの読み込みに失敗しました</string>
+    <string name="title_bookmark_detail">Bookmark Detail</string>
+    <string name="label_author_comment">Author\'s comment</string>
+    <string name="hint_comment_input">Enter a comment</string>
+    <string name="button_post_comment">Post</string>
+    <string name="message_no_comments">No comments</string>
+    <string name="error_comment_empty">Please enter a comment</string>
+    <string name="error_comment_create_failed">Failed to create comment</string>
+    <string name="error_comment_post_failed">Failed to post comment</string>
+    <string name="error_signed_event_build_failed">Failed to build signed event</string>
+    <string name="error_signing_cancelled">Signing was cancelled</string>
+    <string name="error_comments_load_failed">Failed to load comments</string>
 
-    <!-- アクセシビリティ用contentDescription -->
-    <string name="cd_navigate_up">戻る</string>
-    <string name="cd_open_menu">メニューを開く</string>
-    <string name="cd_add_bookmark">ブックマークを追加</string>
-    <string name="cd_copy_version">バージョン情報をコピー</string>
-    <string name="cd_post_comment">コメントを投稿</string>
+    <string name="cd_navigate_up">Go back</string>
+    <string name="cd_open_menu">Open menu</string>
+    <string name="cd_add_bookmark">Add bookmark</string>
+    <string name="cd_copy_version">Copy version info</string>
+    <string name="cd_post_comment">Post comment</string>
+
+    <string name="settings_language">Language</string>
+    <string name="locale_system_default">System Default</string>
+    <string name="locale_english">English</string>
+    <string name="locale_japanese">日本語</string>
 
 </resources>
