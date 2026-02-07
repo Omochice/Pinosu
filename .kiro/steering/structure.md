@@ -133,6 +133,7 @@ feature/{name}/
 - `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey)
 - `navigation/` - App navigation (NavHost, animations)
 - `nip/` - Nostr protocol implementations
+    - `nip19/` - NIP-19 Bech32 entity resolver
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
@@ -176,6 +177,7 @@ io.github.omochice.pinosu/
 │   ├── model/               // NostrEvent, UnsignedNostrEvent, Pubkey
 │   ├── navigation/          // NavHost, animations
 │   ├── nip/                 // NIP protocol implementations
+│   │   ├── nip19/           // Bech32 entity resolver
 │   │   ├── nip55/           // Signer client
 │   │   └── nip65/           // Relay list fetcher
 │   ├── relay/               // RelayPool, PublishResult
@@ -209,4 +211,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-02-04 - Added comment feature module for NIP-22 kind 1111/1 support_
+_Updated: 2026-02-07 - Added NIP-19 Bech32 entity resolver to core/nip/_
