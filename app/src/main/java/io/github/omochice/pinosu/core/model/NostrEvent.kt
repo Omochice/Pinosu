@@ -24,5 +24,5 @@ data class NostrEvent(
     val kind: Int,
     val tags: List<List<String>>,
     val content: String,
-    val sig: String? = null,
+    val sig: String,
 )
