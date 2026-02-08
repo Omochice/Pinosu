@@ -45,7 +45,8 @@ class RelayPoolTest {
         createdAt = System.currentTimeMillis() / 1000,
         kind = 39701,
         tags = listOf(listOf("r", "https://example.com")),
-        content = "")
+        content = "",
+        sig = "dummy-sig")
   }
 
   /**
@@ -115,9 +116,8 @@ class RelayPoolTest {
     }
 
     private fun buildEventJson(subscriptionId: String, event: NostrEvent): String {
-      val tagsJson =
-          event.tags.joinToString(",") { tag -> "[" + tag.joinToString(",") { "\"$it\"" } + "]" }
-      return """["EVENT","$subscriptionId",{"id":"${event.id}","pubkey":"${event.pubkey}","created_at":${event.createdAt},"kind":${event.kind},"tags":[$tagsJson],"content":"${event.content}"}]"""
+      val eventJson = Json.encodeToString(NostrEvent.serializer(), event)
+      return """["EVENT","$subscriptionId",$eventJson]"""
     }
 
     fun setListener(l: WebSocketListener) {

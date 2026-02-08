@@ -143,7 +143,8 @@ class GetCommentsForBookmarkUseCaseTest {
                 createdAt = 1_700_000_050L,
                 kind = 1,
                 tags = emptyList(),
-                content = "This is the referenced text note")
+                content = "This is the referenced text note",
+                sig = "dummy-sig")
 
         coEvery { commentRepository.getEventsByIds(listOf(eventId)) } returns
             Result.success(listOf(fetchedEvent))

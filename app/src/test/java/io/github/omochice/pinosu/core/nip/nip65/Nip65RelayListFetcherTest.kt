@@ -141,6 +141,7 @@ class Nip65RelayListFetcherTest {
         createdAt = createdAt,
         kind = 10002,
         tags = tags,
-        content = "")
+        content = "",
+        sig = "dummy-sig")
   }
 }

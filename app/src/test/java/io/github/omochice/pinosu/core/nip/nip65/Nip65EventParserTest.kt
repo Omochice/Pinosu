@@ -113,7 +113,8 @@ class Nip65EventParserTest {
             createdAt = 1234567890L,
             kind = 1, // Wrong kind, should be 10002
             tags = listOf(listOf("r", "wss://relay.example.com")),
-            content = "")
+            content = "",
+            sig = "dummy-sig")
 
     val result = parser.parseRelayListEvent(event)
 
@@ -168,6 +169,7 @@ class Nip65EventParserTest {
         createdAt = 1234567890L,
         kind = 10002,
         tags = tags,
-        content = "")
+        content = "",
+        sig = "dummy-sig")
   }
 }

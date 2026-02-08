@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
  * @property kind Event kind number (e.g., 39701 for bookmark lists)
  * @property tags List of tag arrays (e.g., [["r", "url"], ["title", "..."]])
  * @property content Event content (may be encrypted for private events)
+ * @property sig Event signature (64-byte hex-encoded Schnorr signature)
  */
 @Serializable
 data class NostrEvent(
@@ -23,4 +24,5 @@ data class NostrEvent(
     val kind: Int,
     val tags: List<List<String>>,
     val content: String,
+    val sig: String,
 )

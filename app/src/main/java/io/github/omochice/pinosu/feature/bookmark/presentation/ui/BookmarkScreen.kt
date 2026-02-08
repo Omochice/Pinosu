@@ -1,6 +1,8 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
-import androidx.compose.foundation.clickable
+import android.content.ClipData
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +69,7 @@ import java.time.format.DateTimeFormatter
  * @param onTabSelected Callback when a filter tab is selected
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
  * @param onBookmarkDetailNavigate Callback when a bookmark card is tapped to navigate to detail
+ * @param onLongPressBookmark Callback when a bookmark card is long-pressed with rawJson
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,37 +81,31 @@ fun BookmarkScreen(
     onTabSelected: (BookmarkFilterMode) -> Unit = {},
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
+    onLongPressBookmark: (String) -> Unit = {},
 ) {
   LaunchedEffect(Unit) { onLoad() }
+
+  val clipboardManager = LocalClipboardManager.current
+  val hapticFeedback = LocalHapticFeedback.current
 
   val onBookmarkClick: (BookmarkItem) -> Unit = { clickedBookmark ->
     onBookmarkDetailNavigate(clickedBookmark)
   }
 
+  val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
+    bookmark.rawJson?.let { rawJson ->
+      clipboardManager.setClip(ClipEntry(ClipData.newPlainText("rawJson", rawJson)))
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      onLongPressBookmark(rawJson)
+    }
+  }
+
   Scaffold(
       topBar = {
-        Column {
-          TopAppBar(
-              title = { Text(stringResource(R.string.title_bookmarks)) },
-              navigationIcon = {
-                IconButton(onClick = onOpenDrawer) {
-                  Icon(
-                      imageVector = Icons.Default.Menu,
-                      contentDescription = stringResource(R.string.cd_open_menu))
-                }
-              })
-          PrimaryTabRow(
-              selectedTabIndex = if (uiState.selectedTab == BookmarkFilterMode.Local) 0 else 1) {
-                Tab(
-                    selected = uiState.selectedTab == BookmarkFilterMode.Local,
-                    onClick = { onTabSelected(BookmarkFilterMode.Local) },
-                    text = { Text(stringResource(R.string.tab_local)) })
-                Tab(
-                    selected = uiState.selectedTab == BookmarkFilterMode.Global,
-                    onClick = { onTabSelected(BookmarkFilterMode.Global) },
-                    text = { Text(stringResource(R.string.tab_global)) })
-              }
-        }
+        BookmarkTopBar(
+            selectedTab = uiState.selectedTab,
+            onOpenDrawer = onOpenDrawer,
+            onTabSelected = onTabSelected)
       },
       floatingActionButton = {
         FloatingActionButton(onClick = onAddBookmark) {
@@ -113,48 +114,102 @@ fun BookmarkScreen(
               contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
-        PullToRefreshBox(
-            isRefreshing = uiState.isLoading,
+        BookmarkContent(
+            uiState = uiState,
             onRefresh = onRefresh,
-            modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-              when {
-                uiState.isLoading && uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                  }
-                }
-                uiState.error != null && uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                      Text(
-                          text = uiState.error,
-                          style = MaterialTheme.typography.bodyLarge,
-                          color = MaterialTheme.colorScheme.error)
-                    }
-                  }
-                }
-                uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.message_no_bookmarks),
-                        style = MaterialTheme.typography.bodyLarge)
-                  }
-                }
-                else -> {
-                  when (uiState.displayMode) {
-                    BookmarkDisplayMode.List ->
-                        BookmarkListView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
-                    BookmarkDisplayMode.Grid ->
-                        BookmarkGridView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
-                  }
-                }
-              }
-            }
+            onBookmarkClick = onBookmarkClick,
+            onBookmarkLongPress = onBookmarkLongPress,
+            modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BookmarkListView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkTopBar(
+    selectedTab: BookmarkFilterMode,
+    onOpenDrawer: () -> Unit,
+    onTabSelected: (BookmarkFilterMode) -> Unit,
+) {
+  Column {
+    TopAppBar(
+        title = { Text(stringResource(R.string.title_bookmarks)) },
+        navigationIcon = {
+          IconButton(onClick = onOpenDrawer) {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = stringResource(R.string.cd_open_menu))
+          }
+        })
+    PrimaryTabRow(selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1) {
+      Tab(
+          selected = selectedTab == BookmarkFilterMode.Local,
+          onClick = { onTabSelected(BookmarkFilterMode.Local) },
+          text = { Text(stringResource(R.string.tab_local)) })
+      Tab(
+          selected = selectedTab == BookmarkFilterMode.Global,
+          onClick = { onTabSelected(BookmarkFilterMode.Global) },
+          text = { Text(stringResource(R.string.tab_global)) })
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BookmarkContent(
+    uiState: BookmarkUiState,
+    onRefresh: () -> Unit,
+    onBookmarkClick: (BookmarkItem) -> Unit,
+    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+  PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
+    when {
+      uiState.isLoading && uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
+      }
+      uiState.error != null && uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = uiState.error,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error)
+          }
+        }
+      }
+      uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+              text = stringResource(R.string.message_no_bookmarks),
+              style = MaterialTheme.typography.bodyLarge)
+        }
+      }
+      else -> {
+        when (uiState.displayMode) {
+          BookmarkDisplayMode.List ->
+              BookmarkListView(
+                  bookmarks = uiState.bookmarks,
+                  onClick = onBookmarkClick,
+                  onLongPress = onBookmarkLongPress)
+          BookmarkDisplayMode.Grid ->
+              BookmarkGridView(
+                  bookmarks = uiState.bookmarks,
+                  onClick = onBookmarkClick,
+                  onLongPress = onBookmarkLongPress)
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun BookmarkListView(
+    bookmarks: List<BookmarkItem>,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   LazyColumn(
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
@@ -163,13 +218,17 @@ private fun BookmarkListView(bookmarks: List<BookmarkItem>, onClick: (BookmarkIt
             bookmarks,
             key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
                 bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
             }
       }
 }
 
 @Composable
-private fun BookmarkGridView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkGridView(
+    bookmarks: List<BookmarkItem>,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Adaptive(minSize = 160.dp),
       modifier = Modifier.fillMaxSize(),
@@ -180,19 +239,30 @@ private fun BookmarkGridView(bookmarks: List<BookmarkItem>, onClick: (BookmarkIt
             bookmarks,
             key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
                 bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
             }
       }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkItemCard(
+    bookmark: BookmarkItem,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   val hasUrls = bookmark.urls.isNotEmpty()
 
+  val clickModifier =
+      if (hasUrls) {
+        Modifier.combinedClickable(
+            onClick = { onClick(bookmark) }, onLongClick = { onLongPress(bookmark) })
+      } else {
+        Modifier
+      }
+
   Card(
-      modifier =
-          Modifier.fillMaxWidth()
-              .then(if (hasUrls) Modifier.clickable { onClick(bookmark) } else Modifier),
+      modifier = Modifier.fillMaxWidth().then(clickModifier),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
       colors =
           CardDefaults.cardColors(
