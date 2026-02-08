@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,9 +68,11 @@ import java.time.format.DateTimeFormatter
  * @param onTabSelected Callback when a filter tab is selected
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
  * @param onBookmarkDetailNavigate Callback when a bookmark card is tapped to navigate to detail
+ * @param onLongPressBookmark Callback when a bookmark card is long-pressed with rawJson
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("DEPRECATION")
 fun BookmarkScreen(
     uiState: BookmarkUiState,
     onRefresh: () -> Unit,
@@ -74,11 +81,23 @@ fun BookmarkScreen(
     onTabSelected: (BookmarkFilterMode) -> Unit = {},
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
+    onLongPressBookmark: (String) -> Unit = {},
 ) {
   LaunchedEffect(Unit) { onLoad() }
 
+  val clipboardManager = LocalClipboardManager.current
+  val hapticFeedback = LocalHapticFeedback.current
+
   val onBookmarkClick: (BookmarkItem) -> Unit = { clickedBookmark ->
     onBookmarkDetailNavigate(clickedBookmark)
+  }
+
+  val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
+    bookmark.rawJson?.let { rawJson ->
+      clipboardManager.setText(AnnotatedString(rawJson))
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      onLongPressBookmark(rawJson)
+    }
   }
 
   Scaffold(
@@ -143,9 +162,15 @@ fun BookmarkScreen(
                 else -> {
                   when (uiState.displayMode) {
                     BookmarkDisplayMode.List ->
-                        BookmarkListView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
+                        BookmarkListView(
+                            bookmarks = uiState.bookmarks,
+                            onClick = onBookmarkClick,
+                            onLongPress = onBookmarkLongPress)
                     BookmarkDisplayMode.Grid ->
-                        BookmarkGridView(bookmarks = uiState.bookmarks, onClick = onBookmarkClick)
+                        BookmarkGridView(
+                            bookmarks = uiState.bookmarks,
+                            onClick = onBookmarkClick,
+                            onLongPress = onBookmarkLongPress)
                   }
                 }
               }
@@ -154,7 +179,11 @@ fun BookmarkScreen(
 }
 
 @Composable
-private fun BookmarkListView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkListView(
+    bookmarks: List<BookmarkItem>,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   LazyColumn(
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
@@ -163,13 +192,17 @@ private fun BookmarkListView(bookmarks: List<BookmarkItem>, onClick: (BookmarkIt
             bookmarks,
             key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
                 bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
             }
       }
 }
 
 @Composable
-private fun BookmarkGridView(bookmarks: List<BookmarkItem>, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkGridView(
+    bookmarks: List<BookmarkItem>,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   LazyVerticalStaggeredGrid(
       columns = StaggeredGridCells.Adaptive(minSize = 160.dp),
       modifier = Modifier.fillMaxSize(),
@@ -180,19 +213,30 @@ private fun BookmarkGridView(bookmarks: List<BookmarkItem>, onClick: (BookmarkIt
             bookmarks,
             key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
                 bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick)
+              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
             }
       }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BookmarkItemCard(bookmark: BookmarkItem, onClick: (BookmarkItem) -> Unit) {
+private fun BookmarkItemCard(
+    bookmark: BookmarkItem,
+    onClick: (BookmarkItem) -> Unit,
+    onLongPress: (BookmarkItem) -> Unit,
+) {
   val hasUrls = bookmark.urls.isNotEmpty()
 
+  val clickModifier =
+      if (hasUrls) {
+        Modifier.combinedClickable(
+            onClick = { onClick(bookmark) }, onLongClick = { onLongPress(bookmark) })
+      } else {
+        Modifier
+      }
+
   Card(
-      modifier =
-          Modifier.fillMaxWidth()
-              .then(if (hasUrls) Modifier.clickable { onClick(bookmark) } else Modifier),
+      modifier = Modifier.fillMaxWidth().then(clickModifier),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
       colors =
           CardDefaults.cardColors(
