@@ -102,28 +102,10 @@ fun BookmarkScreen(
 
   Scaffold(
       topBar = {
-        Column {
-          TopAppBar(
-              title = { Text(stringResource(R.string.title_bookmarks)) },
-              navigationIcon = {
-                IconButton(onClick = onOpenDrawer) {
-                  Icon(
-                      imageVector = Icons.Default.Menu,
-                      contentDescription = stringResource(R.string.cd_open_menu))
-                }
-              })
-          PrimaryTabRow(
-              selectedTabIndex = if (uiState.selectedTab == BookmarkFilterMode.Local) 0 else 1) {
-                Tab(
-                    selected = uiState.selectedTab == BookmarkFilterMode.Local,
-                    onClick = { onTabSelected(BookmarkFilterMode.Local) },
-                    text = { Text(stringResource(R.string.tab_local)) })
-                Tab(
-                    selected = uiState.selectedTab == BookmarkFilterMode.Global,
-                    onClick = { onTabSelected(BookmarkFilterMode.Global) },
-                    text = { Text(stringResource(R.string.tab_global)) })
-              }
-        }
+        BookmarkTopBar(
+            selectedTab = uiState.selectedTab,
+            onOpenDrawer = onOpenDrawer,
+            onTabSelected = onTabSelected)
       },
       floatingActionButton = {
         FloatingActionButton(onClick = onAddBookmark) {
@@ -132,50 +114,94 @@ fun BookmarkScreen(
               contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
-        PullToRefreshBox(
-            isRefreshing = uiState.isLoading,
+        BookmarkContent(
+            uiState = uiState,
             onRefresh = onRefresh,
-            modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-              when {
-                uiState.isLoading && uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                  }
-                }
-                uiState.error != null && uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                      Text(
-                          text = uiState.error,
-                          style = MaterialTheme.typography.bodyLarge,
-                          color = MaterialTheme.colorScheme.error)
-                    }
-                  }
-                }
-                uiState.bookmarks.isEmpty() -> {
-                  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.message_no_bookmarks),
-                        style = MaterialTheme.typography.bodyLarge)
-                  }
-                }
-                else -> {
-                  when (uiState.displayMode) {
-                    BookmarkDisplayMode.List ->
-                        BookmarkListView(
-                            bookmarks = uiState.bookmarks,
-                            onClick = onBookmarkClick,
-                            onLongPress = onBookmarkLongPress)
-                    BookmarkDisplayMode.Grid ->
-                        BookmarkGridView(
-                            bookmarks = uiState.bookmarks,
-                            onClick = onBookmarkClick,
-                            onLongPress = onBookmarkLongPress)
-                  }
-                }
-              }
-            }
+            onBookmarkClick = onBookmarkClick,
+            onBookmarkLongPress = onBookmarkLongPress,
+            modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BookmarkTopBar(
+    selectedTab: BookmarkFilterMode,
+    onOpenDrawer: () -> Unit,
+    onTabSelected: (BookmarkFilterMode) -> Unit,
+) {
+  Column {
+    TopAppBar(
+        title = { Text(stringResource(R.string.title_bookmarks)) },
+        navigationIcon = {
+          IconButton(onClick = onOpenDrawer) {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = stringResource(R.string.cd_open_menu))
+          }
+        })
+    PrimaryTabRow(selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1) {
+      Tab(
+          selected = selectedTab == BookmarkFilterMode.Local,
+          onClick = { onTabSelected(BookmarkFilterMode.Local) },
+          text = { Text(stringResource(R.string.tab_local)) })
+      Tab(
+          selected = selectedTab == BookmarkFilterMode.Global,
+          onClick = { onTabSelected(BookmarkFilterMode.Global) },
+          text = { Text(stringResource(R.string.tab_global)) })
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BookmarkContent(
+    uiState: BookmarkUiState,
+    onRefresh: () -> Unit,
+    onBookmarkClick: (BookmarkItem) -> Unit,
+    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+  PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
+    when {
+      uiState.isLoading && uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
+      }
+      uiState.error != null && uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = uiState.error,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error)
+          }
+        }
+      }
+      uiState.bookmarks.isEmpty() -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          Text(
+              text = stringResource(R.string.message_no_bookmarks),
+              style = MaterialTheme.typography.bodyLarge)
+        }
+      }
+      else -> {
+        when (uiState.displayMode) {
+          BookmarkDisplayMode.List ->
+              BookmarkListView(
+                  bookmarks = uiState.bookmarks,
+                  onClick = onBookmarkClick,
+                  onLongPress = onBookmarkLongPress)
+          BookmarkDisplayMode.Grid ->
+              BookmarkGridView(
+                  bookmarks = uiState.bookmarks,
+                  onClick = onBookmarkClick,
+                  onLongPress = onBookmarkLongPress)
+        }
+      }
+    }
+  }
 }
 
 @Composable
