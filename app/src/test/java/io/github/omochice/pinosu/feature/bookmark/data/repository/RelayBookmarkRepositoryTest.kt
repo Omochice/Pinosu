@@ -48,8 +48,8 @@ class RelayBookmarkRepositoryTest {
         NostrEvent(
             id = "event123",
             pubkey = "pubkey456",
-            createdAt = 1700000000L,
-            kind = 39701,
+            createdAt = 1_700_000_000L,
+            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/article"), listOf("title", "Test Article")),
             content = "",
             sig = "sig789")
@@ -72,7 +72,10 @@ class RelayBookmarkRepositoryTest {
     val deserializedEvent = json.decodeFromString<NostrEvent>(rawJson!!)
     assertEquals("Deserialized event id should match", "event123", deserializedEvent.id)
     assertEquals("Deserialized event sig should match", "sig789", deserializedEvent.sig)
-    assertEquals("Deserialized event kind should match", 39701, deserializedEvent.kind)
+    assertEquals(
+        "Deserialized event kind should match",
+        RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+        deserializedEvent.kind)
   }
 
   companion object {
