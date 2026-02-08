@@ -45,7 +45,8 @@ class RelayPoolTest {
         createdAt = System.currentTimeMillis() / 1000,
         kind = 39701,
         tags = listOf(listOf("r", "https://example.com")),
-        content = "")
+        content = "",
+        sig = "dummy-sig")
   }
 
   /**

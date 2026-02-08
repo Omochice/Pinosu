@@ -70,7 +70,8 @@ class RelayCommentRepositoryTest {
                     listOf("E", "event123"),
                     listOf("K", "39701"),
                     listOf("P", "abc123")),
-            content = "Nice bookmark!")
+            content = "Nice bookmark!",
+            sig = "dummy-sig")
 
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
 
@@ -158,7 +159,8 @@ class RelayCommentRepositoryTest {
             createdAt = 1_700_000_000L,
             kind = 1,
             tags = emptyList(),
-            content = "Hello world")
+            content = "Hello world",
+            sig = "dummy-sig")
 
     val filterSlot = slot<String>()
     coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns

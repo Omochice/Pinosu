@@ -125,6 +125,7 @@ class FakeRelayPoolTest {
         createdAt = System.currentTimeMillis() / 1000,
         kind = 1,
         tags = emptyList(),
-        content = "Test content")
+        content = "Test content",
+        sig = "dummy-sig")
   }
 }
