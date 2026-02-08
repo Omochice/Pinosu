@@ -437,51 +437,51 @@
         }
       }
     },
-    "rumdl@0.1.2": {
-      "last_modified": "2026-01-30T02:32:49Z",
-      "resolved": "github:NixOS/nixpkgs/6308c3b21396534d8aaeac46179c14c439a89b8a#rumdl",
+    "rumdl@0.1.10": {
+      "last_modified": "2026-02-02T23:09:17Z",
+      "resolved": "github:NixOS/nixpkgs/47472570b1e607482890801aeaf29bfb749884f6#rumdl",
       "source": "devbox-search",
-      "version": "0.1.2",
+      "version": "0.1.10",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/fkc1pvbfwlxsd3098syrhy2vx5znhj8r-rumdl-0.1.2",
+              "path": "/nix/store/j4688wvcfszcrpk73qmb69hz7yinkm28-rumdl-0.1.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/fkc1pvbfwlxsd3098syrhy2vx5znhj8r-rumdl-0.1.2"
+          "store_path": "/nix/store/j4688wvcfszcrpk73qmb69hz7yinkm28-rumdl-0.1.10"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wl0flyw1nd4id1m1fgr9z0knfg85f03n-rumdl-0.1.2",
+              "path": "/nix/store/w6pxi11dwlbpm7x8xjll0p0p81rrmmym-rumdl-0.1.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wl0flyw1nd4id1m1fgr9z0knfg85f03n-rumdl-0.1.2"
+          "store_path": "/nix/store/w6pxi11dwlbpm7x8xjll0p0p81rrmmym-rumdl-0.1.10"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/w4fxdj9gn1qcrfahll80py61xjaz6xgs-rumdl-0.1.2",
+              "path": "/nix/store/gkr418i1xfnqdl13wx4zv2ygrgklanas-rumdl-0.1.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/w4fxdj9gn1qcrfahll80py61xjaz6xgs-rumdl-0.1.2"
+          "store_path": "/nix/store/gkr418i1xfnqdl13wx4zv2ygrgklanas-rumdl-0.1.10"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/kk542g7l85k5v89j6nkwaii2x00g5lxd-rumdl-0.1.2",
+              "path": "/nix/store/qmkzwg5bs9g57z07jpi731g1pza7scfm-rumdl-0.1.10",
               "default": true
             }
           ],
-          "store_path": "/nix/store/kk542g7l85k5v89j6nkwaii2x00g5lxd-rumdl-0.1.2"
+          "store_path": "/nix/store/qmkzwg5bs9g57z07jpi731g1pza7scfm-rumdl-0.1.10"
         }
       }
     },
