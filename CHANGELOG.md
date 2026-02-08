@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/Omochice/Pinosu/compare/v0.5.2...v0.6.0) (2026-02-08)
+
+
+### Features
+
+* add long-press to copy raw JSON on bookmark list ([#201](https://github.com/Omochice/Pinosu/issues/201)) ([c0c1f0a](https://github.com/Omochice/Pinosu/commit/c0c1f0a2084dbf87e4d373d5123c87e47a86c6b7))
+
 ## [0.5.2](https://github.com/Omochice/Pinosu/compare/v0.5.1...v0.5.2) (2026-02-06)
 
 
