@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.appinfo.presentation.ui
 
+import android.content.ClipData
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +20,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -37,8 +38,6 @@ import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiSta
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-// ClipboardManager.setText() is deprecated in Compose BOM 2026.01.01
-@Suppress("DEPRECATION")
 fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
   val clipboardManager = LocalClipboardManager.current
 
@@ -68,7 +67,8 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
             Text(text = uiState.versionDisplayText, style = MaterialTheme.typography.bodyLarge)
             IconButton(
                 onClick = {
-                  clipboardManager.setText(AnnotatedString(uiState.versionDisplayText))
+                  clipboardManager.setClip(
+                      ClipEntry(ClipData.newPlainText("version", uiState.versionDisplayText)))
                 }) {
                   Icon(
                       imageVector = Icons.Default.ContentCopy,
