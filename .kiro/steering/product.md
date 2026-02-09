@@ -37,4 +37,4 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 
 ---
 
-_Updated: 2026-02-07 - Added NIP-19 support for nevent references_
+_Updated: 2026-02-09 - Added development tooling details (formatting, linting, coverage)_
