@@ -112,3 +112,12 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Null Safety**: Prefer elvis operator (?:) over !! assertion
 - **Thread Safety**: Use java.time API instead of SimpleDateFormat for thread safety
 - **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations
+- **Code Coverage**: Kover for unit test coverage, Jacoco for instrumentation test reports
+- **Version Tracking**: BuildConfig.COMMIT_HASH for git commit identification
+
+### Development Tooling
+
+- **Code Formatting**: ktfmt (Kotlin), biome (JSON/YAML), treefmt (orchestration)
+- **Linting**: detekt (Kotlin static analysis), actionlint (GitHub Actions)
+- **Spell Check**: typos for typo detection
+- **Scripts**: Managed via devbox shell scripts (fmt, check, test, version-up)
