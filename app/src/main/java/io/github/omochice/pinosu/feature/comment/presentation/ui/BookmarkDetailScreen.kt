@@ -105,6 +105,7 @@ fun BookmarkDetailScreen(
       }) { paddingValues ->
         BookmarkDetailContent(
             uiState = uiState,
+            title = title,
             urls = urls,
             createdAt = createdAt,
             imageUrl = imageUrl,
@@ -121,6 +122,7 @@ fun BookmarkDetailScreen(
 @Composable
 private fun BookmarkDetailContent(
     uiState: BookmarkDetailUiState,
+    title: String?,
     urls: List<String>,
     createdAt: Long,
     imageUrl: String?,
@@ -140,6 +142,7 @@ private fun BookmarkDetailContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           item {
             BookmarkInfoSection(
+                title = title,
                 urls = urls,
                 createdAt = createdAt,
                 imageUrl = imageUrl,
@@ -171,6 +174,7 @@ private fun BookmarkDetailContent(
 
 @Composable
 private fun BookmarkInfoSection(
+    title: String?,
     urls: List<String>,
     createdAt: Long,
     imageUrl: String?,
@@ -181,7 +185,7 @@ private fun BookmarkInfoSection(
     imageUrl?.let { url ->
       AsyncImage(
           model = url,
-          contentDescription = null,
+          contentDescription = title ?: stringResource(R.string.cd_ogp_image),
           modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
           contentScale = ContentScale.Crop)
       Spacer(modifier = Modifier.height(12.dp))

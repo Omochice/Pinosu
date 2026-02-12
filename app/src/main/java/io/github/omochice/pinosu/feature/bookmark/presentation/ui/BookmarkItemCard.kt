@@ -32,7 +32,10 @@ fun BookmarkItemCard(
 ) {
   BookmarkCardShell(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress) {
     Row(modifier = Modifier.padding(16.dp)) {
-      OgpThumbnail(imageUrl = bookmark.imageUrl, modifier = Modifier.size(80.dp))
+      OgpThumbnail(
+          imageUrl = bookmark.imageUrl,
+          contentDescription = bookmark.title,
+          modifier = Modifier.size(80.dp))
       Spacer(modifier = Modifier.width(12.dp))
       BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.weight(1f))
     }
@@ -48,7 +51,10 @@ fun BookmarkGridItemCard(
 ) {
   BookmarkCardShell(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress) {
     Column {
-      OgpThumbnail(imageUrl = bookmark.imageUrl, modifier = Modifier.fillMaxWidth().height(100.dp))
+      OgpThumbnail(
+          imageUrl = bookmark.imageUrl,
+          contentDescription = bookmark.title,
+          modifier = Modifier.fillMaxWidth().height(100.dp))
       BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.padding(12.dp))
     }
   }
