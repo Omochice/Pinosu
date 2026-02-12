@@ -122,6 +122,11 @@ dependencies {
   implementation(libs.jsoup)
   implementation(libs.kotlinx.serialization.json)
 
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
+  testImplementation(libs.coil.test)
+  androidTestImplementation(libs.coil.test)
+
   implementation(libs.aboutlibraries.core)
   implementation(libs.aboutlibraries.compose.m3)
 
