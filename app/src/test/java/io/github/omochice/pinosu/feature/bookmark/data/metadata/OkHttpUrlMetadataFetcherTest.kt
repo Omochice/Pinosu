@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.bookmark.data.metadata
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -173,6 +174,6 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(secondResult.isSuccess)
     assertNull(firstResult.getOrNull()!!.title)
     assertNull(secondResult.getOrNull()!!.title)
-    io.mockk.verify(exactly = 1) { okHttpClient.newCall(any()) }
+    verify(exactly = 1) { okHttpClient.newCall(any()) }
   }
 }
