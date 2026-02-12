@@ -55,7 +55,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         }
 
         val html = response.body.string()
-        val metadata = parseMetadata(html)
+        val metadata = parseMetadata(html, url)
 
         cache.put(url, metadata)
 
@@ -73,18 +73,19 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
    * Title priority: og:title → <title> tag Image: og:image meta tag
    *
    * @param html HTML content
+   * @param baseUrl Base URL for resolving relative URLs
    * @return [UrlMetadata] with parsed title and image URL
    */
-  private fun parseMetadata(html: String): UrlMetadata {
+  private fun parseMetadata(html: String, baseUrl: String): UrlMetadata {
     try {
-      val doc = Jsoup.parse(html)
+      val doc = Jsoup.parse(html, baseUrl)
 
       val title =
           doc.selectFirst("meta[property=og:title]")?.attr("content")?.takeIf { it.isNotBlank() }
               ?: doc.selectFirst("title")?.text()?.takeIf { it.isNotBlank() }
 
       val imageUrl =
-          doc.selectFirst("meta[property=og:image]")?.attr("content")?.takeIf { it.isNotBlank() }
+          doc.selectFirst("meta[property=og:image]")?.absUrl("content")?.takeIf { it.isNotBlank() }
 
       return UrlMetadata(title = title, imageUrl = imageUrl)
     } catch (e: Exception) {

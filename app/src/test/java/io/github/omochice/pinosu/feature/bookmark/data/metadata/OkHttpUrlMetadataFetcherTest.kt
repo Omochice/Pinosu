@@ -139,6 +139,28 @@ class OkHttpUrlMetadataFetcherTest {
   }
 
   @Test
+  fun `fetchMetadata resolves relative og image URL to absolute`() = runTest {
+    val html =
+        """
+        <html><head>
+          <meta property="og:title" content="Relative Image">
+          <meta property="og:image" content="/images/og.jpg">
+        </head><body></body></html>
+        """
+            .trimIndent()
+    val url = "https://example.com/page"
+    mockHttpResponse(url, 200, html)
+
+    val result = fetcher.fetchMetadata(url)
+
+    assertTrue(result.isSuccess)
+    val metadata = result.getOrNull()
+    assertNotNull(metadata)
+    assertEquals("Relative Image", metadata!!.title)
+    assertEquals("https://example.com/images/og.jpg", metadata.imageUrl)
+  }
+
+  @Test
   fun `fetchMetadata caches empty metadata and does not repeat HTTP call`() = runTest {
     val html = "<html><head></head><body></body></html>"
     val url = "https://example.com/no-og-tags"
