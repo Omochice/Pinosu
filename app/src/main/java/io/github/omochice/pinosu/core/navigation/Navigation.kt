@@ -38,6 +38,7 @@ data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String
  * @property content Bookmark event content (author's comment)
  * @property createdAt Unix timestamp of the bookmark event
  * @property urls List of bookmark URLs
+ * @property imageUrl OGP image URL, or null if not available
  */
 @Serializable
 data class BookmarkDetail(
@@ -48,6 +49,7 @@ data class BookmarkDetail(
     val content: String = "",
     val createdAt: Long = 0L,
     val urls: List<String> = emptyList(),
+    val imageUrl: String? = null,
 ) : Route
 
 /** Settings screen route */

@@ -52,6 +52,7 @@ import java.time.format.DateTimeFormatter
  * @param title Bookmark title
  * @param urls List of bookmark URLs
  * @param createdAt Bookmark creation timestamp
+ * @param imageUrl OGP image URL, or null if not available
  * @param onCommentInputChange Callback when comment input changes
  * @param onPostComment Callback when post button is clicked
  * @param onNavigateBack Callback to navigate back
@@ -66,6 +67,7 @@ fun BookmarkDetailScreen(
     title: String?,
     urls: List<String>,
     createdAt: Long,
+    imageUrl: String? = null,
     onCommentInputChange: (String) -> Unit,
     onPostComment: () -> Unit,
     onNavigateBack: () -> Unit,
