@@ -10,9 +10,20 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 
+/**
+ * URL metadata from Open Graph tags
+ *
+ * @property title og:title or HTML title
+ * @property imageUrl og:image URL
+ */
+data class UrlMetadata(
+    val title: String? = null,
+    val imageUrl: String? = null,
+)
+
 /** Fetches URL metadata (Open Graph tags) */
 interface UrlMetadataFetcher {
-  suspend fun fetchTitle(url: String): Result<String?>
+  suspend fun fetchMetadata(url: String): Result<UrlMetadata>
 }
 
 /**
@@ -24,11 +35,9 @@ interface UrlMetadataFetcher {
 class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkHttpClient) :
     UrlMetadataFetcher {
 
-  // Simple in-memory cache: URL -> Title
-  private val cache = LruCache<String, String>(MAX_CACHE_SIZE)
+  private val cache = LruCache<String, UrlMetadata>(MAX_CACHE_SIZE)
 
-  override suspend fun fetchTitle(url: String): Result<String?> {
-    // Check cache first
+  override suspend fun fetchMetadata(url: String): Result<UrlMetadata> {
     cache.get(url)?.let {
       return Result.success(it)
     }
@@ -46,12 +55,13 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         }
 
         val html = response.body.string()
+        val metadata = parseMetadata(html)
 
-        val title = parseOgTitle(html)
+        if (metadata.title != null || metadata.imageUrl != null) {
+          cache.put(url, metadata)
+        }
 
-        title?.let { cache.put(url, it) }
-
-        Result.success(title)
+        Result.success(metadata)
       } catch (e: Exception) {
         Log.w(TAG, "Failed to fetch metadata for $url: ${e.message}")
         Result.failure(e)
@@ -60,39 +70,28 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
   }
 
   /**
-   * Parse Open Graph title or HTML title from HTML content
+   * Parse Open Graph metadata from HTML content
    *
-   * Priority:
-   * 1. og:title meta tag
-   * 2. <title> tag
+   * Title priority: og:title → <title> tag Image: og:image meta tag
    *
    * @param html HTML content
-   * @return Title string or null if not found
+   * @return [UrlMetadata] with parsed title and image URL
    */
-  private fun parseOgTitle(html: String): String? {
+  private fun parseMetadata(html: String): UrlMetadata {
     try {
       val doc = Jsoup.parse(html)
 
-      // Priority 1: og:title
-      doc.selectFirst("meta[property=og:title]")
-          ?.attr("content")
-          ?.takeIf { it.isNotBlank() }
-          ?.let {
-            return it
-          }
+      val title =
+          doc.selectFirst("meta[property=og:title]")?.attr("content")?.takeIf { it.isNotBlank() }
+              ?: doc.selectFirst("title")?.text()?.takeIf { it.isNotBlank() }
 
-      // Priority 2: <title> tag
-      doc.selectFirst("title")
-          ?.text()
-          ?.takeIf { it.isNotBlank() }
-          ?.let {
-            return it
-          }
+      val imageUrl =
+          doc.selectFirst("meta[property=og:image]")?.attr("content")?.takeIf { it.isNotBlank() }
 
-      return null
+      return UrlMetadata(title = title, imageUrl = imageUrl)
     } catch (e: Exception) {
       Log.w(TAG, "Failed to parse HTML: ${e.message}")
-      return null
+      return UrlMetadata()
     }
   }
 
