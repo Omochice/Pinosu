@@ -277,14 +277,17 @@ private fun BookmarkItemCard(
                   if (hasUrls) MaterialTheme.colorScheme.surface
                   else MaterialTheme.colorScheme.surfaceVariant)) {
         Row(modifier = Modifier.padding(16.dp)) {
-          bookmark.imageUrl?.let { url ->
+          val imageUrl = bookmark.imageUrl
+          if (imageUrl != null) {
             AsyncImage(
-                model = url,
+                model = imageUrl,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp).clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop)
-            Spacer(modifier = Modifier.width(12.dp))
+          } else {
+            Spacer(modifier = Modifier.size(80.dp))
           }
+          Spacer(modifier = Modifier.width(12.dp))
 
           Column(modifier = Modifier.weight(1f)) {
             bookmark.title?.let { title ->
