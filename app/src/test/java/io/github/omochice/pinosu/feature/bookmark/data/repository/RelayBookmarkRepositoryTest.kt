@@ -4,6 +4,7 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadata
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -57,6 +58,9 @@ class RelayBookmarkRepositoryTest {
     coEvery { localAuthDataSource.getRelayList() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+    coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+        Result.success(
+            UrlMetadata(title = "Fetched Title", imageUrl = "https://example.com/img.jpg"))
 
     val result = repository.getBookmarkList(TEST_VALID_NPUB)
 
@@ -76,6 +80,62 @@ class RelayBookmarkRepositoryTest {
         "Deserialized event kind should match",
         RelayBookmarkRepository.KIND_BOOKMARK_LIST,
         deserializedEvent.kind)
+  }
+
+  @Test
+  fun `getBookmarkList populates imageUrl from metadata`() = runTest {
+    val event =
+        NostrEvent(
+            id = "event456",
+            pubkey = "pubkey789",
+            createdAt = 1_700_000_000L,
+            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            tags = listOf(listOf("d", "example.com/page"), listOf("title", "Page Title")),
+            content = "",
+            sig = "sig123")
+
+    coEvery { localAuthDataSource.getRelayList() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+    coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+        Result.success(UrlMetadata(title = "OG Title", imageUrl = "https://example.com/ogp.jpg"))
+
+    val result = repository.getBookmarkList(TEST_VALID_NPUB)
+
+    assertTrue("Result should be success", result.isSuccess)
+    val items = result.getOrNull()!!.items
+    assertEquals("Should have 1 bookmark item", 1, items.size)
+    assertEquals(
+        "imageUrl should be populated from metadata",
+        "https://example.com/ogp.jpg",
+        items[0].imageUrl)
+  }
+
+  @Test
+  fun `getBookmarkList sets null imageUrl when metadata fetch fails`() = runTest {
+    val event =
+        NostrEvent(
+            id = "event789",
+            pubkey = "pubkey012",
+            createdAt = 1_700_000_000L,
+            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            tags = listOf(listOf("d", "example.com/fail"), listOf("title", "Fail Title")),
+            content = "",
+            sig = "sig456")
+
+    coEvery { localAuthDataSource.getRelayList() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+    coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+        Result.failure(Exception("Network error"))
+
+    val result = repository.getBookmarkList(TEST_VALID_NPUB)
+
+    assertTrue("Result should be success", result.isSuccess)
+    val items = result.getOrNull()!!.items
+    assertEquals("Should have 1 bookmark item", 1, items.size)
+    assertEquals("Title should fall back to title tag", "Fail Title", items[0].title)
+    assertEquals("imageUrl should be null when metadata fetch fails", null, items[0].imageUrl)
   }
 
   companion object {
