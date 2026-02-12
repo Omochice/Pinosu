@@ -20,11 +20,11 @@ import kotlinx.serialization.json.Json
  * Relay-based implementation of [BookmarkRepository]
  *
  * Fetches kind:39701 bookmark events from multiple Nostr relays in parallel, deduplicates results,
- * and enriches them with URL metadata (og:title) when title tags are not present.
+ * and enriches them with URL metadata (og:title, og:image).
  *
  * @param relayPool Pool for querying Nostr relays
  * @param localAuthDataSource Local data source for cached authentication and relay data
- * @param urlMetadataFetcher Fetcher for URL metadata (og:title)
+ * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
  */
 @Singleton
 class RelayBookmarkRepository
