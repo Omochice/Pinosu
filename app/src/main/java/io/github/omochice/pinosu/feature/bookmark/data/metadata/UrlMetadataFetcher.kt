@@ -57,9 +57,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         val html = response.body.string()
         val metadata = parseMetadata(html)
 
-        if (metadata.title != null || metadata.imageUrl != null) {
-          cache.put(url, metadata)
-        }
+        cache.put(url, metadata)
 
         Result.success(metadata)
       } catch (e: Exception) {

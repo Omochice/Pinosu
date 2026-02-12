@@ -137,4 +137,20 @@ class OkHttpUrlMetadataFetcherTest {
 
     assertTrue(result.isFailure)
   }
+
+  @Test
+  fun `fetchMetadata caches empty metadata and does not repeat HTTP call`() = runTest {
+    val html = "<html><head></head><body></body></html>"
+    val url = "https://example.com/no-og-tags"
+    mockHttpResponse(url, 200, html)
+
+    val firstResult = fetcher.fetchMetadata(url)
+    val secondResult = fetcher.fetchMetadata(url)
+
+    assertTrue(firstResult.isSuccess)
+    assertTrue(secondResult.isSuccess)
+    assertNull(firstResult.getOrNull()!!.title)
+    assertNull(secondResult.getOrNull()!!.title)
+    io.mockk.verify(exactly = 1) { okHttpClient.newCall(any()) }
+  }
 }
