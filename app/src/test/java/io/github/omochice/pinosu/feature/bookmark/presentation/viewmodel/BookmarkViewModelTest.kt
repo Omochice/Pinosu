@@ -72,7 +72,6 @@ class BookmarkViewModelTest {
     val state = viewModel.uiState.first()
 
     assertFalse("isLoading should be false", state.isLoading)
-    assertTrue("bookmarks should be empty", state.bookmarks.isEmpty())
     assertNull("error should be null", state.error)
     assertNull("selectedBookmarkForUrlDialog should be null", state.selectedBookmarkForUrlDialog)
     assertNull("urlOpenError should be null", state.urlOpenError)
@@ -219,7 +218,6 @@ class BookmarkViewModelTest {
     val state = viewModel.uiState.first()
     assertFalse("isLoading should be false", state.isLoading)
     assertEquals("error should indicate not logged in", "Not logged in", state.error)
-    assertTrue("bookmarks should be empty", state.bookmarks.isEmpty())
   }
 
   @Test

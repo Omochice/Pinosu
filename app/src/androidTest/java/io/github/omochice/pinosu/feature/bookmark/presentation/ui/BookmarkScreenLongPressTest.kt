@@ -42,11 +42,7 @@ class BookmarkScreenLongPressTest {
     composeTestRule.setContent {
       BookmarkScreen(
           uiState =
-              BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = bookmarks,
-                  bookmarks = bookmarks,
-                  userHexPubkey = "def"),
+              BookmarkUiState(isLoading = false, allBookmarks = bookmarks, userHexPubkey = "def"),
           onRefresh = {},
           onLoad = {},
           onLongPressBookmark = { rawJson -> capturedRawJson = rawJson })

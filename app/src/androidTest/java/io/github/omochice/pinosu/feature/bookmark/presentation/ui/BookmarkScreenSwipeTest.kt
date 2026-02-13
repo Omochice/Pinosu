@@ -58,7 +58,6 @@ class BookmarkScreenSwipeTest {
               BookmarkUiState(
                   isLoading = false,
                   allBookmarks = listOf(localBookmark, globalBookmark),
-                  bookmarks = listOf(localBookmark),
                   selectedTab = BookmarkFilterMode.Local,
                   userHexPubkey = "my-pubkey"),
           onRefresh = {},
@@ -85,7 +84,6 @@ class BookmarkScreenSwipeTest {
               BookmarkUiState(
                   isLoading = false,
                   allBookmarks = listOf(localBookmark, globalBookmark),
-                  bookmarks = listOf(localBookmark, globalBookmark),
                   selectedTab = BookmarkFilterMode.Global,
                   userHexPubkey = "my-pubkey"),
           onRefresh = {},

@@ -64,10 +64,7 @@ constructor(
               ?: run {
                 _uiState.value =
                     _uiState.value.copy(
-                        isLoading = false,
-                        error = "Not logged in",
-                        allBookmarks = emptyList(),
-                        bookmarks = emptyList())
+                        isLoading = false, error = "Not logged in", allBookmarks = emptyList())
                 return@launch
               }
 

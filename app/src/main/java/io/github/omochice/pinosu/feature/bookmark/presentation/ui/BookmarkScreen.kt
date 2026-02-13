@@ -151,7 +151,8 @@ private fun BookmarkPager(
           BookmarkFilterMode.Global -> uiState.allBookmarks
         }
     BookmarkContent(
-        uiState = uiState.copy(bookmarks = filteredBookmarks),
+        uiState = uiState,
+        bookmarks = filteredBookmarks,
         onRefresh = onRefresh,
         onBookmarkClick = onBookmarkClick,
         onBookmarkLongPress = onBookmarkLongPress,
@@ -193,6 +194,7 @@ private fun BookmarkTopBar(
 @Composable
 private fun BookmarkContent(
     uiState: BookmarkUiState,
+    bookmarks: List<BookmarkItem>,
     onRefresh: () -> Unit,
     onBookmarkClick: (BookmarkItem) -> Unit,
     onBookmarkLongPress: (BookmarkItem) -> Unit,
@@ -200,12 +202,12 @@ private fun BookmarkContent(
 ) {
   PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
     when {
-      uiState.isLoading && uiState.bookmarks.isEmpty() -> {
+      uiState.isLoading && bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator()
         }
       }
-      uiState.error != null && uiState.bookmarks.isEmpty() -> {
+      uiState.error != null && bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -215,7 +217,7 @@ private fun BookmarkContent(
           }
         }
       }
-      uiState.bookmarks.isEmpty() -> {
+      bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
               text = stringResource(R.string.message_no_bookmarks),
@@ -226,12 +228,12 @@ private fun BookmarkContent(
         when (uiState.displayMode) {
           BookmarkDisplayMode.List ->
               BookmarkListView(
-                  bookmarks = uiState.bookmarks,
+                  bookmarks = bookmarks,
                   onClick = onBookmarkClick,
                   onLongPress = onBookmarkLongPress)
           BookmarkDisplayMode.Grid ->
               BookmarkGridView(
-                  bookmarks = uiState.bookmarks,
+                  bookmarks = bookmarks,
                   onClick = onBookmarkClick,
                   onLongPress = onBookmarkLongPress)
         }
@@ -283,10 +285,7 @@ private fun BookmarkScreenLoadingPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenEmptyPreview() {
-  BookmarkScreen(
-      uiState = BookmarkUiState(isLoading = false, bookmarks = emptyList()),
-      onRefresh = {},
-      onLoad = {})
+  BookmarkScreen(uiState = BookmarkUiState(isLoading = false), onRefresh = {}, onLoad = {})
 }
 
 @Preview(showBackground = true)
@@ -322,7 +321,7 @@ private fun BookmarkScreenWithDataPreview() {
                       tags = emptyList())),
       )
   BookmarkScreen(
-      uiState = BookmarkUiState(isLoading = false, bookmarks = sampleBookmarks),
+      uiState = BookmarkUiState(isLoading = false, allBookmarks = sampleBookmarks),
       onRefresh = {},
       onLoad = {})
 }
