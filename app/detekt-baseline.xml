@@ -3,7 +3,6 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>BracesOnIfStatements:BookmarkScreen.kt$if</ID>
-    <ID>BracesOnWhenStatements:BookmarkViewModel.kt$BookmarkViewModel$when</ID>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
