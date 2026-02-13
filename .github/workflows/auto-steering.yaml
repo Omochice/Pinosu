@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: anthropics/claude-code-action@c22f7c3f9dbdf2faa98a4c3139f7ec9eb5a691dc # v1.0.50
+      - uses: anthropics/claude-code-action@ea36d6abdedc17fc2a671b36060770b208a6f8f1 # v1.0.51
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
