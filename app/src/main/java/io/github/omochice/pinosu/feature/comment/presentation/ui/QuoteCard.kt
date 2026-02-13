@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
 /**

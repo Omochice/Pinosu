@@ -43,12 +43,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.ui.component.ErrorDialog
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 /**
  * Bookmark detail screen showing bookmark info and comments
@@ -255,12 +253,6 @@ private fun CommentInputBar(
         }
       }
 }
-
-internal val timestampFormatter: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
-
-internal fun formatTimestamp(timestamp: Long): String =
-    timestampFormatter.format(Instant.ofEpochSecond(timestamp))
 
 @Preview(showBackground = true)
 @Composable

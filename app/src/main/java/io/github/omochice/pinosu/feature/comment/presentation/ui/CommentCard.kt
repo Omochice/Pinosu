@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
 /**

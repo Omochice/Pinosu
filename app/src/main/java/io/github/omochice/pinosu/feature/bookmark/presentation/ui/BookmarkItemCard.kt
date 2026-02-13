@@ -18,10 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -127,10 +125,4 @@ private fun BookmarkCardTextContent(bookmark: BookmarkItem, modifier: Modifier =
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
-}
-
-private fun formatTimestamp(timestamp: Long): String {
-  val instant = Instant.ofEpochSecond(timestamp)
-  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
-  return formatter.format(instant)
 }

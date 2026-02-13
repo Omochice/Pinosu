@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import org.junit.Rule
 import org.junit.Test
