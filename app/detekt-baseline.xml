@@ -2,8 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>BracesOnIfStatements:BookmarkScreen.kt$if</ID>
-    <ID>BracesOnWhenStatements:BookmarkViewModel.kt$BookmarkViewModel$when</ID>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
@@ -12,7 +10,6 @@
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenTimeoutDialogPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenLoadingPreview()</ID>
-    <ID>IfElseWrapping:BookmarkScreen.kt$if (hasUrls) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant</ID>
     <ID>LabeledExpression:BookmarkViewModel.kt$BookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:PostBookmarkViewModel.kt$PostBookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:RelayBookmarkRepository.kt$RelayBookmarkRepository$@forEach</ID>
@@ -34,8 +31,6 @@
     <ID>MaxLineLength:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState$return """["EVENT","$subscriptionId",{"id":"${event.id}","pubkey":"${event.pubkey}","created_at":${event.createdAt},"kind":${event.kind},"tags":[$tagsJson],"content":"${event.content}"}]"""</ID>
     <ID>MaximumLineLength:RelayPoolTest.kt$RelayPoolTest$ </ID>
     <ID>MaximumLineLength:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState$ </ID>
-    <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surface</ID>
-    <ID>MultiLineIfElse:BookmarkScreen.kt$MaterialTheme.colorScheme.surfaceVariant</ID>
     <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>

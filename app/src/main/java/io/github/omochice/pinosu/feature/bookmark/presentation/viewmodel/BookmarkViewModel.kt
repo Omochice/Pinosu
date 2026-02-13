@@ -128,7 +128,9 @@ constructor(
           state.allBookmarks.filter { it.event?.author == hexPubkey }
         } ?: emptyList()
       }
-      BookmarkFilterMode.Global -> state.allBookmarks
+      BookmarkFilterMode.Global -> {
+        state.allBookmarks
+      }
     }
   }
 
