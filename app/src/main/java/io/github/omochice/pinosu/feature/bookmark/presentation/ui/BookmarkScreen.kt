@@ -77,10 +77,6 @@ fun BookmarkScreen(
   val clipboardManager = LocalClipboardManager.current
   val hapticFeedback = LocalHapticFeedback.current
 
-  val onBookmarkClick: (BookmarkItem) -> Unit = { clickedBookmark ->
-    onBookmarkDetailNavigate(clickedBookmark)
-  }
-
   val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
     bookmark.rawJson?.let { rawJson ->
       clipboardManager.setClip(ClipEntry(ClipData.newPlainText("rawJson", rawJson)))
@@ -106,7 +102,7 @@ fun BookmarkScreen(
         BookmarkContent(
             uiState = uiState,
             onRefresh = onRefresh,
-            onBookmarkClick = onBookmarkClick,
+            onBookmarkClick = onBookmarkDetailNavigate,
             onBookmarkLongPress = onBookmarkLongPress,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
