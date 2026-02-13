@@ -70,7 +70,11 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
   /**
    * Parse Open Graph metadata from HTML content
    *
-   * Title priority: og:title → <title> tag Image: og:image meta tag
+   * Title priority:
+   * 1. og:title meta tag
+   * 2. &lt;title&gt; tag
+   *
+   * Image: og:image meta tag
    *
    * @param html HTML content
    * @param baseUrl Base URL for resolving relative URLs
