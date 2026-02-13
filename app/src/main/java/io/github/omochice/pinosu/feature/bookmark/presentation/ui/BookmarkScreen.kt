@@ -102,43 +102,61 @@ fun BookmarkScreen(
               contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
-        val pagerState =
-            rememberPagerState(
-                initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
-                pageCount = { BookmarkFilterMode.entries.size })
-
-        LaunchedEffect(uiState.selectedTab) {
-          val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
-          if (pagerState.currentPage != targetPage) {
-            pagerState.animateScrollToPage(targetPage)
-          }
-        }
-
-        LaunchedEffect(pagerState) {
-          snapshotFlow { pagerState.currentPage }
-              .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
-        }
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.padding(paddingValues).fillMaxSize(),
-        ) { page ->
-          val filteredBookmarks =
-              when (BookmarkFilterMode.entries[page]) {
-                BookmarkFilterMode.Local ->
-                    uiState.userHexPubkey?.let { hexPubkey ->
-                      uiState.allBookmarks.filter { it.event?.author == hexPubkey }
-                    } ?: emptyList()
-                BookmarkFilterMode.Global -> uiState.allBookmarks
-              }
-          BookmarkContent(
-              uiState = uiState.copy(bookmarks = filteredBookmarks),
-              onRefresh = onRefresh,
-              onBookmarkClick = onBookmarkDetailNavigate,
-              onBookmarkLongPress = onBookmarkLongPress,
-              modifier = Modifier.fillMaxSize())
-        }
+        BookmarkPager(
+            uiState = uiState,
+            onTabSelected = onTabSelected,
+            onRefresh = onRefresh,
+            onBookmarkClick = onBookmarkDetailNavigate,
+            onBookmarkLongPress = onBookmarkLongPress,
+            modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
+}
+
+@Composable
+private fun BookmarkPager(
+    uiState: BookmarkUiState,
+    onTabSelected: (BookmarkFilterMode) -> Unit,
+    onRefresh: () -> Unit,
+    onBookmarkClick: (BookmarkItem) -> Unit,
+    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+  val pagerState =
+      rememberPagerState(
+          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
+          pageCount = { BookmarkFilterMode.entries.size })
+
+  LaunchedEffect(uiState.selectedTab) {
+    val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
+    if (pagerState.currentPage != targetPage) {
+      pagerState.animateScrollToPage(targetPage)
+    }
+  }
+
+  LaunchedEffect(pagerState) {
+    snapshotFlow { pagerState.currentPage }
+        .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
+  }
+
+  HorizontalPager(
+      state = pagerState,
+      modifier = modifier,
+  ) { page ->
+    val filteredBookmarks =
+        when (BookmarkFilterMode.entries[page]) {
+          BookmarkFilterMode.Local ->
+              uiState.userHexPubkey?.let { hexPubkey ->
+                uiState.allBookmarks.filter { it.event?.author == hexPubkey }
+              } ?: emptyList()
+          BookmarkFilterMode.Global -> uiState.allBookmarks
+        }
+    BookmarkContent(
+        uiState = uiState.copy(bookmarks = filteredBookmarks),
+        onRefresh = onRefresh,
+        onBookmarkClick = onBookmarkClick,
+        onBookmarkLongPress = onBookmarkLongPress,
+        modifier = Modifier.fillMaxSize())
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
