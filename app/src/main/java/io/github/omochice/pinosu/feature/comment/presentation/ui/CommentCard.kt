@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
 /**
@@ -46,14 +45,7 @@ internal fun CommentCard(comment: Comment) {
             Spacer(modifier = Modifier.height(4.dp))
           }
 
-          Text(text = comment.content, style = MaterialTheme.typography.bodyMedium)
-
-          Spacer(modifier = Modifier.height(4.dp))
-
-          Text(
-              text = formatTimestamp(comment.createdAt),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant)
+          CommentBody(comment = comment)
         }
       }
 }
