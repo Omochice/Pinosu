@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Unit tests for [BookmarkItem] rawJson property */
+/** Unit tests for [BookmarkItem] properties */
 class BookmarkItemTest {
 
   @Test
@@ -21,5 +21,34 @@ class BookmarkItemTest {
     val item = BookmarkItem(type = "event", rawJson = expectedJson)
 
     assertEquals("rawJson should retain provided value", expectedJson, item.rawJson)
+  }
+
+  @Test
+  fun `imageUrl defaults to null when not provided`() {
+    val item = BookmarkItem(type = "event")
+
+    assertNull("imageUrl should default to null", item.imageUrl)
+  }
+
+  @Test
+  fun `imageUrl retains provided value`() {
+    val expectedUrl = "https://example.com/ogp-image.jpg"
+    val item = BookmarkItem(type = "event", imageUrl = expectedUrl)
+
+    assertEquals("imageUrl should retain provided value", expectedUrl, item.imageUrl)
+  }
+
+  @Test
+  fun `stableKey uses eventId when present`() {
+    val item = BookmarkItem(type = "event", eventId = "abc123")
+
+    assertEquals("event:abc123", item.stableKey)
+  }
+
+  @Test
+  fun `stableKey falls back to hashCode when eventId is null`() {
+    val item = BookmarkItem(type = "event", eventId = null)
+
+    assertEquals("event:${item.hashCode()}", item.stableKey)
   }
 }

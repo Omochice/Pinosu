@@ -1,16 +1,11 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
 import android.content.ClipData
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,8 +15,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -43,7 +36,6 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -52,9 +44,6 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 /**
  * Composable function for bookmark list screen
@@ -88,10 +77,6 @@ fun BookmarkScreen(
   val clipboardManager = LocalClipboardManager.current
   val hapticFeedback = LocalHapticFeedback.current
 
-  val onBookmarkClick: (BookmarkItem) -> Unit = { clickedBookmark ->
-    onBookmarkDetailNavigate(clickedBookmark)
-  }
-
   val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
     bookmark.rawJson?.let { rawJson ->
       clipboardManager.setClip(ClipEntry(ClipData.newPlainText("rawJson", rawJson)))
@@ -117,7 +102,7 @@ fun BookmarkScreen(
         BookmarkContent(
             uiState = uiState,
             onRefresh = onRefresh,
-            onBookmarkClick = onBookmarkClick,
+            onBookmarkClick = onBookmarkDetailNavigate,
             onBookmarkLongPress = onBookmarkLongPress,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
@@ -214,12 +199,9 @@ private fun BookmarkListView(
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(
-            bookmarks,
-            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
-                bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
-            }
+        items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
+          BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+        }
       }
 }
 
@@ -235,79 +217,10 @@ private fun BookmarkGridView(
       contentPadding = PaddingValues(16.dp),
       verticalItemSpacing = 8.dp,
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(
-            bookmarks,
-            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
-                bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
-            }
-      }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun BookmarkItemCard(
-    bookmark: BookmarkItem,
-    onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
-) {
-  val hasUrls = bookmark.urls.isNotEmpty()
-
-  val clickModifier =
-      if (hasUrls) {
-        Modifier.combinedClickable(
-            onClick = { onClick(bookmark) }, onLongClick = { onLongPress(bookmark) })
-      } else {
-        Modifier
-      }
-
-  Card(
-      modifier = Modifier.fillMaxWidth().then(clickModifier),
-      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-      colors =
-          CardDefaults.cardColors(
-              containerColor =
-                  if (hasUrls) MaterialTheme.colorScheme.surface
-                  else MaterialTheme.colorScheme.surfaceVariant)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-          bookmark.title?.let { title ->
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis)
-            Spacer(modifier = Modifier.height(8.dp))
-          }
-
-          if (bookmark.urls.isNotEmpty()) {
-            bookmark.urls.forEach { url ->
-              Text(
-                  text = url,
-                  style = MaterialTheme.typography.bodySmall,
-                  color = MaterialTheme.colorScheme.secondary,
-                  modifier = Modifier.padding(vertical = 2.dp),
-                  maxLines = 1,
-                  overflow = TextOverflow.Ellipsis)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-          }
-
-          bookmark.event?.let { event ->
-            Text(
-                text = formatTimestamp(event.createdAt),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-          }
+        items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
+          BookmarkGridItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
         }
       }
-}
-
-private fun formatTimestamp(timestamp: Long): String {
-  val instant = Instant.ofEpochSecond(timestamp)
-  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())
-  return formatter.format(instant)
 }
 
 @Preview(showBackground = true)

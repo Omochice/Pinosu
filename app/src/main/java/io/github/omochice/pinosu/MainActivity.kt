@@ -358,6 +358,7 @@ fun PinosuApp(
                     title = route.title,
                     urls = route.urls,
                     createdAt = route.createdAt,
+                    imageUrl = route.imageUrl,
                     onCommentInputChange = { detailViewModel.updateCommentInput(it) },
                     onPostComment = {
                       detailViewModel.prepareSignCommentIntent(
@@ -434,5 +435,6 @@ private fun navigateToBookmarkDetail(
           content = event.content,
           createdAt = event.createdAt,
           urls = bookmark.urls,
+          imageUrl = bookmark.imageUrl,
       ))
 }

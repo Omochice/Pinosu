@@ -45,14 +45,7 @@ internal fun CommentCard(comment: Comment) {
             Spacer(modifier = Modifier.height(4.dp))
           }
 
-          Text(text = comment.content, style = MaterialTheme.typography.bodyMedium)
-
-          Spacer(modifier = Modifier.height(4.dp))
-
-          Text(
-              text = formatTimestamp(comment.createdAt),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant)
+          CommentBody(comment = comment)
         }
       }
 }

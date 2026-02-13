@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
@@ -14,17 +15,20 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import java.net.URI
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 
 /**
  * Relay-based implementation of [BookmarkRepository]
  *
  * Fetches kind:39701 bookmark events from multiple Nostr relays in parallel, deduplicates results,
- * and enriches them with URL metadata (og:title) when title tags are not present.
+ * and enriches them with URL metadata (og:title, og:image).
  *
  * @param relayPool Pool for querying Nostr relays
  * @param localAuthDataSource Local data source for cached authentication and relay data
- * @param urlMetadataFetcher Fetcher for URL metadata (og:title)
+ * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
  */
 @Singleton
 class RelayBookmarkRepository
@@ -55,47 +59,10 @@ constructor(
         return Result.success(null)
       }
 
-      val allItems = mutableListOf<BookmarkItem>()
       val mostRecentEvent = events.maxByOrNull { it.createdAt }
 
-      events.forEach { event ->
-        val dTags =
-            event.tags
-                .filter { it.isNotEmpty() && it[0] == "d" }
-                .mapNotNull { it.getOrNull(1) }
-                .map { "https://$it" }
-                .filter { isValidUrl(it) }
-
-        val rTags =
-            event.tags.filter { it.isNotEmpty() && it[0] == "r" }.mapNotNull { it.getOrNull(1) }
-
-        val urls =
-            when {
-              dTags.isNotEmpty() -> dTags
-              rTags.isNotEmpty() -> rTags
-              else -> return@forEach
-            }
-
-        val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == "title" }?.get(1)
-        val title = titleTag ?: urlMetadataFetcher.fetchTitle(urls.first()).getOrNull()
-
-        val item =
-            BookmarkItem(
-                type = "event",
-                eventId = event.id,
-                url = urls.first(),
-                urls = urls,
-                title = title,
-                event =
-                    BookmarkedEvent(
-                        kind = event.kind,
-                        content = event.content,
-                        author = event.pubkey,
-                        createdAt = event.createdAt,
-                        tags = event.tags),
-                rawJson = Json.encodeToString(event))
-
-        allItems.add(item)
+      val allItems = coroutineScope {
+        events.map { event -> async { buildBookmarkItem(event) } }.awaitAll().filterNotNull()
       }
 
       val itemsWithEvents = allItems.sortedByDescending { it.event?.createdAt ?: 0L }
@@ -179,6 +146,48 @@ constructor(
         kind = KIND_BOOKMARK_LIST,
         tags = tags,
         content = comment)
+  }
+
+  private suspend fun buildBookmarkItem(event: NostrEvent): BookmarkItem? {
+    val dTags =
+        event.tags
+            .filter { it.isNotEmpty() && it[0] == "d" }
+            .mapNotNull { it.getOrNull(1) }
+            .map { "https://$it" }
+            .filter { isValidUrl(it) }
+
+    val rTags =
+        event.tags
+            .filter { it.isNotEmpty() && it[0] == "r" }
+            .mapNotNull { it.getOrNull(1) }
+            .filter { isValidUrl(it) }
+
+    val urls =
+        when {
+          dTags.isNotEmpty() -> dTags
+          rTags.isNotEmpty() -> rTags
+          else -> return null
+        }
+
+    val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == "title" }?.get(1)
+    val metadata = urlMetadataFetcher.fetchMetadata(urls.first()).getOrNull()
+    val title = titleTag ?: metadata?.title
+
+    return BookmarkItem(
+        type = "event",
+        eventId = event.id,
+        url = urls.first(),
+        urls = urls,
+        title = title,
+        imageUrl = metadata?.imageUrl,
+        event =
+            BookmarkedEvent(
+                kind = event.kind,
+                content = event.content,
+                author = event.pubkey,
+                createdAt = event.createdAt,
+                tags = event.tags),
+        rawJson = Json.encodeToString(event))
   }
 
   /**
