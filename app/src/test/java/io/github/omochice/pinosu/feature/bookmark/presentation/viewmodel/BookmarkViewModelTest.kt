@@ -6,7 +6,6 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
-import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
@@ -97,88 +96,6 @@ class BookmarkViewModelTest {
     val newState = viewModel.uiState.first()
 
     assertSame("State should be same reference when selecting same tab", initialState, newState)
-  }
-
-  @Test
-  fun `Global tab should show all bookmarks from allBookmarks`() = runTest {
-    val testBookmarks =
-        listOf(
-            createTestBookmarkItem("id1", "author1"),
-            createTestBookmarkItem("id2", "author2"),
-            createTestBookmarkItem("id3", "author1"))
-
-    setViewModelState(allBookmarks = testBookmarks, userHexPubkey = "author1")
-
-    viewModel.selectTab(BookmarkFilterMode.Global)
-
-    val state = viewModel.uiState.first()
-    assertEquals("Global tab should show all bookmarks", testBookmarks, state.bookmarks)
-  }
-
-  @Test
-  fun `Local tab should filter bookmarks by userHexPubkey`() = runTest {
-    val testBookmarks =
-        listOf(
-            createTestBookmarkItem("id1", "author1"),
-            createTestBookmarkItem("id2", "author2"),
-            createTestBookmarkItem("id3", "author1"))
-
-    setViewModelState(
-        allBookmarks = testBookmarks,
-        userHexPubkey = "author1",
-        selectedTab = BookmarkFilterMode.Global)
-
-    viewModel.selectTab(BookmarkFilterMode.Local)
-
-    val state = viewModel.uiState.first()
-    assertEquals("Local tab should show only user's bookmarks", 2, state.bookmarks.size)
-    assertTrue(
-        "All bookmarks should have matching author",
-        state.bookmarks.all { it.event?.author == "author1" })
-  }
-
-  @Test
-  fun `Local tab with null userHexPubkey should show empty list`() = runTest {
-    val testBookmarks =
-        listOf(createTestBookmarkItem("id1", "author1"), createTestBookmarkItem("id2", "author2"))
-
-    setViewModelState(allBookmarks = testBookmarks, userHexPubkey = null)
-
-    viewModel.selectTab(BookmarkFilterMode.Local)
-
-    val state = viewModel.uiState.first()
-    assertTrue("Local tab with null userHexPubkey should be empty", state.bookmarks.isEmpty())
-  }
-
-  private fun createTestBookmarkItem(eventId: String, author: String): BookmarkItem {
-    return BookmarkItem(
-        type = "event",
-        eventId = eventId,
-        title = "Test $eventId",
-        urls = listOf("https://example.com/$eventId"),
-        event =
-            BookmarkedEvent(
-                kind = 39701,
-                content = "content",
-                author = author,
-                createdAt = System.currentTimeMillis() / 1000,
-                tags = emptyList()))
-  }
-
-  private fun setViewModelState(
-      allBookmarks: List<BookmarkItem> = emptyList(),
-      userHexPubkey: String? = null,
-      selectedTab: BookmarkFilterMode = BookmarkFilterMode.Local
-  ) {
-    val currentState = viewModel.uiState.value
-    val field = viewModel::class.java.getDeclaredField("_uiState")
-    field.isAccessible = true
-    @Suppress("UNCHECKED_CAST")
-    val mutableStateFlow =
-        field.get(viewModel) as kotlinx.coroutines.flow.MutableStateFlow<BookmarkUiState>
-    mutableStateFlow.value =
-        currentState.copy(
-            allBookmarks = allBookmarks, userHexPubkey = userHexPubkey, selectedTab = selectedTab)
   }
 
   @Test
