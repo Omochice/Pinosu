@@ -10,7 +10,6 @@
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenTimeoutDialogPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenLoadingPreview()</ID>
-    <ID>IfElseWrapping:BookmarkScreen.kt$if (hasUrls) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant</ID>
     <ID>LabeledExpression:BookmarkViewModel.kt$BookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:PostBookmarkViewModel.kt$PostBookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:RelayBookmarkRepository.kt$RelayBookmarkRepository$@forEach</ID>
