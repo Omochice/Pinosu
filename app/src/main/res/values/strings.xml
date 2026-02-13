@@ -99,6 +99,6 @@
     <string name="cd_add_bookmark">ブックマークを追加</string>
     <string name="cd_copy_version">バージョン情報をコピー</string>
     <string name="cd_post_comment">コメントを投稿</string>
-    <string name="cd_ogp_image">OGP画像</string>
+    <string name="cd_ogp_image">プレビュー画像</string>
 
 </resources>
