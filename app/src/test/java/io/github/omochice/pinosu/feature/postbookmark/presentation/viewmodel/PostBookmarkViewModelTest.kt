@@ -181,7 +181,7 @@ class PostBookmarkViewModelTest {
     val realEvent =
         UnsignedNostrEvent(
             pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
-            createdAt = 1234567890,
+            createdAt = 1_234_567_890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
             content = "Test comment")
@@ -229,7 +229,7 @@ class PostBookmarkViewModelTest {
     val realEvent =
         UnsignedNostrEvent(
             pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
-            createdAt = 1234567890,
+            createdAt = 1_234_567_890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
             content = "comment")
@@ -281,7 +281,7 @@ class PostBookmarkViewModelTest {
     val realEvent =
         UnsignedNostrEvent(
             pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
-            createdAt = 1234567890,
+            createdAt = 1_234_567_890,
             kind = 39701,
             tags = listOf(listOf("d", "example.com")),
             content = "comment")
@@ -316,7 +316,7 @@ class PostBookmarkViewModelTest {
     val realEvent =
         UnsignedNostrEvent(
             pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
-            createdAt = 1234567890,
+            createdAt = 1_234_567_890,
             kind = 39701,
             tags = emptyList(),
             content = "")
