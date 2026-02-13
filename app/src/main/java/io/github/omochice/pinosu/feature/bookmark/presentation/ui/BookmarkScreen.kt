@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -29,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -99,12 +102,42 @@ fun BookmarkScreen(
               contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
-        BookmarkContent(
-            uiState = uiState,
-            onRefresh = onRefresh,
-            onBookmarkClick = onBookmarkDetailNavigate,
-            onBookmarkLongPress = onBookmarkLongPress,
-            modifier = Modifier.padding(paddingValues).fillMaxSize())
+        val pagerState =
+            rememberPagerState(
+                initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
+                pageCount = { BookmarkFilterMode.entries.size })
+
+        LaunchedEffect(uiState.selectedTab) {
+          val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
+          if (pagerState.currentPage != targetPage) {
+            pagerState.animateScrollToPage(targetPage)
+          }
+        }
+
+        LaunchedEffect(pagerState) {
+          snapshotFlow { pagerState.currentPage }
+              .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.padding(paddingValues).fillMaxSize(),
+        ) { page ->
+          val filteredBookmarks =
+              when (BookmarkFilterMode.entries[page]) {
+                BookmarkFilterMode.Local ->
+                    uiState.userHexPubkey?.let { hexPubkey ->
+                      uiState.allBookmarks.filter { it.event?.author == hexPubkey }
+                    } ?: emptyList()
+                BookmarkFilterMode.Global -> uiState.allBookmarks
+              }
+          BookmarkContent(
+              uiState = uiState.copy(bookmarks = filteredBookmarks),
+              onRefresh = onRefresh,
+              onBookmarkClick = onBookmarkDetailNavigate,
+              onBookmarkLongPress = onBookmarkLongPress,
+              modifier = Modifier.fillMaxSize())
+        }
       }
 }
 
