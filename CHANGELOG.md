@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/Omochice/Pinosu/compare/v0.6.0...v0.7.0) (2026-02-13)
+
+
+### Features
+
+* display OGP image on bookmark cards and detail screen ([#215](https://github.com/Omochice/Pinosu/issues/215)) ([a3f7656](https://github.com/Omochice/Pinosu/commit/a3f76569d04ba4afe0322c5c8c8c3bd72cc1a28e))
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.activity:activity-compose to v1.12.4 ([#211](https://github.com/Omochice/Pinosu/issues/211)) ([4d189d9](https://github.com/Omochice/Pinosu/commit/4d189d9bc32d69e4fedb4fd94b2cd8775236f781))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.02.00 ([#212](https://github.com/Omochice/Pinosu/issues/212)) ([b062ba2](https://github.com/Omochice/Pinosu/commit/b062ba2d6f838b1f6d62a9a969197867c3bad0b6))
+
 ## [0.6.0](https://github.com/Omochice/Pinosu/compare/v0.5.2...v0.6.0) (2026-02-08)
 
 
