@@ -138,6 +138,29 @@ class RelayBookmarkRepositoryTest {
     assertEquals("imageUrl should be null when metadata fetch fails", null, items[0].imageUrl)
   }
 
+  @Test
+  fun `getBookmarkList skips event when rTags contain only invalid URLs`() = runTest {
+    val event =
+        NostrEvent(
+            id = "eventInvalid",
+            pubkey = "pubkeyInvalid",
+            createdAt = 1_700_000_000L,
+            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            tags = listOf(listOf("r", "not-a-valid-url")),
+            content = "",
+            sig = "sigInvalid")
+
+    coEvery { localAuthDataSource.getRelayList() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+
+    val result = repository.getBookmarkList(TEST_VALID_NPUB)
+
+    assertTrue("Result should be success", result.isSuccess)
+    val items = result.getOrNull()!!.items
+    assertEquals("Event with only invalid rTags should be skipped", 0, items.size)
+  }
+
   companion object {
     /**
      * Valid test npub (fiatjaf's pubkey) that passes Bech32 checksum validation in Pubkey.parse()

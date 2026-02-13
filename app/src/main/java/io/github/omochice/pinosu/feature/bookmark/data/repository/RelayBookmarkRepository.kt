@@ -156,7 +156,11 @@ constructor(
             .map { "https://$it" }
             .filter { isValidUrl(it) }
 
-    val rTags = event.tags.filter { it.isNotEmpty() && it[0] == "r" }.mapNotNull { it.getOrNull(1) }
+    val rTags =
+        event.tags
+            .filter { it.isNotEmpty() && it[0] == "r" }
+            .mapNotNull { it.getOrNull(1) }
+            .filter { isValidUrl(it) }
 
     val urls =
         when {
