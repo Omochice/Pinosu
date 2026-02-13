@@ -37,4 +37,18 @@ class BookmarkItemTest {
 
     assertEquals("imageUrl should retain provided value", expectedUrl, item.imageUrl)
   }
+
+  @Test
+  fun `stableKey uses eventId when present`() {
+    val item = BookmarkItem(type = "event", eventId = "abc123")
+
+    assertEquals("event:abc123", item.stableKey)
+  }
+
+  @Test
+  fun `stableKey falls back to hashCode when eventId is null`() {
+    val item = BookmarkItem(type = "event", eventId = null)
+
+    assertEquals("event:${item.hashCode()}", item.stableKey)
+  }
 }

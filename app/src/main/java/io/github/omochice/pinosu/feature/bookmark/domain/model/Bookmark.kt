@@ -21,7 +21,11 @@ data class BookmarkItem(
     val event: BookmarkedEvent? = null,
     val urls: List<String> = emptyList(),
     val rawJson: String? = null,
-)
+) {
+  /** Stable key for Compose lazy list/grid item identity */
+  val stableKey: String
+    get() = "$type:${eventId ?: hashCode()}"
+}
 
 /**
  * Bookmarked event details

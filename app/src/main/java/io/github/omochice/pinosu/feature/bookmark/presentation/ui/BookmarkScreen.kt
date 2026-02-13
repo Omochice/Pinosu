@@ -199,12 +199,9 @@ private fun BookmarkListView(
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(
-            bookmarks,
-            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
-                bookmark ->
-              BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
-            }
+        items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
+          BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+        }
       }
 }
 
@@ -220,13 +217,9 @@ private fun BookmarkGridView(
       contentPadding = PaddingValues(16.dp),
       verticalItemSpacing = 8.dp,
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(
-            bookmarks,
-            key = { bookmark -> "${bookmark.type}:${bookmark.eventId ?: bookmark.hashCode()}" }) {
-                bookmark ->
-              BookmarkGridItemCard(
-                  bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
-            }
+        items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
+          BookmarkGridItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+        }
       }
 }
 
