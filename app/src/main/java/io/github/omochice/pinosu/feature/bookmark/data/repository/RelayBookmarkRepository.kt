@@ -211,7 +211,7 @@ constructor(
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
     const val KIND_BOOKMARK_LIST = 39701
-    const val PER_RELAY_TIMEOUT_MS = 10000L
+    const val PER_RELAY_TIMEOUT_MS = 10_000L
     const val DEFAULT_RELAY_URL = "wss://yabu.me"
 
     private fun isValidUrl(url: String): Boolean {

@@ -65,15 +65,9 @@
     <ID>UnderscoresInNumericLiterals:BookmarkViewModelTest.kt$BookmarkViewModelTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:Nip65EventParser.kt$Nip65EventParserImpl.Companion$10002</ID>
     <ID>UnderscoresInNumericLiterals:Nip65EventParserTest.kt$Nip65EventParserTest$10002</ID>
-    <ID>UnderscoresInNumericLiterals:Nip65EventParserTest.kt$Nip65EventParserTest$1234567890L</ID>
-    <ID>UnderscoresInNumericLiterals:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl.Companion$10000L</ID>
     <ID>UnderscoresInNumericLiterals:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$10002</ID>
-    <ID>UnderscoresInNumericLiterals:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$1234567890L</ID>
-    <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$1234567890L</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$39701</ID>
-    <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$1234567890</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$39701</ID>
-    <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$10000L</ID>
     <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
   </CurrentIssues>

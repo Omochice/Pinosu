@@ -72,7 +72,7 @@ constructor(
     const val BOOTSTRAP_RELAY_URL = "wss://yabu.me"
 
     /** Timeout for relay queries in milliseconds */
-    const val RELAY_TIMEOUT_MS = 10000L
+    const val RELAY_TIMEOUT_MS = 10_000L
 
     /** Expected length of hex-encoded public key */
     private const val HEX_PUBKEY_LENGTH = 64

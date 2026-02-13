@@ -83,7 +83,7 @@ class PostBookmarkUseCaseTest {
     val expectedEvent =
         UnsignedNostrEvent(
             pubkey = hexPubkey,
-            createdAt = 1234567890L,
+            createdAt = 1_234_567_890L,
             kind = 39701,
             tags = listOf(listOf("r", "https://example.com/article")),
             content = "Great article")

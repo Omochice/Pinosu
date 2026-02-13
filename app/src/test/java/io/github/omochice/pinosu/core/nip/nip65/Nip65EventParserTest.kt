@@ -110,7 +110,7 @@ class Nip65EventParserTest {
         NostrEvent(
             id = "test-id",
             pubkey = "test-pubkey",
-            createdAt = 1234567890L,
+            createdAt = 1_234_567_890L,
             kind = 1, // Wrong kind, should be 10002
             tags = listOf(listOf("r", "wss://relay.example.com")),
             content = "",
@@ -166,7 +166,7 @@ class Nip65EventParserTest {
     return NostrEvent(
         id = "test-event-id",
         pubkey = "test-pubkey",
-        createdAt = 1234567890L,
+        createdAt = 1_234_567_890L,
         kind = 10002,
         tags = tags,
         content = "",

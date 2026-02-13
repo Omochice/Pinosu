@@ -133,7 +133,7 @@ class Nip65RelayListFetcherTest {
   private fun createNip65Event(
       pubkey: String,
       tags: List<List<String>>,
-      createdAt: Long = 1234567890L
+      createdAt: Long = 1_234_567_890L
   ): NostrEvent {
     return NostrEvent(
         id = "test-event-id-${createdAt}",
