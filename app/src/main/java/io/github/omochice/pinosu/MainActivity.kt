@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
@@ -144,6 +145,18 @@ fun PinosuApp(
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
 
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val currentDestination = navBackStackEntry?.destination
+  val drawerGesturesEnabled =
+      currentDestination?.let { dest -> dest.hasRoute<Bookmark>() || dest.hasRoute<Main>() }
+          ?: false
+
+  LaunchedEffect(drawerGesturesEnabled) {
+    if (!drawerGesturesEnabled && drawerState.isOpen) {
+      drawerState.close()
+    }
+  }
+
   val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()
   val loginUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -180,6 +193,7 @@ fun PinosuApp(
 
   ModalNavigationDrawer(
       drawerState = drawerState,
+      gesturesEnabled = drawerGesturesEnabled,
       drawerContent = {
         AppDrawer(
             onNavigateToLicense = { navController.navigate(License) },
