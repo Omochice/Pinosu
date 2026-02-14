@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -143,12 +144,14 @@ private fun BookmarkPager(
       modifier = modifier,
   ) { page ->
     val filteredBookmarks =
-        when (BookmarkFilterMode.entries[page]) {
-          BookmarkFilterMode.Local ->
-              uiState.userHexPubkey?.let { hexPubkey ->
-                uiState.allBookmarks.filter { it.event?.author == hexPubkey }
-              } ?: emptyList()
-          BookmarkFilterMode.Global -> uiState.allBookmarks
+        remember(page, uiState.allBookmarks, uiState.userHexPubkey) {
+          when (BookmarkFilterMode.entries[page]) {
+            BookmarkFilterMode.Local ->
+                uiState.userHexPubkey?.let { hexPubkey ->
+                  uiState.allBookmarks.filter { it.event?.author == hexPubkey }
+                } ?: emptyList()
+            BookmarkFilterMode.Global -> uiState.allBookmarks
+          }
         }
     BookmarkContent(
         uiState = uiState,
