@@ -52,8 +52,8 @@ constructor(
   /**
    * Load bookmarks for the current logged-in user
    *
-   * Fetches all bookmarks from relays, stores in shared data pool, and applies filter based on
-   * selected tab.
+   * Fetches all bookmarks from relays and stores them in allBookmarks. Filtering is handled by the
+   * Composable layer (BookmarkPager).
    */
   fun loadBookmarks() {
     viewModelScope.launch {
@@ -93,7 +93,7 @@ constructor(
   /**
    * Select bookmark filter tab
    *
-   * Applies filter based on selected tab without re-fetching data from relay.
+   * Updates the selected tab state. Filtering is handled by the Composable layer (BookmarkPager).
    *
    * @param tab The filter mode to select (Local or Global)
    */
