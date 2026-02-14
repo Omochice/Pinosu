@@ -134,7 +134,7 @@ private fun BookmarkPager(
   }
 
   LaunchedEffect(pagerState) {
-    snapshotFlow { pagerState.currentPage }
+    snapshotFlow { pagerState.settledPage }
         .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
   }
 
