@@ -324,7 +324,11 @@ private fun BookmarkScreenWithDataPreview() {
                       tags = emptyList())),
       )
   BookmarkScreen(
-      uiState = BookmarkUiState(isLoading = false, allBookmarks = sampleBookmarks),
+      uiState =
+          BookmarkUiState(
+              isLoading = false,
+              allBookmarks = sampleBookmarks,
+              selectedTab = BookmarkFilterMode.Global),
       onRefresh = {},
       onLoad = {})
 }
