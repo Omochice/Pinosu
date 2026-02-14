@@ -52,8 +52,8 @@ constructor(
   /**
    * Load bookmarks for the current logged-in user
    *
-   * Fetches all bookmarks from relays, stores in shared data pool, and applies filter based on
-   * selected tab.
+   * Fetches all bookmarks from relays and stores them in allBookmarks. Filtering is handled by the
+   * Composable layer (BookmarkPager).
    */
   fun loadBookmarks() {
     viewModelScope.launch {
@@ -64,10 +64,7 @@ constructor(
               ?: run {
                 _uiState.value =
                     _uiState.value.copy(
-                        isLoading = false,
-                        error = "Not logged in",
-                        allBookmarks = emptyList(),
-                        bookmarks = emptyList())
+                        isLoading = false, error = "Not logged in", allBookmarks = emptyList())
                 return@launch
               }
 
@@ -78,13 +75,11 @@ constructor(
           onSuccess = { bookmarkList ->
             val allItems = bookmarkList?.items ?: emptyList()
             _uiState.update { state ->
-              val updatedState =
-                  state.copy(
-                      isLoading = false,
-                      allBookmarks = allItems,
-                      userHexPubkey = userHexPubkey,
-                      error = null)
-              updatedState.copy(bookmarks = filterBookmarks(updatedState))
+              state.copy(
+                  isLoading = false,
+                  allBookmarks = allItems,
+                  userHexPubkey = userHexPubkey,
+                  error = null)
             }
           },
           onFailure = { e ->
@@ -98,38 +93,16 @@ constructor(
   /**
    * Select bookmark filter tab
    *
-   * Applies filter based on selected tab without re-fetching data from relay.
+   * Updates the selected tab state. Filtering is handled by the Composable layer (BookmarkPager).
    *
    * @param tab The filter mode to select (Local or Global)
    */
   fun selectTab(tab: BookmarkFilterMode) {
     _uiState.update { state ->
       if (state.selectedTab != tab) {
-        val newState = state.copy(selectedTab = tab)
-        newState.copy(bookmarks = filterBookmarks(newState))
+        state.copy(selectedTab = tab)
       } else {
         state
-      }
-    }
-  }
-
-  /**
-   * Filter bookmarks based on selected tab
-   *
-   * Local tab shows only bookmarks authored by the logged-in user. Global tab shows all bookmarks.
-   *
-   * @param state Current UI state to filter from
-   * @return Filtered list of bookmarks
-   */
-  private fun filterBookmarks(state: BookmarkUiState): List<BookmarkItem> {
-    return when (state.selectedTab) {
-      BookmarkFilterMode.Local -> {
-        state.userHexPubkey?.let { hexPubkey ->
-          state.allBookmarks.filter { it.event?.author == hexPubkey }
-        } ?: emptyList()
-      }
-      BookmarkFilterMode.Global -> {
-        state.allBookmarks
       }
     }
   }

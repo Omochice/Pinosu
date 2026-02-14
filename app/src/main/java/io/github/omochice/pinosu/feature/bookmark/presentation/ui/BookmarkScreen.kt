@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -29,6 +31,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -99,13 +103,64 @@ fun BookmarkScreen(
               contentDescription = stringResource(R.string.cd_add_bookmark))
         }
       }) { paddingValues ->
-        BookmarkContent(
+        BookmarkPager(
             uiState = uiState,
+            onTabSelected = onTabSelected,
             onRefresh = onRefresh,
             onBookmarkClick = onBookmarkDetailNavigate,
             onBookmarkLongPress = onBookmarkLongPress,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
+}
+
+@Composable
+private fun BookmarkPager(
+    uiState: BookmarkUiState,
+    onTabSelected: (BookmarkFilterMode) -> Unit,
+    onRefresh: () -> Unit,
+    onBookmarkClick: (BookmarkItem) -> Unit,
+    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+  val pagerState =
+      rememberPagerState(
+          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
+          pageCount = { BookmarkFilterMode.entries.size })
+
+  LaunchedEffect(uiState.selectedTab) {
+    val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
+    if (pagerState.currentPage != targetPage) {
+      pagerState.animateScrollToPage(targetPage)
+    }
+  }
+
+  LaunchedEffect(pagerState) {
+    snapshotFlow { pagerState.settledPage }
+        .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
+  }
+
+  HorizontalPager(
+      state = pagerState,
+      modifier = modifier,
+  ) { page ->
+    val filteredBookmarks =
+        remember(page, uiState.allBookmarks, uiState.userHexPubkey) {
+          when (BookmarkFilterMode.entries[page]) {
+            BookmarkFilterMode.Local ->
+                uiState.userHexPubkey?.let { hexPubkey ->
+                  uiState.allBookmarks.filter { it.event?.author == hexPubkey }
+                } ?: emptyList()
+            BookmarkFilterMode.Global -> uiState.allBookmarks
+          }
+        }
+    BookmarkContent(
+        uiState = uiState,
+        bookmarks = filteredBookmarks,
+        onRefresh = onRefresh,
+        onBookmarkClick = onBookmarkClick,
+        onBookmarkLongPress = onBookmarkLongPress,
+        modifier = Modifier.fillMaxSize())
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -142,6 +197,7 @@ private fun BookmarkTopBar(
 @Composable
 private fun BookmarkContent(
     uiState: BookmarkUiState,
+    bookmarks: List<BookmarkItem>,
     onRefresh: () -> Unit,
     onBookmarkClick: (BookmarkItem) -> Unit,
     onBookmarkLongPress: (BookmarkItem) -> Unit,
@@ -149,12 +205,12 @@ private fun BookmarkContent(
 ) {
   PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
     when {
-      uiState.isLoading && uiState.bookmarks.isEmpty() -> {
+      uiState.isLoading && bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator()
         }
       }
-      uiState.error != null && uiState.bookmarks.isEmpty() -> {
+      uiState.error != null && bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -164,7 +220,7 @@ private fun BookmarkContent(
           }
         }
       }
-      uiState.bookmarks.isEmpty() -> {
+      bookmarks.isEmpty() -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(
               text = stringResource(R.string.message_no_bookmarks),
@@ -175,12 +231,12 @@ private fun BookmarkContent(
         when (uiState.displayMode) {
           BookmarkDisplayMode.List ->
               BookmarkListView(
-                  bookmarks = uiState.bookmarks,
+                  bookmarks = bookmarks,
                   onClick = onBookmarkClick,
                   onLongPress = onBookmarkLongPress)
           BookmarkDisplayMode.Grid ->
               BookmarkGridView(
-                  bookmarks = uiState.bookmarks,
+                  bookmarks = bookmarks,
                   onClick = onBookmarkClick,
                   onLongPress = onBookmarkLongPress)
         }
@@ -232,10 +288,7 @@ private fun BookmarkScreenLoadingPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenEmptyPreview() {
-  BookmarkScreen(
-      uiState = BookmarkUiState(isLoading = false, bookmarks = emptyList()),
-      onRefresh = {},
-      onLoad = {})
+  BookmarkScreen(uiState = BookmarkUiState(isLoading = false), onRefresh = {}, onLoad = {})
 }
 
 @Preview(showBackground = true)
@@ -271,7 +324,11 @@ private fun BookmarkScreenWithDataPreview() {
                       tags = emptyList())),
       )
   BookmarkScreen(
-      uiState = BookmarkUiState(isLoading = false, bookmarks = sampleBookmarks),
+      uiState =
+          BookmarkUiState(
+              isLoading = false,
+              allBookmarks = sampleBookmarks,
+              selectedTab = BookmarkFilterMode.Global),
       onRefresh = {},
       onLoad = {})
 }

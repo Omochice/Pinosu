@@ -180,6 +180,7 @@ fun PinosuApp(
 
   ModalNavigationDrawer(
       drawerState = drawerState,
+      gesturesEnabled = false,
       drawerContent = {
         AppDrawer(
             onNavigateToLicense = { navController.navigate(License) },
