@@ -55,7 +55,7 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
   val appIcon =
       remember(context) {
         val drawable = context.packageManager.getApplicationIcon(context.applicationInfo)
-        drawableToBitmap(drawable).asImageBitmap()
+        adaptiveIconToBitmap(drawable).asImageBitmap()
       }
 
   Scaffold(
@@ -105,13 +105,32 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
       }
 }
 
-private fun drawableToBitmap(drawable: android.graphics.drawable.Drawable): Bitmap {
-  val bitmap =
-      Bitmap.createBitmap(
-          drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+/**
+ * Renders a Drawable to a Bitmap without platform launcher mask applied.
+ *
+ * For AdaptiveIconDrawable, draws background and foreground layers directly so the Compose-side
+ * RoundedCornerShape clip determines the final shape instead of the system's circular/squircle
+ * mask.
+ */
+private const val ADAPTIVE_ICON_SIZE = 108
+
+private fun adaptiveIconToBitmap(drawable: android.graphics.drawable.Drawable): Bitmap {
+  val size = ADAPTIVE_ICON_SIZE
+  val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
   val canvas = Canvas(bitmap)
-  drawable.setBounds(0, 0, canvas.width, canvas.height)
-  drawable.draw(canvas)
+  if (drawable is android.graphics.drawable.AdaptiveIconDrawable) {
+    drawable.background?.let { bg ->
+      bg.setBounds(0, 0, size, size)
+      bg.draw(canvas)
+    }
+    drawable.foreground?.let { fg ->
+      fg.setBounds(0, 0, size, size)
+      fg.draw(canvas)
+    }
+  } else {
+    drawable.setBounds(0, 0, size, size)
+    drawable.draw(canvas)
+  }
   return bitmap
 }
 
