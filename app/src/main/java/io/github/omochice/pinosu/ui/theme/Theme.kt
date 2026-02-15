@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.ui.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,7 +9,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowInsetsControllerCompat
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 
 private val LightColorScheme = lightColorScheme()
@@ -50,6 +54,17 @@ fun PinosuTheme(
           LightColorScheme
         }
       }
+
+  val view = LocalView.current
+  if (!view.isInEditMode) {
+    SideEffect {
+      val activity = view.context as Activity
+      WindowInsetsControllerCompat(activity.window, view).apply {
+        isAppearanceLightStatusBars = !darkTheme
+        isAppearanceLightNavigationBars = !darkTheme
+      }
+    }
+  }
 
   MaterialTheme(colorScheme = colorScheme, content = content)
 }
