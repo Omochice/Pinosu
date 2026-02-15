@@ -1,12 +1,13 @@
 package io.github.omochice.pinosu.feature.settings.presentation.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +38,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onDisplayModeChange Callback when display mode is changed
  * @param onThemeModeChange Callback when theme mode is changed
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
@@ -64,13 +65,11 @@ fun SettingsScreen(
 
           Spacer(modifier = Modifier.height(8.dp))
 
-          Row {
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = uiState.displayMode == BookmarkDisplayMode.List,
                 onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
                 label = { Text(stringResource(R.string.display_mode_list)) })
-
-            Spacer(modifier = Modifier.width(8.dp))
 
             FilterChip(
                 selected = uiState.displayMode == BookmarkDisplayMode.Grid,
@@ -86,20 +85,16 @@ fun SettingsScreen(
 
           Spacer(modifier = Modifier.height(8.dp))
 
-          Row {
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = uiState.themeMode == ThemeMode.System,
                 onClick = { onThemeModeChange(ThemeMode.System) },
                 label = { Text(stringResource(R.string.theme_mode_system)) })
 
-            Spacer(modifier = Modifier.width(8.dp))
-
             FilterChip(
                 selected = uiState.themeMode == ThemeMode.Light,
                 onClick = { onThemeModeChange(ThemeMode.Light) },
                 label = { Text(stringResource(R.string.theme_mode_light)) })
-
-            Spacer(modifier = Modifier.width(8.dp))
 
             FilterChip(
                 selected = uiState.themeMode == ThemeMode.Dark,
