@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsUiState
 
 /**
@@ -34,6 +35,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param uiState Current settings UI state
  * @param onNavigateUp Callback when back navigation is triggered
  * @param onDisplayModeChange Callback when display mode is changed
+ * @param onThemeModeChange Callback when theme mode is changed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +43,7 @@ fun SettingsScreen(
     uiState: SettingsUiState,
     onNavigateUp: () -> Unit,
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
+    onThemeModeChange: (ThemeMode) -> Unit,
 ) {
   Scaffold(
       topBar = {
@@ -74,6 +77,35 @@ fun SettingsScreen(
                 onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
                 label = { Text(stringResource(R.string.display_mode_grid)) })
           }
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          Text(
+              text = stringResource(R.string.settings_theme_mode),
+              style = MaterialTheme.typography.titleMedium)
+
+          Spacer(modifier = Modifier.height(8.dp))
+
+          Row {
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.System,
+                onClick = { onThemeModeChange(ThemeMode.System) },
+                label = { Text(stringResource(R.string.theme_mode_system)) })
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.Light,
+                onClick = { onThemeModeChange(ThemeMode.Light) },
+                label = { Text(stringResource(R.string.theme_mode_light)) })
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.Dark,
+                onClick = { onThemeModeChange(ThemeMode.Dark) },
+                label = { Text(stringResource(R.string.theme_mode_dark)) })
+          }
         }
       }
 }
@@ -84,7 +116,8 @@ private fun SettingsScreenPreview() {
   SettingsScreen(
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.List),
       onNavigateUp = {},
-      onDisplayModeChange = {})
+      onDisplayModeChange = {},
+      onThemeModeChange = {})
 }
 
 @Preview(showBackground = true)
@@ -93,5 +126,6 @@ private fun SettingsScreenGridPreview() {
   SettingsScreen(
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.Grid),
       onNavigateUp = {},
-      onDisplayModeChange = {})
+      onDisplayModeChange = {},
+      onThemeModeChange = {})
 }
