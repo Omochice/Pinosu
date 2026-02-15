@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.data.repository
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -25,4 +26,21 @@ interface SettingsRepository {
    * @param mode Display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode)
+
+  /** Observable StateFlow of theme mode preference for reactive updates */
+  val themeModeFlow: StateFlow<ThemeMode>
+
+  /**
+   * Retrieve theme mode preference.
+   *
+   * @return Stored theme mode, defaults to System if not set
+   */
+  fun getThemeMode(): ThemeMode
+
+  /**
+   * Save theme mode preference.
+   *
+   * @param mode Theme mode to save
+   */
+  fun setThemeMode(mode: ThemeMode)
 }

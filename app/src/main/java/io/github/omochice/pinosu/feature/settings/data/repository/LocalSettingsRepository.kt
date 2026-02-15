@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.settings.data.repository
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.data.local.LocalSettingsDataSource
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.StateFlow
@@ -22,5 +23,13 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override fun setDisplayMode(mode: BookmarkDisplayMode) {
     localSettingsDataSource.setDisplayMode(mode)
+  }
+
+  override val themeModeFlow: StateFlow<ThemeMode> = localSettingsDataSource.themeModeFlow
+
+  override fun getThemeMode(): ThemeMode = localSettingsDataSource.getThemeMode()
+
+  override fun setThemeMode(mode: ThemeMode) {
+    localSettingsDataSource.setThemeMode(mode)
   }
 }
