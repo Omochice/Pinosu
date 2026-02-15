@@ -1,12 +1,19 @@
 package io.github.omochice.pinosu.feature.appinfo.presentation.ui
 
 import android.content.ClipData
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
@@ -18,10 +25,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +52,18 @@ import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiSta
 @Composable
 fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
   val clipboardManager = LocalClipboardManager.current
+  val context = LocalContext.current
+  val isInPreview = LocalInspectionMode.current
+  val appIcon =
+      remember(context) {
+        if (isInPreview) {
+          Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()
+        } else {
+          val density = context.resources.displayMetrics.density
+          val drawable = context.packageManager.getApplicationIcon(context.applicationInfo)
+          adaptiveIconToBitmap(drawable, density).asImageBitmap()
+        }
+      }
 
   Scaffold(
       topBar = {
@@ -54,6 +78,15 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
             })
       }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)) {
+          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Image(
+                bitmap = appIcon,
+                contentDescription = null,
+                modifier = Modifier.size(96.dp).clip(RoundedCornerShape(16.dp)))
+          }
+
+          Spacer(modifier = Modifier.height(16.dp))
+
           Text(
               text = stringResource(R.string.app_name),
               style = MaterialTheme.typography.headlineMedium)
@@ -77,6 +110,38 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
           }
         }
       }
+}
+
+/**
+ * Renders a Drawable to a Bitmap without platform launcher mask applied.
+ *
+ * For AdaptiveIconDrawable, draws background and foreground layers directly so the Compose-side
+ * RoundedCornerShape clip determines the final shape instead of the system's circular/squircle
+ * mask.
+ */
+private const val ADAPTIVE_ICON_SIZE_DP = 108
+
+private fun adaptiveIconToBitmap(
+    drawable: android.graphics.drawable.Drawable,
+    density: Float
+): Bitmap {
+  val size = (ADAPTIVE_ICON_SIZE_DP * density).toInt()
+  val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+  val canvas = Canvas(bitmap)
+  if (drawable is android.graphics.drawable.AdaptiveIconDrawable) {
+    drawable.background?.let { bg ->
+      bg.setBounds(0, 0, size, size)
+      bg.draw(canvas)
+    }
+    drawable.foreground?.let { fg ->
+      fg.setBounds(0, 0, size, size)
+      fg.draw(canvas)
+    }
+  } else {
+    drawable.setBounds(0, 0, size, size)
+    drawable.draw(canvas)
+  }
+  return bitmap
 }
 
 @Preview(showBackground = true)
