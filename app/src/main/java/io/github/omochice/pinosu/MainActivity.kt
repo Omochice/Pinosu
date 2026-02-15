@@ -67,7 +67,8 @@ import kotlinx.coroutines.launch
  * Main Activity for Pinosu application
  *
  * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles NIP-55
- * signer integration for Nostr authentication and ACTION_SEND intents for shared content.
+ * signer integration for Nostr authentication, ACTION_SEND intents for shared content, and theme
+ * mode observation for applying user's theme preference.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
