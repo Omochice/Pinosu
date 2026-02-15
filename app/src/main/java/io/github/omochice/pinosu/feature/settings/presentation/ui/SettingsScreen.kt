@@ -1,12 +1,13 @@
 package io.github.omochice.pinosu.feature.settings.presentation.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsUiState
 
 /**
@@ -34,13 +36,15 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param uiState Current settings UI state
  * @param onNavigateUp Callback when back navigation is triggered
  * @param onDisplayModeChange Callback when display mode is changed
+ * @param onThemeModeChange Callback when theme mode is changed
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
     onNavigateUp: () -> Unit,
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
+    onThemeModeChange: (ThemeMode) -> Unit,
 ) {
   Scaffold(
       topBar = {
@@ -61,18 +65,41 @@ fun SettingsScreen(
 
           Spacer(modifier = Modifier.height(8.dp))
 
-          Row {
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = uiState.displayMode == BookmarkDisplayMode.List,
                 onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
                 label = { Text(stringResource(R.string.display_mode_list)) })
 
-            Spacer(modifier = Modifier.width(8.dp))
-
             FilterChip(
                 selected = uiState.displayMode == BookmarkDisplayMode.Grid,
                 onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
                 label = { Text(stringResource(R.string.display_mode_grid)) })
+          }
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          Text(
+              text = stringResource(R.string.settings_theme_mode),
+              style = MaterialTheme.typography.titleMedium)
+
+          Spacer(modifier = Modifier.height(8.dp))
+
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.System,
+                onClick = { onThemeModeChange(ThemeMode.System) },
+                label = { Text(stringResource(R.string.theme_mode_system)) })
+
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.Light,
+                onClick = { onThemeModeChange(ThemeMode.Light) },
+                label = { Text(stringResource(R.string.theme_mode_light)) })
+
+            FilterChip(
+                selected = uiState.themeMode == ThemeMode.Dark,
+                onClick = { onThemeModeChange(ThemeMode.Dark) },
+                label = { Text(stringResource(R.string.theme_mode_dark)) })
           }
         }
       }
@@ -84,7 +111,8 @@ private fun SettingsScreenPreview() {
   SettingsScreen(
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.List),
       onNavigateUp = {},
-      onDisplayModeChange = {})
+      onDisplayModeChange = {},
+      onThemeModeChange = {})
 }
 
 @Preview(showBackground = true)
@@ -93,5 +121,6 @@ private fun SettingsScreenGridPreview() {
   SettingsScreen(
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.Grid),
       onNavigateUp = {},
-      onDisplayModeChange = {})
+      onDisplayModeChange = {},
+      onThemeModeChange = {})
 }

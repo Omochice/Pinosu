@@ -52,6 +52,7 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
@@ -65,7 +66,8 @@ import kotlinx.coroutines.launch
  * Main Activity for Pinosu application
  *
  * Entry point of the app that sets up Hilt dependency injection and Compose UI. Handles NIP-55
- * signer integration for Nostr authentication and ACTION_SEND intents for shared content.
+ * signer integration for Nostr authentication, ACTION_SEND intents for shared content, and theme
+ * mode observation for applying user's theme preference.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -75,6 +77,8 @@ class MainActivity : ComponentActivity() {
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
   @Inject lateinit var extractSharedContentUseCase: ExtractSharedContentUseCase
+
+  @Inject lateinit var observeThemeModeUseCase: ObserveThemeModeUseCase
 
   @androidx.annotation.VisibleForTesting
   internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
@@ -92,7 +96,9 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      PinosuTheme {
+      val themeMode by observeThemeModeUseCase().collectAsStateWithLifecycle()
+
+      PinosuTheme(themeMode = themeMode) {
         PinosuApp(
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
@@ -408,7 +414,8 @@ fun PinosuApp(
                 SettingsScreen(
                     uiState = settingsUiState,
                     onNavigateUp = { navController.navigateUp() },
-                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) })
+                    onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) },
+                    onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) })
               }
         }
       }

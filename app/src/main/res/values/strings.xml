@@ -79,6 +79,10 @@
     <string name="settings_display_mode">ブックマーク表示</string>
     <string name="display_mode_list">リスト</string>
     <string name="display_mode_grid">グリッド</string>
+    <string name="settings_theme_mode">テーマ</string>
+    <string name="theme_mode_system">システム設定に従う</string>
+    <string name="theme_mode_light">ライト</string>
+    <string name="theme_mode_dark">ダーク</string>
 
     <!-- ブックマーク詳細画面 -->
     <string name="title_bookmark_detail">ブックマーク詳細</string>
