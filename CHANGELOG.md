@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/Omochice/Pinosu/compare/v0.8.0...v0.9.0) (2026-02-15)
+
+
+### Features
+
+* add dark mode support with Material You ([#226](https://github.com/Omochice/Pinosu/issues/226)) ([d9008c0](https://github.com/Omochice/Pinosu/commit/d9008c0f2d42c14b85f1e6859fb2d6e6bc6a6339))
+
 ## [0.8.0](https://github.com/Omochice/Pinosu/compare/v0.7.0...v0.8.0) (2026-02-15)
 
 
