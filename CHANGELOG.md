@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/Omochice/Pinosu/compare/v0.7.0...v0.8.0) (2026-02-15)
+
+
+### Features
+
+* add swipe gesture to switch between Local/Global bookmark tabs ([#222](https://github.com/Omochice/Pinosu/issues/222)) ([d848d84](https://github.com/Omochice/Pinosu/commit/d848d84aae5da6f1a67fad4a93a2c00d390a59dc))
+* add the application icon ([#224](https://github.com/Omochice/Pinosu/issues/224)) ([c6e6f04](https://github.com/Omochice/Pinosu/commit/c6e6f04fdab113b352f7972669b0e9e95c089a1c))
+
 ## [0.7.0](https://github.com/Omochice/Pinosu/compare/v0.6.0...v0.7.0) (2026-02-13)
 
 
