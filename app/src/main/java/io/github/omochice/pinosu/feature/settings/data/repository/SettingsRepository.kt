@@ -13,6 +13,9 @@ interface SettingsRepository {
   /** Observable StateFlow of display mode preference for reactive updates */
   val displayModeFlow: StateFlow<BookmarkDisplayMode>
 
+  /** Observable StateFlow of theme mode preference for reactive updates */
+  val themeModeFlow: StateFlow<ThemeMode>
+
   /**
    * Retrieve bookmark display mode preference.
    *
@@ -26,9 +29,6 @@ interface SettingsRepository {
    * @param mode Display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode)
-
-  /** Observable StateFlow of theme mode preference for reactive updates */
-  val themeModeFlow: StateFlow<ThemeMode>
 
   /**
    * Retrieve theme mode preference.

@@ -43,8 +43,12 @@ fun PinosuTheme(
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+          DarkColorScheme
+        }
+        else -> {
+          LightColorScheme
+        }
       }
 
   MaterialTheme(colorScheme = colorScheme, content = content)

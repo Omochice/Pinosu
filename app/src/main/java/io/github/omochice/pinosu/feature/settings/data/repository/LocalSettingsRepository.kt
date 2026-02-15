@@ -19,13 +19,13 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
   override val displayModeFlow: StateFlow<BookmarkDisplayMode> =
       localSettingsDataSource.displayModeFlow
 
+  override val themeModeFlow: StateFlow<ThemeMode> = localSettingsDataSource.themeModeFlow
+
   override fun getDisplayMode(): BookmarkDisplayMode = localSettingsDataSource.getDisplayMode()
 
   override fun setDisplayMode(mode: BookmarkDisplayMode) {
     localSettingsDataSource.setDisplayMode(mode)
   }
-
-  override val themeModeFlow: StateFlow<ThemeMode> = localSettingsDataSource.themeModeFlow
 
   override fun getThemeMode(): ThemeMode = localSettingsDataSource.getThemeMode()
 
