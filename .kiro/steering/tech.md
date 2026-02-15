@@ -31,8 +31,8 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Min SDK**: 30
 - **Target SDK**: 36
 - **Kotlin**: 2.3.10
-- **Compose BOM**: 2026.01.01
-- **Gradle Plugin**: 9.0.0
+- **Compose BOM**: 2026.02.00
+- **Gradle Plugin**: 9.0.1
 - **Hilt**: 2.59.1 (requires metadata compatibility workaround for Kotlin 2.3.x)
 
 ### Architecture
@@ -72,6 +72,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
 - **HTML Parsing**: Jsoup 1.22.1 for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
+- **Image Loading**: Coil 3.3.0 with OkHttp integration (coil-compose, coil-network-okhttp)
 
 ### Testing
 
@@ -114,6 +115,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations
 - **Code Coverage**: Kover for unit test coverage, Jacoco for instrumentation test reports
 - **Version Tracking**: BuildConfig.COMMIT_HASH for git commit identification
+- **License Management**: AboutLibraries 13.2.1 for open-source license display
 
 ### Development Tooling
 
@@ -121,3 +123,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Linting**: detekt (Kotlin static analysis), actionlint (GitHub Actions)
 - **Spell Check**: typos for typo detection
 - **Scripts**: Managed via devbox shell scripts (fmt, check, test, version-up)
+
+---
+
+_Updated: 2026-02-15 - Updated Compose BOM to 2026.02.00, AGP to 9.0.1, added Coil and AboutLibraries_
