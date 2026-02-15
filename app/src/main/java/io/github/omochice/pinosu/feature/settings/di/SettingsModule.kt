@@ -8,8 +8,12 @@ import io.github.omochice.pinosu.feature.settings.data.repository.LocalSettingsR
 import io.github.omochice.pinosu.feature.settings.data.repository.SettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCaseImpl
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCaseImpl
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCaseImpl
 
 /**
  * Hilt module for Settings feature dependency injection.
@@ -27,5 +31,12 @@ object SettingsModule {
 
   @Provides
   fun provideObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase =
+      impl
+
+  @Provides
+  fun provideSetThemeModeUseCase(impl: SetThemeModeUseCaseImpl): SetThemeModeUseCase = impl
+
+  @Provides
+  fun provideObserveThemeModeUseCase(impl: ObserveThemeModeUseCaseImpl): ObserveThemeModeUseCase =
       impl
 }
