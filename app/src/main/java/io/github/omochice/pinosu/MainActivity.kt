@@ -52,6 +52,8 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
@@ -76,6 +78,8 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var extractSharedContentUseCase: ExtractSharedContentUseCase
 
+  @Inject lateinit var observeThemeModeUseCase: ObserveThemeModeUseCase
+
   @androidx.annotation.VisibleForTesting
   internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
 
@@ -92,7 +96,10 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      PinosuTheme {
+      val themeMode by
+          observeThemeModeUseCase().collectAsStateWithLifecycle(initialValue = ThemeMode.System)
+
+      PinosuTheme(themeMode = themeMode) {
         PinosuApp(
             viewModel = loginViewModel,
             nip55SignerClient = nip55SignerClient,
