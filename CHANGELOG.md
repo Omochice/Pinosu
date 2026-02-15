@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/Omochice/Pinosu/compare/v0.9.0...v0.9.1) (2026-02-15)
+
+
+### Bug Fixes
+
+* remove windowLightStatusBar override that broke dark mode status bar ([#230](https://github.com/Omochice/Pinosu/issues/230)) ([028df50](https://github.com/Omochice/Pinosu/commit/028df5033d0a8203b6b454b605a4e97796aeee34))
+
 ## [0.9.0](https://github.com/Omochice/Pinosu/compare/v0.8.0...v0.9.0) (2026-02-15)
 
 
