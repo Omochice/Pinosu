@@ -52,7 +52,6 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
-import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
@@ -97,8 +96,7 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      val themeMode by
-          observeThemeModeUseCase().collectAsStateWithLifecycle(initialValue = ThemeMode.System)
+      val themeMode by observeThemeModeUseCase().collectAsStateWithLifecycle()
 
       PinosuTheme(themeMode = themeMode) {
         PinosuApp(
