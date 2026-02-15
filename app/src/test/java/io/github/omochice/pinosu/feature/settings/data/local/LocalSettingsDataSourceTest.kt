@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -102,5 +103,77 @@ class LocalSettingsDataSourceTest {
     val newDataSource = LocalSettingsDataSource(context)
 
     assertEquals(BookmarkDisplayMode.Grid, newDataSource.displayModeFlow.value)
+  }
+
+  @Test
+  fun `getThemeMode returns System when no value is stored`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_THEME_MODE, null) } returns null
+
+    val result = dataSource.getThemeMode()
+
+    assertEquals(ThemeMode.System, result)
+  }
+
+  @Test
+  fun `getThemeMode returns Light when stored value is Light`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_THEME_MODE, null) } returns
+        "Light"
+
+    val result = dataSource.getThemeMode()
+
+    assertEquals(ThemeMode.Light, result)
+  }
+
+  @Test
+  fun `getThemeMode returns Dark when stored value is Dark`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_THEME_MODE, null) } returns
+        "Dark"
+
+    val result = dataSource.getThemeMode()
+
+    assertEquals(ThemeMode.Dark, result)
+  }
+
+  @Test
+  fun `getThemeMode returns System when stored value is invalid`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_THEME_MODE, null) } returns
+        "InvalidValue"
+
+    val result = dataSource.getThemeMode()
+
+    assertEquals(ThemeMode.System, result)
+  }
+
+  @Test
+  fun `setThemeMode saves Light value`() {
+    dataSource.setThemeMode(ThemeMode.Light)
+
+    verify { editor.putString(LocalSettingsDataSource.KEY_THEME_MODE, "Light") }
+    verify { editor.apply() }
+  }
+
+  @Test
+  fun `setThemeMode saves Dark value`() {
+    dataSource.setThemeMode(ThemeMode.Dark)
+
+    verify { editor.putString(LocalSettingsDataSource.KEY_THEME_MODE, "Dark") }
+    verify { editor.apply() }
+  }
+
+  @Test
+  fun `setThemeMode updates themeModeFlow with new value`() {
+    dataSource.setThemeMode(ThemeMode.Dark)
+
+    assertEquals(ThemeMode.Dark, dataSource.themeModeFlow.value)
+  }
+
+  @Test
+  fun `themeModeFlow is initialized with stored value on construction`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_THEME_MODE, null) } returns
+        "Dark"
+
+    val newDataSource = LocalSettingsDataSource(context)
+
+    assertEquals(ThemeMode.Dark, newDataSource.themeModeFlow.value)
   }
 }
