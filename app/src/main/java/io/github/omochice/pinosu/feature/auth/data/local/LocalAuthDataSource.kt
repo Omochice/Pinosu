@@ -48,6 +48,8 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
       }
     } catch (e: IOException) {
       throw StorageError.WriteError("Failed to save user: ${e.message}")
+    } catch (e: IllegalStateException) {
+      throw StorageError.WriteError("Failed to save user: ${e.message}")
     }
   }
 
@@ -71,6 +73,9 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
     } catch (e: IOException) {
       Log.w(TAG, "Failed to read user data: ${e.message}")
       null
+    } catch (e: IllegalStateException) {
+      Log.w(TAG, "Failed to read user data: ${e.message}")
+      null
     }
   }
 
@@ -84,6 +89,8 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
     try {
       activeDataStore.updateData { current -> current.copy(relayList = relays) }
     } catch (e: IOException) {
+      throw StorageError.WriteError("Failed to save relay list: ${e.message}")
+    } catch (e: IllegalStateException) {
       throw StorageError.WriteError("Failed to save relay list: ${e.message}")
     }
   }
@@ -99,6 +106,9 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
     } catch (e: IOException) {
       Log.w(TAG, "Failed to read relay list: ${e.message}")
       null
+    } catch (e: IllegalStateException) {
+      Log.w(TAG, "Failed to read relay list: ${e.message}")
+      null
     }
   }
 
@@ -111,6 +121,8 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
     try {
       activeDataStore.updateData { AuthData.DEFAULT }
     } catch (e: IOException) {
+      throw StorageError.WriteError("Failed to clear login state: ${e.message}")
+    } catch (e: IllegalStateException) {
       throw StorageError.WriteError("Failed to clear login state: ${e.message}")
     }
   }
