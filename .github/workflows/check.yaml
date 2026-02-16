@@ -15,6 +15,7 @@ jobs:
       # keep-sorted start
       actions: ${{steps.changes.outputs.actions}}
       android: ${{steps.changes.outputs.android}}
+      devbox: ${{steps.changes.outputs.devbox}}
       renovate: ${{steps.changes.outputs.renovate}}
       version: ${{steps.changes.outputs.version}}
       # keep-sorted end
@@ -42,6 +43,8 @@ jobs:
               - gradlew.bat
               - app/**/*
               - devbox.json
+              - devbox.lock
+            devbox:
               - devbox.lock
             renovate:
               - renovate.json5
@@ -226,6 +229,33 @@ jobs:
         with:
           enable-cache: true
       - run: devbox run renovate-config-validator --strict
+  check-devbox:
+    timeout-minutes: 5
+    name: Check devbox ${{ matrix.name }}
+    needs: path-filter
+    if: needs.path-filter.outputs.devbox == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux x86_64
+          - os: ubuntu-24.04-arm
+            name: Linux ARM64
+          - os: macos-latest
+            name: macOS ARM64
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - name: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: jetify-com/devbox-install-action@a0d2d53632934ae004f878c840055956d9f741b0 # v0.14.0
+        with:
+          enable-cache: true
+      - run: devbox run echo "ok"
   check-version-code:
     timeout-minutes: 5
     name: Check versionCode increment
@@ -299,6 +329,7 @@ jobs:
       - build-apk
       - check-actions
       - check-android
+      - check-devbox
       - check-format
       - check-renovate
       - check-version-code
