@@ -1,10 +1,12 @@
 package io.github.omochice.pinosu.feature.auth.data.local
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
@@ -44,7 +46,7 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
             lastAccessed = currentTime,
             relayList = current.relayList)
       }
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       throw StorageError.WriteError("Failed to save user: ${e.message}")
     }
   }
@@ -66,7 +68,8 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
       }
 
       User(pubkey)
-    } catch (_: Exception) {
+    } catch (e: IOException) {
+      Log.w(TAG, "Failed to read user data: ${e.message}")
       null
     }
   }
@@ -80,7 +83,7 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
   suspend fun saveRelayList(relays: List<RelayConfig>) {
     try {
       activeDataStore.updateData { current -> current.copy(relayList = relays) }
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       throw StorageError.WriteError("Failed to save relay list: ${e.message}")
     }
   }
@@ -93,7 +96,8 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
   suspend fun getRelayList(): List<RelayConfig>? {
     return try {
       activeDataStore.data.first().relayList
-    } catch (_: Exception) {
+    } catch (e: IOException) {
+      Log.w(TAG, "Failed to read relay list: ${e.message}")
       null
     }
   }
@@ -106,8 +110,12 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
   suspend fun clearLoginState() {
     try {
       activeDataStore.updateData { AuthData.DEFAULT }
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       throw StorageError.WriteError("Failed to clear login state: ${e.message}")
     }
+  }
+
+  companion object {
+    private const val TAG = "LocalAuthDataSource"
   }
 }
