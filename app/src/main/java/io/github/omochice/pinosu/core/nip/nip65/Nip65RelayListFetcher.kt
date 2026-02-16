@@ -61,6 +61,8 @@ constructor(
       Result.success(relays)
     } catch (e: IOException) {
       Result.failure(e)
+    } catch (e: IllegalArgumentException) {
+      Result.failure(e)
     }
   }
 
