@@ -75,6 +75,9 @@ constructor(
     } catch (e: IOException) {
       Log.e(TAG, "Error getting comments", e)
       Result.failure(e)
+    } catch (e: IllegalArgumentException) {
+      Log.e(TAG, "Error getting comments", e)
+      Result.failure(e)
     }
   }
 
