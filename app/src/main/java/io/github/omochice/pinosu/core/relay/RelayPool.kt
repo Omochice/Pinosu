@@ -247,9 +247,6 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
                 is NostrRelayMessage.Closed -> close()
                 else -> {}
               }
-            } catch (e: SerializationException) {
-              Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
-              close(e)
             } catch (e: IllegalArgumentException) {
               Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
               close(e)
