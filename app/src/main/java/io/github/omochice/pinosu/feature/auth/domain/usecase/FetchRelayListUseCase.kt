@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
@@ -54,7 +55,7 @@ constructor(
 
     try {
       localAuthDataSource.saveRelayList(relays)
-    } catch (e: Exception) {
+    } catch (e: StorageError) {
       Log.w(TAG, "Failed to cache relay list: ${e.message}")
     }
 
