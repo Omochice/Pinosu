@@ -134,6 +134,9 @@ constructor(
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing comment", e)
       Result.failure(e)
+    } catch (e: IllegalArgumentException) {
+      Log.e(TAG, "Error publishing comment", e)
+      Result.failure(e)
     }
   }
 
