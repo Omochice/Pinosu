@@ -80,6 +80,9 @@ constructor(
     } catch (e: IOException) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)
+    } catch (e: IllegalArgumentException) {
+      Log.e(TAG, "Error getting bookmark list", e)
+      Result.failure(e)
     }
   }
 
