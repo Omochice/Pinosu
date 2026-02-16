@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.bookmark.data.metadata
 
 import android.util.Log
 import android.util.LruCache
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +61,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         cache.put(url, metadata)
 
         Result.success(metadata)
-      } catch (e: Exception) {
+      } catch (e: IOException) {
         Log.w(TAG, "Failed to fetch metadata for $url: ${e.message}")
         Result.failure(e)
       }
@@ -92,7 +93,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
           doc.selectFirst("meta[property=og:image]")?.absUrl("content")?.takeIf { it.isNotBlank() }
 
       return UrlMetadata(title = title, imageUrl = imageUrl)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       Log.w(TAG, "Failed to parse HTML: ${e.message}")
       return UrlMetadata()
     }
