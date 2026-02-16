@@ -27,9 +27,10 @@ constructor(@param:ApplicationContext private val context: Context) {
       context.packageManager.getPackageInfo(
           NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
       true
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
       false
-    } catch (e: Exception) {
+    } catch (e: SecurityException) {
+      Log.w(TAG, "Security exception checking NIP-55 signer: ${e.message}")
       false
     }
   }

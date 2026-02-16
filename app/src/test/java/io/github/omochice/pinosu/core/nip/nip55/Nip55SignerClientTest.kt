@@ -66,7 +66,7 @@ class Nip55SignerClientTest {
     every {
       packageManager.getPackageInfo(
           Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)
-    } throws RuntimeException("Unexpected error")
+    } throws SecurityException("Unexpected error")
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
