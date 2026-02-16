@@ -94,6 +94,9 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
               } catch (e: IOException) {
                 Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
                 emptyList()
+              } catch (e: IllegalArgumentException) {
+                Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
+                emptyList()
               }
             }
           }
