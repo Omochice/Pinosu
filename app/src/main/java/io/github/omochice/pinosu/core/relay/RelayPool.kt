@@ -119,9 +119,6 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     val eventId =
         try {
           Json.parseToJsonElement(signedEventJson).jsonObject["id"]?.jsonPrimitive?.content ?: ""
-        } catch (e: SerializationException) {
-          Log.e(TAG, "Failed to parse signedEventJson", e)
-          return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
         } catch (e: IllegalArgumentException) {
           Log.e(TAG, "Failed to parse signedEventJson", e)
           return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
