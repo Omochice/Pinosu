@@ -12,7 +12,9 @@ import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetch
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import java.io.IOException
 import java.net.URI
+import java.net.URISyntaxException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.async
@@ -75,7 +77,7 @@ constructor(
               items = itemsWithEvents,
               createdAt = event.createdAt,
               encryptedContent = encryptedContent))
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)
     }
@@ -200,7 +202,7 @@ constructor(
     return try {
       val relays = getRelaysForQuery()
       relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
     }
@@ -218,7 +220,7 @@ constructor(
       return try {
         val uri = URI(url)
         uri.scheme in listOf("http", "https") && uri.host != null
-      } catch (e: Exception) {
+      } catch (_: URISyntaxException) {
         false
       }
     }
