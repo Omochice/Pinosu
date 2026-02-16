@@ -121,6 +121,9 @@ constructor(
     } catch (e: IOException) {
       Log.e(TAG, "Error fetching events by IDs", e)
       Result.failure(e)
+    } catch (e: IllegalArgumentException) {
+      Log.e(TAG, "Error fetching events by IDs", e)
+      Result.failure(e)
     }
   }
 
