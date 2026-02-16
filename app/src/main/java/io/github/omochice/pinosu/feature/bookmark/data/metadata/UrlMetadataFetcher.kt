@@ -64,6 +64,9 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
       } catch (e: IOException) {
         Log.w(TAG, "Failed to fetch metadata for $url: ${e.message}")
         Result.failure(e)
+      } catch (e: IllegalArgumentException) {
+        Log.w(TAG, "Invalid URL for metadata fetch: $url", e)
+        Result.failure(e)
       }
     }
   }
