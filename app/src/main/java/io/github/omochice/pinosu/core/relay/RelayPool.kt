@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.core.relay
 
 import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
+import java.io.IOException
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -89,7 +91,7 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
               try {
                 withTimeoutOrNull(timeoutMs) { subscribeToRelay(relay.url, filter).toList() }
                     ?: emptyList()
-              } catch (e: Exception) {
+              } catch (e: IOException) {
                 Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
                 emptyList()
               }
@@ -114,9 +116,12 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     val eventId =
         try {
           Json.parseToJsonElement(signedEventJson).jsonObject["id"]?.jsonPrimitive?.content ?: ""
-        } catch (e: Exception) {
+        } catch (e: SerializationException) {
           Log.e(TAG, "Failed to parse signedEventJson", e)
-          return Result.failure(Exception("Invalid JSON: ${e.message}"))
+          return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
+        } catch (e: IllegalArgumentException) {
+          Log.e(TAG, "Failed to parse signedEventJson", e)
+          return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
         }
     if (eventId.isBlank()) {
       return Result.failure(Exception("Missing event id"))
@@ -130,7 +135,7 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
               try {
                 withTimeoutOrNull(timeoutMs) { publishToRelay(relay.url, signedEventJson) }
                     ?: Pair(relay.url, "Timeout")
-              } catch (e: Exception) {
+              } catch (e: IOException) {
                 Log.w(TAG, "Failed to publish to relay ${relay.url}: ${e.message}")
                 Pair(relay.url, e.message ?: "Unknown error")
               }
@@ -180,7 +185,12 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
                 if (!continuation.isActive) return
                 val result = if (message.accepted) "OK" else message.message.ifEmpty { "Rejected" }
                 continuation.resume(Pair(relayUrl, result))
-              } catch (e: Exception) {
+              } catch (e: SerializationException) {
+                Log.e(TAG, "Error parsing OK response from $relayUrl: $text", e)
+                if (continuation.isActive) {
+                  continuation.resume(Pair(relayUrl, "Parse error: ${e.message}"))
+                }
+              } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "Error parsing OK response from $relayUrl: $text", e)
                 if (continuation.isActive) {
                   continuation.resume(Pair(relayUrl, "Parse error: ${e.message}"))
@@ -234,7 +244,10 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
                 is NostrRelayMessage.Closed -> close()
                 else -> {}
               }
-            } catch (e: Exception) {
+            } catch (e: SerializationException) {
+              Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
+              close(e)
+            } catch (e: IllegalArgumentException) {
               Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
               close(e)
             }
