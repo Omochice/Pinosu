@@ -141,6 +141,9 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
               } catch (e: IOException) {
                 Log.w(TAG, "Failed to publish to relay ${relay.url}: ${e.message}")
                 Pair(relay.url, e.message ?: "Unknown error")
+              } catch (e: IllegalArgumentException) {
+                Log.w(TAG, "Failed to publish to relay ${relay.url}: ${e.message}")
+                Pair(relay.url, e.message ?: "Unknown error")
               }
             }
           }
