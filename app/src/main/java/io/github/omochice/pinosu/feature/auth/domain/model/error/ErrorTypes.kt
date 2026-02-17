@@ -59,8 +59,10 @@ sealed class StorageError : Exception() {
    * Failed to write to storage
    *
    * @property message Error message
+   * @property cause Original exception that caused the write failure
    */
-  data class WriteError(override val message: String) : StorageError()
+  data class WriteError(override val message: String, override val cause: Throwable? = null) :
+      StorageError()
 
   /**
    * Failed to read from storage
