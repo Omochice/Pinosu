@@ -35,6 +35,7 @@
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>
     <ID>StringTemplate:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$${createdAt}</ID>
     <ID>SwallowedException:LocalAuthDataSource.kt$LocalAuthDataSource$e: IOException</ID>
+    <ID>SwallowedException:LocalAuthDataSource.kt$LocalAuthDataSource$e: IllegalStateException</ID>
     <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockPublishWebSocketState${}</ID>
     <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockWebSocketState${}</ID>
     <ID>UnderscoresInNumericLiterals:BookmarkScreen.kt$39701</ID>
