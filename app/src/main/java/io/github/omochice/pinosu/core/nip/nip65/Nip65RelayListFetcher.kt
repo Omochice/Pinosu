@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.core.nip.nip65
 
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -58,7 +59,9 @@ constructor(
       val relays = parser.parseRelayListEvent(mostRecentEvent)
 
       Result.success(relays)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
+      Result.failure(e)
+    } catch (e: IllegalArgumentException) {
       Result.failure(e)
     }
   }

@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.core.relay.RelayPool
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.io.IOException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -120,7 +121,7 @@ class Nip65RelayListFetcherTest {
   fun `fetchRelayList should handle relay pool exception gracefully`() = runTest {
     val hexPubkey = "a".repeat(64)
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } throws
-        RuntimeException("Network error")
+        IOException("Network error")
 
     val result = fetcher.fetchRelayList(hexPubkey)
 

@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.core.relay
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.mockk.every
 import io.mockk.mockk
+import java.io.IOException
 import java.util.concurrent.Executors
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -243,7 +244,7 @@ class RelayPoolTest {
           val ws = mockk<WebSocket>(relaxed = true)
           every { ws.close(any(), any()) } returns true
 
-          listener.onFailure(ws, RuntimeException("Connection failed"), null)
+          listener.onFailure(ws, IOException("Connection failed"), null)
           ws
         }
 
@@ -274,7 +275,7 @@ class RelayPoolTest {
           val ws = mockk<WebSocket>(relaxed = true)
           every { ws.close(any(), any()) } returns true
 
-          listener.onFailure(ws, RuntimeException("Connection failed"), null)
+          listener.onFailure(ws, IOException("Connection failed"), null)
           ws
         }
 

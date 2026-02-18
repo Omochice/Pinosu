@@ -8,6 +8,7 @@ import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.serialization.SerialName
@@ -71,7 +72,10 @@ constructor(
           }
 
       Result.success(comments)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
+      Log.e(TAG, "Error getting comments", e)
+      Result.failure(e)
+    } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error getting comments", e)
       Result.failure(e)
     }
@@ -114,7 +118,10 @@ constructor(
 
       val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
       Result.success(events)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
+      Log.e(TAG, "Error fetching events by IDs", e)
+      Result.failure(e)
+    } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error fetching events by IDs", e)
       Result.failure(e)
     }
@@ -124,7 +131,10 @@ constructor(
     return try {
       val relays = getRelaysForQuery()
       relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
+      Log.e(TAG, "Error publishing comment", e)
+      Result.failure(e)
+    } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error publishing comment", e)
       Result.failure(e)
     }
