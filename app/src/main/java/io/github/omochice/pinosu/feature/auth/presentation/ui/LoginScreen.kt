@@ -127,7 +127,7 @@ private fun LoginContent(
           NpubInputSection(
               npubText = npubText,
               onNpubTextChange = { npubText = it },
-              onSubmit = { onReadOnlyLoginSubmit(npubText) },
+              onSubmit = { onReadOnlyLoginSubmit(npubText.trim()) },
               isLoading = isLoading)
         }
       }
