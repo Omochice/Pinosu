@@ -33,6 +33,14 @@
 
     <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
 
+    <!-- 閲覧専用ログイン -->
+    <string name="button_login_read_only">公開鍵で閲覧</string>
+    <string name="hint_npub_input">npub1…</string>
+    <string name="button_submit_read_only">閲覧モードでログイン</string>
+    <string name="label_read_only_mode">閲覧専用モード</string>
+    <string name="dialog_title_read_only_share_warning">閲覧専用モードです</string>
+    <string name="dialog_message_read_only_share_warning">閲覧専用モードではブックマークを追加できません。NIP-55対応アプリでログインしてください。</string>
+
     <!-- NIP-55対応アプリ未インストールダイアログ -->
     <string name="dialog_title_nip55_signer_required">NIP-55対応アプリが必要です</string>
     <string name="dialog_message_nip55_signer_required">このアプリを使用するにはNIP-55対応アプリのインストールが必要です。</string>
