@@ -99,7 +99,7 @@ class BookmarkDetailScreenTest {
           isReadOnly = false)
     }
 
-    composeTestRule.onNodeWithContentDescription("コメントを投稿").assertExists()
+    composeTestRule.onNodeWithContentDescription("コメントを投稿").assertIsDisplayed()
   }
 
   @Test
