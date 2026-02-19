@@ -1,6 +1,5 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
-import io.github.omochice.pinosu.core.model.PubkeyTest.Companion.TEST_VALID_NPUB
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
@@ -64,5 +63,11 @@ class ReadOnlyLoginUseCaseTest {
     assertTrue("Should return failure", result.isFailure)
     val error = result.exceptionOrNull()
     assertTrue("Error should be UnknownError", error is LoginError.UnknownError)
+  }
+
+  companion object {
+    /** fiatjaf's npub - a real bech32-encoded public key that passes checksum validation */
+    private const val TEST_VALID_NPUB =
+        "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
   }
 }
