@@ -95,6 +95,12 @@ class ShareIntentNavigationTest {
 
   @BindValue
   @JvmField
+  val mockReadOnlyLoginUseCase:
+      io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase =
+      mockk(relaxed = true)
+
+  @BindValue
+  @JvmField
   val mockFetchRelayListUseCase: FetchRelayListUseCase =
       object : FetchRelayListUseCase by mockk(relaxed = true) {
         override suspend fun invoke(
