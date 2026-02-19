@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import java.io.IOException
@@ -68,10 +69,10 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
       activeDataStore.data.first().loginMode
     } catch (e: IOException) {
       Log.w(TAG, "Failed to read login mode: ${e.message}")
-      io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer
+      LoginMode.Nip55Signer
     } catch (e: IllegalStateException) {
       Log.w(TAG, "Failed to read login mode: ${e.message}")
-      io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer
+      LoginMode.Nip55Signer
     }
   }
 

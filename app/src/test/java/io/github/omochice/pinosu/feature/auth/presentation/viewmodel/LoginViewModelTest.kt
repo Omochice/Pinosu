@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.auth.presentation.viewmodel
 
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
@@ -439,8 +440,7 @@ class LoginViewModelTest {
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { getLoginStateUseCase() } returns testUser
-    coEvery { localAuthDataSource.getLoginMode() } returns
-        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly
+    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.ReadOnly
 
     viewModel.checkLoginState()
     advanceUntilIdle()
@@ -455,8 +455,7 @@ class LoginViewModelTest {
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { getLoginStateUseCase() } returns testUser
-    coEvery { localAuthDataSource.getLoginMode() } returns
-        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer
+    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.Nip55Signer
 
     viewModel.checkLoginState()
     advanceUntilIdle()

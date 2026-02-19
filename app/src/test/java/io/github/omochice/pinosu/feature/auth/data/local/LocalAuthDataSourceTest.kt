@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.auth.data.local
 
 import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -106,12 +107,9 @@ class LocalAuthDataSourceTest {
     val pubkey = io.github.omochice.pinosu.core.model.Pubkey.parse("npub1" + "a".repeat(59))!!
     val user = io.github.omochice.pinosu.feature.auth.domain.model.User(pubkey)
 
-    localAuthDataSource.saveUser(
-        user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly)
+    localAuthDataSource.saveUser(user, LoginMode.ReadOnly)
 
-    assertEquals(
-        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly,
-        dataFlow.value.loginMode)
+    assertEquals(LoginMode.ReadOnly, dataFlow.value.loginMode)
   }
 
   @Test
@@ -119,24 +117,18 @@ class LocalAuthDataSourceTest {
     val pubkey = io.github.omochice.pinosu.core.model.Pubkey.parse("npub1" + "a".repeat(59))!!
     val user = io.github.omochice.pinosu.feature.auth.domain.model.User(pubkey)
 
-    localAuthDataSource.saveUser(
-        user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer)
+    localAuthDataSource.saveUser(user, LoginMode.Nip55Signer)
 
-    assertEquals(
-        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer,
-        dataFlow.value.loginMode)
+    assertEquals(LoginMode.Nip55Signer, dataFlow.value.loginMode)
   }
 
   @Test
   fun `getLoginMode should return stored login mode`() = runTest {
-    dataFlow.value =
-        AuthData(
-            userPubkey = "npub1test",
-            loginMode = io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly)
+    dataFlow.value = AuthData(userPubkey = "npub1test", loginMode = LoginMode.ReadOnly)
 
     val result = localAuthDataSource.getLoginMode()
 
-    assertEquals(io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly, result)
+    assertEquals(LoginMode.ReadOnly, result)
   }
 
   @Test
@@ -145,6 +137,6 @@ class LocalAuthDataSourceTest {
 
     val result = localAuthDataSource.getLoginMode()
 
-    assertEquals(io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer, result)
+    assertEquals(LoginMode.Nip55Signer, result)
   }
 }
