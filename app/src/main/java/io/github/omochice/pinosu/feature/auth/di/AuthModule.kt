@@ -14,6 +14,8 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.LogoutUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55LoginUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.Nip55LogoutUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCaseImpl
 
 /**
  * Hilt module for Auth feature dependency injection.
@@ -35,4 +37,7 @@ object AuthModule {
 
   @Provides
   fun provideFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase = impl
+
+  @Provides
+  fun provideReadOnlyLoginUseCase(impl: ReadOnlyLoginUseCaseImpl): ReadOnlyLoginUseCase = impl
 }
