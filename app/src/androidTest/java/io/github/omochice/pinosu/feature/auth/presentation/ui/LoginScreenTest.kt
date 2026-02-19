@@ -240,7 +240,7 @@ class LoginScreenTest {
 
     composeTestRule.onNodeWithText("公開鍵で閲覧").performClick()
 
-    composeTestRule.onNodeWithText("閲覧モードでログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText("公開鍵でログイン").assertIsDisplayed()
   }
 
   @Test
@@ -268,7 +268,7 @@ class LoginScreenTest {
                         .or(androidx.compose.ui.test.hasText(""))))
         .performTextInput(npub)
 
-    composeTestRule.onNodeWithText("閲覧モードでログイン").performClick()
+    composeTestRule.onNodeWithText("公開鍵でログイン").performClick()
 
     assertEquals("Should submit the entered npub", npub, submittedNpub)
   }

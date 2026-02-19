@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -80,6 +83,7 @@ fun LoginScreen(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginContent(
     isSuccess: Boolean,
@@ -87,7 +91,7 @@ private fun LoginContent(
     onLoginButtonClick: () -> Unit,
     onReadOnlyLoginSubmit: (String) -> Unit,
 ) {
-  var showNpubInput by remember { mutableStateOf(false) }
+  var showBottomSheet by remember { mutableStateOf(false) }
   var npubText by remember { mutableStateOf("") }
 
   Column(
@@ -124,21 +128,28 @@ private fun LoginContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedButton(
-            onClick = { showNpubInput = !showNpubInput },
+            onClick = { showBottomSheet = true },
             enabled = !isLoading,
             modifier = buttonModifier,
         ) {
           Text(stringResource(R.string.button_login_read_only))
         }
-
-        if (showNpubInput) {
-          NpubInputSection(
-              npubText = npubText,
-              onNpubTextChange = { npubText = it },
-              onSubmit = { onReadOnlyLoginSubmit(npubText.trim()) },
-              isLoading = isLoading)
-        }
       }
+
+  if (showBottomSheet) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = { showBottomSheet = false },
+        sheetState = sheetState,
+    ) {
+      NpubInputSection(
+          npubText = npubText,
+          onNpubTextChange = { npubText = it },
+          onSubmit = { onReadOnlyLoginSubmit(npubText.trim()) },
+          isLoading = isLoading)
+    }
+  }
 }
 
 @Composable
@@ -148,22 +159,26 @@ private fun NpubInputSection(
     onSubmit: () -> Unit,
     isLoading: Boolean,
 ) {
-  Spacer(modifier = Modifier.height(12.dp))
-
-  OutlinedTextField(
-      value = npubText,
-      onValueChange = onNpubTextChange,
-      label = { Text(stringResource(R.string.hint_npub_input)) },
-      singleLine = true,
-      modifier = Modifier.fillMaxWidth())
-
-  Spacer(modifier = Modifier.height(8.dp))
-
-  Button(
-      onClick = onSubmit,
-      enabled = npubText.isNotBlank() && !isLoading,
+  Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 24.dp),
   ) {
-    Text(stringResource(R.string.button_submit_read_only))
+    OutlinedTextField(
+        value = npubText,
+        onValueChange = onNpubTextChange,
+        label = { Text(stringResource(R.string.hint_npub_input)) },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth())
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    Button(
+        onClick = onSubmit,
+        enabled = npubText.isNotBlank() && !isLoading,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+      Text(stringResource(R.string.button_submit_read_only))
+    }
   }
 }
 
