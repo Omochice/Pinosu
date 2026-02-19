@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
+import io.github.omochice.pinosu.core.model.PubkeyTest.Companion.TEST_VALID_NPUB
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
@@ -32,7 +33,7 @@ class ReadOnlyLoginUseCaseTest {
 
   @Test
   fun `invoke with valid npub should save user with ReadOnly mode and return success`() = runTest {
-    val npub = "npub1" + "a".repeat(59)
+    val npub = TEST_VALID_NPUB
     coEvery { localAuthDataSource.saveUser(any(), any()) } returns Unit
 
     val result = useCase(npub)
@@ -54,7 +55,7 @@ class ReadOnlyLoginUseCaseTest {
 
   @Test
   fun `invoke when storage fails should return UnknownError`() = runTest {
-    val npub = "npub1" + "a".repeat(59)
+    val npub = TEST_VALID_NPUB
     coEvery { localAuthDataSource.saveUser(any(), any()) } throws
         StorageError.WriteError("Storage full")
 
