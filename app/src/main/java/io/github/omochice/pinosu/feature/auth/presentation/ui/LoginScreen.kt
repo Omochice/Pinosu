@@ -5,17 +5,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +40,7 @@ import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiStat
  * @param onInstallNip55Signer Callback when NIP-55 signer install button is clicked
  * @param onRetry Callback when retry button is clicked
  * @param onLoginSuccess Callback when login succeeds
+ * @param onReadOnlyLoginSubmit Callback when read-only npub is submitted
  */
 @Composable
 fun LoginScreen(
@@ -41,7 +49,8 @@ fun LoginScreen(
     onDismissDialog: () -> Unit = {},
     onInstallNip55Signer: () -> Unit = {},
     onRetry: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    onReadOnlyLoginSubmit: (String) -> Unit = {}
 ) {
   val isSuccess = uiState is LoginUiState.Success
   LaunchedEffect(isSuccess) {
@@ -51,6 +60,9 @@ fun LoginScreen(
   }
 
   val isLoading = uiState is LoginUiState.Loading
+
+  var showNpubInput by remember { mutableStateOf(false) }
+  var npubText by remember { mutableStateOf("") }
 
   Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -77,6 +89,35 @@ fun LoginScreen(
 
             Button(onClick = onLoginButtonClick, enabled = !isLoading) {
               Text(stringResource(R.string.button_login_with_nip55))
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = { showNpubInput = !showNpubInput },
+                enabled = !isLoading,
+            ) {
+              Text(stringResource(R.string.button_login_read_only))
+            }
+
+            if (showNpubInput) {
+              Spacer(modifier = Modifier.height(12.dp))
+
+              OutlinedTextField(
+                  value = npubText,
+                  onValueChange = { npubText = it },
+                  label = { Text(stringResource(R.string.hint_npub_input)) },
+                  singleLine = true,
+                  modifier = Modifier.fillMaxWidth())
+
+              Spacer(modifier = Modifier.height(8.dp))
+
+              Button(
+                  onClick = { onReadOnlyLoginSubmit(npubText) },
+                  enabled = npubText.isNotBlank() && !isLoading,
+              ) {
+                Text(stringResource(R.string.button_submit_read_only))
+              }
             }
           }
     }
