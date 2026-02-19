@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
+import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
@@ -34,7 +35,7 @@ constructor(private val localAuthDataSource: LocalAuthDataSource) : ReadOnlyLogi
     return try {
       localAuthDataSource.saveUser(user, LoginMode.ReadOnly)
       Result.success(user)
-    } catch (e: Exception) {
+    } catch (e: StorageError) {
       Result.failure(LoginError.UnknownError(e))
     }
   }

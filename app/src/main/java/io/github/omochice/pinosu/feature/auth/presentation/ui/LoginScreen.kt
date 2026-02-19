@@ -42,6 +42,7 @@ import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiStat
  * @param onLoginSuccess Callback when login succeeds
  * @param onReadOnlyLoginSubmit Callback when read-only npub is submitted
  */
+@Suppress("LongParameterList")
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,
@@ -61,106 +62,146 @@ fun LoginScreen(
 
   val isLoading = uiState is LoginUiState.Loading
 
+  Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      LoginContent(
+          isSuccess = isSuccess,
+          isLoading = isLoading,
+          onLoginButtonClick = onLoginButtonClick,
+          onReadOnlyLoginSubmit = onReadOnlyLoginSubmit)
+    }
+
+    LoginDialogs(
+        uiState = uiState,
+        onDismissDialog = onDismissDialog,
+        onInstallNip55Signer = onInstallNip55Signer,
+        onRetry = onRetry)
+  }
+}
+
+@Composable
+private fun LoginContent(
+    isSuccess: Boolean,
+    isLoading: Boolean,
+    onLoginButtonClick: () -> Unit,
+    onReadOnlyLoginSubmit: (String) -> Unit,
+) {
   var showNpubInput by remember { mutableStateOf(false) }
   var npubText by remember { mutableStateOf("") }
 
-  Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center,
-          modifier = Modifier.padding(16.dp)) {
-            if (isSuccess) {
-              Text(
-                  text = stringResource(R.string.message_login_success),
-                  style = MaterialTheme.typography.headlineSmall,
-                  color = MaterialTheme.colorScheme.primary)
-              Spacer(modifier = Modifier.height(16.dp))
-            }
+  Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center,
+      modifier = Modifier.padding(16.dp)) {
+        if (isSuccess) {
+          Text(
+              text = stringResource(R.string.message_login_success),
+              style = MaterialTheme.typography.headlineSmall,
+              color = MaterialTheme.colorScheme.primary)
+          Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            if (isLoading) {
-              CircularProgressIndicator()
-              Spacer(modifier = Modifier.height(16.dp))
-              Text(
-                  text = stringResource(R.string.message_loading),
-                  style = MaterialTheme.typography.bodyMedium)
-              Spacer(modifier = Modifier.height(32.dp))
-            }
+        if (isLoading) {
+          CircularProgressIndicator()
+          Spacer(modifier = Modifier.height(16.dp))
+          Text(
+              text = stringResource(R.string.message_loading),
+              style = MaterialTheme.typography.bodyMedium)
+          Spacer(modifier = Modifier.height(32.dp))
+        }
 
-            Button(onClick = onLoginButtonClick, enabled = !isLoading) {
-              Text(stringResource(R.string.button_login_with_nip55))
-            }
+        Button(onClick = onLoginButtonClick, enabled = !isLoading) {
+          Text(stringResource(R.string.button_login_with_nip55))
+        }
 
-            Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedButton(
-                onClick = { showNpubInput = !showNpubInput },
-                enabled = !isLoading,
-            ) {
-              Text(stringResource(R.string.button_login_read_only))
-            }
+        OutlinedButton(
+            onClick = { showNpubInput = !showNpubInput },
+            enabled = !isLoading,
+        ) {
+          Text(stringResource(R.string.button_login_read_only))
+        }
 
-            if (showNpubInput) {
-              Spacer(modifier = Modifier.height(12.dp))
+        if (showNpubInput) {
+          NpubInputSection(
+              npubText = npubText,
+              onNpubTextChange = { npubText = it },
+              onSubmit = { onReadOnlyLoginSubmit(npubText) },
+              isLoading = isLoading)
+        }
+      }
+}
 
-              OutlinedTextField(
-                  value = npubText,
-                  onValueChange = { npubText = it },
-                  label = { Text(stringResource(R.string.hint_npub_input)) },
-                  singleLine = true,
-                  modifier = Modifier.fillMaxWidth())
+@Composable
+private fun NpubInputSection(
+    npubText: String,
+    onNpubTextChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    isLoading: Boolean,
+) {
+  Spacer(modifier = Modifier.height(12.dp))
 
-              Spacer(modifier = Modifier.height(8.dp))
+  OutlinedTextField(
+      value = npubText,
+      onValueChange = onNpubTextChange,
+      label = { Text(stringResource(R.string.hint_npub_input)) },
+      singleLine = true,
+      modifier = Modifier.fillMaxWidth())
 
-              Button(
-                  onClick = { onReadOnlyLoginSubmit(npubText) },
-                  enabled = npubText.isNotBlank() && !isLoading,
-              ) {
-                Text(stringResource(R.string.button_submit_read_only))
-              }
-            }
-          }
+  Spacer(modifier = Modifier.height(8.dp))
+
+  Button(
+      onClick = onSubmit,
+      enabled = npubText.isNotBlank() && !isLoading,
+  ) {
+    Text(stringResource(R.string.button_submit_read_only))
+  }
+}
+
+@Composable
+private fun LoginDialogs(
+    uiState: LoginUiState,
+    onDismissDialog: () -> Unit,
+    onInstallNip55Signer: () -> Unit,
+    onRetry: () -> Unit,
+) {
+  when (uiState) {
+    LoginUiState.Idle,
+    LoginUiState.Loading,
+    LoginUiState.Success -> {}
+    LoginUiState.RequiresNip55Install -> {
+      AlertDialog(
+          onDismissRequest = onDismissDialog,
+          title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
+          text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
+          confirmButton = {
+            Button(onClick = onInstallNip55Signer) { Text(stringResource(R.string.button_install)) }
+          },
+          dismissButton = {
+            TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
+          })
     }
-
-    when (uiState) {
-      LoginUiState.Idle,
-      LoginUiState.Loading,
-      LoginUiState.Success -> {}
-      LoginUiState.RequiresNip55Install -> {
-        AlertDialog(
-            onDismissRequest = onDismissDialog,
-            title = { Text(stringResource(R.string.dialog_title_nip55_signer_required)) },
-            text = { Text(stringResource(R.string.dialog_message_nip55_signer_required)) },
-            confirmButton = {
-              Button(onClick = onInstallNip55Signer) {
-                Text(stringResource(R.string.button_install))
-              }
-            },
-            dismissButton = {
-              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_close)) }
-            })
-      }
-      is LoginUiState.Error.Retryable -> {
-        AlertDialog(
-            onDismissRequest = onDismissDialog,
-            title = { Text(stringResource(R.string.dialog_title_error)) },
-            text = { Text(uiState.message) },
-            confirmButton = {
-              Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
-            },
-            dismissButton = {
-              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_cancel)) }
-            })
-      }
-      is LoginUiState.Error.NonRetryable -> {
-        AlertDialog(
-            onDismissRequest = onDismissDialog,
-            title = { Text(stringResource(R.string.dialog_title_error)) },
-            text = { Text(uiState.message) },
-            confirmButton = {
-              TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
-            })
-      }
+    is LoginUiState.Error.Retryable -> {
+      AlertDialog(
+          onDismissRequest = onDismissDialog,
+          title = { Text(stringResource(R.string.dialog_title_error)) },
+          text = { Text(uiState.message) },
+          confirmButton = {
+            Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
+          },
+          dismissButton = {
+            TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_cancel)) }
+          })
+    }
+    is LoginUiState.Error.NonRetryable -> {
+      AlertDialog(
+          onDismissRequest = onDismissDialog,
+          title = { Text(stringResource(R.string.dialog_title_error)) },
+          text = { Text(uiState.message) },
+          confirmButton = {
+            TextButton(onClick = onDismissDialog) { Text(stringResource(R.string.button_ok)) }
+          })
     }
   }
 }

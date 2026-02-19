@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
  * @param readOnlyLoginUseCase UseCase for read-only npub login
  * @param localAuthDataSource Local data source for reading login mode
  */
+@Suppress("LongParameterList")
 @HiltViewModel
 class LoginViewModel
 @Inject
@@ -98,10 +99,10 @@ constructor(
       } else {
         val error = result.exceptionOrNull()
         _uiState.value =
-            when (error) {
-              is LoginError.InvalidPubkey ->
-                  LoginUiState.Error.NonRetryable("Invalid public key format.")
-              else -> LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+            if (error is LoginError.InvalidPubkey) {
+              LoginUiState.Error.NonRetryable("Invalid public key format.")
+            } else {
+              LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
       }
     }
@@ -156,9 +157,8 @@ constructor(
               is LoginError.NetworkError ->
                   LoginUiState.Error.Retryable(
                       "A network error occurred. Please check your connection.")
-              is LoginError.UnknownError ->
-                  LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
-              else -> LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+              is LoginError.UnknownError -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
+              else -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
       }
     }
@@ -166,5 +166,6 @@ constructor(
 
   companion object {
     private const val TAG = "LoginViewModel"
+    private const val ERROR_GENERIC = "An error occurred. Please try again later."
   }
 }
