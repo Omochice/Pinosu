@@ -80,6 +80,7 @@ class LoginViewModelTest {
 
     assertNull("userPubkey should be null", state.userPubkey)
     assertFalse("isLoggingOut should be false", state.isLoggingOut)
+    assertFalse("isReadOnly should be false", state.isReadOnly)
   }
 
   @Test
