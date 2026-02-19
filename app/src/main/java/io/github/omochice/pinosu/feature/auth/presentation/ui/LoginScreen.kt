@@ -110,7 +110,11 @@ private fun LoginContent(
           Spacer(modifier = Modifier.height(32.dp))
         }
 
-        Button(onClick = onLoginButtonClick, enabled = !isLoading) {
+        Button(
+            onClick = onLoginButtonClick,
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
           Text(stringResource(R.string.button_login_with_nip55))
         }
 
@@ -119,6 +123,7 @@ private fun LoginContent(
         OutlinedButton(
             onClick = { showNpubInput = !showNpubInput },
             enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth(),
         ) {
           Text(stringResource(R.string.button_login_read_only))
         }
