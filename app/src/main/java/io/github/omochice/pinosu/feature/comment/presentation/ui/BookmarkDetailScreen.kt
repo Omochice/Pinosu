@@ -61,6 +61,7 @@ import io.github.omochice.pinosu.ui.component.ErrorDialog
  * @param onNavigateBack Callback to navigate back
  * @param onDismissError Callback to dismiss error dialog
  * @param onOpenUrlFailed Callback when opening a URL fails
+ * @param isReadOnly Whether to hide comment input for read-only login
  */
 @Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +77,7 @@ fun BookmarkDetailScreen(
     onNavigateBack: () -> Unit,
     onDismissError: () -> Unit,
     onOpenUrlFailed: () -> Unit = {},
+    isReadOnly: Boolean = false,
 ) {
   Scaffold(
       topBar = {
@@ -95,11 +97,13 @@ fun BookmarkDetailScreen(
             })
       },
       bottomBar = {
-        CommentInputBar(
-            value = uiState.commentInput,
-            onValueChange = onCommentInputChange,
-            onPost = onPostComment,
-            isSubmitting = uiState.isSubmitting)
+        if (!isReadOnly) {
+          CommentInputBar(
+              value = uiState.commentInput,
+              onValueChange = onCommentInputChange,
+              onPost = onPostComment,
+              isSubmitting = uiState.isSubmitting)
+        }
       }) { paddingValues ->
         BookmarkDetailContent(
             uiState = uiState,
