@@ -100,4 +100,51 @@ class LocalAuthDataSourceTest {
 
     assertNull("relay_list should be cleared", dataFlow.value.relayList)
   }
+
+  @Test
+  fun `saveUser with ReadOnly loginMode should persist read_only`() = runTest {
+    val pubkey = io.github.omochice.pinosu.core.model.Pubkey.parse("npub1" + "a".repeat(59))!!
+    val user = io.github.omochice.pinosu.feature.auth.domain.model.User(pubkey)
+
+    localAuthDataSource.saveUser(
+        user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly)
+
+    assertEquals(
+        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly,
+        dataFlow.value.loginMode)
+  }
+
+  @Test
+  fun `saveUser with Nip55Signer loginMode should persist nip55_signer`() = runTest {
+    val pubkey = io.github.omochice.pinosu.core.model.Pubkey.parse("npub1" + "a".repeat(59))!!
+    val user = io.github.omochice.pinosu.feature.auth.domain.model.User(pubkey)
+
+    localAuthDataSource.saveUser(
+        user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer)
+
+    assertEquals(
+        io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer,
+        dataFlow.value.loginMode)
+  }
+
+  @Test
+  fun `getLoginMode should return stored login mode`() = runTest {
+    dataFlow.value =
+        AuthData(
+            userPubkey = "npub1test",
+            loginMode = io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly)
+
+    val result = localAuthDataSource.getLoginMode()
+
+    assertEquals(io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.ReadOnly, result)
+  }
+
+  @Test
+  fun `getLoginMode when default should return Nip55Signer`() = runTest {
+    dataFlow.value = AuthData(userPubkey = "npub1test")
+
+    val result = localAuthDataSource.getLoginMode()
+
+    assertEquals(io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer, result)
+  }
 }

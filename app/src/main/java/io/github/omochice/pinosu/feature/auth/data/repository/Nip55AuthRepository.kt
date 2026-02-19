@@ -42,7 +42,8 @@ constructor(
    */
   override suspend fun saveLoginState(user: User): Result<Unit> {
     return try {
-      localAuthDataSource.saveUser(user)
+      localAuthDataSource.saveUser(
+          user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer)
       Result.success(Unit)
     } catch (e: StorageError) {
       Result.failure(e)
@@ -81,7 +82,8 @@ constructor(
       val user = User(pubkey)
 
       try {
-        localAuthDataSource.saveUser(user)
+        localAuthDataSource.saveUser(
+            user, io.github.omochice.pinosu.feature.auth.domain.model.LoginMode.Nip55Signer)
         Result.success(user)
       } catch (e: StorageError) {
         Result.failure(LoginError.UnknownError(e))
