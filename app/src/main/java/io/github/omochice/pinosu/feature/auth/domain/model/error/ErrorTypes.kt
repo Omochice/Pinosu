@@ -23,6 +23,9 @@ sealed class LoginError : Exception() {
    */
   data class NetworkError(override val message: String) : LoginError()
 
+  /** Provided public key (npub) is invalid or unparsable */
+  data object InvalidPubkey : LoginError()
+
   /**
    * Unknown error occurred
    *
