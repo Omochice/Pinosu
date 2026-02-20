@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/Omochice/Pinosu/compare/v0.9.1...v0.10.0) (2026-02-20)
+
+
+### Features
+
+* **auth:** add read-only public key login ([#246](https://github.com/Omochice/Pinosu/issues/246)) ([32885fb](https://github.com/Omochice/Pinosu/commit/32885fb5af8429eaa8504fb64323c5353369eec3))
+
 ## [0.9.1](https://github.com/Omochice/Pinosu/compare/v0.9.0...v0.9.1) (2026-02-15)
 
 
