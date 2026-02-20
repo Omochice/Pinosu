@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.crypto.tink.aead.AeadConfig
 import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import io.github.omochice.pinosu.core.model.Pubkey
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import java.io.File
@@ -57,7 +58,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `data should be stored in encrypted form`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "a".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val fileBytes = testFile.readBytes()
     val fileContent = String(fileBytes, Charsets.UTF_8)
@@ -70,7 +71,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `encrypted data should be correctly decrypted`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "b".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val retrieved = dataSource.getUser()
 
@@ -82,7 +83,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `encryption key should persist across instances`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "c".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val newDataSource = LocalAuthDataSource(testDataStore)
 
@@ -102,7 +103,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
             User(requireNotNull(Pubkey.parse("npub1" + "f".repeat(59)))))
 
     for (user in users) {
-      dataSource.saveUser(user)
+      dataSource.saveUser(user, LoginMode.Nip55Signer)
 
       val retrieved = dataSource.getUser()
 
@@ -169,7 +170,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `getUser should handle timestamps correctly`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "d".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val retrieved = dataSource.getUser()
 
@@ -181,7 +182,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `clearLoginState should remove all data`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "e".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     assertNotNull("User should be saved", dataSource.getUser())
 
@@ -195,7 +196,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "f".repeat(59))))
 
     try {
-      dataSource.saveUser(user)
+      dataSource.saveUser(user, LoginMode.Nip55Signer)
       val retrieved = dataSource.getUser()
       assertEquals("User should be saved successfully", user.pubkey, retrieved?.pubkey)
     } catch (e: StorageError.WriteError) {

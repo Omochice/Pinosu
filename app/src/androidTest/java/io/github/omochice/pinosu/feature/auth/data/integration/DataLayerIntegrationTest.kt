@@ -11,6 +11,7 @@ import io.github.omochice.pinosu.feature.auth.data.local.AuthData
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.data.local.TestAuthDataSerializer
 import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepository
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
 import kotlinx.coroutines.test.runTest
@@ -90,7 +91,7 @@ class DataLayerIntegrationTest {
     val testPubkey = requireNotNull(Pubkey.parse("npub1" + "b".repeat(59)))
     val testUser = User(testPubkey)
 
-    localAuthDataSource.saveUser(testUser)
+    localAuthDataSource.saveUser(testUser, LoginMode.Nip55Signer)
     advanceUntilIdle()
 
     val retrievedUser = localAuthDataSource.getUser()
@@ -110,7 +111,7 @@ class DataLayerIntegrationTest {
   fun `encrypted storage save and delete should work correctly`() = runTest {
     val testPubkey = requireNotNull(Pubkey.parse("npub1" + "c".repeat(59)))
     val testUser = User(testPubkey)
-    localAuthDataSource.saveUser(testUser)
+    localAuthDataSource.saveUser(testUser, LoginMode.Nip55Signer)
     advanceUntilIdle()
 
     val userBeforeDelete = localAuthDataSource.getUser()
@@ -140,7 +141,7 @@ class DataLayerIntegrationTest {
         )
 
     users.forEach { user ->
-      localAuthDataSource.saveUser(user)
+      localAuthDataSource.saveUser(user, LoginMode.Nip55Signer)
 
       val retrievedUser = localAuthDataSource.getUser()
       assertNotNull("Retrieved user should not be null", retrievedUser)
@@ -166,7 +167,7 @@ class DataLayerIntegrationTest {
   fun `logout flow should clear encrypted storage`() = runTest {
     val testPubkey = requireNotNull(Pubkey.parse("npub1" + "g".repeat(59)))
     val testUser = User(testPubkey)
-    localAuthDataSource.saveUser(testUser)
+    localAuthDataSource.saveUser(testUser, LoginMode.Nip55Signer)
     advanceUntilIdle()
 
     val userBeforeLogout = authRepository.getLoginState()
@@ -195,7 +196,7 @@ class DataLayerIntegrationTest {
   fun `app restart should restore login state from encrypted storage`() = runTest {
     val testPubkey = requireNotNull(Pubkey.parse("npub1" + "h".repeat(59)))
     val testUser = User(testPubkey)
-    localAuthDataSource.saveUser(testUser)
+    localAuthDataSource.saveUser(testUser, LoginMode.Nip55Signer)
     advanceUntilIdle()
 
     val newLocalAuthDataSource = LocalAuthDataSource(testDataStore)

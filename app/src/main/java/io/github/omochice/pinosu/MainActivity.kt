@@ -10,15 +10,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -155,6 +160,8 @@ fun PinosuApp(
   val mainUiState by viewModel.mainUiState.collectAsStateWithLifecycle()
   val loginUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+  var showReadOnlyShareWarning by remember { mutableStateOf(false) }
+
   val nip55Launcher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.StartActivityForResult()) { result ->
@@ -175,15 +182,32 @@ fun PinosuApp(
     }
   }
 
-  LaunchedEffect(pendingSharedContent, mainUiState.userPubkey) {
+  LaunchedEffect(pendingSharedContent, mainUiState.userPubkey, mainUiState.isReadOnly) {
     val content = pendingSharedContent
     if (content != null && mainUiState.userPubkey != null) {
-      navController.navigate(
-          PostBookmark(sharedUrl = content.url, sharedComment = content.comment)) {
-            launchSingleTop = true
-          }
-      onSharedContentConsumed()
+      if (mainUiState.isReadOnly) {
+        showReadOnlyShareWarning = true
+        onSharedContentConsumed()
+      } else {
+        navController.navigate(
+            PostBookmark(sharedUrl = content.url, sharedComment = content.comment)) {
+              launchSingleTop = true
+            }
+        onSharedContentConsumed()
+      }
     }
+  }
+
+  if (showReadOnlyShareWarning) {
+    AlertDialog(
+        onDismissRequest = { showReadOnlyShareWarning = false },
+        title = { Text(stringResource(R.string.dialog_title_read_only_share_warning)) },
+        text = { Text(stringResource(R.string.dialog_message_read_only_share_warning)) },
+        confirmButton = {
+          TextButton(onClick = { showReadOnlyShareWarning = false }) {
+            Text(stringResource(R.string.button_ok))
+          }
+        })
   }
 
   ModalNavigationDrawer(
@@ -227,7 +251,8 @@ fun PinosuApp(
                       // Navigation is handled by LaunchedEffect(mainUiState.userPubkey)
                       // to avoid conflicting with share-intent navigation to PostBookmark.
                       viewModel.dismissError()
-                    })
+                    },
+                    onReadOnlyLoginSubmit = { npub -> viewModel.onReadOnlyLoginSubmit(npub) })
               }
 
           composable<Main>(
@@ -269,7 +294,8 @@ fun PinosuApp(
                     onAddBookmark = { navController.navigate(PostBookmark()) },
                     onBookmarkDetailNavigate = { bookmark ->
                       navigateToBookmarkDetail(navController, bookmark)
-                    })
+                    },
+                    isReadOnly = mainUiState.isReadOnly)
               }
 
           composable<PostBookmark>(
@@ -379,7 +405,8 @@ fun PinosuApp(
                     },
                     onNavigateBack = { navController.navigateUp() },
                     onDismissError = { detailViewModel.dismissError() },
-                    onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() })
+                    onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() },
+                    isReadOnly = mainUiState.isReadOnly)
               }
 
           composable<License>(

@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.omochice.pinosu.core.model.Pubkey
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
 import kotlinx.coroutines.test.runTest
@@ -42,7 +43,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   @Test
   fun `saveUser should succeed`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "a".repeat(59))))
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
   }
 
   @Test
@@ -50,7 +51,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "b".repeat(59))))
     val beforeSave = System.currentTimeMillis()
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val savedUser = dataSource.getUser()
     assertNotNull("Saved user should be retrievable", savedUser)
@@ -61,8 +62,8 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val user1 = User(requireNotNull(Pubkey.parse("npub1" + "c".repeat(59))))
     val user2 = User(requireNotNull(Pubkey.parse("npub1" + "d".repeat(59))))
 
-    dataSource.saveUser(user1)
-    dataSource.saveUser(user2)
+    dataSource.saveUser(user1, LoginMode.Nip55Signer)
+    dataSource.saveUser(user2, LoginMode.Nip55Signer)
 
     val savedUser = dataSource.getUser()
     assertEquals("Should retrieve the latest user", user2.pubkey, savedUser?.pubkey)
@@ -71,7 +72,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   @Test
   fun `getUser after save should return saved user`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "e".repeat(59))))
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val retrieved = dataSource.getUser()
 
@@ -90,7 +91,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   fun `getUser should preserve createdAt timestamp`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "f".repeat(59))))
 
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val retrieved = dataSource.getUser()
     assertNotNull("User should be retrievable after save", retrieved)
@@ -100,7 +101,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   @Test
   fun `getUser should update lastAccessed timestamp`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "1".repeat(59))))
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val firstRetrieval = dataSource.getUser()
     val secondRetrieval = dataSource.getUser()
@@ -113,7 +114,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   @Test
   fun `clearLoginState should succeed`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "2".repeat(59))))
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     dataSource.clearLoginState()
 
@@ -127,7 +128,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   @Test
   fun `clearLoginState should remove all data`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "3".repeat(59))))
-    dataSource.saveUser(user)
+    dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     dataSource.clearLoginState()
 

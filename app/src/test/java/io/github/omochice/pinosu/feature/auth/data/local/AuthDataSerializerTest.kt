@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.data.local
 
 import com.google.crypto.tink.Aead
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -88,5 +89,22 @@ class AuthDataSerializerTest {
 
     verify { mockAead.encrypt(jsonBytes, associatedData) }
     assertArrayEquals(encryptedBytes, output.toByteArray())
+  }
+
+  @Test
+  fun `AuthData with ReadOnly loginMode should serialize and deserialize correctly`() = runTest {
+    val authData = AuthData(userPubkey = "npub1test", loginMode = LoginMode.ReadOnly)
+
+    val json = Json.encodeToString(authData)
+    val decoded = Json.decodeFromString<AuthData>(json)
+
+    assertEquals(LoginMode.ReadOnly, decoded.loginMode)
+  }
+
+  @Test
+  fun `AuthData default loginMode should be Nip55Signer`() {
+    val authData = AuthData()
+
+    assertEquals(LoginMode.Nip55Signer, authData.loginMode)
   }
 }

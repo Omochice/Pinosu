@@ -2,7 +2,9 @@ package io.github.omochice.pinosu.feature.auth.presentation.viewmodel
 
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase
@@ -41,6 +43,10 @@ class LoginViewModelTest {
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var authRepository: AuthRepository
   private lateinit var fetchRelayListUseCase: FetchRelayListUseCase
+  private lateinit var readOnlyLoginUseCase:
+      io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
+  private lateinit var localAuthDataSource:
+      io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -53,13 +59,17 @@ class LoginViewModelTest {
     getLoginStateUseCase = mockk(relaxed = true)
     authRepository = mockk(relaxed = true)
     fetchRelayListUseCase = mockk(relaxed = true)
+    readOnlyLoginUseCase = mockk(relaxed = true)
+    localAuthDataSource = mockk(relaxed = true)
     viewModel =
         LoginViewModel(
             loginUseCase,
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
   }
 
   @After
@@ -80,6 +90,7 @@ class LoginViewModelTest {
 
     assertNull("userPubkey should be null", state.userPubkey)
     assertFalse("isLoggingOut should be false", state.isLoggingOut)
+    assertFalse("isReadOnly should be false", state.isReadOnly)
   }
 
   @Test
@@ -201,7 +212,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
 
@@ -227,7 +240,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -254,7 +269,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -279,7 +296,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -306,7 +325,9 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -341,7 +362,9 @@ class LoginViewModelTest {
                 logoutUseCase,
                 getLoginStateUseCase,
                 authRepository,
-                fetchRelayListUseCase)
+                fetchRelayListUseCase,
+                readOnlyLoginUseCase,
+                localAuthDataSource)
 
         viewModelWithMock.processNip55Response(-1, mockIntent)
         advanceUntilIdle()
@@ -374,12 +397,87 @@ class LoginViewModelTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
     assertTrue("state should be Success even if relay fetch fails", state is LoginUiState.Success)
+  }
+
+  @Test
+  fun `onReadOnlyLoginSubmit with valid npub should set isReadOnly true`() = runTest {
+    val npub = "npub1" + "a".repeat(59)
+    val user = User(Pubkey.parse(npub)!!)
+    coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
+
+    viewModel.onReadOnlyLoginSubmit(npub)
+    advanceUntilIdle()
+
+    val mainState = viewModel.mainUiState.first()
+    assertTrue("isReadOnly should be true", mainState.isReadOnly)
+    assertEquals("userPubkey should be set", npub, mainState.userPubkey)
+    val loginState = viewModel.uiState.first()
+    assertTrue("login state should be Success", loginState is LoginUiState.Success)
+  }
+
+  @Test
+  fun `onReadOnlyLoginSubmit with invalid npub should set error state`() = runTest {
+    coEvery { readOnlyLoginUseCase("invalid") } returns Result.failure(LoginError.InvalidPubkey)
+
+    viewModel.onReadOnlyLoginSubmit("invalid")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertTrue("state should be NonRetryable error", state is LoginUiState.Error.NonRetryable)
+  }
+
+  @Test
+  fun `checkLoginState should set isReadOnly when login mode is ReadOnly`() = runTest {
+    val testPubkey = "npub1" + "a".repeat(59)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.ReadOnly
+
+    viewModel.checkLoginState()
+    advanceUntilIdle()
+
+    val state = viewModel.mainUiState.first()
+    assertEquals("userPubkey should be set", testPubkey, state.userPubkey)
+    assertTrue("isReadOnly should be true", state.isReadOnly)
+  }
+
+  @Test
+  fun `checkLoginState should set isReadOnly false when login mode is Nip55Signer`() = runTest {
+    val testPubkey = "npub1" + "a".repeat(59)
+    val testUser = User(Pubkey.parse(testPubkey)!!)
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.Nip55Signer
+
+    viewModel.checkLoginState()
+    advanceUntilIdle()
+
+    val state = viewModel.mainUiState.first()
+    assertFalse("isReadOnly should be false", state.isReadOnly)
+  }
+
+  @Test
+  fun `onLogoutButtonClicked should reset isReadOnly`() = runTest {
+    val npub = "npub1" + "a".repeat(59)
+    val user = User(Pubkey.parse(npub)!!)
+    coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
+    viewModel.onReadOnlyLoginSubmit(npub)
+    advanceUntilIdle()
+
+    coEvery { logoutUseCase() } returns Result.success(Unit)
+    viewModel.onLogoutButtonClicked()
+    advanceUntilIdle()
+
+    val state = viewModel.mainUiState.first()
+    assertNull("userPubkey should be null", state.userPubkey)
+    assertFalse("isReadOnly should be false after logout", state.isReadOnly)
   }
 }

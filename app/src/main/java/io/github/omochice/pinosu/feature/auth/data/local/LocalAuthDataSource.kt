@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import java.io.IOException
@@ -34,9 +35,13 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
    * Save user information
    *
    * @param user User to save
+   * @param loginMode How the user authenticated
    * @throws StorageError.WriteError when save fails
    */
-  suspend fun saveUser(user: User) {
+  suspend fun saveUser(
+      user: User,
+      loginMode: io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
+  ) {
     try {
       val currentTime = System.currentTimeMillis()
       activeDataStore.updateData { current ->
@@ -44,12 +49,30 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
             userPubkey = user.pubkey.npub,
             createdAt = currentTime,
             lastAccessed = currentTime,
-            relayList = current.relayList)
+            relayList = current.relayList,
+            loginMode = loginMode)
       }
     } catch (e: IOException) {
       throw StorageError.WriteError("Failed to save user: ${e.message}", e)
     } catch (e: IllegalStateException) {
       throw StorageError.WriteError("Failed to save user: ${e.message}", e)
+    }
+  }
+
+  /**
+   * Retrieve stored login mode
+   *
+   * @return Stored login mode
+   */
+  suspend fun getLoginMode(): io.github.omochice.pinosu.feature.auth.domain.model.LoginMode {
+    return try {
+      activeDataStore.data.first().loginMode
+    } catch (e: IOException) {
+      Log.w(TAG, "Failed to read login mode: ${e.message}")
+      LoginMode.Nip55Signer
+    } catch (e: IllegalStateException) {
+      Log.w(TAG, "Failed to read login mode: ${e.message}")
+      LoginMode.Nip55Signer
     }
   }
 

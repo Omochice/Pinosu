@@ -54,6 +54,10 @@ class PresentationDomainIntegrationTest {
   private lateinit var logoutUseCase: LogoutUseCase
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var fetchRelayListUseCase: FetchRelayListUseCase
+  private lateinit var readOnlyLoginUseCase:
+      io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
+  private lateinit var localAuthDataSource:
+      io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -64,6 +68,8 @@ class PresentationDomainIntegrationTest {
 
     authRepository = mockk(relaxed = true)
     fetchRelayListUseCase = mockk(relaxed = true)
+    readOnlyLoginUseCase = mockk(relaxed = true)
+    localAuthDataSource = mockk(relaxed = true)
 
     loginUseCase = Nip55LoginUseCase(authRepository)
     logoutUseCase = Nip55LogoutUseCase(authRepository)
@@ -75,7 +81,9 @@ class PresentationDomainIntegrationTest {
             logoutUseCase,
             getLoginStateUseCase,
             authRepository,
-            fetchRelayListUseCase)
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase,
+            localAuthDataSource)
   }
 
   @After

@@ -69,26 +69,26 @@ class Nip55AuthRepositoryTest {
   @Test
   fun `saveLoginState on success should return success`() = runTest {
     val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
-    coEvery { localAuthDataSource.saveUser(user) } returns Unit
+    coEvery { localAuthDataSource.saveUser(user, any()) } returns Unit
 
     val result = authRepository.saveLoginState(user)
 
     assertTrue("Should return success", result.isSuccess)
-    coVerify { localAuthDataSource.saveUser(user) }
+    coVerify { localAuthDataSource.saveUser(user, any()) }
   }
 
   @Test
   fun `saveLoginState on failure should return StorageError`() = runTest {
     val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     val storageError = StorageError.WriteError("Failed to save")
-    coEvery { localAuthDataSource.saveUser(user) } throws storageError
+    coEvery { localAuthDataSource.saveUser(user, any()) } throws storageError
 
     val result = authRepository.saveLoginState(user)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be StorageError", exception is StorageError.WriteError)
-    coVerify { localAuthDataSource.saveUser(user) }
+    coVerify { localAuthDataSource.saveUser(user, any()) }
   }
 
   @Test
@@ -123,7 +123,7 @@ class Nip55AuthRepositoryTest {
 
     every { nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent) } returns
         Result.success(nip55Response)
-    coEvery { localAuthDataSource.saveUser(any()) } returns Unit
+    coEvery { localAuthDataSource.saveUser(any(), any()) } returns Unit
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
@@ -131,7 +131,7 @@ class Nip55AuthRepositoryTest {
     val user = result.getOrNull()
     assertNotNull("User should not be null", user)
     assertEquals("Pubkey should match", pubkey, user?.pubkey?.npub)
-    coVerify { localAuthDataSource.saveUser(any()) }
+    coVerify { localAuthDataSource.saveUser(any(), any()) }
   }
 
   @Test
@@ -200,7 +200,7 @@ class Nip55AuthRepositoryTest {
         every {
           nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
         } returns Result.success(nip55Response)
-        coEvery { localAuthDataSource.saveUser(any()) } throws
+        coEvery { localAuthDataSource.saveUser(any(), any()) } throws
             StorageError.WriteError("Storage full")
 
         val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)

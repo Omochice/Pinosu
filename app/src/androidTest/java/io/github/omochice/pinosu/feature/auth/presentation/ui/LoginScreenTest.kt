@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -212,6 +213,64 @@ class LoginScreenTest {
     composeTestRule.onNodeWithText("ログインがキャンセルされました。再度お試しください。").assertIsDisplayed()
 
     composeTestRule.onNodeWithText("OK").assertIsDisplayed()
+  }
+
+  @Test
+  fun `LoginScreen should display read-only login button`() {
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = LoginUiState.Idle,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onReadOnlyLoginSubmit = {})
+    }
+
+    composeTestRule.onNodeWithText("公開鍵で閲覧").assertIsDisplayed()
+  }
+
+  @Test
+  fun `LoginScreen read-only button should show npub input`() {
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = LoginUiState.Idle,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onReadOnlyLoginSubmit = {})
+    }
+
+    composeTestRule.onNodeWithText("公開鍵で閲覧").performClick()
+
+    composeTestRule.onNodeWithText("公開鍵でログイン").assertIsDisplayed()
+  }
+
+  @Test
+  fun `LoginScreen read-only submit should trigger callback with npub`() {
+    var submittedNpub = ""
+
+    composeTestRule.setContent {
+      LoginScreen(
+          uiState = LoginUiState.Idle,
+          onLoginButtonClick = {},
+          onDismissDialog = {},
+          onReadOnlyLoginSubmit = { submittedNpub = it })
+    }
+
+    composeTestRule.onNodeWithText("公開鍵で閲覧").performClick()
+
+    val npub = "npub1" + "a".repeat(59)
+    composeTestRule
+        .onNode(
+            androidx.compose.ui.test
+                .hasSetTextAction()
+                .and(
+                    androidx.compose.ui.test
+                        .hasText("npub1…")
+                        .or(androidx.compose.ui.test.hasText(""))))
+        .performTextInput(npub)
+
+    composeTestRule.onNodeWithText("公開鍵でログイン").performClick()
+
+    assertEquals("Should submit the entered npub", npub, submittedNpub)
   }
 
   @Test

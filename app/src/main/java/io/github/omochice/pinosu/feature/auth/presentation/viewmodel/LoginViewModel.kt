@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.LogoutUseCase
+import io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +27,10 @@ import kotlinx.coroutines.launch
  * @param getLoginStateUseCase UseCase for retrieving current login state
  * @param authRepository Repository for processing NIP-55 signer responses
  * @param fetchRelayListUseCase UseCase for fetching NIP-65 relay list after login
+ * @param readOnlyLoginUseCase UseCase for read-only npub login
+ * @param localAuthDataSource Local data source for reading login mode
  */
+@Suppress("LongParameterList")
 @HiltViewModel
 class LoginViewModel
 @Inject
@@ -35,6 +40,8 @@ constructor(
     private val getLoginStateUseCase: GetLoginStateUseCase,
     private val authRepository: AuthRepository,
     private val fetchRelayListUseCase: FetchRelayListUseCase,
+    private val readOnlyLoginUseCase: ReadOnlyLoginUseCase,
+    private val localAuthDataSource: LocalAuthDataSource,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -47,7 +54,9 @@ constructor(
   fun checkLoginState() {
     viewModelScope.launch {
       val user = getLoginStateUseCase()
-      _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub)
+      val loginMode = localAuthDataSource.getLoginMode()
+      _mainUiState.value =
+          MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = loginMode.isReadOnly)
     }
   }
 
@@ -65,9 +74,36 @@ constructor(
       _mainUiState.value = _mainUiState.value.copy(isLoggingOut = true)
       val result = logoutUseCase()
       if (result.isSuccess) {
-        _mainUiState.value = MainUiState(userPubkey = null, isLoggingOut = false)
+        _mainUiState.value = MainUiState()
       } else {
         _mainUiState.value = _mainUiState.value.copy(isLoggingOut = false)
+      }
+    }
+  }
+
+  /**
+   * Handle read-only login submission with npub
+   *
+   * @param npub Nostr public key in npub format
+   */
+  fun onReadOnlyLoginSubmit(npub: String) {
+    viewModelScope.launch {
+      _uiState.value = LoginUiState.Loading
+
+      val result = readOnlyLoginUseCase(npub)
+
+      if (result.isSuccess) {
+        val user = result.getOrNull()
+        _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = true)
+        _uiState.value = LoginUiState.Success
+      } else {
+        val error = result.exceptionOrNull()
+        _uiState.value =
+            if (error is LoginError.InvalidPubkey) {
+              LoginUiState.Error.NonRetryable("Invalid public key format.")
+            } else {
+              LoginUiState.Error.NonRetryable(ERROR_GENERIC)
+            }
       }
     }
   }
@@ -121,9 +157,8 @@ constructor(
               is LoginError.NetworkError ->
                   LoginUiState.Error.Retryable(
                       "A network error occurred. Please check your connection.")
-              is LoginError.UnknownError ->
-                  LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
-              else -> LoginUiState.Error.NonRetryable("An error occurred. Please try again later.")
+              is LoginError.UnknownError -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
+              else -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
       }
     }
@@ -131,5 +166,6 @@ constructor(
 
   companion object {
     private const val TAG = "LoginViewModel"
+    private const val ERROR_GENERIC = "An error occurred. Please try again later."
   }
 }

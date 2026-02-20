@@ -63,6 +63,7 @@ import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.Bookmar
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
  * @param onBookmarkDetailNavigate Callback when a bookmark card is tapped to navigate to detail
  * @param onLongPressBookmark Callback when a bookmark card is long-pressed with rawJson
+ * @param isReadOnly Whether to hide write-only UI (FAB) for read-only login
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +76,7 @@ fun BookmarkScreen(
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
     onLongPressBookmark: (String) -> Unit = {},
+    isReadOnly: Boolean = false,
 ) {
   LaunchedEffect(Unit) { onLoad() }
 
@@ -97,10 +99,12 @@ fun BookmarkScreen(
             onTabSelected = onTabSelected)
       },
       floatingActionButton = {
-        FloatingActionButton(onClick = onAddBookmark) {
-          Icon(
-              imageVector = Icons.Filled.Add,
-              contentDescription = stringResource(R.string.cd_add_bookmark))
+        if (!isReadOnly) {
+          FloatingActionButton(onClick = onAddBookmark) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.cd_add_bookmark))
+          }
         }
       }) { paddingValues ->
         BookmarkPager(
