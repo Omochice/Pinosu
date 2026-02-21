@@ -12,6 +12,7 @@ import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetch
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException

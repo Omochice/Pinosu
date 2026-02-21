@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.bookmark.data.repository
+package io.github.omochice.pinosu.feature.bookmark.domain.repository
 
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
