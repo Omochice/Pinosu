@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/Omochice/Pinosu/compare/v0.10.0...v0.10.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* **deps:** update hilt to v2.59.2 ([#253](https://github.com/Omochice/Pinosu/issues/253)) ([fbe2c3f](https://github.com/Omochice/Pinosu/commit/fbe2c3fa63c60a76b29518efa824388321491e75))
+
 ## [0.10.0](https://github.com/Omochice/Pinosu/compare/v0.9.1...v0.10.0) (2026-02-20)
 
 
