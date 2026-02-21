@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.feature.comment.data.repository.CommentRepository
 import io.github.omochice.pinosu.feature.comment.data.repository.RelayCommentRepository
+import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
 import io.github.omochice.pinosu.feature.comment.domain.usecase.GetCommentsForBookmarkUseCase
 import io.github.omochice.pinosu.feature.comment.domain.usecase.GetCommentsForBookmarkUseCaseImpl
 import io.github.omochice.pinosu.feature.comment.domain.usecase.PostCommentUseCase

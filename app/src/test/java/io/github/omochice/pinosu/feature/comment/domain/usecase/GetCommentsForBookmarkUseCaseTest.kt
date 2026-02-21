@@ -2,8 +2,8 @@ package io.github.omochice.pinosu.feature.comment.domain.usecase
 
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.nip.nip19.Nip19EventResolver
-import io.github.omochice.pinosu.feature.comment.data.repository.CommentRepository
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
+import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
