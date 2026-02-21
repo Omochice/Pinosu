@@ -2,7 +2,7 @@ package io.github.omochice.pinosu.feature.auth.domain.usecase
 
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -28,28 +28,28 @@ import org.robolectric.annotation.Config
 class FetchRelayListUseCaseTest {
 
   private lateinit var fetcher: Nip65RelayListFetcher
-  private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var authRepository: AuthRepository
   private lateinit var useCase: FetchRelayListUseCase
 
   @Before
   fun setup() {
     fetcher = mockk(relaxed = true)
-    localAuthDataSource = mockk(relaxed = true)
-    useCase = FetchRelayListUseCaseImpl(fetcher, localAuthDataSource)
+    authRepository = mockk(relaxed = true)
+    useCase = FetchRelayListUseCaseImpl(fetcher, authRepository)
   }
 
   @Test
   fun `invoke should fetch relay list and cache it on success`() = runTest {
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { fetcher.fetchRelayList(TEST_VALID_HEX) } returns Result.success(relays)
-    coEvery { localAuthDataSource.saveRelayList(relays) } just runs
+    coEvery { authRepository.saveRelayList(relays) } just runs
 
     val result = useCase(TEST_VALID_NPUB)
 
     assertTrue("Should return success", result.isSuccess)
     assertEquals("Should return fetched relays", relays, result.getOrNull())
     coVerify { fetcher.fetchRelayList(TEST_VALID_HEX) }
-    coVerify { localAuthDataSource.saveRelayList(relays) }
+    coVerify { authRepository.saveRelayList(relays) }
   }
 
   @Test
@@ -79,8 +79,7 @@ class FetchRelayListUseCaseTest {
   fun `invoke should still return success when cache fails`() = runTest {
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { fetcher.fetchRelayList(TEST_VALID_HEX) } returns Result.success(relays)
-    coEvery { localAuthDataSource.saveRelayList(any()) } throws
-        StorageError.WriteError("Cache error")
+    coEvery { authRepository.saveRelayList(any()) } throws StorageError.WriteError("Cache error")
 
     val result = useCase(TEST_VALID_NPUB)
 
@@ -91,13 +90,13 @@ class FetchRelayListUseCaseTest {
   @Test
   fun `invoke should return empty list when no NIP-65 event found`() = runTest {
     coEvery { fetcher.fetchRelayList(TEST_VALID_HEX) } returns Result.success(emptyList())
-    coEvery { localAuthDataSource.saveRelayList(any()) } just runs
+    coEvery { authRepository.saveRelayList(any()) } just runs
 
     val result = useCase(TEST_VALID_NPUB)
 
     assertTrue("Should return success", result.isSuccess)
     assertTrue("Should return empty list", result.getOrNull()!!.isEmpty())
-    coVerify { localAuthDataSource.saveRelayList(emptyList()) }
+    coVerify { authRepository.saveRelayList(emptyList()) }
   }
 
   @Test

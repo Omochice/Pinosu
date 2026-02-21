@@ -4,7 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 
@@ -29,13 +29,13 @@ interface FetchRelayListUseCase {
  * Implementation of [FetchRelayListUseCase]
  *
  * @param fetcher Fetcher for NIP-65 relay list metadata
- * @param localAuthDataSource Local data source for caching relay list
+ * @param authRepository Repository for caching relay list
  */
 class FetchRelayListUseCaseImpl
 @Inject
 constructor(
     private val fetcher: Nip65RelayListFetcher,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val authRepository: AuthRepository,
 ) : FetchRelayListUseCase {
 
   @Suppress("ReturnCount")
@@ -54,7 +54,7 @@ constructor(
     val relays = fetchResult.getOrNull() ?: emptyList()
 
     try {
-      localAuthDataSource.saveRelayList(relays)
+      authRepository.saveRelayList(relays)
     } catch (e: StorageError) {
       Log.w(TAG, "Failed to cache relay list: ${e.message}")
     }
