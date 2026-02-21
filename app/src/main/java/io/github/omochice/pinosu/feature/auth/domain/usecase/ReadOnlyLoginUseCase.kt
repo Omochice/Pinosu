@@ -1,11 +1,10 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
 import io.github.omochice.pinosu.core.model.Pubkey
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
-import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import javax.inject.Inject
 
 /**
@@ -23,20 +22,22 @@ interface ReadOnlyLoginUseCase {
   suspend operator fun invoke(npub: String): Result<User>
 }
 
-/** Default [ReadOnlyLoginUseCase] implementation */
-class ReadOnlyLoginUseCaseImpl
-@Inject
-constructor(private val localAuthDataSource: LocalAuthDataSource) : ReadOnlyLoginUseCase {
+/**
+ * Default [ReadOnlyLoginUseCase] implementation
+ *
+ * @param authRepository Repository for authentication state management
+ */
+class ReadOnlyLoginUseCaseImpl @Inject constructor(private val authRepository: AuthRepository) :
+    ReadOnlyLoginUseCase {
 
   override suspend fun invoke(npub: String): Result<User> {
     val pubkey = Pubkey.parse(npub) ?: return Result.failure(LoginError.InvalidPubkey)
     val user = User(pubkey)
 
-    return try {
-      localAuthDataSource.saveUser(user, LoginMode.ReadOnly)
-      Result.success(user)
-    } catch (e: StorageError) {
-      Result.failure(LoginError.UnknownError(e))
-    }
+    return authRepository
+        .saveLoginState(user, LoginMode.ReadOnly)
+        .fold(
+            onSuccess = { Result.success(user) },
+            onFailure = { Result.failure(LoginError.UnknownError(it)) })
   }
 }
