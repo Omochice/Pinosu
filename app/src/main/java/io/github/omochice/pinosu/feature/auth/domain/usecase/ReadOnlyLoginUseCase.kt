@@ -1,10 +1,10 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
 import io.github.omochice.pinosu.core.model.Pubkey
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**

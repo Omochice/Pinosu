@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

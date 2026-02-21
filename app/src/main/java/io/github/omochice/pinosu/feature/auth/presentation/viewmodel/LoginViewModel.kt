@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase

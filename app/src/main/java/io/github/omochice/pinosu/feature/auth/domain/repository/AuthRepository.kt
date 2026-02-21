@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.auth.data.repository
+package io.github.omochice.pinosu.feature.auth.domain.repository
 
 import android.content.Intent
 import io.github.omochice.pinosu.core.relay.RelayConfig

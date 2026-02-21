@@ -11,6 +11,7 @@ import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

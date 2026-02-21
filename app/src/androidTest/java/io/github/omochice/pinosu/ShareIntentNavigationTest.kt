@@ -12,8 +12,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent

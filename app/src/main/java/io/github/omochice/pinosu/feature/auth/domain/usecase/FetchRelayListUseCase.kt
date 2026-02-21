@@ -4,8 +4,8 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.relay.RelayConfig
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**

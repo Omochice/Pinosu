@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepository
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCaseImpl
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
