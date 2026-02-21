@@ -115,7 +115,6 @@ class ShareIntentNavigationTest {
   init {
     every { mockExtractSharedContentUseCase(any()) } returns
         SharedContent(url = "https://example.com", comment = "Check this out")
-    coEvery { mockLocalAuthDataSource.getUser() } returns null
     coEvery { mockGetLoginStateUseCase() } returns null
   }
 

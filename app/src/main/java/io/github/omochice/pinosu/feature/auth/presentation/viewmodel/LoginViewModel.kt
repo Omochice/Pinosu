@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
@@ -28,9 +27,7 @@ import kotlinx.coroutines.launch
  * @param authRepository Repository for processing NIP-55 signer responses
  * @param fetchRelayListUseCase UseCase for fetching NIP-65 relay list after login
  * @param readOnlyLoginUseCase UseCase for read-only npub login
- * @param localAuthDataSource Local data source for reading login mode
  */
-@Suppress("LongParameterList")
 @HiltViewModel
 class LoginViewModel
 @Inject
@@ -41,7 +38,6 @@ constructor(
     private val authRepository: AuthRepository,
     private val fetchRelayListUseCase: FetchRelayListUseCase,
     private val readOnlyLoginUseCase: ReadOnlyLoginUseCase,
-    private val localAuthDataSource: LocalAuthDataSource,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
@@ -54,7 +50,7 @@ constructor(
   fun checkLoginState() {
     viewModelScope.launch {
       val user = getLoginStateUseCase()
-      val loginMode = localAuthDataSource.getLoginMode()
+      val loginMode = authRepository.getLoginMode()
       _mainUiState.value =
           MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = loginMode.isReadOnly)
     }

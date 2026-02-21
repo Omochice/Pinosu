@@ -45,8 +45,6 @@ class LoginViewModelTest {
   private lateinit var fetchRelayListUseCase: FetchRelayListUseCase
   private lateinit var readOnlyLoginUseCase:
       io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
-  private lateinit var localAuthDataSource:
-      io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -60,7 +58,6 @@ class LoginViewModelTest {
     authRepository = mockk(relaxed = true)
     fetchRelayListUseCase = mockk(relaxed = true)
     readOnlyLoginUseCase = mockk(relaxed = true)
-    localAuthDataSource = mockk(relaxed = true)
     viewModel =
         LoginViewModel(
             loginUseCase,
@@ -68,8 +65,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
   }
 
   @After
@@ -213,8 +209,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
 
@@ -241,8 +236,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -270,8 +264,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -297,8 +290,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -326,8 +318,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -363,8 +354,7 @@ class LoginViewModelTest {
                 getLoginStateUseCase,
                 authRepository,
                 fetchRelayListUseCase,
-                readOnlyLoginUseCase,
-                localAuthDataSource)
+                readOnlyLoginUseCase)
 
         viewModelWithMock.processNip55Response(-1, mockIntent)
         advanceUntilIdle()
@@ -398,8 +388,7 @@ class LoginViewModelTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
 
     viewModelWithMock.processNip55Response(-1, mockIntent)
     advanceUntilIdle()
@@ -440,7 +429,7 @@ class LoginViewModelTest {
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { getLoginStateUseCase() } returns testUser
-    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.ReadOnly
+    coEvery { authRepository.getLoginMode() } returns LoginMode.ReadOnly
 
     viewModel.checkLoginState()
     advanceUntilIdle()
@@ -455,7 +444,7 @@ class LoginViewModelTest {
     val testPubkey = "npub1" + "a".repeat(59)
     val testUser = User(Pubkey.parse(testPubkey)!!)
     coEvery { getLoginStateUseCase() } returns testUser
-    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.Nip55Signer
+    coEvery { authRepository.getLoginMode() } returns LoginMode.Nip55Signer
 
     viewModel.checkLoginState()
     advanceUntilIdle()
