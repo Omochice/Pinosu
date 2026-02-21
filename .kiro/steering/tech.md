@@ -59,6 +59,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
 - **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **Auth Modes**: `LoginMode` sealed interface (`Nip55Signer` for full access, `ReadOnly` for browse-only via npub entry)
 
 ### Serialization
 
@@ -126,4 +127,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-02-15 - Updated Compose BOM to 2026.02.00, AGP to 9.0.1, added Coil and AboutLibraries_
+_Updated: 2026-02-21 - Added LoginMode auth modes pattern_

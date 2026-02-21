@@ -137,6 +137,7 @@ feature/{name}/
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
+- `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
 
 ### Shared UI (`ui/`)
@@ -181,6 +182,7 @@ io.github.omochice.pinosu/
 │   │   ├── nip55/           // Signer client
 │   │   └── nip65/           // Relay list fetcher
 │   ├── relay/               // RelayPool, PublishResult
+│   ├── timestamp/           // Timestamp formatting (java.time)
 │   └── ui/                  // UiText abstraction
 ├── feature/                 // Feature modules (vertical slices)
 │   ├── auth/                // Authentication feature
@@ -211,4 +213,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-02-07 - Added NIP-19 Bech32 entity resolver to core/nip/_
+_Updated: 2026-02-21 - Added core/timestamp/ utility package_
