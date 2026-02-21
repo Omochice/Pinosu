@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.settings.data.repository.LocalSettingsRepository
-import io.github.omochice.pinosu.feature.settings.data.repository.SettingsRepository
+import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
