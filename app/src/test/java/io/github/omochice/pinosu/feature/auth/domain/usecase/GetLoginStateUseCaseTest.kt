@@ -63,7 +63,7 @@ class GetLoginStateUseCaseTest {
     getLoginStateUseCase()
 
     coVerify(exactly = 2) { authRepository.getLoginState() }
-    coVerify(exactly = 0) { authRepository.saveLoginState(any()) }
+    coVerify(exactly = 0) { authRepository.saveLoginState(any(), any()) }
     coVerify(exactly = 0) { authRepository.logout() }
   }
 }

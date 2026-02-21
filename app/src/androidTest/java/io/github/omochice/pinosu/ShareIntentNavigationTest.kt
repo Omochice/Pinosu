@@ -69,7 +69,10 @@ class ShareIntentNavigationTest {
   @JvmField
   val mockAuthRepository: AuthRepository =
       object : AuthRepository by mockk(relaxed = true) {
-        override suspend fun saveLoginState(user: User): Result<Unit> = Result.success(Unit)
+        override suspend fun saveLoginState(
+            user: User,
+            loginMode: io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
+        ): Result<Unit> = Result.success(Unit)
 
         override suspend fun logout(): Result<Unit> = Result.success(Unit)
 
