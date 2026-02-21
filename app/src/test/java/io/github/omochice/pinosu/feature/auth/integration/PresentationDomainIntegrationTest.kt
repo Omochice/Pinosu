@@ -1,10 +1,10 @@
 package io.github.omochice.pinosu.feature.auth.integration
 
 import io.github.omochice.pinosu.core.model.Pubkey
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.auth.domain.usecase.LoginUseCase
@@ -56,8 +56,6 @@ class PresentationDomainIntegrationTest {
   private lateinit var fetchRelayListUseCase: FetchRelayListUseCase
   private lateinit var readOnlyLoginUseCase:
       io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCase
-  private lateinit var localAuthDataSource:
-      io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
   private lateinit var viewModel: LoginViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -69,7 +67,6 @@ class PresentationDomainIntegrationTest {
     authRepository = mockk(relaxed = true)
     fetchRelayListUseCase = mockk(relaxed = true)
     readOnlyLoginUseCase = mockk(relaxed = true)
-    localAuthDataSource = mockk(relaxed = true)
 
     loginUseCase = Nip55LoginUseCase(authRepository)
     logoutUseCase = Nip55LogoutUseCase(authRepository)
@@ -82,8 +79,7 @@ class PresentationDomainIntegrationTest {
             getLoginStateUseCase,
             authRepository,
             fetchRelayListUseCase,
-            readOnlyLoginUseCase,
-            localAuthDataSource)
+            readOnlyLoginUseCase)
   }
 
   @After

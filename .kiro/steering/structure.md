@@ -24,13 +24,13 @@ graph TB
             UC_Login[LoginUseCase<br/>Interface]
             UC_Logout[LogoutUseCase<br/>Interface]
             Model[User, AuthEvent<br/>ErrorTypes]
+            Repo[AuthRepository<br/>Interface]
 
             UC_Login -.implements.- UC_Login_Impl[Nip55LoginUseCase]
             UC_Logout -.implements.- UC_Logout_Impl[Nip55LogoutUseCase]
         end
 
         subgraph "data/"
-            Repo[AuthRepository<br/>Interface]
             RepoImpl[Nip55AuthRepository]
             LocalDS[LocalAuthDataSource<br/>DataStore]
 
@@ -74,8 +74,8 @@ graph TB
     classDef di fill:#fce4ec,stroke:#880e4f
 
     class UI,VM,State presentation
-    class UC_Login,UC_Logout,UC_Login_Impl,UC_Logout_Impl,Model domain
-    class Repo,RepoImpl,LocalDS data
+    class UC_Login,UC_Logout,UC_Login_Impl,UC_Logout_Impl,Model,Repo domain
+    class RepoImpl,LocalDS data
     class Nip55Client,Nip65Fetcher,RelayPool,TinkKeyManager,Navigation,UiText core
     class Nip55Signer,AndroidKeystore external
     class AuthMod di
@@ -110,9 +110,10 @@ graph TB
 feature/{name}/
 ├── domain/
 │   ├── model/       // Feature-specific entities
+│   ├── repository/  // Repository interfaces (abstractions)
 │   └── usecase/     // Business use cases (interface + implementation)
 ├── data/
-│   ├── repository/  // Repository interface + implementation
+│   ├── repository/  // Repository implementations only
 │   ├── local/       // DataStore sources
 │   └── metadata/    // External data fetching
 ├── presentation/
@@ -205,6 +206,7 @@ io.github.omochice.pinosu/
 
 - **Feature Cohesion**: Each feature is a self-contained vertical slice
 - **Dependency Rule**: Domain layer has no dependencies on data or presentation
+- **Dependency Inversion**: Repository interfaces live in `domain/repository/`, implementations in `data/repository/`
 - **Interface Segregation**: Use cases and repositories defined as interfaces
 - **Single Responsibility**: Each class/file has one clear purpose
 - **Core for Sharing**: Only infrastructure shared across features lives in `core/`
@@ -213,4 +215,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-02-21 - Added core/timestamp/ utility package_
+_Updated: 2026-02-21 - Moved repository interfaces to domain/repository/ per Dependency Inversion Principle_

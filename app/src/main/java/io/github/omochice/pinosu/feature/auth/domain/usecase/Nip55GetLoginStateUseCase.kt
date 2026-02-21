@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**

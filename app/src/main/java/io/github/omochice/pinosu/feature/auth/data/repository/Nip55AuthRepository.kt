@@ -10,6 +10,7 @@ import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**
@@ -39,16 +40,23 @@ constructor(
    * Save login state
    *
    * @param user User to save
+   * @param loginMode How the user authenticated
    * @return Success on success, Failure(StorageError) on failure
    */
-  override suspend fun saveLoginState(user: User): Result<Unit> {
+  override suspend fun saveLoginState(user: User, loginMode: LoginMode): Result<Unit> {
     return try {
-      localAuthDataSource.saveUser(user, LoginMode.Nip55Signer)
+      localAuthDataSource.saveUser(user, loginMode)
       Result.success(Unit)
     } catch (e: StorageError) {
       Result.failure(e)
     }
   }
+
+  override suspend fun getLoginMode(): LoginMode = localAuthDataSource.getLoginMode()
+
+  override suspend fun saveRelayList(
+      relays: List<io.github.omochice.pinosu.core.relay.RelayConfig>
+  ) = localAuthDataSource.saveRelayList(relays)
 
   /**
    * Logout

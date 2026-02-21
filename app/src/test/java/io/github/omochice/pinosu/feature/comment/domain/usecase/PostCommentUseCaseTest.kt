@@ -5,7 +5,7 @@ import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.feature.comment.data.repository.CommentRepository
+import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

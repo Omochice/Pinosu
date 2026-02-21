@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.settings.data.repository
+package io.github.omochice.pinosu.feature.settings.domain.repository
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode

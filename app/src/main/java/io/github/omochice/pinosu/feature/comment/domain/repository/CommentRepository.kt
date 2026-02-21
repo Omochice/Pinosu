@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.comment.data.repository
+package io.github.omochice.pinosu.feature.comment.domain.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent

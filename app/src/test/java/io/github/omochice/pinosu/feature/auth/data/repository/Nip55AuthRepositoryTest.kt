@@ -4,11 +4,14 @@ import android.content.Intent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55Response
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -71,10 +74,10 @@ class Nip55AuthRepositoryTest {
     val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
     coEvery { localAuthDataSource.saveUser(user, any()) } returns Unit
 
-    val result = authRepository.saveLoginState(user)
+    val result = authRepository.saveLoginState(user, LoginMode.Nip55Signer)
 
     assertTrue("Should return success", result.isSuccess)
-    coVerify { localAuthDataSource.saveUser(user, any()) }
+    coVerify { localAuthDataSource.saveUser(user, LoginMode.Nip55Signer) }
   }
 
   @Test
@@ -83,12 +86,58 @@ class Nip55AuthRepositoryTest {
     val storageError = StorageError.WriteError("Failed to save")
     coEvery { localAuthDataSource.saveUser(user, any()) } throws storageError
 
-    val result = authRepository.saveLoginState(user)
+    val result = authRepository.saveLoginState(user, LoginMode.Nip55Signer)
 
     assertTrue("Should return failure", result.isFailure)
     val exception = result.exceptionOrNull()
     assertTrue("Exception should be StorageError", exception is StorageError.WriteError)
-    coVerify { localAuthDataSource.saveUser(user, any()) }
+    coVerify { localAuthDataSource.saveUser(user, LoginMode.Nip55Signer) }
+  }
+
+  @Test
+  fun `saveLoginState should forward loginMode to localAuthDataSource`() = runTest {
+    val user = User(Pubkey.parse("npub1" + "a".repeat(59))!!)
+    coEvery { localAuthDataSource.saveUser(user, any()) } returns Unit
+
+    authRepository.saveLoginState(user, LoginMode.ReadOnly)
+
+    coVerify { localAuthDataSource.saveUser(user, LoginMode.ReadOnly) }
+  }
+
+  @Test
+  fun `getLoginMode should delegate to localAuthDataSource`() = runTest {
+    coEvery { localAuthDataSource.getLoginMode() } returns LoginMode.ReadOnly
+
+    val result = authRepository.getLoginMode()
+
+    assertEquals("Should return login mode from LocalAuthDataSource", LoginMode.ReadOnly, result)
+    coVerify { localAuthDataSource.getLoginMode() }
+  }
+
+  @Test
+  fun `saveRelayList should delegate to localAuthDataSource`() = runTest {
+    val relays = listOf(RelayConfig("wss://relay.example.com"))
+    coEvery { localAuthDataSource.saveRelayList(relays) } returns Unit
+
+    authRepository.saveRelayList(relays)
+
+    coVerify { localAuthDataSource.saveRelayList(relays) }
+  }
+
+  @Test
+  fun `saveRelayList on failure should propagate StorageError`() = runTest {
+    val relays = listOf(RelayConfig("wss://relay.example.com"))
+    val storageError = StorageError.WriteError("Failed to save relay list")
+    coEvery { localAuthDataSource.saveRelayList(relays) } throws storageError
+
+    var thrown: Throwable? = null
+    try {
+      authRepository.saveRelayList(relays)
+    } catch (e: StorageError) {
+      thrown = e
+    }
+
+    assertTrue("Should throw StorageError", thrown is StorageError.WriteError)
   }
 
   @Test

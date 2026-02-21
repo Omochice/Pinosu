@@ -8,6 +8,7 @@ import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
+import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton

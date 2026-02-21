@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
 import io.github.omochice.pinosu.core.model.Pubkey
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -63,7 +63,7 @@ class GetLoginStateUseCaseTest {
     getLoginStateUseCase()
 
     coVerify(exactly = 2) { authRepository.getLoginState() }
-    coVerify(exactly = 0) { authRepository.saveLoginState(any()) }
+    coVerify(exactly = 0) { authRepository.saveLoginState(any(), any()) }
     coVerify(exactly = 0) { authRepository.logout() }
   }
 }

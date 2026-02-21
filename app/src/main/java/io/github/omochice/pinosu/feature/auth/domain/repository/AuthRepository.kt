@@ -1,20 +1,19 @@
-package io.github.omochice.pinosu.feature.auth.data.repository
+package io.github.omochice.pinosu.feature.auth.domain.repository
 
 import android.content.Intent
+import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 
 /**
  * Authentication repository interface
  *
- * Integrates Nip55SignerClient and LocalAuthDataSource to provide authentication flow and local
- * state management.
+ * Provides authentication flow and local state management.
  */
 interface AuthRepository {
 
   /**
    * Get login state
-   *
-   * Retrieves saved user information from LocalAuthDataSource.
    *
    * @return User if logged in, null if not logged in
    */
@@ -23,17 +22,30 @@ interface AuthRepository {
   /**
    * Save login state
    *
-   * Saves user information to LocalAuthDataSource.
-   *
    * @param user User to save
+   * @param loginMode How the user authenticated
    * @return Success on success, Failure(StorageError) on failure
    */
-  suspend fun saveLoginState(user: User): Result<Unit>
+  suspend fun saveLoginState(user: User, loginMode: LoginMode): Result<Unit>
+
+  /**
+   * Retrieve stored login mode
+   *
+   * @return Stored login mode, defaults to [LoginMode.Nip55Signer] when no value has been persisted
+   */
+  suspend fun getLoginMode(): LoginMode
+
+  /**
+   * Save relay list
+   *
+   * @param relays List of relay configurations to save
+   * @throws io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError.WriteError when
+   *   save fails
+   */
+  suspend fun saveRelayList(relays: List<RelayConfig>)
 
   /**
    * Logout
-   *
-   * Clears login state in LocalAuthDataSource.
    *
    * @return Success on success, Failure(LogoutError) on failure
    */
@@ -41,8 +53,6 @@ interface AuthRepository {
 
   /**
    * Process NIP-55 signer response and set user to logged-in state
-   *
-   * Parses response with Nip55SignerClient and saves to LocalAuthDataSource on success.
    *
    * @param resultCode ActivityResult's resultCode
    * @param data Intent data
@@ -52,8 +62,6 @@ interface AuthRepository {
 
   /**
    * Check if NIP-55 signer app is installed
-   *
-   * Delegates to Nip55SignerClient to verify NIP-55 signer installation status.
    *
    * @return true if NIP-55 signer is installed
    */

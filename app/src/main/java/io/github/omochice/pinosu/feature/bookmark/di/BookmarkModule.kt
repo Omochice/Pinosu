@@ -6,8 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.OkHttpUrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.feature.bookmark.data.repository.BookmarkRepository
 import io.github.omochice.pinosu.feature.bookmark.data.repository.RelayBookmarkRepository
+import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCaseImpl
 

@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -21,26 +21,26 @@ import org.junit.Test
  */
 class ReadOnlyLoginUseCaseTest {
 
-  private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var authRepository: AuthRepository
   private lateinit var useCase: ReadOnlyLoginUseCase
 
   @Before
   fun setup() {
-    localAuthDataSource = mockk(relaxed = true)
-    useCase = ReadOnlyLoginUseCaseImpl(localAuthDataSource)
+    authRepository = mockk(relaxed = true)
+    useCase = ReadOnlyLoginUseCaseImpl(authRepository)
   }
 
   @Test
   fun `invoke with valid npub should save user with ReadOnly mode and return success`() = runTest {
     val npub = TEST_VALID_NPUB
-    coEvery { localAuthDataSource.saveUser(any(), any()) } returns Unit
+    coEvery { authRepository.saveLoginState(any(), any()) } returns Result.success(Unit)
 
     val result = useCase(npub)
 
     assertTrue("Should return success", result.isSuccess)
     val user = result.getOrNull()!!
     assertEquals("Pubkey should match", npub, user.pubkey.npub)
-    coVerify { localAuthDataSource.saveUser(any(), eq(LoginMode.ReadOnly)) }
+    coVerify { authRepository.saveLoginState(any(), eq(LoginMode.ReadOnly)) }
   }
 
   @Test
@@ -55,8 +55,8 @@ class ReadOnlyLoginUseCaseTest {
   @Test
   fun `invoke when storage fails should return UnknownError`() = runTest {
     val npub = TEST_VALID_NPUB
-    coEvery { localAuthDataSource.saveUser(any(), any()) } throws
-        StorageError.WriteError("Storage full")
+    coEvery { authRepository.saveLoginState(any(), any()) } returns
+        Result.failure(StorageError.WriteError("Storage full"))
 
     val result = useCase(npub)
 

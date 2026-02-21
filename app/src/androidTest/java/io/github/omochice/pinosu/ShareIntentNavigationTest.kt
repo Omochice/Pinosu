@@ -12,8 +12,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
-import io.github.omochice.pinosu.feature.auth.data.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.model.User
+import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
@@ -69,7 +69,10 @@ class ShareIntentNavigationTest {
   @JvmField
   val mockAuthRepository: AuthRepository =
       object : AuthRepository by mockk(relaxed = true) {
-        override suspend fun saveLoginState(user: User): Result<Unit> = Result.success(Unit)
+        override suspend fun saveLoginState(
+            user: User,
+            loginMode: io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
+        ): Result<Unit> = Result.success(Unit)
 
         override suspend fun logout(): Result<Unit> = Result.success(Unit)
 
@@ -112,7 +115,6 @@ class ShareIntentNavigationTest {
   init {
     every { mockExtractSharedContentUseCase(any()) } returns
         SharedContent(url = "https://example.com", comment = "Check this out")
-    coEvery { mockLocalAuthDataSource.getUser() } returns null
     coEvery { mockGetLoginStateUseCase() } returns null
   }
 

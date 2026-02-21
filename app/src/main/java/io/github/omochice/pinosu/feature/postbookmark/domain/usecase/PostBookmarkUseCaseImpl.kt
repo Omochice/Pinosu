@@ -3,7 +3,7 @@ package io.github.omochice.pinosu.feature.postbookmark.domain.usecase
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
-import io.github.omochice.pinosu.feature.bookmark.data.repository.BookmarkRepository
+import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

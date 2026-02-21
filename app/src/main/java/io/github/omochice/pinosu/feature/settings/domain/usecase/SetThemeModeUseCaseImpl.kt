@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.domain.usecase
 
-import io.github.omochice.pinosu.feature.settings.data.repository.SettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
+import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import javax.inject.Inject
 
 /**
