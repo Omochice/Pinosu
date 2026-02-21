@@ -31,7 +31,7 @@ interface AuthRepository {
   /**
    * Retrieve stored login mode
    *
-   * @return Stored login mode
+   * @return Stored login mode, defaults to [LoginMode.Nip55Signer] when no value has been persisted
    */
   suspend fun getLoginMode(): LoginMode
 
