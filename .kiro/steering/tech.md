@@ -33,7 +33,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Kotlin**: 2.3.10
 - **Compose BOM**: 2026.02.00
 - **Gradle Plugin**: 9.0.1
-- **Hilt**: 2.59.1 (requires metadata compatibility workaround for Kotlin 2.3.x)
+- **Hilt**: 2.59.2 (requires metadata compatibility workaround for Kotlin 2.3.x)
 
 ### Architecture
 
@@ -51,7 +51,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Nostr Integration
 
-- **Amethyst Quartz**: com.vitorpamplona:quartz-android (v1.05.1)
+- **Amethyst Quartz**: com.vitorpamplona.quartz:quartz (v1.05.1)
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
@@ -127,4 +127,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-02-21 - Added LoginMode auth modes pattern_
+_Updated: 2026-02-22 - Corrected Hilt version (2.59.1→2.59.2) and Quartz artifact coordinates_
