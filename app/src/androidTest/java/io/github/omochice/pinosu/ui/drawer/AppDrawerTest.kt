@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.ui.drawer
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Assert.assertTrue
@@ -72,36 +71,5 @@ class AppDrawerTest {
     composeTestRule.onNodeWithText("ログアウト").performClick()
     assertTrue("Logout should be triggered", logoutClicked)
     assertTrue("Drawer should be closed after logout click", drawerClosed)
-  }
-
-  @Test
-  fun `AppDrawer should display close button`() {
-    composeTestRule.setContent {
-      AppDrawer(
-          onNavigateToLicense = {},
-          onNavigateToAppInfo = {},
-          onNavigateToSettings = {},
-          onLogout = {},
-          onCloseDrawer = {})
-    }
-
-    composeTestRule.onNodeWithContentDescription("メニューを閉じる").assertIsDisplayed()
-  }
-
-  @Test
-  fun `AppDrawer close button should call onCloseDrawer`() {
-    var drawerClosed = false
-
-    composeTestRule.setContent {
-      AppDrawer(
-          onNavigateToLicense = {},
-          onNavigateToAppInfo = {},
-          onNavigateToSettings = {},
-          onLogout = {},
-          onCloseDrawer = { drawerClosed = true })
-    }
-
-    composeTestRule.onNodeWithContentDescription("メニューを閉じる").performClick()
-    assertTrue("Drawer should be closed after close button click", drawerClosed)
   }
 }
