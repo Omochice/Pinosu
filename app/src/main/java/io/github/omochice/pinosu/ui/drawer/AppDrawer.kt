@@ -11,9 +11,9 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -49,7 +49,7 @@ fun AppDrawer(
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-  DismissibleDrawerSheet(modifier = modifier.fillMaxWidth(DRAWER_WIDTH_FRACTION).fillMaxHeight()) {
+  ModalDrawerSheet(modifier = modifier.fillMaxWidth(DRAWER_WIDTH_FRACTION).fillMaxHeight()) {
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
       Text(
           text = stringResource(R.string.app_name),
