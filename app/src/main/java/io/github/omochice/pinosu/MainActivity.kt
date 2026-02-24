@@ -11,8 +11,8 @@ import androidx.activity.viewModels
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
@@ -210,7 +210,7 @@ fun PinosuApp(
         })
   }
 
-  ModalNavigationDrawer(
+  DismissibleNavigationDrawer(
       drawerState = drawerState,
       gesturesEnabled = false,
       drawerContent = {

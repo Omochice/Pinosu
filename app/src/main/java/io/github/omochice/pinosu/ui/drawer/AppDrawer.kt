@@ -9,11 +9,11 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -49,7 +49,7 @@ fun AppDrawer(
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-  ModalDrawerSheet(modifier = modifier.fillMaxSize()) {
+  DismissibleDrawerSheet(modifier = modifier.fillMaxSize()) {
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         navigationIcon = {
