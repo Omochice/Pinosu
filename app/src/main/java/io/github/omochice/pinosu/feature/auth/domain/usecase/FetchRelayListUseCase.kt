@@ -38,7 +38,6 @@ constructor(
     private val authRepository: AuthRepository,
 ) : FetchRelayListUseCase {
 
-  @Suppress("ReturnCount")
   override suspend fun invoke(npubPubkey: String): Result<List<RelayConfig>> {
     val hexPubkey =
         Pubkey.parse(npubPubkey)?.hex
