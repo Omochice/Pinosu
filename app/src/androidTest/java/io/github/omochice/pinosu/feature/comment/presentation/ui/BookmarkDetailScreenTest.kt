@@ -34,9 +34,9 @@ class BookmarkDetailScreenTest {
       CompositionLocalProvider(LocalUriHandler provides fakeUriHandler) {
         BookmarkDetailScreen(
             uiState = BookmarkDetailUiState(),
-            title = "Test Bookmark",
-            urls = listOf(testUrl),
-            createdAt = 1_700_000_000L,
+            bookmarkInfo =
+                BookmarkInfo(
+                    title = "Test Bookmark", urls = listOf(testUrl), createdAt = 1_700_000_000L),
             onCommentInputChange = {},
             onPostComment = {},
             onNavigateBack = {},
@@ -71,9 +71,11 @@ class BookmarkDetailScreenTest {
     composeTestRule.setContent {
       BookmarkDetailScreen(
           uiState = BookmarkDetailUiState(comments = listOf(quoteComment, regularComment)),
-          title = "Test Bookmark",
-          urls = listOf("https://example.com"),
-          createdAt = 1_700_000_000L,
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test Bookmark",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},
@@ -89,9 +91,9 @@ class BookmarkDetailScreenTest {
     composeTestRule.setContent {
       BookmarkDetailScreen(
           uiState = BookmarkDetailUiState(),
-          title = "Test",
-          urls = listOf("https://example.com"),
-          createdAt = 1_700_000_000L,
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test", urls = listOf("https://example.com"), createdAt = 1_700_000_000L),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},
@@ -107,9 +109,9 @@ class BookmarkDetailScreenTest {
     composeTestRule.setContent {
       BookmarkDetailScreen(
           uiState = BookmarkDetailUiState(),
-          title = "Test",
-          urls = listOf("https://example.com"),
-          createdAt = 1_700_000_000L,
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test", urls = listOf("https://example.com"), createdAt = 1_700_000_000L),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},

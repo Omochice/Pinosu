@@ -53,6 +53,7 @@ import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewMo
 import io.github.omochice.pinosu.feature.bookmark.presentation.ui.BookmarkScreen
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkViewModel
 import io.github.omochice.pinosu.feature.comment.presentation.ui.BookmarkDetailScreen
+import io.github.omochice.pinosu.feature.comment.presentation.ui.BookmarkInfo
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailViewModel
 import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
@@ -390,10 +391,12 @@ fun PinosuApp(
 
                 BookmarkDetailScreen(
                     uiState = detailUiState,
-                    title = route.title,
-                    urls = route.urls,
-                    createdAt = route.createdAt,
-                    imageUrl = route.imageUrl,
+                    bookmarkInfo =
+                        BookmarkInfo(
+                            title = route.title,
+                            urls = route.urls,
+                            createdAt = route.createdAt,
+                            imageUrl = route.imageUrl),
                     onCommentInputChange = { detailViewModel.updateCommentInput(it) },
                     onPostComment = {
                       detailViewModel.prepareSignCommentIntent(
