@@ -2,7 +2,8 @@ package io.github.omochice.pinosu.ui.drawer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+
+private const val DRAWER_WIDTH_FRACTION = 0.75f
 
 /**
  * Application drawer menu
@@ -46,7 +49,7 @@ fun AppDrawer(
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-  DismissibleDrawerSheet(modifier = modifier.fillMaxSize()) {
+  DismissibleDrawerSheet(modifier = modifier.fillMaxWidth(DRAWER_WIDTH_FRACTION).fillMaxHeight()) {
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
       Text(
           text = stringResource(R.string.app_name),
