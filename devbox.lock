@@ -1,51 +1,51 @@
 {
   "lockfile_version": "1",
   "packages": {
-    "actionlint@1.7.10": {
-      "last_modified": "2026-01-23T17:20:52Z",
-      "resolved": "github:NixOS/nixpkgs/a1bab9e494f5f4939442a57a58d0449a109593fe#actionlint",
+    "actionlint@1.7.11": {
+      "last_modified": "2026-02-23T15:40:43Z",
+      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#actionlint",
       "source": "devbox-search",
-      "version": "1.7.10",
+      "version": "1.7.11",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/92yl15p354llm4lkdq2vjvscljfdp03q-actionlint-1.7.10",
+              "path": "/nix/store/lgjp3mb2wfk2mpfay8w62mk4jl2bg4gr-actionlint-1.7.11",
               "default": true
             }
           ],
-          "store_path": "/nix/store/92yl15p354llm4lkdq2vjvscljfdp03q-actionlint-1.7.10"
+          "store_path": "/nix/store/lgjp3mb2wfk2mpfay8w62mk4jl2bg4gr-actionlint-1.7.11"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/c756x60xjyyfc1p09670im6ms6b75lxg-actionlint-1.7.10",
+              "path": "/nix/store/css8sdn6z2y71y9d0dbmnj6i5v5vcybv-actionlint-1.7.11",
               "default": true
             }
           ],
-          "store_path": "/nix/store/c756x60xjyyfc1p09670im6ms6b75lxg-actionlint-1.7.10"
+          "store_path": "/nix/store/css8sdn6z2y71y9d0dbmnj6i5v5vcybv-actionlint-1.7.11"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/9n2c90qk316b5xsll2ndsfsl7jrccjhc-actionlint-1.7.10",
+              "path": "/nix/store/1snf915whqdd6579iig1icpk1lqc6khg-actionlint-1.7.11",
               "default": true
             }
           ],
-          "store_path": "/nix/store/9n2c90qk316b5xsll2ndsfsl7jrccjhc-actionlint-1.7.10"
+          "store_path": "/nix/store/1snf915whqdd6579iig1icpk1lqc6khg-actionlint-1.7.11"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/r9iw80i3mm22lj116h1bxvnc53kkry2s-actionlint-1.7.10",
+              "path": "/nix/store/pafy6lli47c2fhrnxanz4wdmcy9932ix-actionlint-1.7.11",
               "default": true
             }
           ],
-          "store_path": "/nix/store/r9iw80i3mm22lj116h1bxvnc53kkry2s-actionlint-1.7.10"
+          "store_path": "/nix/store/pafy6lli47c2fhrnxanz4wdmcy9932ix-actionlint-1.7.11"
         }
       }
     },
