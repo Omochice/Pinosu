@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -45,5 +46,21 @@ class QuoteCardTest {
 
     val expected = formatTimestamp(timestamp)
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
+  }
+
+  @Test
+  fun displaysFallbackAvatarWhenProfileImageUrlIsNull() {
+    val comment =
+        Comment(
+            id = "q3",
+            content = "Quote without avatar",
+            authorPubkey = "pk3",
+            createdAt = 1_700_000_000L,
+            isAuthorComment = false,
+            kind = Comment.KIND_TEXT_NOTE)
+
+    composeTestRule.setContent { QuoteCard(comment = comment, profileImageUrl = null) }
+
+    composeTestRule.onNodeWithContentDescription("コメント投稿者のプロフィール画像").assertIsDisplayed()
   }
 }
