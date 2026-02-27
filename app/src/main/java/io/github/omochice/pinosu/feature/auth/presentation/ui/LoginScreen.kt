@@ -46,7 +46,6 @@ import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiStat
  * @param onLoginSuccess Callback when login succeeds
  * @param onReadOnlyLoginSubmit Callback when read-only npub is submitted
  */
-@Suppress("LongParameterList")
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,

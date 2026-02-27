@@ -52,10 +52,7 @@ import io.github.omochice.pinosu.ui.component.ErrorDialog
  * Bookmark detail screen showing bookmark info and comments
  *
  * @param uiState Current UI state
- * @param title Bookmark title
- * @param urls List of bookmark URLs
- * @param createdAt Bookmark creation timestamp
- * @param imageUrl OGP image URL, or null if not available
+ * @param bookmarkInfo Bookmark metadata (title, URLs, timestamp, image)
  * @param onCommentInputChange Callback when comment input changes
  * @param onPostComment Callback when post button is clicked
  * @param onNavigateBack Callback to navigate back
@@ -63,19 +60,15 @@ import io.github.omochice.pinosu.ui.component.ErrorDialog
  * @param onOpenUrlFailed Callback when opening a URL fails
  * @param isReadOnly Whether to hide comment input for read-only login
  */
-@Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkDetailScreen(
     uiState: BookmarkDetailUiState,
-    title: String?,
-    urls: List<String>,
-    createdAt: Long,
-    imageUrl: String? = null,
+    bookmarkInfo: BookmarkInfo,
     onCommentInputChange: (String) -> Unit,
     onPostComment: () -> Unit,
     onNavigateBack: () -> Unit,
-    onDismissError: () -> Unit,
+    onDismissError: () -> Unit = {},
     onOpenUrlFailed: () -> Unit = {},
     isReadOnly: Boolean = false,
 ) {
@@ -84,7 +77,7 @@ fun BookmarkDetailScreen(
         TopAppBar(
             title = {
               Text(
-                  text = title ?: stringResource(R.string.title_bookmark_detail),
+                  text = bookmarkInfo.title ?: stringResource(R.string.title_bookmark_detail),
                   maxLines = 1,
                   overflow = TextOverflow.Ellipsis)
             },
@@ -107,10 +100,7 @@ fun BookmarkDetailScreen(
       }) { paddingValues ->
         BookmarkDetailContent(
             uiState = uiState,
-            title = title,
-            urls = urls,
-            createdAt = createdAt,
-            imageUrl = imageUrl,
+            bookmarkInfo = bookmarkInfo,
             paddingValues = paddingValues,
             onOpenUrlFailed = onOpenUrlFailed)
 
@@ -120,14 +110,10 @@ fun BookmarkDetailScreen(
       }
 }
 
-@Suppress("LongParameterList")
 @Composable
 private fun BookmarkDetailContent(
     uiState: BookmarkDetailUiState,
-    title: String?,
-    urls: List<String>,
-    createdAt: Long,
-    imageUrl: String?,
+    bookmarkInfo: BookmarkInfo,
     paddingValues: PaddingValues,
     onOpenUrlFailed: () -> Unit,
 ) {
@@ -143,12 +129,7 @@ private fun BookmarkDetailContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           item {
-            BookmarkInfoSection(
-                title = title,
-                urls = urls,
-                createdAt = createdAt,
-                imageUrl = imageUrl,
-                onOpenUrlFailed = onOpenUrlFailed)
+            BookmarkInfoSection(bookmarkInfo = bookmarkInfo, onOpenUrlFailed = onOpenUrlFailed)
           }
 
           item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
@@ -176,24 +157,21 @@ private fun BookmarkDetailContent(
 
 @Composable
 private fun BookmarkInfoSection(
-    title: String?,
-    urls: List<String>,
-    createdAt: Long,
-    imageUrl: String?,
+    bookmarkInfo: BookmarkInfo,
     onOpenUrlFailed: () -> Unit,
 ) {
   val uriHandler = LocalUriHandler.current
   Column {
-    imageUrl?.let { url ->
+    bookmarkInfo.imageUrl?.let { url ->
       AsyncImage(
           model = url,
-          contentDescription = title ?: stringResource(R.string.cd_ogp_image),
+          contentDescription = bookmarkInfo.title ?: stringResource(R.string.cd_ogp_image),
           modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
           contentScale = ContentScale.Crop)
       Spacer(modifier = Modifier.height(12.dp))
     }
 
-    urls.forEach { url ->
+    bookmarkInfo.urls.forEach { url ->
       Text(
           text = url,
           style =
@@ -211,10 +189,10 @@ private fun BookmarkInfoSection(
               })
     }
 
-    if (createdAt > 0) {
+    if (bookmarkInfo.createdAt > 0) {
       Spacer(modifier = Modifier.height(4.dp))
       Text(
-          text = formatTimestamp(createdAt),
+          text = formatTimestamp(bookmarkInfo.createdAt),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -278,9 +256,11 @@ private fun BookmarkDetailScreenPreview() {
                           authorPubkey = "pk2",
                           createdAt = 1_700_000_100L,
                           isAuthorComment = false))),
-      title = "Example Article",
-      urls = listOf("https://example.com/article"),
-      createdAt = 1_700_000_000L,
+      bookmarkInfo =
+          BookmarkInfo(
+              title = "Example Article",
+              urls = listOf("https://example.com/article"),
+              createdAt = 1_700_000_000L),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},
@@ -292,9 +272,11 @@ private fun BookmarkDetailScreenPreview() {
 private fun DetailScreenEmptyPreview() {
   BookmarkDetailScreen(
       uiState = BookmarkDetailUiState(),
-      title = "Empty Bookmark",
-      urls = listOf("https://example.com"),
-      createdAt = 1_700_000_000L,
+      bookmarkInfo =
+          BookmarkInfo(
+              title = "Empty Bookmark",
+              urls = listOf("https://example.com"),
+              createdAt = 1_700_000_000L),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},
