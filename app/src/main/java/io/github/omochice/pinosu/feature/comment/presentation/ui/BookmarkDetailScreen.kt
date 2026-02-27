@@ -129,12 +129,7 @@ private fun BookmarkDetailContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           item {
-            BookmarkInfoSection(
-                title = bookmarkInfo.title,
-                urls = bookmarkInfo.urls,
-                createdAt = bookmarkInfo.createdAt,
-                imageUrl = bookmarkInfo.imageUrl,
-                onOpenUrlFailed = onOpenUrlFailed)
+            BookmarkInfoSection(bookmarkInfo = bookmarkInfo, onOpenUrlFailed = onOpenUrlFailed)
           }
 
           item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
@@ -162,24 +157,21 @@ private fun BookmarkDetailContent(
 
 @Composable
 private fun BookmarkInfoSection(
-    title: String?,
-    urls: List<String>,
-    createdAt: Long,
-    imageUrl: String?,
+    bookmarkInfo: BookmarkInfo,
     onOpenUrlFailed: () -> Unit,
 ) {
   val uriHandler = LocalUriHandler.current
   Column {
-    imageUrl?.let { url ->
+    bookmarkInfo.imageUrl?.let { url ->
       AsyncImage(
           model = url,
-          contentDescription = title ?: stringResource(R.string.cd_ogp_image),
+          contentDescription = bookmarkInfo.title ?: stringResource(R.string.cd_ogp_image),
           modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
           contentScale = ContentScale.Crop)
       Spacer(modifier = Modifier.height(12.dp))
     }
 
-    urls.forEach { url ->
+    bookmarkInfo.urls.forEach { url ->
       Text(
           text = url,
           style =
@@ -197,10 +189,10 @@ private fun BookmarkInfoSection(
               })
     }
 
-    if (createdAt > 0) {
+    if (bookmarkInfo.createdAt > 0) {
       Spacer(modifier = Modifier.height(4.dp))
       Text(
-          text = formatTimestamp(createdAt),
+          text = formatTimestamp(bookmarkInfo.createdAt),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
