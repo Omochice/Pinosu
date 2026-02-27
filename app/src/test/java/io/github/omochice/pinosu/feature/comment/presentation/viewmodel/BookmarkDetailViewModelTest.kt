@@ -3,6 +3,8 @@ package io.github.omochice.pinosu.feature.comment.presentation.viewmodel
 import android.content.Intent
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.model.UserProfile
+import io.github.omochice.pinosu.core.nip.nip01.Nip01ProfileFetcher
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
 import io.github.omochice.pinosu.core.relay.PublishResult
@@ -39,6 +41,7 @@ class BookmarkDetailViewModelTest {
   private lateinit var getCommentsUseCase: GetCommentsForBookmarkUseCase
   private lateinit var postCommentUseCase: PostCommentUseCase
   private lateinit var nip55SignerClient: Nip55SignerClient
+  private lateinit var profileFetcher: Nip01ProfileFetcher
   private lateinit var viewModel: BookmarkDetailViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -49,7 +52,11 @@ class BookmarkDetailViewModelTest {
     getCommentsUseCase = mockk(relaxed = true)
     postCommentUseCase = mockk(relaxed = true)
     nip55SignerClient = mockk(relaxed = true)
-    viewModel = BookmarkDetailViewModel(getCommentsUseCase, postCommentUseCase, nip55SignerClient)
+    profileFetcher = mockk(relaxed = true)
+    coEvery { profileFetcher.fetchProfiles(any()) } returns emptyMap()
+    viewModel =
+        BookmarkDetailViewModel(
+            getCommentsUseCase, postCommentUseCase, nip55SignerClient, profileFetcher)
   }
 
   @After
@@ -261,5 +268,47 @@ class BookmarkDetailViewModelTest {
         assertTrue(error is UiText.StringResource)
         assertEquals(R.string.error_comment_post_failed, (error as UiText.StringResource).resId)
         assertFalse(state.isSubmitting)
+      }
+
+  @Test
+  fun `loadComments fetches profiles for all comment authors and bookmark author`() =
+      runTest(testDispatcher) {
+        val comments =
+            listOf(
+                Comment(
+                    id = "c1",
+                    content = "Hello",
+                    authorPubkey = "commenter-pk",
+                    createdAt = 1_700_000_000L,
+                    isAuthorComment = false))
+        val profileMap =
+            mapOf(
+                "author-pk" to
+                    UserProfile(
+                        pubkey = "author-pk",
+                        name = "Author",
+                        picture = "https://example.com/author.png"),
+                "commenter-pk" to
+                    UserProfile(
+                        pubkey = "commenter-pk",
+                        name = "Commenter",
+                        picture = "https://example.com/commenter.png"))
+
+        coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
+            Result.success(comments)
+        coEvery { profileFetcher.fetchProfiles(any()) } returns profileMap
+
+        viewModel.loadComments(
+            rootPubkey = "author-pk",
+            dTag = "example.com",
+            rootEventId = "evt-1",
+            authorContent = "",
+            authorCreatedAt = 0L)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        assertEquals(2, state.profiles.size)
+        assertEquals("https://example.com/author.png", state.profiles["author-pk"]?.picture)
+        assertEquals("https://example.com/commenter.png", state.profiles["commenter-pk"]?.picture)
       }
 }
