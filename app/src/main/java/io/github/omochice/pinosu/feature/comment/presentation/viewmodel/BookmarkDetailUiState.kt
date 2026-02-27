@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.comment.presentation.viewmodel
 
+import io.github.omochice.pinosu.core.model.UserProfile
 import io.github.omochice.pinosu.core.ui.UiText
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
@@ -12,6 +13,7 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
  * @property isSubmitting Whether a comment is being posted
  * @property error Error to display, or null
  * @property postSuccess Whether the comment was posted successfully
+ * @property profiles Map of pubkey to user profile for displaying avatars
  */
 data class BookmarkDetailUiState(
     val isLoading: Boolean = false,
@@ -20,4 +22,5 @@ data class BookmarkDetailUiState(
     val isSubmitting: Boolean = false,
     val error: UiText? = null,
     val postSuccess: Boolean = false,
+    val profiles: Map<String, UserProfile> = emptyMap(),
 )
