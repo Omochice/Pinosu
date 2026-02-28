@@ -124,4 +124,18 @@ class Nip01ProfileFetcherTest {
     assertTrue(result.isEmpty())
     coVerify(exactly = 0) { relayPool.subscribeWithTimeout(any(), any(), any()) }
   }
+
+  @Test
+  fun `fetchProfiles sends filter with kinds 0 and authors`() = runTest {
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
+
+    fetcher.fetchProfiles(listOf("aabb", "ccdd"))
+
+    coVerify {
+      relayPool.subscribeWithTimeout(
+          any(),
+          match { it.contains(""""kinds":[0]""") && it.contains(""""authors":["aabb","ccdd"]""") },
+          any())
+    }
+  }
 }

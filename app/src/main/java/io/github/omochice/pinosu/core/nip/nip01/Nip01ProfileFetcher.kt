@@ -67,7 +67,10 @@ constructor(
     if (uncached.isEmpty()) return result
 
     val relays = getRelaysForQuery()
-    val filter = Json.encodeToString(ProfileFilter(authors = uncached))
+    val filter =
+        Json.encodeToString(
+            ProfileFilter(
+                kinds = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA), authors = uncached))
     val events = relayPool.subscribeWithTimeout(relays, filter, RELAY_TIMEOUT_MS)
 
     val profilesByPubkey =
@@ -98,7 +101,7 @@ constructor(
 
   @Serializable
   private data class ProfileFilter(
-      val kinds: List<Int> = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA),
+      val kinds: List<Int>,
       val authors: List<String>,
   )
 
