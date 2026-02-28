@@ -36,7 +36,10 @@ class BookmarkDetailScreenTest {
             uiState = BookmarkDetailUiState(),
             bookmarkInfo =
                 BookmarkInfo(
-                    title = "Test Bookmark", urls = listOf(testUrl), createdAt = 1_700_000_000L),
+                    title = "Test Bookmark",
+                    urls = listOf(testUrl),
+                    createdAt = 1_700_000_000L,
+                    authorPubkey = "pk_author"),
             onCommentInputChange = {},
             onPostComment = {},
             onNavigateBack = {},
@@ -75,7 +78,8 @@ class BookmarkDetailScreenTest {
               BookmarkInfo(
                   title = "Test Bookmark",
                   urls = listOf("https://example.com"),
-                  createdAt = 1_700_000_000L),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},
@@ -93,7 +97,10 @@ class BookmarkDetailScreenTest {
           uiState = BookmarkDetailUiState(),
           bookmarkInfo =
               BookmarkInfo(
-                  title = "Test", urls = listOf("https://example.com"), createdAt = 1_700_000_000L),
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},
@@ -111,7 +118,10 @@ class BookmarkDetailScreenTest {
           uiState = BookmarkDetailUiState(),
           bookmarkInfo =
               BookmarkInfo(
-                  title = "Test", urls = listOf("https://example.com"), createdAt = 1_700_000_000L),
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
           onCommentInputChange = {},
           onPostComment = {},
           onNavigateBack = {},
