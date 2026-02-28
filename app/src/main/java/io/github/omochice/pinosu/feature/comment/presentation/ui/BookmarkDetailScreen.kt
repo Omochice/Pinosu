@@ -275,7 +275,8 @@ private fun BookmarkDetailScreenPreview() {
           BookmarkInfo(
               title = "Example Article",
               urls = listOf("https://example.com/article"),
-              createdAt = 1_700_000_000L),
+              createdAt = 1_700_000_000L,
+              authorPubkey = "pk1"),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},
@@ -291,7 +292,8 @@ private fun DetailScreenEmptyPreview() {
           BookmarkInfo(
               title = "Empty Bookmark",
               urls = listOf("https://example.com"),
-              createdAt = 1_700_000_000L),
+              createdAt = 1_700_000_000L,
+              authorPubkey = "pk_author"),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},
