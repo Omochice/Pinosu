@@ -31,7 +31,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Min SDK**: 30
 - **Target SDK**: 36
 - **Kotlin**: 2.3.10
-- **Compose BOM**: 2026.02.00
+- **Compose BOM**: 2026.02.01
 - **Gradle Plugin**: 9.0.1
 - **Hilt**: 2.59.2 (requires metadata compatibility workaround for Kotlin 2.3.x)
 
@@ -73,7 +73,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
 - **HTML Parsing**: Jsoup 1.22.1 for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
-- **Image Loading**: Coil 3.3.0 with OkHttp integration (coil-compose, coil-network-okhttp)
+- **Image Loading**: Coil 3.4.0 with OkHttp integration (coil-compose, coil-network-okhttp)
 
 ### Testing
 
@@ -127,4 +127,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-02-22 - Corrected Hilt version (2.59.1→2.59.2) and Quartz artifact coordinates_
+_Updated: 2026-03-01 - Compose BOM 2026.02.00→2026.02.01, Coil 3.3.0→3.4.0_
