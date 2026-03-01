@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
   "packages": [
     "ktfmt@0.51",
-    "tombi@0.7.28",
+    "tombi@0.7.31",
     "mado@0.3.0",
     "treefmt@2.4.0",
     "renovate@42.76.4",
