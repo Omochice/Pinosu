@@ -396,7 +396,8 @@ fun PinosuApp(
                             title = route.title,
                             urls = route.urls,
                             createdAt = route.createdAt,
-                            imageUrl = route.imageUrl),
+                            imageUrl = route.imageUrl,
+                            authorPubkey = route.authorPubkey),
                     onCommentInputChange = { detailViewModel.updateCommentInput(it) },
                     onPostComment = {
                       detailViewModel.prepareSignCommentIntent(

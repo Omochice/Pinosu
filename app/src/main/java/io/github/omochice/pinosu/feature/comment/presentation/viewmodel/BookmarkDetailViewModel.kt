@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.nip.nip01.Nip01ProfileFetcher
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.ui.UiText
 import io.github.omochice.pinosu.feature.comment.domain.usecase.GetCommentsForBookmarkUseCase
@@ -21,8 +22,8 @@ import kotlinx.coroutines.launch
  * ViewModel for bookmark detail screen
  *
  * Manages comment loading and posting flow including NIP-55 signing. Uses
- * [GetCommentsForBookmarkUseCase] to fetch comments, [PostCommentUseCase] to post comments, and
- * [Nip55SignerClient] for signing operations.
+ * [GetCommentsForBookmarkUseCase] to fetch comments, [PostCommentUseCase] to post comments,
+ * [Nip55SignerClient] for signing operations, and [Nip01ProfileFetcher] for author profile images.
  */
 @HiltViewModel
 class BookmarkDetailViewModel
@@ -31,6 +32,7 @@ constructor(
     private val getCommentsUseCase: GetCommentsForBookmarkUseCase,
     private val postCommentUseCase: PostCommentUseCase,
     private val nip55SignerClient: Nip55SignerClient,
+    private val profileFetcher: Nip01ProfileFetcher,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(BookmarkDetailUiState())
@@ -65,6 +67,11 @@ constructor(
               authorCreatedAt = authorCreatedAt)
           .onSuccess { comments ->
             _uiState.update { it.copy(isLoading = false, comments = comments) }
+            val pubkeys = (comments.map { it.authorPubkey } + rootPubkey).distinct()
+            launch {
+              val profiles = profileFetcher.fetchProfiles(pubkeys)
+              _uiState.update { it.copy(profiles = profiles) }
+            }
           }
           .onFailure {
             _uiState.update {

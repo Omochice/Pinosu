@@ -112,5 +112,7 @@
     <string name="cd_copy_version">バージョン情報をコピー</string>
     <string name="cd_post_comment">コメントを投稿</string>
     <string name="cd_ogp_image">プレビュー画像</string>
+    <string name="cd_author_avatar">投稿者のプロフィール画像</string>
+    <string name="cd_commenter_avatar">コメント投稿者のプロフィール画像</string>
 
 </resources>

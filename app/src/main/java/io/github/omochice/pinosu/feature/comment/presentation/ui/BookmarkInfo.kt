@@ -7,10 +7,12 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
  * @property urls List of bookmark URLs
  * @property createdAt Bookmark creation timestamp (Unix epoch seconds)
  * @property imageUrl OGP image URL, or null if not available
+ * @property authorPubkey Hex-encoded public key of the bookmark author
  */
 data class BookmarkInfo(
     val title: String?,
     val urls: List<String>,
     val createdAt: Long,
     val imageUrl: String? = null,
+    val authorPubkey: String = "",
 )

@@ -129,7 +129,10 @@ private fun BookmarkDetailContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
           item {
-            BookmarkInfoSection(bookmarkInfo = bookmarkInfo, onOpenUrlFailed = onOpenUrlFailed)
+            BookmarkInfoSection(
+                bookmarkInfo = bookmarkInfo,
+                authorProfileImageUrl = uiState.profiles[bookmarkInfo.authorPubkey]?.picture,
+                onOpenUrlFailed = onOpenUrlFailed)
           }
 
           item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
@@ -144,10 +147,11 @@ private fun BookmarkDetailContent(
             }
           } else {
             items(uiState.comments, key = { it.id }) { comment ->
+              val profileUrl = uiState.profiles[comment.authorPubkey]?.picture
               if (comment.kind == Comment.KIND_TEXT_NOTE) {
-                QuoteCard(comment = comment)
+                QuoteCard(comment = comment, profileImageUrl = profileUrl)
               } else {
-                CommentCard(comment = comment)
+                CommentCard(comment = comment, profileImageUrl = profileUrl)
               }
             }
           }
@@ -158,6 +162,7 @@ private fun BookmarkDetailContent(
 @Composable
 private fun BookmarkInfoSection(
     bookmarkInfo: BookmarkInfo,
+    authorProfileImageUrl: String?,
     onOpenUrlFailed: () -> Unit,
 ) {
   val uriHandler = LocalUriHandler.current
@@ -171,30 +176,40 @@ private fun BookmarkInfoSection(
       Spacer(modifier = Modifier.height(12.dp))
     }
 
-    bookmarkInfo.urls.forEach { url ->
-      Text(
-          text = url,
-          style =
-              MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline),
-          color = MaterialTheme.colorScheme.primary,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-          modifier =
-              Modifier.padding(vertical = 2.dp).clickable {
-                try {
-                  uriHandler.openUri(url)
-                } catch (_: Exception) {
-                  onOpenUrlFailed()
-                }
-              })
-    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      ProfileAvatar(
+          imageUrl = authorProfileImageUrl,
+          contentDescription = stringResource(R.string.cd_author_avatar),
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      Column(modifier = Modifier.weight(1f)) {
+        bookmarkInfo.urls.forEach { url ->
+          Text(
+              text = url,
+              style =
+                  MaterialTheme.typography.bodySmall.copy(
+                      textDecoration = TextDecoration.Underline),
+              color = MaterialTheme.colorScheme.primary,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              modifier =
+                  Modifier.padding(vertical = 2.dp).clickable {
+                    try {
+                      uriHandler.openUri(url)
+                    } catch (_: Exception) {
+                      onOpenUrlFailed()
+                    }
+                  })
+        }
 
-    if (bookmarkInfo.createdAt > 0) {
-      Spacer(modifier = Modifier.height(4.dp))
-      Text(
-          text = formatTimestamp(bookmarkInfo.createdAt),
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (bookmarkInfo.createdAt > 0) {
+          Spacer(modifier = Modifier.height(4.dp))
+          Text(
+              text = formatTimestamp(bookmarkInfo.createdAt),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+      }
     }
   }
 }
@@ -260,7 +275,8 @@ private fun BookmarkDetailScreenPreview() {
           BookmarkInfo(
               title = "Example Article",
               urls = listOf("https://example.com/article"),
-              createdAt = 1_700_000_000L),
+              createdAt = 1_700_000_000L,
+              authorPubkey = "pk1"),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},
@@ -276,7 +292,8 @@ private fun DetailScreenEmptyPreview() {
           BookmarkInfo(
               title = "Empty Bookmark",
               urls = listOf("https://example.com"),
-              createdAt = 1_700_000_000L),
+              createdAt = 1_700_000_000L,
+              authorPubkey = "pk_author"),
       onCommentInputChange = {},
       onPostComment = {},
       onNavigateBack = {},

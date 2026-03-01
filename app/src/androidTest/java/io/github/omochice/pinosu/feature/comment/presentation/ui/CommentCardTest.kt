@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -73,5 +74,20 @@ class CommentCardTest {
     composeTestRule.setContent { CommentCard(comment = comment) }
 
     composeTestRule.onNodeWithText("投稿者のコメント").assertDoesNotExist()
+  }
+
+  @Test
+  fun displaysFallbackAvatarWhenProfileImageUrlIsNull() {
+    val comment =
+        Comment(
+            id = "c5",
+            content = "Comment without avatar",
+            authorPubkey = "pk3",
+            createdAt = 1_700_000_000L,
+            isAuthorComment = false)
+
+    composeTestRule.setContent { CommentCard(comment = comment, profileImageUrl = null) }
+
+    composeTestRule.onNodeWithContentDescription("コメント投稿者のプロフィール画像").assertIsDisplayed()
   }
 }

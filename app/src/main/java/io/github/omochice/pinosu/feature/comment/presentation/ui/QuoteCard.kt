@@ -1,15 +1,21 @@
 package io.github.omochice.pinosu.feature.comment.presentation.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 
 /**
@@ -19,9 +25,10 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
  * comments.
  *
  * @param comment The kind 1 comment to display
+ * @param profileImageUrl Profile image URL for the text note author, or null for fallback icon
  */
 @Composable
-internal fun QuoteCard(comment: Comment) {
+internal fun QuoteCard(comment: Comment, profileImageUrl: String? = null) {
   val primaryColor = MaterialTheme.colorScheme.primary
   Surface(
       modifier =
@@ -35,7 +42,15 @@ internal fun QuoteCard(comment: Comment) {
       shape = MaterialTheme.shapes.small) {
         Column(
             modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)) {
-              CommentBody(comment = comment)
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                ProfileAvatar(
+                    imageUrl = profileImageUrl,
+                    contentDescription = stringResource(R.string.cd_commenter_avatar),
+                    size = 24.dp,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(modifier = Modifier.weight(1f)) { CommentBody(comment = comment) }
+              }
             }
       }
 }
