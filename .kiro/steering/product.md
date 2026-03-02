@@ -27,7 +27,8 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 
 ## Technical Foundation
 
-- **Nostr Protocol**: Kind 39701 (bookmarks), Kind 10002 (relay metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **Nostr Protocol**: Kind 0 (NIP-01 user profiles), Kind 39701 (bookmarks), Kind 10002 (relay metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **NIP-01 Integration**: User profile metadata (kind 0) for enriching comment author display (name, avatar)
 - **NIP-19 Integration**: Bech32-encoded entity resolution (nevent references)
 - **NIP-22 Integration**: Comment system for bookmark discussions with kind 1111 and kind 1 support
 - **NIP-55 Integration**: Secure external signing without key exposure (default: Amber)
@@ -37,4 +38,4 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 
 ---
 
-_Updated: 2026-02-21 - Added read-only npub login mode to authentication capabilities_
+_Updated: 2026-03-02 - Added NIP-01 integration for user profile enrichment_

@@ -131,9 +131,10 @@ feature/{name}/
 
 - `crypto/` - Encryption utilities (TinkKeyManager)
 - `di/` - Core Hilt modules (NetworkModule, RelayPoolModule)
-- `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey)
+- `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey, UserProfile)
 - `navigation/` - App navigation (NavHost, animations)
 - `nip/` - Nostr protocol implementations
+    - `nip01/` - NIP-01 user metadata fetcher (kind 0, cached batch)
     - `nip19/` - NIP-19 Bech32 entity resolver
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
@@ -179,6 +180,7 @@ io.github.omochice.pinosu/
 │   ├── model/               // NostrEvent, UnsignedNostrEvent, Pubkey
 │   ├── navigation/          // NavHost, animations
 │   ├── nip/                 // NIP protocol implementations
+│   │   ├── nip01/           // User metadata fetcher (kind 0)
 │   │   ├── nip19/           // Bech32 entity resolver
 │   │   ├── nip55/           // Signer client
 │   │   └── nip65/           // Relay list fetcher
@@ -215,4 +217,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-02-21 - Moved repository interfaces to domain/repository/ per Dependency Inversion Principle_
+_Updated: 2026-03-02 - Added nip01/ to core/nip/; UserProfile to core/model/_
