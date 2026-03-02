@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.0](https://github.com/Omochice/Pinosu/compare/v0.10.1...v0.11.0) (2026-03-02)
+
+
+### Features
+
+* add gesture-based drawer menu dismissal ([#259](https://github.com/Omochice/Pinosu/issues/259)) ([ae31e40](https://github.com/Omochice/Pinosu/commit/ae31e40e7513480add0067d7fcaeb3462cbf6826))
+* display kind 0 profile avatars in bookmark detail ([#277](https://github.com/Omochice/Pinosu/issues/277)) ([5b9622f](https://github.com/Omochice/Pinosu/commit/5b9622f2fde8af91184d412ae0aa9e0db1dca27f))
+
+
+### Bug Fixes
+
+* **deps:** update coil to v3.4.0 ([#266](https://github.com/Omochice/Pinosu/issues/266)) ([a1f4458](https://github.com/Omochice/Pinosu/commit/a1f445875abe591840a582a916ac3306101fe968))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.02.01 ([#278](https://github.com/Omochice/Pinosu/issues/278)) ([7e808b4](https://github.com/Omochice/Pinosu/commit/7e808b48f1e614846690902f331ac662fe9f7128))
+
 ## [0.10.1](https://github.com/Omochice/Pinosu/compare/v0.10.0...v0.10.1) (2026-02-21)
 
 
