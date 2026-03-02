@@ -52,13 +52,14 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 ### Nostr Integration
 
 - **Amethyst Quartz**: com.vitorpamplona.quartz:quartz (v1.05.1)
+- **NIP-01**: User metadata fetching from kind 0 events; in-memory cached batch profile fetcher (`Nip01ProfileFetcher`)
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
-- **Event Types**: Kind 39701 (bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **Event Types**: Kind 0 (NIP-01 user metadata), Kind 39701 (bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
 - **Auth Modes**: `LoginMode` sealed interface (`Nip55Signer` for full access, `ReadOnly` for browse-only via npub entry)
 
 ### Serialization
@@ -120,11 +121,11 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Development Tooling
 
-- **Code Formatting**: ktfmt (Kotlin), biome (JSON/YAML), treefmt (orchestration)
+- **Code Formatting**: ktfmt (Kotlin), biome (JSON/YAML), tombi (TOML), treefmt (orchestration)
 - **Linting**: detekt (Kotlin static analysis), actionlint (GitHub Actions)
 - **Spell Check**: typos for typo detection
 - **Scripts**: Managed via devbox shell scripts (fmt, check, test, version-up)
 
 ---
 
-_Updated: 2026-03-01 - Compose BOM 2026.02.00→2026.02.01, Coil 3.3.0→3.4.0_
+_Updated: 2026-03-02 - Added NIP-01 profile fetching; tombi TOML formatter to tooling_
