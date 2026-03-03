@@ -23,7 +23,6 @@ val gitCommitHash =
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.detekt)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ksp)
@@ -85,8 +84,6 @@ android {
     }
   }
 }
-
-kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11) } }
 
 dependencies {
   implementation(libs.androidx.core.ktx)
@@ -210,13 +207,14 @@ tasks.register<JacocoReport>("jacocoInstrumentationTestReport") {
           "**/ComposableSingletons*",
       )
 
-  val debugTree =
-      fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug") { exclude(fileFilter) }
-  val kotlinDebugTree =
-      fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") { exclude(fileFilter) }
+  val classTree =
+      fileTree(
+          "${layout.buildDirectory.get()}/intermediates/classes/debug/transformDebugClassesWithAsm/dirs") {
+            exclude(fileFilter)
+          }
 
   sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-  classDirectories.setFrom(files(debugTree, kotlinDebugTree))
+  classDirectories.setFrom(classTree)
   executionData.setFrom(
       fileTree(layout.buildDirectory) {
         include("outputs/code_coverage/debugAndroidTest/connected/**/*.ec")
