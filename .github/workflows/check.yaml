@@ -338,6 +338,6 @@ jobs:
       - test-android
       # keep-sorted end
     permissions: {}
-    if: failure()
+    if: failure() || cancelled()
     steps:
       - run: exit 1
