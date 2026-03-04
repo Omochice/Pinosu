@@ -15,7 +15,7 @@
     "temurin-bin@21.0.8",
     "actionlint@1.7.11",
     "zizmor@1.22.0",
-    "ghalint@1.5.4",
+    "ghalint@1.5.5",
     "stdenv.cc.cc.lib",
     "gojq@0.12.18",
     "moreutils@0.70"
