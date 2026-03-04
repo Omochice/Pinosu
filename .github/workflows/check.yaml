@@ -338,6 +338,7 @@ jobs:
       - test-android
       # keep-sorted end
     permissions: {}
-    if: failure() || cancelled()
+    if: always()
     steps:
-      - run: exit 1
+      - if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
