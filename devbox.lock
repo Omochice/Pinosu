@@ -708,51 +708,51 @@
         }
       }
     },
-    "typos@1.43.5": {
-      "last_modified": "2026-02-23T15:40:43Z",
-      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#typos",
+    "typos@1.44.0": {
+      "last_modified": "2026-03-02T19:25:24Z",
+      "resolved": "github:NixOS/nixpkgs/4215e62dc2cd3bc705b0a423b9719ff6be378a43#typos",
       "source": "devbox-search",
-      "version": "1.43.5",
+      "version": "1.44.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/7sk7q62qgjx6qs6gccnpfxsvlq5z0z7x-typos-1.43.5",
+              "path": "/nix/store/wdy1sqvqhxdcbr2ilf91cni4dmfddb1z-typos-1.44.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/7sk7q62qgjx6qs6gccnpfxsvlq5z0z7x-typos-1.43.5"
+          "store_path": "/nix/store/wdy1sqvqhxdcbr2ilf91cni4dmfddb1z-typos-1.44.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/10584xw8h1jmkcabzv8vv912mhsb898c-typos-1.43.5",
+              "path": "/nix/store/nczjfm7lmb80nxkw1fc7fqbn21zz6ac3-typos-1.44.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/10584xw8h1jmkcabzv8vv912mhsb898c-typos-1.43.5"
+          "store_path": "/nix/store/nczjfm7lmb80nxkw1fc7fqbn21zz6ac3-typos-1.44.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/x1mncybd7sf8d67gdam8nxjrsc7wsgg8-typos-1.43.5",
+              "path": "/nix/store/y6m0km1mjs4yaaz1qf6k6v95m90v4hmi-typos-1.44.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/x1mncybd7sf8d67gdam8nxjrsc7wsgg8-typos-1.43.5"
+          "store_path": "/nix/store/y6m0km1mjs4yaaz1qf6k6v95m90v4hmi-typos-1.44.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/qpsbxa2xi2cmk87c76agx9b414vmk5rd-typos-1.43.5",
+              "path": "/nix/store/ny41wz21x8hry1glarhmgf4kcpp6zd9g-typos-1.44.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/qpsbxa2xi2cmk87c76agx9b414vmk5rd-typos-1.43.5"
+          "store_path": "/nix/store/ny41wz21x8hry1glarhmgf4kcpp6zd9g-typos-1.44.0"
         }
       }
     },
