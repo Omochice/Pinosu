@@ -112,7 +112,6 @@ constructor(
           .onSuccess { unsignedEvent ->
             pendingUnsignedEvent = unsignedEvent
             val eventJson = unsignedEvent.toJson()
-            _uiState.update { it.copy(unsignedEventJson = eventJson) }
             val intent = nip55SignerClient.createSignEventIntent(eventJson)
             onReady(intent)
           }

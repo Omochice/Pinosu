@@ -10,7 +10,6 @@ package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
  * @property isSubmitting Whether the form is being submitted
  * @property errorMessage Error message to display
  * @property postSuccess Whether the post was successful
- * @property unsignedEventJson Unsigned event JSON for signing (internal state)
  */
 data class PostBookmarkUiState(
     val url: String = "",
@@ -20,5 +19,4 @@ data class PostBookmarkUiState(
     val isSubmitting: Boolean = false,
     val errorMessage: String? = null,
     val postSuccess: Boolean = false,
-    val unsignedEventJson: String? = null
 )
