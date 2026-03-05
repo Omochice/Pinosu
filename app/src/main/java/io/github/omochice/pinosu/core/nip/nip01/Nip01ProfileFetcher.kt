@@ -2,8 +2,8 @@ package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.UserProfile
 import io.github.omochice.pinosu.core.relay.NostrConstants
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,7 +36,7 @@ interface Nip01ProfileFetcher {
  *
  * @param relayPool Pool for querying Nostr relays
  * @param parser Parser for kind 0 events
- * @param localAuthDataSource Data source for cached relay list
+ * @param relayListProvider Provider for relay list used in queries
  */
 @Singleton
 class Nip01ProfileFetcherImpl
@@ -44,7 +44,7 @@ class Nip01ProfileFetcherImpl
 constructor(
     private val relayPool: RelayPool,
     private val parser: Nip01ProfileParser,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val relayListProvider: RelayListProvider,
 ) : Nip01ProfileFetcher {
 
   private val cache = ConcurrentHashMap<String, UserProfile>()
@@ -66,7 +66,7 @@ constructor(
 
     if (uncached.isEmpty()) return result
 
-    val relays = localAuthDataSource.getRelayListOrDefault()
+    val relays = relayListProvider.getRelays()
     val filter =
         Json.encodeToString(
             ProfileFilter(

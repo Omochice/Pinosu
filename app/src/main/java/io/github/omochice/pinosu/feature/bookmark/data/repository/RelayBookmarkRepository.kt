@@ -6,8 +6,8 @@ import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.PublishResult
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
@@ -30,7 +30,7 @@ import kotlinx.serialization.json.Json
  * and enriches them with URL metadata (og:title, og:image).
  *
  * @param relayPool Pool for querying Nostr relays
- * @param localAuthDataSource Local data source for cached authentication and relay data
+ * @param relayListProvider Provider for relay list used in queries
  * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
  */
 @Singleton
@@ -38,7 +38,7 @@ class RelayBookmarkRepository
 @Inject
 constructor(
     private val relayPool: RelayPool,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val relayListProvider: RelayListProvider,
     private val urlMetadataFetcher: UrlMetadataFetcher
 ) : BookmarkRepository {
 
@@ -54,7 +54,7 @@ constructor(
           Pubkey.parse(pubkey)?.hex
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val relays = localAuthDataSource.getRelayListOrDefault()
+      val relays = relayListProvider.getRelays()
       val filter = """{"kinds":[${NostrConstants.KIND_BOOKMARK_LIST}],"limit":10}"""
       val events =
           relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
@@ -187,7 +187,7 @@ constructor(
    */
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
-      val relays = localAuthDataSource.getRelayListOrDefault()
+      val relays = relayListProvider.getRelays()
       relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)

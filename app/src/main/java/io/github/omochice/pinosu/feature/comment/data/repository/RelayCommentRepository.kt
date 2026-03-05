@@ -5,8 +5,8 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.PublishResult
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
 import java.io.IOException
@@ -33,14 +33,14 @@ private data class EventIdFilter(
  * Relay-based implementation of CommentRepository
  *
  * Fetches kind 1111 (NIP-22) comment events from Nostr relays and publishes new comments. Uses
- * [RelayPool] for parallel relay queries and [LocalAuthDataSource] for cached relay list.
+ * [RelayPool] for parallel relay queries and [RelayListProvider] for relay list resolution.
  */
 @Singleton
 class RelayCommentRepository
 @Inject
 constructor(
     private val relayPool: RelayPool,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val relayListProvider: RelayListProvider,
 ) : CommentRepository {
 
   override suspend fun getCommentsForBookmark(
@@ -49,7 +49,7 @@ constructor(
       rootEventId: String
   ): Result<List<Comment>> {
     return try {
-      val relays = localAuthDataSource.getRelayListOrDefault()
+      val relays = relayListProvider.getRelays()
       val aTagValue = "${NostrConstants.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
       val filter =
           Json.encodeToString(
@@ -115,7 +115,7 @@ constructor(
   override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
     if (ids.isEmpty()) return Result.success(emptyList())
     return try {
-      val relays = localAuthDataSource.getRelayListOrDefault()
+      val relays = relayListProvider.getRelays()
       val filter = Json.encodeToString(EventIdFilter(ids = ids))
 
       val events =
@@ -132,7 +132,7 @@ constructor(
 
   override suspend fun publishComment(signedEventJson: String): Result<PublishResult> {
     return try {
-      val relays = localAuthDataSource.getRelayListOrDefault()
+      val relays = relayListProvider.getRelays()
       relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing comment", e)

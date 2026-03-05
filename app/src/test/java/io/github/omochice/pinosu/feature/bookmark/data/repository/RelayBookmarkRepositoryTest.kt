@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.feature.bookmark.data.repository
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadata
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.mockk.coEvery
@@ -30,7 +30,7 @@ import org.robolectric.annotation.Config
 class RelayBookmarkRepositoryTest {
 
   private lateinit var relayPool: RelayPool
-  private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var relayListProvider: RelayListProvider
   private lateinit var urlMetadataFetcher: UrlMetadataFetcher
   private lateinit var repository: RelayBookmarkRepository
 
@@ -39,9 +39,9 @@ class RelayBookmarkRepositoryTest {
   @Before
   fun setup() {
     relayPool = mockk()
-    localAuthDataSource = mockk()
+    relayListProvider = mockk()
     urlMetadataFetcher = mockk()
-    repository = RelayBookmarkRepository(relayPool, localAuthDataSource, urlMetadataFetcher)
+    repository = RelayBookmarkRepository(relayPool, relayListProvider, urlMetadataFetcher)
   }
 
   @Test
@@ -56,7 +56,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig789")
 
-    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
+    coEvery { relayListProvider.getRelays() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -95,7 +95,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig123")
 
-    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
+    coEvery { relayListProvider.getRelays() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -124,7 +124,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig456")
 
-    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
+    coEvery { relayListProvider.getRelays() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -151,7 +151,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sigInvalid")
 
-    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
+    coEvery { relayListProvider.getRelays() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
 
