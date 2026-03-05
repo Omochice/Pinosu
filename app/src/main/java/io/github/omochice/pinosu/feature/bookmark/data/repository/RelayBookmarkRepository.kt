@@ -56,7 +56,7 @@ constructor(
 
       val relays = relayListProvider.getRelays()
       val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":10}"""
-      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
         return Result.success(null)
@@ -187,7 +187,7 @@ constructor(
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = relayListProvider.getRelays()
-      relayPool.publishEvent(relays, signedEventJson, TIMEOUT_MS)
+      relayPool.publishEvent(relays, signedEventJson, RelayPool.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
@@ -196,7 +196,6 @@ constructor(
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
-    private const val TIMEOUT_MS = 10_000L
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
 

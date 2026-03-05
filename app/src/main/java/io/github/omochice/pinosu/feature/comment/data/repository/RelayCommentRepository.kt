@@ -60,7 +60,7 @@ constructor(
                   eTag = listOf(rootEventId),
               ))
 
-      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
       val comments =
           events.map { event ->
@@ -118,7 +118,7 @@ constructor(
       val relays = relayListProvider.getRelays()
       val filter = Json.encodeToString(EventIdFilter(ids = ids))
 
-      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
       Result.success(events)
     } catch (e: IOException) {
       Log.e(TAG, "Error fetching events by IDs", e)
@@ -132,7 +132,7 @@ constructor(
   override suspend fun publishComment(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = relayListProvider.getRelays()
-      relayPool.publishEvent(relays, signedEventJson, TIMEOUT_MS)
+      relayPool.publishEvent(relays, signedEventJson, RelayPool.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing comment", e)
       Result.failure(e)
@@ -144,6 +144,5 @@ constructor(
 
   companion object {
     private const val TAG = "RelayCommentRepository"
-    private const val TIMEOUT_MS = 10_000L
   }
 }
