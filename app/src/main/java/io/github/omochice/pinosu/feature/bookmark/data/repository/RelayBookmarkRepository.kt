@@ -4,10 +4,10 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
@@ -30,7 +30,7 @@ import kotlinx.serialization.json.Json
  * and enriches them with URL metadata (og:title, og:image).
  *
  * @param relayPool Pool for querying Nostr relays
- * @param localAuthDataSource Local data source for cached authentication and relay data
+ * @param relayListProvider Provider for relay list used in queries
  * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
  */
 @Singleton
@@ -38,7 +38,7 @@ class RelayBookmarkRepository
 @Inject
 constructor(
     private val relayPool: RelayPool,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val relayListProvider: RelayListProvider,
     private val urlMetadataFetcher: UrlMetadataFetcher
 ) : BookmarkRepository {
 
@@ -54,9 +54,9 @@ constructor(
           Pubkey.parse(pubkey)?.hex
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val relays = getRelaysForQuery()
-      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
-      val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
+      val relays = relayListProvider.getRelays()
+      val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":10}"""
+      val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
         return Result.success(null)
@@ -84,24 +84,6 @@ constructor(
     } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)
-    }
-  }
-
-  /**
-   * Get relay list for querying bookmarks
-   *
-   * Returns cached relay list from LocalAuthDataSource, or default relay if not available.
-   *
-   * @return List of relay configurations for querying
-   */
-  private suspend fun getRelaysForQuery(): List<RelayConfig> {
-    val cachedRelays = localAuthDataSource.getRelayList()
-    return if (cachedRelays.isNullOrEmpty()) {
-      Log.d(TAG, "No cached relay list, using default relay: $DEFAULT_RELAY_URL")
-      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
-    } else {
-      Log.d(TAG, "Using ${cachedRelays.size} cached relays")
-      cachedRelays
     }
   }
 
@@ -149,7 +131,7 @@ constructor(
     return UnsignedNostrEvent(
         pubkey = hexPubkey,
         createdAt = System.currentTimeMillis() / 1000,
-        kind = KIND_BOOKMARK_LIST,
+        kind = NipB0.KIND_BOOKMARK_LIST,
         tags = tags,
         content = comment)
   }
@@ -204,8 +186,8 @@ constructor(
    */
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
-      val relays = getRelaysForQuery()
-      relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
+      val relays = relayListProvider.getRelays()
+      relayPool.publishEvent(relays, signedEventJson, RelayPool.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
@@ -216,9 +198,6 @@ constructor(
     private const val TAG = "RelayBookmarkRepository"
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
-    const val KIND_BOOKMARK_LIST = 39701
-    const val PER_RELAY_TIMEOUT_MS = 10_000L
-    const val DEFAULT_RELAY_URL = "wss://yabu.me"
 
     private fun isValidUrl(url: String): Boolean {
       return try {

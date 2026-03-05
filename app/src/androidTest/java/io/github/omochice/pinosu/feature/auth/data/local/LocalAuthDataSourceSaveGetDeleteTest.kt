@@ -99,7 +99,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   }
 
   @Test
-  fun `getUser should update lastAccessed timestamp`() = runTest {
+  fun `getUser should return consistent data on multiple calls`() = runTest {
     val user = User(requireNotNull(Pubkey.parse("npub1" + "1".repeat(59))))
     dataSource.saveUser(user, LoginMode.Nip55Signer)
 

@@ -65,6 +65,10 @@ interface RelayPool {
       signedEventJson: String,
       timeoutMs: Long
   ): Result<PublishResult>
+
+  companion object {
+    const val PER_RELAY_TIMEOUT_MS = 10_000L
+  }
 }
 
 /**

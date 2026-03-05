@@ -112,7 +112,6 @@ constructor(
           .onSuccess { unsignedEvent ->
             pendingUnsignedEvent = unsignedEvent
             val eventJson = unsignedEvent.toJson()
-            _uiState.update { it.copy(unsignedEventJson = eventJson) }
             val intent = nip55SignerClient.createSignEventIntent(eventJson)
             onReady(intent)
           }
@@ -143,7 +142,8 @@ constructor(
         .onSuccess { response ->
           viewModelScope.launch {
             val signedEventJson =
-                buildSignedEventJson(response.signedEventJson)
+                UnsignedNostrEvent.buildSignedEventJson(
+                    response.signedEventJson, pendingUnsignedEvent)
                     ?: run {
                       _uiState.update {
                         it.copy(isSubmitting = false, errorMessage = "署名済みイベントの構築に失敗しました")
@@ -167,24 +167,6 @@ constructor(
             it.copy(isSubmitting = false, errorMessage = error.message ?: "署名がキャンセルされました")
           }
         }
-  }
-
-  /**
-   * Build signed event JSON from signer response
-   *
-   * If response is already valid JSON (complete event), return as-is. If response is signature only
-   * (hex string), combine with pending unsigned event to build complete event.
-   *
-   * @param signerResponse Response from NIP-55 signer
-   * @return Complete signed event JSON or null if building fails
-   */
-  private fun buildSignedEventJson(signerResponse: String): String? {
-    if (signerResponse.startsWith("{")) {
-      return signerResponse
-    }
-
-    val unsignedEvent = pendingUnsignedEvent ?: return null
-    return unsignedEvent.toSignedJson(signerResponse)
   }
 
   /**

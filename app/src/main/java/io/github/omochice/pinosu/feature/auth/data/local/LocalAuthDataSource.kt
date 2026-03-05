@@ -88,10 +88,6 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
 
       val pubkey = Pubkey.parse(pubkeyStr) ?: return null
 
-      activeDataStore.updateData { current ->
-        current.copy(lastAccessed = System.currentTimeMillis())
-      }
-
       User(pubkey)
     } catch (e: IOException) {
       Log.w(TAG, "Failed to read user data: ${e.message}")

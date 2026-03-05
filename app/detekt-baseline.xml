@@ -42,7 +42,7 @@
     <ID>UnderscoresInNumericLiterals:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$10002</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$39701</ID>
-    <ID>UnderscoresInNumericLiterals:RelayBookmarkRepository.kt$RelayBookmarkRepository.Companion$39701</ID>
+    <ID>UnderscoresInNumericLiterals:NipB0.kt$NipB0$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
   </CurrentIssues>
 </SmellBaseline>

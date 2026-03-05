@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.feature.comment.data.repository
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -30,7 +30,7 @@ import org.junit.Test
 class RelayCommentRepositoryTest {
 
   private lateinit var relayPool: RelayPool
-  private lateinit var localAuthDataSource: LocalAuthDataSource
+  private lateinit var relayListProvider: RelayListProvider
   private lateinit var repository: RelayCommentRepository
 
   private val testRelays = listOf(RelayConfig(url = "wss://relay.test.com"))
@@ -38,10 +38,10 @@ class RelayCommentRepositoryTest {
   @Before
   fun setup() {
     relayPool = mockk()
-    localAuthDataSource = mockk()
-    repository = RelayCommentRepository(relayPool, localAuthDataSource)
+    relayListProvider = mockk()
+    repository = RelayCommentRepository(relayPool, relayListProvider)
 
-    coEvery { localAuthDataSource.getRelayList() } returns testRelays
+    coEvery { relayListProvider.getRelays() } returns testRelays
   }
 
   @Test

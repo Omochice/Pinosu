@@ -150,7 +150,9 @@ constructor(
         .handleSignEventResponse(resultCode, data)
         .onSuccess { response ->
           viewModelScope.launch {
-            val signedEventJson = buildSignedEventJson(response.signedEventJson)
+            val signedEventJson =
+                UnsignedNostrEvent.buildSignedEventJson(
+                    response.signedEventJson, pendingUnsignedEvent)
             if (signedEventJson == null) {
               _uiState.update {
                 it.copy(
@@ -197,13 +199,5 @@ constructor(
   /** Dismiss error message */
   fun dismissError() {
     _uiState.update { it.copy(error = null) }
-  }
-
-  private fun buildSignedEventJson(signerResponse: String): String? {
-    if (signerResponse.startsWith("{")) {
-      return signerResponse
-    }
-    val unsignedEvent = pendingUnsignedEvent ?: return null
-    return unsignedEvent.toSignedJson(signerResponse)
   }
 }

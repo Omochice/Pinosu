@@ -65,7 +65,6 @@ class PostBookmarkViewModelTest {
     assertFalse("isSubmitting should be false", state.isSubmitting)
     assertNull("errorMessage should be null", state.errorMessage)
     assertFalse("postSuccess should be false", state.postSuccess)
-    assertNull("unsignedEventJson should be null", state.unsignedEventJson)
   }
 
   @Test

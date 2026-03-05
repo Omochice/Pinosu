@@ -1,9 +1,8 @@
 package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.UserProfile
-import io.github.omochice.pinosu.core.relay.RelayConfig
+import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,7 +35,7 @@ interface Nip01ProfileFetcher {
  *
  * @param relayPool Pool for querying Nostr relays
  * @param parser Parser for kind 0 events
- * @param localAuthDataSource Data source for cached relay list
+ * @param relayListProvider Provider for relay list used in queries
  */
 @Singleton
 class Nip01ProfileFetcherImpl
@@ -44,7 +43,7 @@ class Nip01ProfileFetcherImpl
 constructor(
     private val relayPool: RelayPool,
     private val parser: Nip01ProfileParser,
-    private val localAuthDataSource: LocalAuthDataSource,
+    private val relayListProvider: RelayListProvider,
 ) : Nip01ProfileFetcher {
 
   private val cache = ConcurrentHashMap<String, UserProfile>()
@@ -66,12 +65,12 @@ constructor(
 
     if (uncached.isEmpty()) return result
 
-    val relays = getRelaysForQuery()
+    val relays = relayListProvider.getRelays()
     val filter =
         Json.encodeToString(
             ProfileFilter(
                 kinds = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA), authors = uncached))
-    val events = relayPool.subscribeWithTimeout(relays, filter, RELAY_TIMEOUT_MS)
+    val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
     val profilesByPubkey =
         events
@@ -90,23 +89,9 @@ constructor(
     return result
   }
 
-  private suspend fun getRelaysForQuery(): List<RelayConfig> {
-    val cachedRelays = localAuthDataSource.getRelayList()
-    return if (cachedRelays.isNullOrEmpty()) {
-      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
-    } else {
-      cachedRelays
-    }
-  }
-
   @Serializable
   private data class ProfileFilter(
       val kinds: List<Int>,
       val authors: List<String>,
   )
-
-  companion object {
-    private const val DEFAULT_RELAY_URL = "wss://yabu.me"
-    private const val RELAY_TIMEOUT_MS = 10_000L
-  }
 }
