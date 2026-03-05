@@ -43,8 +43,5 @@
     <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
-    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `core must not depend on feature`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.core..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature..")</ID>
-    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `feature domain must not depend on data`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature.*.data..")</ID>
-    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `feature domain must not depend on presentation`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature.*.presentation..")</ID>
   </CurrentIssues>
 </SmellBaseline>
