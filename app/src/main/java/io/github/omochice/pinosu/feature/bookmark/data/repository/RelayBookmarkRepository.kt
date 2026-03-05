@@ -4,6 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -55,8 +56,9 @@ constructor(
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
       val relays = getRelaysForQuery()
-      val filter = """{"kinds":[$KIND_BOOKMARK_LIST],"limit":10}"""
-      val events = relayPool.subscribeWithTimeout(relays, filter, PER_RELAY_TIMEOUT_MS)
+      val filter = """{"kinds":[${NostrConstants.KIND_BOOKMARK_LIST}],"limit":10}"""
+      val events =
+          relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
         return Result.success(null)
@@ -97,8 +99,8 @@ constructor(
   private suspend fun getRelaysForQuery(): List<RelayConfig> {
     val cachedRelays = localAuthDataSource.getRelayList()
     return if (cachedRelays.isNullOrEmpty()) {
-      Log.d(TAG, "No cached relay list, using default relay: $DEFAULT_RELAY_URL")
-      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+      Log.d(TAG, "No cached relay list, using default relay: ${NostrConstants.DEFAULT_RELAY_URL}")
+      listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
     } else {
       Log.d(TAG, "Using ${cachedRelays.size} cached relays")
       cachedRelays
@@ -149,7 +151,7 @@ constructor(
     return UnsignedNostrEvent(
         pubkey = hexPubkey,
         createdAt = System.currentTimeMillis() / 1000,
-        kind = KIND_BOOKMARK_LIST,
+        kind = NostrConstants.KIND_BOOKMARK_LIST,
         tags = tags,
         content = comment)
   }
@@ -205,7 +207,7 @@ constructor(
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = getRelaysForQuery()
-      relayPool.publishEvent(relays, signedEventJson, PER_RELAY_TIMEOUT_MS)
+      relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
@@ -216,9 +218,6 @@ constructor(
     private const val TAG = "RelayBookmarkRepository"
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
-    const val KIND_BOOKMARK_LIST = 39701
-    const val PER_RELAY_TIMEOUT_MS = 10_000L
-    const val DEFAULT_RELAY_URL = "wss://yabu.me"
 
     private fun isValidUrl(url: String): Boolean {
       return try {

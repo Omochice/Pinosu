@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
@@ -50,7 +51,7 @@ class RelayBookmarkRepositoryTest {
             id = "event123",
             pubkey = "pubkey456",
             createdAt = 1_700_000_000L,
-            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            kind = NostrConstants.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/article"), listOf("title", "Test Article")),
             content = "",
             sig = "sig789")
@@ -78,7 +79,7 @@ class RelayBookmarkRepositoryTest {
     assertEquals("Deserialized event sig should match", "sig789", deserializedEvent.sig)
     assertEquals(
         "Deserialized event kind should match",
-        RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+        NostrConstants.KIND_BOOKMARK_LIST,
         deserializedEvent.kind)
   }
 
@@ -89,7 +90,7 @@ class RelayBookmarkRepositoryTest {
             id = "event456",
             pubkey = "pubkey789",
             createdAt = 1_700_000_000L,
-            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            kind = NostrConstants.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/page"), listOf("title", "Page Title")),
             content = "",
             sig = "sig123")
@@ -118,7 +119,7 @@ class RelayBookmarkRepositoryTest {
             id = "event789",
             pubkey = "pubkey012",
             createdAt = 1_700_000_000L,
-            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            kind = NostrConstants.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/fail"), listOf("title", "Fail Title")),
             content = "",
             sig = "sig456")
@@ -145,7 +146,7 @@ class RelayBookmarkRepositoryTest {
             id = "eventInvalid",
             pubkey = "pubkeyInvalid",
             createdAt = 1_700_000_000L,
-            kind = RelayBookmarkRepository.KIND_BOOKMARK_LIST,
+            kind = NostrConstants.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("r", "not-a-valid-url")),
             content = "",
             sig = "sigInvalid")

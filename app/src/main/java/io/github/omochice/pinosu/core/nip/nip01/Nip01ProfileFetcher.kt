@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.UserProfile
+import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
@@ -71,7 +72,7 @@ constructor(
         Json.encodeToString(
             ProfileFilter(
                 kinds = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA), authors = uncached))
-    val events = relayPool.subscribeWithTimeout(relays, filter, RELAY_TIMEOUT_MS)
+    val events = relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
 
     val profilesByPubkey =
         events
@@ -93,7 +94,7 @@ constructor(
   private suspend fun getRelaysForQuery(): List<RelayConfig> {
     val cachedRelays = localAuthDataSource.getRelayList()
     return if (cachedRelays.isNullOrEmpty()) {
-      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+      listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
     } else {
       cachedRelays
     }
@@ -104,9 +105,4 @@ constructor(
       val kinds: List<Int>,
       val authors: List<String>,
   )
-
-  companion object {
-    private const val DEFAULT_RELAY_URL = "wss://yabu.me"
-    private const val RELAY_TIMEOUT_MS = 10_000L
-  }
 }
