@@ -17,8 +17,12 @@ class CachedRelayListProvider
 constructor(private val localAuthDataSource: LocalAuthDataSource) : RelayListProvider {
 
   override suspend fun getRelays(): List<RelayConfig> {
-    return localAuthDataSource.getRelayList()?.takeIf { it.isNotEmpty() }
-        ?: listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+    val relays = localAuthDataSource.getRelayList()
+    return if (relays.isNullOrEmpty()) {
+      listOf(RelayConfig(url = DEFAULT_RELAY_URL))
+    } else {
+      relays
+    }
   }
 
   companion object {
