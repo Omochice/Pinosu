@@ -3,7 +3,8 @@ package io.github.omochice.pinosu.feature.comment.data.repository
 import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
-import io.github.omochice.pinosu.core.relay.NostrConstants
+import io.github.omochice.pinosu.core.nip.nip22.Nip22
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -50,17 +51,16 @@ constructor(
   ): Result<List<Comment>> {
     return try {
       val relays = relayListProvider.getRelays()
-      val aTagValue = "${NostrConstants.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
+      val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
       val filter =
           Json.encodeToString(
               CommentFilter(
-                  kinds = listOf(NostrConstants.KIND_COMMENT),
+                  kinds = listOf(Nip22.KIND_COMMENT),
                   aTag = listOf(aTagValue),
                   eTag = listOf(rootEventId),
               ))
 
-      val events =
-          relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
 
       val comments =
           events.map { event ->
@@ -90,24 +90,24 @@ constructor(
       dTag: String,
       rootEventId: String
   ): UnsignedNostrEvent {
-    val aTagValue = "${NostrConstants.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
+    val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
 
     val tags =
         listOf(
             listOf("A", aTagValue),
             listOf("E", rootEventId),
-            listOf("K", NostrConstants.KIND_BOOKMARK_LIST.toString()),
+            listOf("K", NipB0.KIND_BOOKMARK_LIST.toString()),
             listOf("P", rootPubkey),
             listOf("a", aTagValue),
             listOf("e", rootEventId),
-            listOf("k", NostrConstants.KIND_BOOKMARK_LIST.toString()),
+            listOf("k", NipB0.KIND_BOOKMARK_LIST.toString()),
             listOf("p", rootPubkey),
         )
 
     return UnsignedNostrEvent(
         pubkey = hexPubkey,
         createdAt = System.currentTimeMillis() / 1000,
-        kind = NostrConstants.KIND_COMMENT,
+        kind = Nip22.KIND_COMMENT,
         tags = tags,
         content = content)
   }
@@ -118,8 +118,7 @@ constructor(
       val relays = relayListProvider.getRelays()
       val filter = Json.encodeToString(EventIdFilter(ids = ids))
 
-      val events =
-          relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
+      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
       Result.success(events)
     } catch (e: IOException) {
       Log.e(TAG, "Error fetching events by IDs", e)
@@ -133,7 +132,7 @@ constructor(
   override suspend fun publishComment(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = relayListProvider.getRelays()
-      relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
+      relayPool.publishEvent(relays, signedEventJson, TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing comment", e)
       Result.failure(e)
@@ -145,5 +144,6 @@ constructor(
 
   companion object {
     private const val TAG = "RelayCommentRepository"
+    private const val TIMEOUT_MS = 10_000L
   }
 }

@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.UserProfile
-import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
 import java.util.concurrent.ConcurrentHashMap
@@ -71,7 +70,7 @@ constructor(
         Json.encodeToString(
             ProfileFilter(
                 kinds = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA), authors = uncached))
-    val events = relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
+    val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
 
     val profilesByPubkey =
         events
@@ -95,4 +94,8 @@ constructor(
       val kinds: List<Int>,
       val authors: List<String>,
   )
+
+  companion object {
+    private const val TIMEOUT_MS = 10_000L
+  }
 }

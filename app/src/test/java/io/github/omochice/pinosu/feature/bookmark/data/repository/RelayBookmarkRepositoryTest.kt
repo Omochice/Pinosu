@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
-import io.github.omochice.pinosu.core.relay.NostrConstants
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -51,7 +51,7 @@ class RelayBookmarkRepositoryTest {
             id = "event123",
             pubkey = "pubkey456",
             createdAt = 1_700_000_000L,
-            kind = NostrConstants.KIND_BOOKMARK_LIST,
+            kind = NipB0.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/article"), listOf("title", "Test Article")),
             content = "",
             sig = "sig789")
@@ -78,9 +78,7 @@ class RelayBookmarkRepositoryTest {
     assertEquals("Deserialized event id should match", "event123", deserializedEvent.id)
     assertEquals("Deserialized event sig should match", "sig789", deserializedEvent.sig)
     assertEquals(
-        "Deserialized event kind should match",
-        NostrConstants.KIND_BOOKMARK_LIST,
-        deserializedEvent.kind)
+        "Deserialized event kind should match", NipB0.KIND_BOOKMARK_LIST, deserializedEvent.kind)
   }
 
   @Test
@@ -90,7 +88,7 @@ class RelayBookmarkRepositoryTest {
             id = "event456",
             pubkey = "pubkey789",
             createdAt = 1_700_000_000L,
-            kind = NostrConstants.KIND_BOOKMARK_LIST,
+            kind = NipB0.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/page"), listOf("title", "Page Title")),
             content = "",
             sig = "sig123")
@@ -119,7 +117,7 @@ class RelayBookmarkRepositoryTest {
             id = "event789",
             pubkey = "pubkey012",
             createdAt = 1_700_000_000L,
-            kind = NostrConstants.KIND_BOOKMARK_LIST,
+            kind = NipB0.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("d", "example.com/fail"), listOf("title", "Fail Title")),
             content = "",
             sig = "sig456")
@@ -146,7 +144,7 @@ class RelayBookmarkRepositoryTest {
             id = "eventInvalid",
             pubkey = "pubkeyInvalid",
             createdAt = 1_700_000_000L,
-            kind = NostrConstants.KIND_BOOKMARK_LIST,
+            kind = NipB0.KIND_BOOKMARK_LIST,
             tags = listOf(listOf("r", "not-a-valid-url")),
             content = "",
             sig = "sigInvalid")

@@ -4,7 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
-import io.github.omochice.pinosu.core.relay.NostrConstants
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -55,9 +55,8 @@ constructor(
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
       val relays = relayListProvider.getRelays()
-      val filter = """{"kinds":[${NostrConstants.KIND_BOOKMARK_LIST}],"limit":10}"""
-      val events =
-          relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
+      val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":10}"""
+      val events = relayPool.subscribeWithTimeout(relays, filter, TIMEOUT_MS)
 
       if (events.isEmpty()) {
         return Result.success(null)
@@ -132,7 +131,7 @@ constructor(
     return UnsignedNostrEvent(
         pubkey = hexPubkey,
         createdAt = System.currentTimeMillis() / 1000,
-        kind = NostrConstants.KIND_BOOKMARK_LIST,
+        kind = NipB0.KIND_BOOKMARK_LIST,
         tags = tags,
         content = comment)
   }
@@ -188,7 +187,7 @@ constructor(
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
       val relays = relayListProvider.getRelays()
-      relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
+      relayPool.publishEvent(relays, signedEventJson, TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)
       Result.failure(e)
@@ -197,6 +196,7 @@ constructor(
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
+    private const val TIMEOUT_MS = 10_000L
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
 
