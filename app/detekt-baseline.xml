@@ -12,7 +12,6 @@
     <ID>LabeledExpression:BookmarkViewModel.kt$BookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:PostBookmarkViewModel.kt$PostBookmarkViewModel$@launch</ID>
     <ID>LabeledExpression:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$@withContext</ID>
-    <ID>LongMethod:LoginScreen.kt$@Composable fun LoginScreen( uiState: LoginUiState, onLoginButtonClick: () -&gt; Unit, onDismissDialog: () -&gt; Unit = {}, onInstallNip55Signer: () -&gt; Unit = {}, onRetry: () -&gt; Unit = {}, onLoginSuccess: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:PostBookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PostBookmarkScreen( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
     <ID>LongParameterList:PostBookmarkScreen.kt$( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
@@ -40,9 +39,12 @@
     <ID>UnderscoresInNumericLiterals:Nip65EventParser.kt$Nip65EventParserImpl.Companion$10002</ID>
     <ID>UnderscoresInNumericLiterals:Nip65EventParserTest.kt$Nip65EventParserTest$10002</ID>
     <ID>UnderscoresInNumericLiterals:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$10002</ID>
+    <ID>UnderscoresInNumericLiterals:NipB0.kt$NipB0$39701</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$39701</ID>
-    <ID>UnderscoresInNumericLiterals:NipB0.kt$NipB0$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
+    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `core must not depend on feature`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.core..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature..")</ID>
+    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `feature domain must not depend on data`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature.*.data..")</ID>
+    <ID>VariableNaming:DependencyDirectionTest.kt$DependencyDirectionTest$@ArchTest val `feature domain must not depend on presentation`: ArchRule = noClasses() .that() .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..") .should() .dependOnClassesThat() .resideInAPackage("io.github.omochice.pinosu.feature.*.presentation..")</ID>
   </CurrentIssues>
 </SmellBaseline>
