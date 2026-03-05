@@ -2,7 +2,6 @@ package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.UserProfile
 import io.github.omochice.pinosu.core.relay.NostrConstants
-import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import java.util.concurrent.ConcurrentHashMap
@@ -67,7 +66,7 @@ constructor(
 
     if (uncached.isEmpty()) return result
 
-    val relays = getRelaysForQuery()
+    val relays = localAuthDataSource.getRelayListOrDefault()
     val filter =
         Json.encodeToString(
             ProfileFilter(
@@ -89,15 +88,6 @@ constructor(
     }
 
     return result
-  }
-
-  private suspend fun getRelaysForQuery(): List<RelayConfig> {
-    val cachedRelays = localAuthDataSource.getRelayList()
-    return if (cachedRelays.isNullOrEmpty()) {
-      listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
-    } else {
-      cachedRelays
-    }
   }
 
   @Serializable

@@ -5,7 +5,6 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -50,7 +49,7 @@ constructor(
       rootEventId: String
   ): Result<List<Comment>> {
     return try {
-      val relays = getRelaysForQuery()
+      val relays = localAuthDataSource.getRelayListOrDefault()
       val aTagValue = "${NostrConstants.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
       val filter =
           Json.encodeToString(
@@ -116,7 +115,7 @@ constructor(
   override suspend fun getEventsByIds(ids: List<String>): Result<List<NostrEvent>> {
     if (ids.isEmpty()) return Result.success(emptyList())
     return try {
-      val relays = getRelaysForQuery()
+      val relays = localAuthDataSource.getRelayListOrDefault()
       val filter = Json.encodeToString(EventIdFilter(ids = ids))
 
       val events =
@@ -133,7 +132,7 @@ constructor(
 
   override suspend fun publishComment(signedEventJson: String): Result<PublishResult> {
     return try {
-      val relays = getRelaysForQuery()
+      val relays = localAuthDataSource.getRelayListOrDefault()
       relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing comment", e)
@@ -141,15 +140,6 @@ constructor(
     } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error publishing comment", e)
       Result.failure(e)
-    }
-  }
-
-  private suspend fun getRelaysForQuery(): List<RelayConfig> {
-    val cachedRelays = localAuthDataSource.getRelayList()
-    return if (cachedRelays.isNullOrEmpty()) {
-      listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
-    } else {
-      cachedRelays
     }
   }
 

@@ -41,7 +41,7 @@ class RelayCommentRepositoryTest {
     localAuthDataSource = mockk()
     repository = RelayCommentRepository(relayPool, localAuthDataSource)
 
-    coEvery { localAuthDataSource.getRelayList() } returns testRelays
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns testRelays
   }
 
   @Test

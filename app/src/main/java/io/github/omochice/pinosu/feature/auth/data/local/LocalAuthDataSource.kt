@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.auth.data.local
 import android.util.Log
 import androidx.datastore.core.DataStore
 import io.github.omochice.pinosu.core.model.Pubkey
+import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
@@ -129,6 +130,16 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
       Log.w(TAG, "Failed to read relay list: ${e.message}")
       null
     }
+  }
+
+  /**
+   * Retrieve saved relay list, falling back to default relay if empty or null
+   *
+   * @return Saved relay list or default relay list
+   */
+  suspend fun getRelayListOrDefault(): List<RelayConfig> {
+    return getRelayList()?.takeIf { it.isNotEmpty() }
+        ?: listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
   }
 
   /**

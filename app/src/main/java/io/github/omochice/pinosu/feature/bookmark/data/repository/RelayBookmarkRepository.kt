@@ -6,7 +6,6 @@ import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.relay.NostrConstants
 import io.github.omochice.pinosu.core.relay.PublishResult
-import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
@@ -55,7 +54,7 @@ constructor(
           Pubkey.parse(pubkey)?.hex
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
-      val relays = getRelaysForQuery()
+      val relays = localAuthDataSource.getRelayListOrDefault()
       val filter = """{"kinds":[${NostrConstants.KIND_BOOKMARK_LIST}],"limit":10}"""
       val events =
           relayPool.subscribeWithTimeout(relays, filter, NostrConstants.PER_RELAY_TIMEOUT_MS)
@@ -86,24 +85,6 @@ constructor(
     } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)
-    }
-  }
-
-  /**
-   * Get relay list for querying bookmarks
-   *
-   * Returns cached relay list from LocalAuthDataSource, or default relay if not available.
-   *
-   * @return List of relay configurations for querying
-   */
-  private suspend fun getRelaysForQuery(): List<RelayConfig> {
-    val cachedRelays = localAuthDataSource.getRelayList()
-    return if (cachedRelays.isNullOrEmpty()) {
-      Log.d(TAG, "No cached relay list, using default relay: ${NostrConstants.DEFAULT_RELAY_URL}")
-      listOf(RelayConfig(url = NostrConstants.DEFAULT_RELAY_URL))
-    } else {
-      Log.d(TAG, "Using ${cachedRelays.size} cached relays")
-      cachedRelays
     }
   }
 
@@ -206,7 +187,7 @@ constructor(
    */
   override suspend fun publishBookmark(signedEventJson: String): Result<PublishResult> {
     return try {
-      val relays = getRelaysForQuery()
+      val relays = localAuthDataSource.getRelayListOrDefault()
       relayPool.publishEvent(relays, signedEventJson, NostrConstants.PER_RELAY_TIMEOUT_MS)
     } catch (e: IOException) {
       Log.e(TAG, "Error publishing bookmark", e)

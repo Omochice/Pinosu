@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UserProfile
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.mockk.coEvery
@@ -27,7 +28,8 @@ class Nip01ProfileFetcherTest {
     relayPool = mockk(relaxed = true)
     parser = mockk(relaxed = true)
     localAuthDataSource = mockk(relaxed = true)
-    coEvery { localAuthDataSource.getRelayList() } returns null
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
+        listOf(RelayConfig(url = "wss://yabu.me"))
     fetcher = Nip01ProfileFetcherImpl(relayPool, parser, localAuthDataSource)
   }
 

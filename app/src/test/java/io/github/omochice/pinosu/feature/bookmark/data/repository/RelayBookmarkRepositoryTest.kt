@@ -56,7 +56,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig789")
 
-    coEvery { localAuthDataSource.getRelayList() } returns
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -95,7 +95,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig123")
 
-    coEvery { localAuthDataSource.getRelayList() } returns
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -124,7 +124,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sig456")
 
-    coEvery { localAuthDataSource.getRelayList() } returns
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
     coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
@@ -151,7 +151,7 @@ class RelayBookmarkRepositoryTest {
             content = "",
             sig = "sigInvalid")
 
-    coEvery { localAuthDataSource.getRelayList() } returns
+    coEvery { localAuthDataSource.getRelayListOrDefault() } returns
         listOf(RelayConfig(url = "wss://relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
 
