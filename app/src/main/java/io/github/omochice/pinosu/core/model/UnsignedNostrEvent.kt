@@ -71,4 +71,24 @@ data class UnsignedNostrEvent(
     }
     return Json.encodeToString(json)
   }
+
+  companion object {
+    /**
+     * Build signed event JSON from NIP-55 signer response
+     *
+     * If signer response is already valid JSON (complete signed event), return as-is. If response
+     * is a signature-only hex string, combine with the pending unsigned event to build a complete
+     * signed event.
+     *
+     * @param signerResponse Response from NIP-55 signer (JSON or hex signature)
+     * @param unsignedEvent The pending unsigned event, or null if unavailable
+     * @return Complete signed event JSON or null if building fails
+     */
+    fun buildSignedEventJson(signerResponse: String, unsignedEvent: UnsignedNostrEvent?): String? {
+      if (signerResponse.startsWith("{")) {
+        return signerResponse
+      }
+      return unsignedEvent?.toSignedJson(signerResponse)
+    }
+  }
 }
