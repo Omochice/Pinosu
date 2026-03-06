@@ -315,7 +315,7 @@ naming:
     active: true
     variablePattern: '[a-z][A-Za-z0-9]*'
     privateVariablePattern: '_?[a-z][A-Za-z0-9]*'
-    excludeClassPattern: '$^'
+    excludeClassPattern: 'DependencyDirectionTest'
 
 performance:
   active: true
