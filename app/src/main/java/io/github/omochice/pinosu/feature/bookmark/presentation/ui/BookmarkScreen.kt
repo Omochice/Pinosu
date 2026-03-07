@@ -266,9 +266,9 @@ private fun BookmarkListView(
 
   LaunchedEffect(listState) {
     snapshotFlow {
-          val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-          val totalItems = listState.layoutInfo.totalItemsCount
-          lastVisibleItem >= totalItems - 2
+          listState.layoutInfo.visibleItemsInfo.lastOrNull()?.let { lastItem ->
+            lastItem.index >= listState.layoutInfo.totalItemsCount - 2
+          } ?: false
         }
         .distinctUntilChanged()
         .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
