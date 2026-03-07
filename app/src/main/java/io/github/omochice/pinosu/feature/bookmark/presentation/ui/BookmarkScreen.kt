@@ -305,9 +305,9 @@ private fun BookmarkGridView(
 
   LaunchedEffect(gridState) {
     snapshotFlow {
-          val lastVisibleItem = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-          val totalItems = gridState.layoutInfo.totalItemsCount
-          lastVisibleItem >= totalItems - 2
+          gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.let { lastItem ->
+            lastItem.index >= gridState.layoutInfo.totalItemsCount - 2
+          } ?: false
         }
         .distinctUntilChanged()
         .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
