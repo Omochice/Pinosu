@@ -80,6 +80,8 @@
     <!-- アプリ情報画面 -->
     <string name="title_app_info">アプリ情報</string>
     <string name="label_version">バージョン</string>
+    <string name="label_repository">リポジトリ</string>
+    <string name="url_repository" translatable="false">https://github.com/Omochice/Pinosu</string>
 
     <!-- 設定画面 -->
     <string name="title_settings">設定</string>
