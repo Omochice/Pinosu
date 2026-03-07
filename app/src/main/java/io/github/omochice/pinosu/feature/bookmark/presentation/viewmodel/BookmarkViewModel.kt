@@ -168,7 +168,7 @@ constructor(
                 return@launch
               }
 
-      val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt)
+      val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt - 1)
       result.fold(
           onSuccess = { bookmarkList ->
             val newItems = bookmarkList?.items ?: emptyList()
