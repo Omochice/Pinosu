@@ -78,6 +78,7 @@ constructor(
             _uiState.update { state ->
               state.copy(
                   isLoading = false,
+                  isLoadingMore = false,
                   allBookmarks = allItems,
                   userHexPubkey = userHexPubkey,
                   hasMoreItems = allItems.size >= PAGE_SIZE,
@@ -87,7 +88,9 @@ constructor(
           onFailure = { e ->
             _uiState.value =
                 _uiState.value.copy(
-                    isLoading = false, error = e.message ?: "Failed to load bookmarks")
+                    isLoading = false,
+                    isLoadingMore = false,
+                    error = e.message ?: "Failed to load bookmarks")
           })
     }
   }
