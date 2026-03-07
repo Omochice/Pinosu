@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +35,9 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -54,6 +57,7 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
   val clipboardManager = LocalClipboardManager.current
   val context = LocalContext.current
   val isInPreview = LocalInspectionMode.current
+  val uriHandler = LocalUriHandler.current
   val appIcon =
       remember(context) {
         if (isInPreview) {
@@ -108,6 +112,20 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
                       contentDescription = stringResource(R.string.cd_copy_version))
                 }
           }
+
+          Spacer(modifier = Modifier.height(16.dp))
+
+          Text(
+              text = stringResource(R.string.label_repository),
+              style = MaterialTheme.typography.titleMedium)
+          val repositoryUrl = stringResource(R.string.url_repository)
+          Text(
+              text = repositoryUrl,
+              style =
+                  MaterialTheme.typography.bodyLarge.copy(
+                      color = MaterialTheme.colorScheme.primary,
+                      textDecoration = TextDecoration.Underline),
+              modifier = Modifier.clickable { uriHandler.openUri(repositoryUrl) })
         }
       }
 }
