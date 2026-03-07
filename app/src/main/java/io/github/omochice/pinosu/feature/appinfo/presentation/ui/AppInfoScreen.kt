@@ -97,37 +97,47 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          Text(
-              text = stringResource(R.string.label_version),
-              style = MaterialTheme.typography.titleMedium)
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = uiState.versionDisplayText, style = MaterialTheme.typography.bodyLarge)
-            IconButton(
-                onClick = {
-                  clipboardManager.setClip(
-                      ClipEntry(ClipData.newPlainText("version", uiState.versionDisplayText)))
-                }) {
-                  Icon(
-                      imageVector = Icons.Default.ContentCopy,
-                      contentDescription = stringResource(R.string.cd_copy_version))
-                }
-          }
+          VersionSection(
+              versionDisplayText = uiState.versionDisplayText,
+              onCopyVersion = {
+                clipboardManager.setClip(
+                    ClipEntry(ClipData.newPlainText("version", uiState.versionDisplayText)))
+              })
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          Text(
-              text = stringResource(R.string.label_repository),
-              style = MaterialTheme.typography.titleMedium)
-          val repositoryUrl = stringResource(R.string.url_repository)
-          Text(
-              text = repositoryUrl,
-              style =
-                  MaterialTheme.typography.bodyLarge.copy(
-                      color = MaterialTheme.colorScheme.primary,
-                      textDecoration = TextDecoration.Underline),
-              modifier = Modifier.clickable { uriHandler.openUri(repositoryUrl) })
+          RepositorySection(onOpenUrl = { uriHandler.openUri(it) })
         }
       }
+}
+
+/** Displays the version label, version text, and a copy-to-clipboard button. */
+@Composable
+private fun VersionSection(versionDisplayText: String, onCopyVersion: () -> Unit) {
+  Text(text = stringResource(R.string.label_version), style = MaterialTheme.typography.titleMedium)
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Text(text = versionDisplayText, style = MaterialTheme.typography.bodyLarge)
+    IconButton(onClick = onCopyVersion) {
+      Icon(
+          imageVector = Icons.Default.ContentCopy,
+          contentDescription = stringResource(R.string.cd_copy_version))
+    }
+  }
+}
+
+/** Displays the repository label and a clickable URL that opens in the browser. */
+@Composable
+private fun RepositorySection(onOpenUrl: (String) -> Unit) {
+  Text(
+      text = stringResource(R.string.label_repository),
+      style = MaterialTheme.typography.titleMedium)
+  val repositoryUrl = stringResource(R.string.url_repository)
+  Text(
+      text = repositoryUrl,
+      style =
+          MaterialTheme.typography.bodyLarge.copy(
+              color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline),
+      modifier = Modifier.clickable { onOpenUrl(repositoryUrl) })
 }
 
 /**
