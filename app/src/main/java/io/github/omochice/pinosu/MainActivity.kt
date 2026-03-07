@@ -296,6 +296,7 @@ fun PinosuApp(
                     onBookmarkDetailNavigate = { bookmark ->
                       navigateToBookmarkDetail(navController, bookmark)
                     },
+                    onLoadMore = { bookmarkViewModel.loadMore() },
                     isReadOnly = mainUiState.isReadOnly)
               }
 

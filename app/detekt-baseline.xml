@@ -29,7 +29,7 @@
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>
     <ID>ReturnCount:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$override suspend fun fetchRelayList(hexPubkey: String): Result&lt;List&lt;RelayConfig&gt;&gt;</ID>
-    <ID>ReturnCount:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String): Result&lt;BookmarkList?&gt;</ID>
+    <ID>ReturnCount:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String, until: Long?): Result&lt;BookmarkList?&gt;</ID>
     <ID>ReturnCount:RelayPool.kt$RelayPoolImpl$override suspend fun publishEvent( relays: List&lt;RelayConfig&gt;, signedEventJson: String, timeoutMs: Long ): Result&lt;PublishResult&gt;</ID>
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>
     <ID>StringTemplate:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$${createdAt}</ID>

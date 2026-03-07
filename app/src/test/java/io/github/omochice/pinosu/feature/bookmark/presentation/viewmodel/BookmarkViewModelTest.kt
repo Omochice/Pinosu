@@ -338,7 +338,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
@@ -351,7 +351,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
@@ -391,7 +391,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
@@ -434,7 +434,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
@@ -479,7 +479,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
@@ -492,7 +492,10 @@ class BookmarkViewModelTest {
                 title = "Bookmark 11",
                 event =
                     BookmarkedEvent(
-                        kind = 39701, content = "", author = "author", createdAt = 1_699_998_000L)))
+                        kind = 39_701,
+                        content = "",
+                        author = "author",
+                        createdAt = 1_699_998_000L)))
 
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
@@ -526,7 +529,7 @@ class BookmarkViewModelTest {
               title = "Bookmark $i",
               event =
                   BookmarkedEvent(
-                      kind = 39701,
+                      kind = 39_701,
                       content = "",
                       author = "author",
                       createdAt = 1_700_000_000L - i * 100))
