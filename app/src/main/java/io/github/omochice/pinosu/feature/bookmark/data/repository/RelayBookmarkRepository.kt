@@ -46,16 +46,18 @@ constructor(
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param until Unix timestamp upper bound for pagination (exclusive), null for latest
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?> {
+  override suspend fun getBookmarkList(pubkey: String, until: Long?): Result<BookmarkList?> {
     return try {
       val hexPubkey =
           Pubkey.parse(pubkey)?.hex
               ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
       val relays = relayListProvider.getRelays()
-      val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":10}"""
+      val untilClause = until?.let { ""","until":$it""" } ?: ""
+      val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":$PAGE_SIZE$untilClause}"""
       val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
@@ -196,6 +198,7 @@ constructor(
 
   companion object {
     private const val TAG = "RelayBookmarkRepository"
+    const val PAGE_SIZE = 10
     private const val SCHEME_HTTPS = "https://"
     private const val SCHEME_HTTP = "http://"
 
