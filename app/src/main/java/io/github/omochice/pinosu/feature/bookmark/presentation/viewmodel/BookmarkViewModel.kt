@@ -70,7 +70,7 @@ constructor(
 
       val userHexPubkey = user.pubkey.hex
 
-      val result = getBookmarkListUseCase(user.pubkey.npub)
+      val result = getBookmarkListUseCase(user.pubkey.npub, until = null)
       result.fold(
           onSuccess = { bookmarkList ->
             val allItems = bookmarkList?.items ?: emptyList()
@@ -79,6 +79,7 @@ constructor(
                   isLoading = false,
                   allBookmarks = allItems,
                   userHexPubkey = userHexPubkey,
+                  hasMoreItems = allItems.size >= PAGE_SIZE,
                   error = null)
             }
           },
@@ -138,5 +139,44 @@ constructor(
   /** Dismiss error dialog */
   fun dismissErrorDialog() {
     _uiState.value = _uiState.value.copy(urlOpenError = null)
+  }
+
+  /**
+   * Load older bookmarks for infinite scroll pagination
+   *
+   * Uses the oldest bookmark's createdAt as the `until` cursor to fetch the next page. Appends new
+   * items to the existing list and deduplicates by eventId.
+   */
+  fun loadMore() {
+    val currentState = _uiState.value
+    if (currentState.isLoadingMore || !currentState.hasMoreItems) return
+
+    val oldestCreatedAt =
+        currentState.allBookmarks.mapNotNull { it.event?.createdAt }.minOrNull() ?: return
+
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoadingMore = true) }
+
+      val user = getLoginStateUseCase() ?: return@launch
+
+      val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt)
+      result.fold(
+          onSuccess = { bookmarkList ->
+            val newItems = bookmarkList?.items ?: emptyList()
+            val existingIds = currentState.allBookmarks.mapNotNull { it.eventId }.toSet()
+            val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+            _uiState.update { state ->
+              state.copy(
+                  isLoadingMore = false,
+                  allBookmarks = state.allBookmarks + uniqueNewItems,
+                  hasMoreItems = newItems.size >= PAGE_SIZE)
+            }
+          },
+          onFailure = { _uiState.update { it.copy(isLoadingMore = false) } })
+    }
+  }
+
+  companion object {
+    const val PAGE_SIZE = 10
   }
 }
