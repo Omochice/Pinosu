@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.bookmark.data.repository.RelayBookmarkRepository.Companion.PAGE_SIZE
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
@@ -157,15 +158,20 @@ constructor(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoadingMore = true) }
 
-      val user = getLoginStateUseCase() ?: return@launch
+      val user =
+          getLoginStateUseCase()
+              ?: run {
+                _uiState.update { it.copy(isLoadingMore = false) }
+                return@launch
+              }
 
       val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt)
       result.fold(
           onSuccess = { bookmarkList ->
             val newItems = bookmarkList?.items ?: emptyList()
-            val existingIds = currentState.allBookmarks.mapNotNull { it.eventId }.toSet()
-            val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
             _uiState.update { state ->
+              val existingIds = state.allBookmarks.mapNotNull { it.eventId }.toSet()
+              val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
               state.copy(
                   isLoadingMore = false,
                   allBookmarks = state.allBookmarks + uniqueNewItems,
@@ -174,9 +180,5 @@ constructor(
           },
           onFailure = { _uiState.update { it.copy(isLoadingMore = false) } })
     }
-  }
-
-  companion object {
-    const val PAGE_SIZE = 10
   }
 }

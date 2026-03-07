@@ -50,6 +50,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Composable function for bookmark list screen
@@ -279,6 +280,7 @@ private fun BookmarkListView(
           val totalItems = listState.layoutInfo.totalItemsCount
           lastVisibleItem >= totalItems - 2
         }
+        .distinctUntilChanged()
         .collect { nearEnd -> if (nearEnd) onLoadMore() }
   }
 
@@ -318,6 +320,7 @@ private fun BookmarkGridView(
           val totalItems = gridState.layoutInfo.totalItemsCount
           lastVisibleItem >= totalItems - 2
         }
+        .distinctUntilChanged()
         .collect { nearEnd -> if (nearEnd) onLoadMore() }
   }
 
