@@ -96,6 +96,14 @@ fun BookmarkScreen(
     }
   }
 
+  val callbacks =
+      BookmarkListCallbacks(
+          onRefresh = onRefresh,
+          onClick = onBookmarkDetailNavigate,
+          onLongPress = onBookmarkLongPress,
+          onLoadMore = onLoadMore,
+      )
+
   Scaffold(
       topBar = {
         BookmarkTopBar(
@@ -115,23 +123,16 @@ fun BookmarkScreen(
         BookmarkPager(
             uiState = uiState,
             onTabSelected = onTabSelected,
-            onRefresh = onRefresh,
-            onBookmarkClick = onBookmarkDetailNavigate,
-            onBookmarkLongPress = onBookmarkLongPress,
-            onLoadMore = onLoadMore,
+            callbacks = callbacks,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
 }
 
-@Suppress("LongParameterList")
 @Composable
 private fun BookmarkPager(
     uiState: BookmarkUiState,
     onTabSelected: (BookmarkFilterMode) -> Unit,
-    onRefresh: () -> Unit,
-    onBookmarkClick: (BookmarkItem) -> Unit,
-    onBookmarkLongPress: (BookmarkItem) -> Unit,
-    onLoadMore: () -> Unit,
+    callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
   val pagerState =
@@ -168,10 +169,7 @@ private fun BookmarkPager(
     BookmarkContent(
         uiState = uiState,
         bookmarks = filteredBookmarks,
-        onRefresh = onRefresh,
-        onBookmarkClick = onBookmarkClick,
-        onBookmarkLongPress = onBookmarkLongPress,
-        onLoadMore = onLoadMore,
+        callbacks = callbacks,
         modifier = Modifier.fillMaxSize())
   }
 }
@@ -206,71 +204,62 @@ private fun BookmarkTopBar(
   }
 }
 
-@Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookmarkContent(
     uiState: BookmarkUiState,
     bookmarks: List<BookmarkItem>,
-    onRefresh: () -> Unit,
-    onBookmarkClick: (BookmarkItem) -> Unit,
-    onBookmarkLongPress: (BookmarkItem) -> Unit,
-    onLoadMore: () -> Unit,
+    callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
-  PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
-    when {
-      uiState.isLoading && bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
-        }
-      }
-      uiState.error != null && bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = uiState.error,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error)
+  PullToRefreshBox(
+      isRefreshing = uiState.isLoading, onRefresh = callbacks.onRefresh, modifier = modifier) {
+        when {
+          uiState.isLoading && bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
+            }
+          }
+          uiState.error != null && bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = uiState.error,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error)
+              }
+            }
+          }
+          bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Text(
+                  text = stringResource(R.string.message_no_bookmarks),
+                  style = MaterialTheme.typography.bodyLarge)
+            }
+          }
+          else -> {
+            when (uiState.displayMode) {
+              BookmarkDisplayMode.List ->
+                  BookmarkListView(
+                      bookmarks = bookmarks,
+                      isLoadingMore = uiState.isLoadingMore,
+                      callbacks = callbacks)
+              BookmarkDisplayMode.Grid ->
+                  BookmarkGridView(
+                      bookmarks = bookmarks,
+                      isLoadingMore = uiState.isLoadingMore,
+                      callbacks = callbacks)
+            }
           }
         }
       }
-      bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-              text = stringResource(R.string.message_no_bookmarks),
-              style = MaterialTheme.typography.bodyLarge)
-        }
-      }
-      else -> {
-        when (uiState.displayMode) {
-          BookmarkDisplayMode.List ->
-              BookmarkListView(
-                  bookmarks = bookmarks,
-                  isLoadingMore = uiState.isLoadingMore,
-                  onClick = onBookmarkClick,
-                  onLongPress = onBookmarkLongPress,
-                  onLoadMore = onLoadMore)
-          BookmarkDisplayMode.Grid ->
-              BookmarkGridView(
-                  bookmarks = bookmarks,
-                  isLoadingMore = uiState.isLoadingMore,
-                  onClick = onBookmarkClick,
-                  onLongPress = onBookmarkLongPress,
-                  onLoadMore = onLoadMore)
-        }
-      }
-    }
-  }
 }
 
 @Composable
 private fun BookmarkListView(
     bookmarks: List<BookmarkItem>,
     isLoadingMore: Boolean,
-    onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
-    onLoadMore: () -> Unit,
+    callbacks: BookmarkListCallbacks,
 ) {
   val listState = rememberLazyListState()
 
@@ -281,7 +270,7 @@ private fun BookmarkListView(
           lastVisibleItem >= totalItems - 2
         }
         .distinctUntilChanged()
-        .collect { nearEnd -> if (nearEnd) onLoadMore() }
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
   }
 
   LazyColumn(
@@ -290,7 +279,8 @@ private fun BookmarkListView(
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
-          BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+          BookmarkItemCard(
+              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
         }
         if (isLoadingMore) {
           item {
@@ -308,9 +298,7 @@ private fun BookmarkListView(
 private fun BookmarkGridView(
     bookmarks: List<BookmarkItem>,
     isLoadingMore: Boolean,
-    onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
-    onLoadMore: () -> Unit,
+    callbacks: BookmarkListCallbacks,
 ) {
   val gridState = rememberLazyStaggeredGridState()
 
@@ -321,7 +309,7 @@ private fun BookmarkGridView(
           lastVisibleItem >= totalItems - 2
         }
         .distinctUntilChanged()
-        .collect { nearEnd -> if (nearEnd) onLoadMore() }
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
   }
 
   LazyVerticalStaggeredGrid(
@@ -332,7 +320,8 @@ private fun BookmarkGridView(
       verticalItemSpacing = 8.dp,
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
-          BookmarkGridItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+          BookmarkGridItemCard(
+              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
         }
         if (isLoadingMore) {
           item {
