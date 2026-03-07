@@ -263,14 +263,12 @@ private fun BookmarkDetailScreenPreview() {
                           id = "author",
                           content = "This is my bookmark note",
                           authorPubkey = "pk1",
-                          createdAt = 1_700_000_000L,
-                          isAuthorComment = true),
+                          createdAt = 1_700_000_000L),
                       Comment(
                           id = "c1",
                           content = "Nice bookmark!",
                           authorPubkey = "pk2",
-                          createdAt = 1_700_000_100L,
-                          isAuthorComment = false))),
+                          createdAt = 1_700_000_100L))),
       bookmarkInfo =
           BookmarkInfo(
               title = "Example Article",
