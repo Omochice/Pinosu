@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/Omochice/Pinosu/compare/v0.11.0...v0.12.0) (2026-03-07)
+
+
+### Features
+
+* add infinite scroll pagination ([#306](https://github.com/Omochice/Pinosu/issues/306)) ([5cd0e03](https://github.com/Omochice/Pinosu/commit/5cd0e03de806a4a2f3c57a1617ed19597f03fe5f))
+
 ## [0.11.0](https://github.com/Omochice/Pinosu/compare/v0.10.1...v0.11.0) (2026-03-02)
 
 
