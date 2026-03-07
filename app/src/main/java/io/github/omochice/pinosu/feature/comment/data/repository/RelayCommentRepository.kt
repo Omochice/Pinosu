@@ -69,7 +69,6 @@ constructor(
                 content = event.content,
                 authorPubkey = event.pubkey,
                 createdAt = event.createdAt,
-                isAuthorComment = false,
                 kind = event.kind)
           }
 
