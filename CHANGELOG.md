@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/Omochice/Pinosu/compare/v0.12.0...v0.12.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* remove author comment special styling ([#308](https://github.com/Omochice/Pinosu/issues/308)) ([8a5ef7f](https://github.com/Omochice/Pinosu/commit/8a5ef7fb148649170c7d4867d15501c02023f71e))
+
 ## [0.12.0](https://github.com/Omochice/Pinosu/compare/v0.11.0...v0.12.0) (2026-03-07)
 
 
