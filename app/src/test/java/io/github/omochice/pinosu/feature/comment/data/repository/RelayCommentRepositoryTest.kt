@@ -11,7 +11,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -86,7 +85,6 @@ class RelayCommentRepositoryTest {
     assertEquals("Nice bookmark!", comments[0].content)
     assertEquals("commenter-pubkey", comments[0].authorPubkey)
     assertEquals(1_700_000_000L, comments[0].createdAt)
-    assertFalse(comments[0].isAuthorComment)
   }
 
   @Test

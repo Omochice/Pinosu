@@ -60,7 +60,6 @@ class BookmarkDetailScreenTest {
             content = "Quoted text note content",
             authorPubkey = "pk1",
             createdAt = 1_700_000_000L,
-            isAuthorComment = false,
             kind = Comment.KIND_TEXT_NOTE)
     val regularComment =
         Comment(
@@ -68,7 +67,6 @@ class BookmarkDetailScreenTest {
             content = "Regular NIP-22 comment",
             authorPubkey = "pk2",
             createdAt = 1_700_000_100L,
-            isAuthorComment = false,
             kind = Comment.KIND_COMMENT)
 
     composeTestRule.setContent {

@@ -22,7 +22,6 @@ class QuoteCardTest {
             content = "This is a quoted text note",
             authorPubkey = "pk1",
             createdAt = 1_700_000_000L,
-            isAuthorComment = false,
             kind = Comment.KIND_TEXT_NOTE)
 
     composeTestRule.setContent { QuoteCard(comment = comment) }
@@ -39,7 +38,6 @@ class QuoteCardTest {
             content = "Another quote",
             authorPubkey = "pk2",
             createdAt = timestamp,
-            isAuthorComment = false,
             kind = Comment.KIND_TEXT_NOTE)
 
     composeTestRule.setContent { QuoteCard(comment = comment) }
@@ -56,7 +54,6 @@ class QuoteCardTest {
             content = "Quote without avatar",
             authorPubkey = "pk3",
             createdAt = 1_700_000_000L,
-            isAuthorComment = false,
             kind = Comment.KIND_TEXT_NOTE)
 
     composeTestRule.setContent { QuoteCard(comment = comment, profileImageUrl = null) }

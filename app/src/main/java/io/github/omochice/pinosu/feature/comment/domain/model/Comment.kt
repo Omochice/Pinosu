@@ -10,8 +10,6 @@ package io.github.omochice.pinosu.feature.comment.domain.model
  * @property content Comment text
  * @property authorPubkey Hex-encoded public key of the comment author
  * @property createdAt Unix timestamp in seconds
- * @property isAuthorComment True if this represents the bookmark event's own content rather than a
- *   kind 1111 reply
  * @property kind Nostr event kind (e.g., 1 for text note, 1111 for NIP-22 comment)
  */
 data class Comment(
@@ -19,7 +17,6 @@ data class Comment(
     val content: String,
     val authorPubkey: String,
     val createdAt: Long,
-    val isAuthorComment: Boolean,
     val kind: Int = KIND_COMMENT,
 ) {
   companion object {

@@ -58,8 +58,7 @@ constructor(
               id = "author-content-$rootEventId",
               content = authorContent,
               authorPubkey = rootPubkey,
-              createdAt = authorCreatedAt,
-              isAuthorComment = true))
+              createdAt = authorCreatedAt))
     }
 
     val fetchResult = commentRepository.getEventsByIds(eventIds)
@@ -71,7 +70,6 @@ constructor(
                 content = event.content,
                 authorPubkey = event.pubkey,
                 createdAt = event.createdAt,
-                isAuthorComment = true,
                 kind = event.kind)
           }
         }
@@ -81,8 +79,7 @@ constructor(
                   id = "author-content-$rootEventId",
                   content = authorContent,
                   authorPubkey = rootPubkey,
-                  createdAt = authorCreatedAt,
-                  isAuthorComment = true))
+                  createdAt = authorCreatedAt))
         }
   }
 }
