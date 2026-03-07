@@ -21,7 +21,7 @@ class CommentBodyTest {
             content = "Body content text",
             authorPubkey = "pk1",
             createdAt = 1_700_000_000L,
-            isAuthorComment = false)
+        )
 
     composeTestRule.setContent { CommentBody(comment = comment) }
 
@@ -37,7 +37,7 @@ class CommentBodyTest {
             content = "Some content",
             authorPubkey = "pk1",
             createdAt = timestamp,
-            isAuthorComment = false)
+        )
 
     composeTestRule.setContent { CommentBody(comment = comment) }
 

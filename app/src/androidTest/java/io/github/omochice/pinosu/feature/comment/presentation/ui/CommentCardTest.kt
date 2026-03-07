@@ -21,8 +21,7 @@ class CommentCardTest {
             id = "c1",
             content = "A regular comment",
             authorPubkey = "pk1",
-            createdAt = 1_700_000_000L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_000L)
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 
@@ -37,43 +36,12 @@ class CommentCardTest {
             id = "c2",
             content = "Some comment",
             authorPubkey = "pk1",
-            createdAt = timestamp,
-            isAuthorComment = false)
+            createdAt = timestamp)
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 
     val expected = formatTimestamp(timestamp)
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
-  }
-
-  @Test
-  fun displaysAuthorLabelForAuthorComment() {
-    val comment =
-        Comment(
-            id = "c3",
-            content = "Author's note",
-            authorPubkey = "pk1",
-            createdAt = 1_700_000_000L,
-            isAuthorComment = true)
-
-    composeTestRule.setContent { CommentCard(comment = comment) }
-
-    composeTestRule.onNodeWithText("投稿者のコメント").assertIsDisplayed()
-  }
-
-  @Test
-  fun doesNotDisplayAuthorLabelForRegularComment() {
-    val comment =
-        Comment(
-            id = "c4",
-            content = "Not an author comment",
-            authorPubkey = "pk2",
-            createdAt = 1_700_000_000L,
-            isAuthorComment = false)
-
-    composeTestRule.setContent { CommentCard(comment = comment) }
-
-    composeTestRule.onNodeWithText("投稿者のコメント").assertDoesNotExist()
   }
 
   @Test
@@ -83,8 +51,7 @@ class CommentCardTest {
             id = "c5",
             content = "Comment without avatar",
             authorPubkey = "pk3",
-            createdAt = 1_700_000_000L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_000L)
 
     composeTestRule.setContent { CommentCard(comment = comment, profileImageUrl = null) }
 

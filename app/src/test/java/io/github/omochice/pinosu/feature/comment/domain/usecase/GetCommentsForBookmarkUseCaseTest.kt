@@ -9,7 +9,6 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -44,8 +43,7 @@ class GetCommentsForBookmarkUseCaseTest {
             id = "relay-1",
             content = "Great bookmark!",
             authorPubkey = "other-pubkey",
-            createdAt = 1_700_000_100L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_100L)
 
     coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
         Result.success(listOf(relayComment))
@@ -61,9 +59,8 @@ class GetCommentsForBookmarkUseCaseTest {
     assertTrue(result.isSuccess)
     val comments = result.getOrNull()!!
     assertEquals(2, comments.size)
-    assertTrue(comments[0].isAuthorComment)
     assertEquals("My bookmark note", comments[0].content)
-    assertFalse(comments[1].isAuthorComment)
+    assertEquals("Great bookmark!", comments[1].content)
   }
 
   @Test
@@ -73,8 +70,7 @@ class GetCommentsForBookmarkUseCaseTest {
             id = "relay-1",
             content = "A comment",
             authorPubkey = "other-pubkey",
-            createdAt = 1_700_000_100L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_100L)
 
     coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
         Result.success(listOf(relayComment))
@@ -90,7 +86,7 @@ class GetCommentsForBookmarkUseCaseTest {
     assertTrue(result.isSuccess)
     val comments = result.getOrNull()!!
     assertEquals(1, comments.size)
-    assertFalse(comments[0].isAuthorComment)
+    assertEquals("A comment", comments[0].content)
   }
 
   @Test
@@ -100,15 +96,13 @@ class GetCommentsForBookmarkUseCaseTest {
             id = "newer",
             content = "Newer",
             authorPubkey = "p1",
-            createdAt = 1_700_000_200L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_200L)
     val older =
         Comment(
             id = "older",
             content = "Older",
             authorPubkey = "p2",
-            createdAt = 1_700_000_100L,
-            isAuthorComment = false)
+            createdAt = 1_700_000_100L)
 
     coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
         Result.success(listOf(newer, older))
@@ -163,7 +157,6 @@ class GetCommentsForBookmarkUseCaseTest {
         assertTrue(result.isSuccess)
         val comments = result.getOrNull()!!
         assertEquals(1, comments.size)
-        assertTrue(comments[0].isAuthorComment)
         assertEquals("This is the referenced text note", comments[0].content)
         assertEquals(1, comments[0].kind)
         assertEquals("note-author-pubkey", comments[0].authorPubkey)
