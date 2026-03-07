@@ -32,11 +32,7 @@ class CommentCardTest {
   fun displaysTimestamp() {
     val timestamp = 1_700_000_000L
     val comment =
-        Comment(
-            id = "c2",
-            content = "Some comment",
-            authorPubkey = "pk1",
-            createdAt = timestamp)
+        Comment(id = "c2", content = "Some comment", authorPubkey = "pk1", createdAt = timestamp)
 
     composeTestRule.setContent { CommentCard(comment = comment) }
 

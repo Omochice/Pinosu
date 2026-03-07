@@ -82,10 +82,7 @@ class BookmarkDetailViewModelTest {
         val comments =
             listOf(
                 Comment(
-                    id = "c1",
-                    content = "Hello",
-                    authorPubkey = "p1",
-                    createdAt = 1_700_000_000L))
+                    id = "c1", content = "Hello", authorPubkey = "p1", createdAt = 1_700_000_000L))
 
         coEvery {
           getCommentsUseCase(
@@ -142,10 +139,7 @@ class BookmarkDetailViewModelTest {
                 createdAt = 1_699_999_999L)
         val relayComment =
             Comment(
-                id = "c1",
-                content = "Reply",
-                authorPubkey = "other-pk",
-                createdAt = 1_700_000_000L)
+                id = "c1", content = "Reply", authorPubkey = "other-pk", createdAt = 1_700_000_000L)
 
         coEvery { getCommentsUseCase(any(), any(), any(), any(), any()) } returns
             Result.success(listOf(authorComment, relayComment))

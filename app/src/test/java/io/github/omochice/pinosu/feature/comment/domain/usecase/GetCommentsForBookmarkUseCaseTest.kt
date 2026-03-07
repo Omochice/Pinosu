@@ -92,17 +92,9 @@ class GetCommentsForBookmarkUseCaseTest {
   @Test
   fun `invoke sorts relay comments by createdAt ascending`() = runTest {
     val newer =
-        Comment(
-            id = "newer",
-            content = "Newer",
-            authorPubkey = "p1",
-            createdAt = 1_700_000_200L)
+        Comment(id = "newer", content = "Newer", authorPubkey = "p1", createdAt = 1_700_000_200L)
     val older =
-        Comment(
-            id = "older",
-            content = "Older",
-            authorPubkey = "p2",
-            createdAt = 1_700_000_100L)
+        Comment(id = "older", content = "Older", authorPubkey = "p2", createdAt = 1_700_000_100L)
 
     coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
         Result.success(listOf(newer, older))
