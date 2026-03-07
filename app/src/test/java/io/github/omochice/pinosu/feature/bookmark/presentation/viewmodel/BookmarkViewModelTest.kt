@@ -6,6 +6,7 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
@@ -324,5 +325,238 @@ class BookmarkViewModelTest {
     val stateAfterDismissUrl = viewModel.uiState.first()
     assertNull("URL dialog should be dismissed", stateAfterDismissUrl.selectedBookmarkForUrlDialog)
     assertNotNull("Error dialog should still be shown", stateAfterDismissUrl.urlOpenError)
+  }
+
+  @Test
+  fun `loadMore appends new items to existing allBookmarks`() = runTest {
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
+    val initialBookmarks =
+        (1..10).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+    val olderBookmarks =
+        (11..15).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
+        {
+          val until = secondArg<Long?>()
+          if (until == null) {
+            Result.success(BookmarkList("test", initialBookmarks, 0L))
+          } else {
+            Result.success(BookmarkList("test", olderBookmarks, 0L))
+          }
+        }
+
+    viewModel.loadBookmarks()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(
+        "allBookmarks should contain both initial and older items", 15, state.allBookmarks.size)
+    assertFalse("isLoadingMore should be false after loading", state.isLoadingMore)
+  }
+
+  @Test
+  fun `loadMore does nothing when isLoadingMore is true`() = runTest {
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
+    val initialBookmarks =
+        (1..10).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+
+    var loadMoreCallCount = 0
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
+        {
+          val until = secondArg<Long?>()
+          if (until == null) {
+            Result.success(BookmarkList("test", initialBookmarks, 0L))
+          } else {
+            loadMoreCallCount++
+            kotlinx.coroutines.delay(1000)
+            Result.success(BookmarkList("test", emptyList(), 0L))
+          }
+        }
+
+    viewModel.loadBookmarks()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    testScheduler.runCurrent()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+
+    assertEquals("loadMore should only trigger one usecase call", 1, loadMoreCallCount)
+  }
+
+  @Test
+  fun `loadMore does nothing when hasMoreItems is false`() = runTest {
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
+    val initialBookmarks =
+        (1..10).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+
+    var loadMoreCallCount = 0
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
+        {
+          val until = secondArg<Long?>()
+          if (until == null) {
+            Result.success(BookmarkList("test", initialBookmarks, 0L))
+          } else {
+            loadMoreCallCount++
+            Result.success(BookmarkList("test", emptyList(), 0L))
+          }
+        }
+
+    viewModel.loadBookmarks()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+
+    assertEquals(
+        "loadMore should only be called once because hasMoreItems becomes false",
+        1,
+        loadMoreCallCount)
+  }
+
+  @Test
+  fun `loadMore sets hasMoreItems to false when fewer items than page size returned`() = runTest {
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
+    val initialBookmarks =
+        (1..10).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+    val fewOlderBookmarks =
+        listOf(
+            BookmarkItem(
+                type = "event",
+                eventId = "id11",
+                title = "Bookmark 11",
+                event =
+                    BookmarkedEvent(
+                        kind = 39_701,
+                        content = "",
+                        author = "author",
+                        createdAt = 1_699_998_000L)))
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
+        {
+          val until = secondArg<Long?>()
+          if (until == null) {
+            Result.success(BookmarkList("test", initialBookmarks, 0L))
+          } else {
+            Result.success(BookmarkList("test", fewOlderBookmarks, 0L))
+          }
+        }
+
+    viewModel.loadBookmarks()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse("hasMoreItems should be false when fewer than page size", state.hasMoreItems)
+  }
+
+  @Test
+  fun `refresh resets hasMoreItems to true`() = runTest {
+    val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
+    val initialBookmarks =
+        (1..10).map { i ->
+          BookmarkItem(
+              type = "event",
+              eventId = "id$i",
+              title = "Bookmark $i",
+              event =
+                  BookmarkedEvent(
+                      kind = 39_701,
+                      content = "",
+                      author = "author",
+                      createdAt = 1_700_000_000L - i * 100))
+        }
+
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any<Long>()) } coAnswers
+        {
+          val until = secondArg<Long?>()
+          if (until == null) {
+            Result.success(BookmarkList("test", initialBookmarks, 0L))
+          } else {
+            Result.success(BookmarkList("test", emptyList(), 0L))
+          }
+        }
+
+    viewModel.loadBookmarks()
+    advanceUntilIdle()
+
+    viewModel.loadMore()
+    advanceUntilIdle()
+    assertFalse(
+        "hasMoreItems should be false after exhausting", viewModel.uiState.first().hasMoreItems)
+
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    assertTrue("hasMoreItems should be true after refresh", viewModel.uiState.first().hasMoreItems)
   }
 }

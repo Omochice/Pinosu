@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -48,6 +51,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Composable function for bookmark list screen
@@ -63,6 +67,7 @@ import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.Bookmar
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
  * @param onBookmarkDetailNavigate Callback when a bookmark card is tapped to navigate to detail
  * @param onLongPressBookmark Callback when a bookmark card is long-pressed with rawJson
+ * @param onLoadMore Callback when user scrolls near the end of the list to load older bookmarks
  * @param isReadOnly Whether to hide write-only UI (FAB) for read-only login
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +81,7 @@ fun BookmarkScreen(
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
     onLongPressBookmark: (String) -> Unit = {},
+    onLoadMore: () -> Unit = {},
     isReadOnly: Boolean = false,
 ) {
   LaunchedEffect(Unit) { onLoad() }
@@ -90,6 +96,14 @@ fun BookmarkScreen(
       onLongPressBookmark(rawJson)
     }
   }
+
+  val callbacks =
+      BookmarkListCallbacks(
+          onRefresh = onRefresh,
+          onClick = onBookmarkDetailNavigate,
+          onLongPress = onBookmarkLongPress,
+          onLoadMore = onLoadMore,
+      )
 
   Scaffold(
       topBar = {
@@ -110,9 +124,7 @@ fun BookmarkScreen(
         BookmarkPager(
             uiState = uiState,
             onTabSelected = onTabSelected,
-            onRefresh = onRefresh,
-            onBookmarkClick = onBookmarkDetailNavigate,
-            onBookmarkLongPress = onBookmarkLongPress,
+            callbacks = callbacks,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
 }
@@ -121,9 +133,7 @@ fun BookmarkScreen(
 private fun BookmarkPager(
     uiState: BookmarkUiState,
     onTabSelected: (BookmarkFilterMode) -> Unit,
-    onRefresh: () -> Unit,
-    onBookmarkClick: (BookmarkItem) -> Unit,
-    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
   val pagerState =
@@ -160,9 +170,7 @@ private fun BookmarkPager(
     BookmarkContent(
         uiState = uiState,
         bookmarks = filteredBookmarks,
-        onRefresh = onRefresh,
-        onBookmarkClick = onBookmarkClick,
-        onBookmarkLongPress = onBookmarkLongPress,
+        callbacks = callbacks,
         modifier = Modifier.fillMaxSize())
   }
 }
@@ -202,65 +210,87 @@ private fun BookmarkTopBar(
 private fun BookmarkContent(
     uiState: BookmarkUiState,
     bookmarks: List<BookmarkItem>,
-    onRefresh: () -> Unit,
-    onBookmarkClick: (BookmarkItem) -> Unit,
-    onBookmarkLongPress: (BookmarkItem) -> Unit,
+    callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
-  PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = onRefresh, modifier = modifier) {
-    when {
-      uiState.isLoading && bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          CircularProgressIndicator()
-        }
-      }
-      uiState.error != null && bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = uiState.error,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error)
+  PullToRefreshBox(
+      isRefreshing = uiState.isLoading, onRefresh = callbacks.onRefresh, modifier = modifier) {
+        when {
+          uiState.isLoading && bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
+            }
+          }
+          uiState.error != null && bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = uiState.error,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error)
+              }
+            }
+          }
+          bookmarks.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              Text(
+                  text = stringResource(R.string.message_no_bookmarks),
+                  style = MaterialTheme.typography.bodyLarge)
+            }
+          }
+          else -> {
+            when (uiState.displayMode) {
+              BookmarkDisplayMode.List ->
+                  BookmarkListView(
+                      bookmarks = bookmarks,
+                      isLoadingMore = uiState.isLoadingMore,
+                      callbacks = callbacks)
+              BookmarkDisplayMode.Grid ->
+                  BookmarkGridView(
+                      bookmarks = bookmarks,
+                      isLoadingMore = uiState.isLoadingMore,
+                      callbacks = callbacks)
+            }
           }
         }
       }
-      bookmarks.isEmpty() -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-              text = stringResource(R.string.message_no_bookmarks),
-              style = MaterialTheme.typography.bodyLarge)
-        }
-      }
-      else -> {
-        when (uiState.displayMode) {
-          BookmarkDisplayMode.List ->
-              BookmarkListView(
-                  bookmarks = bookmarks,
-                  onClick = onBookmarkClick,
-                  onLongPress = onBookmarkLongPress)
-          BookmarkDisplayMode.Grid ->
-              BookmarkGridView(
-                  bookmarks = bookmarks,
-                  onClick = onBookmarkClick,
-                  onLongPress = onBookmarkLongPress)
-        }
-      }
-    }
-  }
 }
 
 @Composable
 private fun BookmarkListView(
     bookmarks: List<BookmarkItem>,
-    onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
+    isLoadingMore: Boolean,
+    callbacks: BookmarkListCallbacks,
 ) {
+  val listState = rememberLazyListState()
+
+  LaunchedEffect(listState) {
+    snapshotFlow {
+          listState.layoutInfo.visibleItemsInfo.lastOrNull()?.let { lastItem ->
+            lastItem.index >= listState.layoutInfo.totalItemsCount - 2
+          } ?: false
+        }
+        .distinctUntilChanged()
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
+  }
+
   LazyColumn(
+      state = listState,
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
-          BookmarkItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+          BookmarkItemCard(
+              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
+        }
+        if (isLoadingMore) {
+          item {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                contentAlignment = Alignment.Center) {
+                  CircularProgressIndicator()
+                }
+          }
         }
       }
 }
@@ -268,17 +298,40 @@ private fun BookmarkListView(
 @Composable
 private fun BookmarkGridView(
     bookmarks: List<BookmarkItem>,
-    onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
+    isLoadingMore: Boolean,
+    callbacks: BookmarkListCallbacks,
 ) {
+  val gridState = rememberLazyStaggeredGridState()
+
+  LaunchedEffect(gridState) {
+    snapshotFlow {
+          gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.let { lastItem ->
+            lastItem.index >= gridState.layoutInfo.totalItemsCount - 2
+          } ?: false
+        }
+        .distinctUntilChanged()
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
+  }
+
   LazyVerticalStaggeredGrid(
+      state = gridState,
       columns = StaggeredGridCells.Adaptive(minSize = 160.dp),
       modifier = Modifier.fillMaxSize(),
       contentPadding = PaddingValues(16.dp),
       verticalItemSpacing = 8.dp,
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
-          BookmarkGridItemCard(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress)
+          BookmarkGridItemCard(
+              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
+        }
+        if (isLoadingMore) {
+          item {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                contentAlignment = Alignment.Center) {
+                  CircularProgressIndicator()
+                }
+          }
         }
       }
 }

@@ -19,8 +19,9 @@ constructor(private val bookmarkRepository: BookmarkRepository) : GetBookmarkLis
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param until Unix timestamp upper bound for pagination (exclusive), null for latest
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun invoke(pubkey: String): Result<BookmarkList?> =
-      bookmarkRepository.getBookmarkList(pubkey)
+  override suspend fun invoke(pubkey: String, until: Long?): Result<BookmarkList?> =
+      bookmarkRepository.getBookmarkList(pubkey, until)
 }

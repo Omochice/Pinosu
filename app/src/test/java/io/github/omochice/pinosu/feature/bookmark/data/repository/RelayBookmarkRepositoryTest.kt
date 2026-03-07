@@ -8,6 +8,7 @@ import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadata
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -158,6 +159,56 @@ class RelayBookmarkRepositoryTest {
     assertTrue("Result should be success", result.isSuccess)
     val items = result.getOrNull()!!.items
     assertEquals("Event with only invalid rTags should be skipped", 0, items.size)
+  }
+
+  @Test
+  fun `getBookmarkList includes until in filter when provided`() = runTest {
+    val event =
+        NostrEvent(
+            id = "eventUntil",
+            pubkey = "pubkeyUntil",
+            createdAt = 1_699_999_000L,
+            kind = NipB0.KIND_BOOKMARK_LIST,
+            tags = listOf(listOf("d", "example.com/old"), listOf("title", "Old Article")),
+            content = "",
+            sig = "sigUntil")
+
+    coEvery { relayListProvider.getRelays() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+    coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+        Result.success(UrlMetadata(title = "Old Title", imageUrl = null))
+
+    val untilTimestamp = 1_700_000_000L
+    repository.getBookmarkList(TEST_VALID_NPUB, until = untilTimestamp)
+
+    coVerify {
+      relayPool.subscribeWithTimeout(
+          any(), match { it.contains("\"until\":$untilTimestamp") }, any())
+    }
+  }
+
+  @Test
+  fun `getBookmarkList does not include until in filter when null`() = runTest {
+    val event =
+        NostrEvent(
+            id = "eventNoUntil",
+            pubkey = "pubkeyNoUntil",
+            createdAt = 1_700_000_000L,
+            kind = NipB0.KIND_BOOKMARK_LIST,
+            tags = listOf(listOf("d", "example.com/new"), listOf("title", "New Article")),
+            content = "",
+            sig = "sigNoUntil")
+
+    coEvery { relayListProvider.getRelays() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+    coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+        Result.success(UrlMetadata(title = "New Title", imageUrl = null))
+
+    repository.getBookmarkList(TEST_VALID_NPUB)
+
+    coVerify { relayPool.subscribeWithTimeout(any(), match { !it.contains("\"until\"") }, any()) }
   }
 
   companion object {

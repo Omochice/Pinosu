@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.bookmark.data.repository.RelayBookmarkRepository.Companion.PAGE_SIZE
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
@@ -70,22 +71,26 @@ constructor(
 
       val userHexPubkey = user.pubkey.hex
 
-      val result = getBookmarkListUseCase(user.pubkey.npub)
+      val result = getBookmarkListUseCase(user.pubkey.npub, until = null)
       result.fold(
           onSuccess = { bookmarkList ->
             val allItems = bookmarkList?.items ?: emptyList()
             _uiState.update { state ->
               state.copy(
                   isLoading = false,
+                  isLoadingMore = false,
                   allBookmarks = allItems,
                   userHexPubkey = userHexPubkey,
+                  hasMoreItems = allItems.size >= PAGE_SIZE,
                   error = null)
             }
           },
           onFailure = { e ->
             _uiState.value =
                 _uiState.value.copy(
-                    isLoading = false, error = e.message ?: "Failed to load bookmarks")
+                    isLoading = false,
+                    isLoadingMore = false,
+                    error = e.message ?: "Failed to load bookmarks")
           })
     }
   }
@@ -138,5 +143,45 @@ constructor(
   /** Dismiss error dialog */
   fun dismissErrorDialog() {
     _uiState.value = _uiState.value.copy(urlOpenError = null)
+  }
+
+  /**
+   * Load older bookmarks for infinite scroll pagination
+   *
+   * Uses the oldest bookmark's createdAt as the `until` cursor to fetch the next page. Appends new
+   * items to the existing list and deduplicates by eventId.
+   */
+  fun loadMore() {
+    val currentState = _uiState.value
+    if (currentState.isLoadingMore || !currentState.hasMoreItems) return
+
+    val oldestCreatedAt =
+        currentState.allBookmarks.mapNotNull { it.event?.createdAt }.minOrNull() ?: return
+
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoadingMore = true) }
+
+      val user =
+          getLoginStateUseCase()
+              ?: run {
+                _uiState.update { it.copy(isLoadingMore = false) }
+                return@launch
+              }
+
+      val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt - 1)
+      result.fold(
+          onSuccess = { bookmarkList ->
+            val newItems = bookmarkList?.items ?: emptyList()
+            _uiState.update { state ->
+              val existingIds = state.allBookmarks.mapNotNull { it.eventId }.toSet()
+              val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+              state.copy(
+                  isLoadingMore = false,
+                  allBookmarks = state.allBookmarks + uniqueNewItems,
+                  hasMoreItems = newItems.size >= PAGE_SIZE)
+            }
+          },
+          onFailure = { _uiState.update { it.copy(isLoadingMore = false) } })
+    }
   }
 }

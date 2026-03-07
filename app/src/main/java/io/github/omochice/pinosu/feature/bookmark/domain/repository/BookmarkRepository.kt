@@ -14,9 +14,10 @@ interface BookmarkRepository {
    * Retrieve bookmark list for the specified public key
    *
    * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
+   * @param until Unix timestamp upper bound for pagination (exclusive), null for latest
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  suspend fun getBookmarkList(pubkey: String): Result<BookmarkList?>
+  suspend fun getBookmarkList(pubkey: String, until: Long? = null): Result<BookmarkList?>
 
   /**
    * Create an unsigned bookmark event
