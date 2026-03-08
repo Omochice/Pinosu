@@ -1,15 +1,12 @@
 package io.github.omochice.pinosu.core.relay
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.omochice.pinosu.core.model.NostrEvent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class FakeRelayPoolTest {
 
   private lateinit var fakeRelayPool: FakeRelayPool
