@@ -52,14 +52,15 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 ### Nostr Integration
 
 - **Amethyst Quartz**: com.vitorpamplona.quartz:quartz (v1.05.1)
+- **NIP-B0**: Bookmark list protocol (Kind 39701); constants in `core/nip/nipb0/NipB0`
 - **NIP-01**: User metadata fetching from kind 0 events; in-memory cached batch profile fetcher (`Nip01ProfileFetcher`)
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
-- **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references
+- **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references; constants in `core/nip/nip22/Nip22`
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
-- **Event Types**: Kind 0 (NIP-01 user metadata), Kind 39701 (bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
+- **Event Types**: Kind 0 (NIP-01 user metadata), Kind 39701 (NIP-B0 bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
 - **Auth Modes**: `LoginMode` sealed interface (`Nip55Signer` for full access, `ReadOnly` for browse-only via npub entry)
 
 ### Serialization
@@ -117,7 +118,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations
 - **Code Coverage**: Kover for unit test coverage, Jacoco for instrumentation test reports
 - **Version Tracking**: BuildConfig.COMMIT_HASH for git commit identification
-- **License Management**: AboutLibraries 13.2.1 for open-source license display
+- **License Management**: AboutLibraries 14.0.0-b02 for open-source license display
 
 ### Development Tooling
 
@@ -128,4 +129,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-03-02 - Added NIP-01 profile fetching; tombi TOML formatter to tooling_
+_Updated: 2026-03-08 - AboutLibraries 14.0.0-b02; added NIP-B0 and nip22/ constants to NIP section_
