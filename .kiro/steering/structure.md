@@ -117,7 +117,8 @@ feature/{name}/
 │   ├── local/       // DataStore sources
 │   └── metadata/    // External data fetching
 ├── presentation/
-│   ├── viewmodel/   // ViewModel + *UiState.kt files
+│   ├── viewmodel/   // ViewModel + *UiState.kt files (default)
+│   ├── model/       // *UiState.kt only, for simple features without ViewModel (e.g., appinfo)
 │   └── ui/          // Compose screens
 └── di/              // Feature-scoped Hilt module
 ```
@@ -136,8 +137,10 @@ feature/{name}/
 - `nip/` - Nostr protocol implementations
     - `nip01/` - NIP-01 user metadata fetcher (kind 0, cached batch)
     - `nip19/` - NIP-19 Bech32 entity resolver
+    - `nip22/` - NIP-22 protocol constants (Kind 1111 comments)
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
+    - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
@@ -182,8 +185,10 @@ io.github.omochice.pinosu/
 │   ├── nip/                 // NIP protocol implementations
 │   │   ├── nip01/           // User metadata fetcher (kind 0)
 │   │   ├── nip19/           // Bech32 entity resolver
+│   │   ├── nip22/           // NIP-22 constants (kind 1111)
 │   │   ├── nip55/           // Signer client
-│   │   └── nip65/           // Relay list fetcher
+│   │   ├── nip65/           // Relay list fetcher
+│   │   └── nipb0/           // NIP-B0 constants (kind 39701)
 │   ├── relay/               // RelayPool, PublishResult
 │   ├── timestamp/           // Timestamp formatting (java.time)
 │   └── ui/                  // UiText abstraction
@@ -217,4 +222,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-03-02 - Added nip01/ to core/nip/; UserProfile to core/model/_
+_Updated: 2026-03-08 - Added nip22/ and nipb0/ to core/nip/; noted presentation/model/ pattern for viewmodel-free features_
