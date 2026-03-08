@@ -106,7 +106,9 @@ fun AppInfoScreen(uiState: AppInfoUiState, onNavigateUp: () -> Unit) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          RepositorySection(onOpenUrl = { uriHandler.openUri(it) })
+          val repositoryUrl = stringResource(R.string.url_repository)
+          RepositorySection(
+              repositoryUrl = repositoryUrl, onOpenUrl = { uriHandler.openUri(repositoryUrl) })
         }
       }
 }
@@ -127,17 +129,16 @@ private fun VersionSection(versionDisplayText: String, onCopyVersion: () -> Unit
 
 /** Displays the repository label and a clickable URL that opens in the browser. */
 @Composable
-private fun RepositorySection(onOpenUrl: (String) -> Unit) {
+private fun RepositorySection(repositoryUrl: String, onOpenUrl: () -> Unit) {
   Text(
       text = stringResource(R.string.label_repository),
       style = MaterialTheme.typography.titleMedium)
-  val repositoryUrl = stringResource(R.string.url_repository)
   Text(
       text = repositoryUrl,
       style =
           MaterialTheme.typography.bodyLarge.copy(
               color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline),
-      modifier = Modifier.clickable { onOpenUrl(repositoryUrl) })
+      modifier = Modifier.clickable { onOpenUrl() })
 }
 
 /**
