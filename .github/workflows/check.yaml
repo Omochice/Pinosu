@@ -149,7 +149,7 @@ jobs:
           name: reports
           path: app/build/reports/
   instrumentation-test:
-    timeout-minutes: 15
+    timeout-minutes: 20
     name: Test Android E2E
     needs: path-filter
     if: needs.path-filter.outputs.android == 'true'
