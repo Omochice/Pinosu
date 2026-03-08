@@ -76,6 +76,7 @@ android {
     buildConfig = true
     compose = true
   }
+  testFixtures { enable = true }
   testOptions { unitTests.isReturnDefaultValues = true }
   packaging {
     resources {
@@ -134,11 +135,16 @@ dependencies {
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
 
+  // Compose compiler plugin is applied module-wide; testFixtures needs the runtime on classpath
+  testFixturesImplementation(platform(libs.androidx.compose.bom))
+  testFixturesImplementation("androidx.compose.runtime:runtime")
+  testImplementation(testFixtures(project(":app")))
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
   testImplementation(libs.archunit)
+  androidTestImplementation(testFixtures(project(":app")))
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
