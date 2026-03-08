@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/Omochice/Pinosu/compare/v0.12.0...v0.13.0) (2026-03-08)
+
+
+### Features
+
+* add repository link to app info screen ([#309](https://github.com/Omochice/Pinosu/issues/309)) ([6ac3d93](https://github.com/Omochice/Pinosu/commit/6ac3d939bdd2dd6e730f9ff8b8da9c0476d7f25b))
+
+
+### Bug Fixes
+
+* remove author comment special styling ([#308](https://github.com/Omochice/Pinosu/issues/308)) ([8a5ef7f](https://github.com/Omochice/Pinosu/commit/8a5ef7fb148649170c7d4867d15501c02023f71e))
+
 ## [0.12.0](https://github.com/Omochice/Pinosu/compare/v0.11.0...v0.12.0) (2026-03-07)
 
 
