@@ -1,13 +1,18 @@
 package io.github.omochice.pinosu
 
+import android.app.LocaleManager
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.AlertDialog
@@ -68,6 +73,7 @@ import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
 import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractSharedContentUseCase
 import io.github.omochice.pinosu.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -79,7 +85,7 @@ import kotlinx.coroutines.launch
  * mode observation for applying user's theme preference.
  */
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
   private val loginViewModel: LoginViewModel by viewModels()
 
@@ -96,6 +102,27 @@ class MainActivity : AppCompatActivity() {
 
   @androidx.annotation.VisibleForTesting internal var contentConsumed = false
 
+  override fun attachBaseContext(newBase: Context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      val prefs = newBase.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      val languageValue = prefs.getString(KEY_LANGUAGE_MODE, null)
+      val locale =
+          when (languageValue) {
+            LanguageMode.English.name -> Locale.ENGLISH
+            LanguageMode.Japanese.name -> Locale.JAPANESE
+            else -> null
+          }
+      if (locale != null) {
+        Locale.setDefault(locale)
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocales(LocaleList(locale))
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+        return
+      }
+    }
+    super.attachBaseContext(newBase)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
@@ -111,14 +138,24 @@ class MainActivity : AppCompatActivity() {
       val themeMode by observeThemeModeUseCase().collectAsStateWithLifecycle()
       val languageMode by observeLanguageModeUseCase().collectAsStateWithLifecycle()
 
+      // Skip the initial emission to avoid unnecessary recreate() on launch;
+      // attachBaseContext already applied the saved locale for API < 33.
+      var appliedLanguageOnce by remember { mutableStateOf(false) }
       LaunchedEffect(languageMode) {
-        val localeList =
-            when (languageMode) {
-              LanguageMode.System -> androidx.core.os.LocaleListCompat.getEmptyLocaleList()
-              LanguageMode.English -> androidx.core.os.LocaleListCompat.forLanguageTags("en")
-              LanguageMode.Japanese -> androidx.core.os.LocaleListCompat.forLanguageTags("ja")
-            }
-        androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(localeList)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          val localeList =
+              when (languageMode) {
+                LanguageMode.System -> LocaleList.getEmptyLocaleList()
+                LanguageMode.English -> LocaleList.forLanguageTags("en")
+                LanguageMode.Japanese -> LocaleList.forLanguageTags("ja")
+              }
+          getSystemService(LocaleManager::class.java).applicationLocales = localeList
+        } else {
+          if (appliedLanguageOnce) {
+            recreate()
+          }
+          appliedLanguageOnce = true
+        }
       }
 
       PinosuTheme(themeMode = themeMode) {
@@ -148,6 +185,8 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
     private const val KEY_CONTENT_CONSUMED = "shared_content_consumed"
+    private const val PREFS_NAME = "pinosu_settings"
+    private const val KEY_LANGUAGE_MODE = "language_mode"
   }
 }
 
