@@ -1,10 +1,13 @@
 package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -29,8 +32,11 @@ class SettingsViewModelTest {
   private lateinit var setDisplayModeUseCase: SetDisplayModeUseCase
   private lateinit var observeThemeModeUseCase: ObserveThemeModeUseCase
   private lateinit var setThemeModeUseCase: SetThemeModeUseCase
+  private lateinit var observeLanguageModeUseCase: ObserveLanguageModeUseCase
+  private lateinit var setLanguageModeUseCase: SetLanguageModeUseCase
   private lateinit var displayModeFlow: MutableStateFlow<BookmarkDisplayMode>
   private lateinit var themeModeFlow: MutableStateFlow<ThemeMode>
+  private lateinit var languageModeFlow: MutableStateFlow<LanguageMode>
   private val testDispatcher = StandardTestDispatcher()
 
   @Before
@@ -38,12 +44,16 @@ class SettingsViewModelTest {
     Dispatchers.setMain(testDispatcher)
     displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
     themeModeFlow = MutableStateFlow(ThemeMode.System)
+    languageModeFlow = MutableStateFlow(LanguageMode.System)
     observeDisplayModeUseCase = mockk()
     every { observeDisplayModeUseCase() } returns displayModeFlow
     setDisplayModeUseCase = mockk(relaxed = true)
     observeThemeModeUseCase = mockk()
     every { observeThemeModeUseCase() } returns themeModeFlow
     setThemeModeUseCase = mockk(relaxed = true)
+    observeLanguageModeUseCase = mockk()
+    every { observeLanguageModeUseCase() } returns languageModeFlow
+    setLanguageModeUseCase = mockk(relaxed = true)
   }
 
   @After
@@ -56,7 +66,9 @@ class SettingsViewModelTest {
           observeDisplayModeUseCase,
           setDisplayModeUseCase,
           observeThemeModeUseCase,
-          setThemeModeUseCase)
+          setThemeModeUseCase,
+          observeLanguageModeUseCase,
+          setLanguageModeUseCase)
 
   @Test
   fun `initial state loads display mode from observed flow`() = runTest {
@@ -146,5 +158,50 @@ class SettingsViewModelTest {
     testDispatcher.scheduler.advanceUntilIdle()
 
     assertEquals(ThemeMode.Dark, viewModel.uiState.first().themeMode)
+  }
+
+  @Test
+  fun `initial state loads language mode from observed flow`() = runTest {
+    languageModeFlow.value = LanguageMode.English
+
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(LanguageMode.English, state.languageMode)
+  }
+
+  @Test
+  fun `initial state defaults to System when language mode flow emits System`() = runTest {
+    languageModeFlow.value = LanguageMode.System
+
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(LanguageMode.System, state.languageMode)
+  }
+
+  @Test
+  fun `setLanguageMode calls use case`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.setLanguageMode(LanguageMode.Japanese)
+
+    verify { setLanguageModeUseCase(LanguageMode.Japanese) }
+  }
+
+  @Test
+  fun `language mode state updates when observed flow emits new value`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(LanguageMode.System, viewModel.uiState.first().languageMode)
+
+    languageModeFlow.value = LanguageMode.Japanese
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(LanguageMode.Japanese, viewModel.uiState.first().languageMode)
   }
 }
