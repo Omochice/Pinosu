@@ -48,7 +48,6 @@ object SettingsModule {
   fun provideSetLanguageModeUseCase(impl: SetLanguageModeUseCaseImpl): SetLanguageModeUseCase = impl
 
   @Provides
-  fun provideObserveLanguageModeUseCase(
-      impl: ObserveLanguageModeUseCaseImpl
-  ): ObserveLanguageModeUseCase = impl
+  fun provideObserveLanguageMode(impl: ObserveLanguageModeUseCaseImpl): ObserveLanguageModeUseCase =
+      impl
 }
