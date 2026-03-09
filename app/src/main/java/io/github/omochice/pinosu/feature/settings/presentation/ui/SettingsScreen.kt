@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsUiState
 
@@ -37,6 +38,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onNavigateUp Callback when back navigation is triggered
  * @param onDisplayModeChange Callback when display mode is changed
  * @param onThemeModeChange Callback when theme mode is changed
+ * @param onLanguageModeChange Callback when language mode is changed
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -45,6 +47,7 @@ fun SettingsScreen(
     onNavigateUp: () -> Unit,
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
+    onLanguageModeChange: (LanguageMode) -> Unit,
 ) {
   Scaffold(
       topBar = {
@@ -101,6 +104,31 @@ fun SettingsScreen(
                 onClick = { onThemeModeChange(ThemeMode.Dark) },
                 label = { Text(stringResource(R.string.theme_mode_dark)) })
           }
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          Text(
+              text = stringResource(R.string.settings_language_mode),
+              style = MaterialTheme.typography.titleMedium)
+
+          Spacer(modifier = Modifier.height(8.dp))
+
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = uiState.languageMode == LanguageMode.System,
+                onClick = { onLanguageModeChange(LanguageMode.System) },
+                label = { Text(stringResource(R.string.language_mode_system)) })
+
+            FilterChip(
+                selected = uiState.languageMode == LanguageMode.English,
+                onClick = { onLanguageModeChange(LanguageMode.English) },
+                label = { Text(stringResource(R.string.language_mode_english)) })
+
+            FilterChip(
+                selected = uiState.languageMode == LanguageMode.Japanese,
+                onClick = { onLanguageModeChange(LanguageMode.Japanese) },
+                label = { Text(stringResource(R.string.language_mode_japanese)) })
+          }
         }
       }
 }
@@ -112,7 +140,8 @@ private fun SettingsScreenPreview() {
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.List),
       onNavigateUp = {},
       onDisplayModeChange = {},
-      onThemeModeChange = {})
+      onThemeModeChange = {},
+      onLanguageModeChange = {})
 }
 
 @Preview(showBackground = true)
@@ -122,5 +151,6 @@ private fun SettingsScreenGridPreview() {
       uiState = SettingsUiState(displayMode = BookmarkDisplayMode.Grid),
       onNavigateUp = {},
       onDisplayModeChange = {},
-      onThemeModeChange = {})
+      onThemeModeChange = {},
+      onLanguageModeChange = {})
 }

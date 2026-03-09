@@ -2,12 +2,12 @@ package io.github.omochice.pinosu
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.AlertDialog
@@ -449,7 +449,8 @@ fun PinosuApp(
                     uiState = settingsUiState,
                     onNavigateUp = { navController.navigateUp() },
                     onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) },
-                    onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) })
+                    onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) },
+                    onLanguageModeChange = { mode -> settingsViewModel.setLanguageMode(mode) })
               }
         }
       }

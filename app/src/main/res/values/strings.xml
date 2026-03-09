@@ -93,6 +93,10 @@
     <string name="theme_mode_system">システム設定に従う</string>
     <string name="theme_mode_light">ライト</string>
     <string name="theme_mode_dark">ダーク</string>
+    <string name="settings_language_mode">言語</string>
+    <string name="language_mode_system">システム設定に従う</string>
+    <string name="language_mode_english">英語</string>
+    <string name="language_mode_japanese">日本語</string>
 
     <!-- ブックマーク詳細画面 -->
     <string name="title_bookmark_detail">ブックマーク詳細</string>
