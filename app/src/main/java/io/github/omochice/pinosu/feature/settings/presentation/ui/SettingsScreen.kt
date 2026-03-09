@@ -40,7 +40,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onThemeModeChange Callback when theme mode is changed
  * @param onLanguageModeChange Callback when language mode is changed
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
@@ -61,76 +61,93 @@ fun SettingsScreen(
               }
             })
       }) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)) {
-          Text(
-              text = stringResource(R.string.settings_display_mode),
-              style = MaterialTheme.typography.titleMedium)
-
-          Spacer(modifier = Modifier.height(8.dp))
-
-          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = uiState.displayMode == BookmarkDisplayMode.List,
-                onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
-                label = { Text(stringResource(R.string.display_mode_list)) })
-
-            FilterChip(
-                selected = uiState.displayMode == BookmarkDisplayMode.Grid,
-                onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
-                label = { Text(stringResource(R.string.display_mode_grid)) })
-          }
-
-          Spacer(modifier = Modifier.height(24.dp))
-
-          Text(
-              text = stringResource(R.string.settings_theme_mode),
-              style = MaterialTheme.typography.titleMedium)
-
-          Spacer(modifier = Modifier.height(8.dp))
-
-          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = uiState.themeMode == ThemeMode.System,
-                onClick = { onThemeModeChange(ThemeMode.System) },
-                label = { Text(stringResource(R.string.theme_mode_system)) })
-
-            FilterChip(
-                selected = uiState.themeMode == ThemeMode.Light,
-                onClick = { onThemeModeChange(ThemeMode.Light) },
-                label = { Text(stringResource(R.string.theme_mode_light)) })
-
-            FilterChip(
-                selected = uiState.themeMode == ThemeMode.Dark,
-                onClick = { onThemeModeChange(ThemeMode.Dark) },
-                label = { Text(stringResource(R.string.theme_mode_dark)) })
-          }
-
-          Spacer(modifier = Modifier.height(24.dp))
-
-          Text(
-              text = stringResource(R.string.settings_language_mode),
-              style = MaterialTheme.typography.titleMedium)
-
-          Spacer(modifier = Modifier.height(8.dp))
-
-          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = uiState.languageMode == LanguageMode.System,
-                onClick = { onLanguageModeChange(LanguageMode.System) },
-                label = { Text(stringResource(R.string.language_mode_system)) })
-
-            FilterChip(
-                selected = uiState.languageMode == LanguageMode.English,
-                onClick = { onLanguageModeChange(LanguageMode.English) },
-                label = { Text(stringResource(R.string.language_mode_english)) })
-
-            FilterChip(
-                selected = uiState.languageMode == LanguageMode.Japanese,
-                onClick = { onLanguageModeChange(LanguageMode.Japanese) },
-                label = { Text(stringResource(R.string.language_mode_japanese)) })
-          }
-        }
+        SettingsContent(
+            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp),
+            uiState = uiState,
+            onDisplayModeChange = onDisplayModeChange,
+            onThemeModeChange = onThemeModeChange,
+            onLanguageModeChange = onLanguageModeChange)
       }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SettingsContent(
+    modifier: Modifier = Modifier,
+    uiState: SettingsUiState,
+    onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
+    onThemeModeChange: (ThemeMode) -> Unit,
+    onLanguageModeChange: (LanguageMode) -> Unit,
+) {
+  Column(modifier = modifier) {
+    Text(
+        text = stringResource(R.string.settings_display_mode),
+        style = MaterialTheme.typography.titleMedium)
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      FilterChip(
+          selected = uiState.displayMode == BookmarkDisplayMode.List,
+          onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
+          label = { Text(stringResource(R.string.display_mode_list)) })
+
+      FilterChip(
+          selected = uiState.displayMode == BookmarkDisplayMode.Grid,
+          onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
+          label = { Text(stringResource(R.string.display_mode_grid)) })
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    Text(
+        text = stringResource(R.string.settings_theme_mode),
+        style = MaterialTheme.typography.titleMedium)
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      FilterChip(
+          selected = uiState.themeMode == ThemeMode.System,
+          onClick = { onThemeModeChange(ThemeMode.System) },
+          label = { Text(stringResource(R.string.theme_mode_system)) })
+
+      FilterChip(
+          selected = uiState.themeMode == ThemeMode.Light,
+          onClick = { onThemeModeChange(ThemeMode.Light) },
+          label = { Text(stringResource(R.string.theme_mode_light)) })
+
+      FilterChip(
+          selected = uiState.themeMode == ThemeMode.Dark,
+          onClick = { onThemeModeChange(ThemeMode.Dark) },
+          label = { Text(stringResource(R.string.theme_mode_dark)) })
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    Text(
+        text = stringResource(R.string.settings_language_mode),
+        style = MaterialTheme.typography.titleMedium)
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      FilterChip(
+          selected = uiState.languageMode == LanguageMode.System,
+          onClick = { onLanguageModeChange(LanguageMode.System) },
+          label = { Text(stringResource(R.string.language_mode_system)) })
+
+      FilterChip(
+          selected = uiState.languageMode == LanguageMode.English,
+          onClick = { onLanguageModeChange(LanguageMode.English) },
+          label = { Text(stringResource(R.string.language_mode_english)) })
+
+      FilterChip(
+          selected = uiState.languageMode == LanguageMode.Japanese,
+          onClick = { onLanguageModeChange(LanguageMode.Japanese) },
+          label = { Text(stringResource(R.string.language_mode_japanese)) })
+    }
+  }
 }
 
 @Preview(showBackground = true)
