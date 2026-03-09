@@ -3,7 +3,9 @@ package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,7 +28,9 @@ class BookmarkScreenReadOnlyTest {
           isReadOnly = false)
     }
 
-    composeTestRule.onNodeWithContentDescription("ブックマークを追加").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_add_bookmark))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -39,6 +43,8 @@ class BookmarkScreenReadOnlyTest {
           isReadOnly = true)
     }
 
-    composeTestRule.onNodeWithContentDescription("ブックマークを追加").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_add_bookmark))
+        .assertDoesNotExist()
   }
 }

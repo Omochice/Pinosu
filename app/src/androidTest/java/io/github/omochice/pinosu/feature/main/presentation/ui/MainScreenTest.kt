@@ -4,7 +4,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.MainUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -28,7 +30,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.button_logout)).assertIsDisplayed()
   }
 
   @Test
@@ -51,7 +53,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("未ログイン").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.text_not_logged_in)).assertIsDisplayed()
   }
 
   @Test
@@ -63,7 +65,7 @@ class MainScreenTest {
     val onLogout = { logoutCallbackCalled = true }
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
-    composeTestRule.onNodeWithText("ログアウト").performClick()
+    composeTestRule.onNodeWithText(getTestString(R.string.button_logout)).performClick()
 
     assertTrue("onLogoutコールバックが呼ばれませんでした", logoutCallbackCalled)
   }
@@ -76,7 +78,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.message_logging_out)).assertIsDisplayed()
   }
 
   /** Best Practice: Prevent double-click during logout */
@@ -91,7 +93,7 @@ class MainScreenTest {
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
 
     // Button is not shown during logout processing（only loading message shown）
-    composeTestRule.onNodeWithText("ログアウト中...").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.message_logging_out)).assertIsDisplayed()
 
     // Verify logout button is not clickable（since it doesn't exist）
     assertFalse("ログアウト処理中はonLogoutコールバックが呼ばれてはいけません", logoutCallbackCalled)
@@ -174,7 +176,7 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログイン済み").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.text_logged_in)).assertIsDisplayed()
   }
 
   @Test
@@ -184,6 +186,6 @@ class MainScreenTest {
 
     composeTestRule.setContent { MainScreen(uiState = notLoggedInState, onLogout = {}) }
 
-    composeTestRule.onNodeWithText("ログアウト").assertDoesNotExist()
+    composeTestRule.onNodeWithText(getTestString(R.string.button_logout)).assertDoesNotExist()
   }
 }

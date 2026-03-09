@@ -8,7 +8,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +35,9 @@ class AppInfoScreenTest {
 
     composeTestRule.setContent { AppInfoScreen(uiState = uiState, onNavigateUp = {}) }
 
-    composeTestRule.onNodeWithContentDescription("バージョン情報をコピー").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_copy_version))
+        .assertIsDisplayed()
   }
 
   @Test
