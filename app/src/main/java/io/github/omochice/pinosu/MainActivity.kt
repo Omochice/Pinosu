@@ -59,6 +59,8 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
@@ -87,6 +89,8 @@ class MainActivity : AppCompatActivity() {
 
   @Inject lateinit var observeThemeModeUseCase: ObserveThemeModeUseCase
 
+  @Inject lateinit var observeLanguageModeUseCase: ObserveLanguageModeUseCase
+
   @androidx.annotation.VisibleForTesting
   internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
 
@@ -105,6 +109,17 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       val themeMode by observeThemeModeUseCase().collectAsStateWithLifecycle()
+      val languageMode by observeLanguageModeUseCase().collectAsStateWithLifecycle()
+
+      LaunchedEffect(languageMode) {
+        val localeList =
+            when (languageMode) {
+              LanguageMode.System -> androidx.core.os.LocaleListCompat.getEmptyLocaleList()
+              LanguageMode.English -> androidx.core.os.LocaleListCompat.forLanguageTags("en")
+              LanguageMode.Japanese -> androidx.core.os.LocaleListCompat.forLanguageTags("ja")
+            }
+        androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(localeList)
+      }
 
       PinosuTheme(themeMode = themeMode) {
         PinosuApp(
