@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,6 +35,11 @@ constructor(@param:ApplicationContext private val context: Context) {
 
   /** Observable StateFlow of theme mode preference */
   val themeModeFlow: StateFlow<ThemeMode> = _themeModeFlow.asStateFlow()
+
+  private val _languageModeFlow = MutableStateFlow(getLanguageMode())
+
+  /** Observable StateFlow of language mode preference */
+  val languageModeFlow: StateFlow<LanguageMode> = _languageModeFlow.asStateFlow()
 
   /**
    * Retrieve bookmark display mode preference.
@@ -83,9 +89,34 @@ constructor(@param:ApplicationContext private val context: Context) {
     _themeModeFlow.value = mode
   }
 
+  /**
+   * Retrieve language mode preference.
+   *
+   * @return Stored language mode, defaults to System if not set or invalid
+   */
+  fun getLanguageMode(): LanguageMode {
+    val value = sharedPreferences.getString(KEY_LANGUAGE_MODE, null)
+    return try {
+      value?.let { LanguageMode.valueOf(it) } ?: LanguageMode.System
+    } catch (_: IllegalArgumentException) {
+      LanguageMode.System
+    }
+  }
+
+  /**
+   * Save language mode preference and emit to observers.
+   *
+   * @param mode Language mode to save
+   */
+  fun setLanguageMode(mode: LanguageMode) {
+    sharedPreferences.edit().putString(KEY_LANGUAGE_MODE, mode.name).apply()
+    _languageModeFlow.value = mode
+  }
+
   companion object {
     private const val PREFS_NAME = "pinosu_settings"
     internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
     internal const val KEY_THEME_MODE = "theme_mode"
+    internal const val KEY_LANGUAGE_MODE = "language_mode"
   }
 }

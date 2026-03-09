@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.mockk.every
 import io.mockk.mockk
@@ -175,5 +176,78 @@ class LocalSettingsDataSourceTest {
     val newDataSource = LocalSettingsDataSource(context)
 
     assertEquals(ThemeMode.Dark, newDataSource.themeModeFlow.value)
+  }
+
+  @Test
+  fun `getLanguageMode returns System when no value is stored`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null) } returns
+        null
+
+    val result = dataSource.getLanguageMode()
+
+    assertEquals(LanguageMode.System, result)
+  }
+
+  @Test
+  fun `getLanguageMode returns English when stored value is English`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null) } returns
+        "English"
+
+    val result = dataSource.getLanguageMode()
+
+    assertEquals(LanguageMode.English, result)
+  }
+
+  @Test
+  fun `getLanguageMode returns Japanese when stored value is Japanese`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null) } returns
+        "Japanese"
+
+    val result = dataSource.getLanguageMode()
+
+    assertEquals(LanguageMode.Japanese, result)
+  }
+
+  @Test
+  fun `getLanguageMode returns System when stored value is invalid`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null) } returns
+        "InvalidValue"
+
+    val result = dataSource.getLanguageMode()
+
+    assertEquals(LanguageMode.System, result)
+  }
+
+  @Test
+  fun `setLanguageMode saves English value`() {
+    dataSource.setLanguageMode(LanguageMode.English)
+
+    verify { editor.putString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, "English") }
+    verify { editor.apply() }
+  }
+
+  @Test
+  fun `setLanguageMode saves Japanese value`() {
+    dataSource.setLanguageMode(LanguageMode.Japanese)
+
+    verify { editor.putString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, "Japanese") }
+    verify { editor.apply() }
+  }
+
+  @Test
+  fun `setLanguageMode updates languageModeFlow with new value`() {
+    dataSource.setLanguageMode(LanguageMode.Japanese)
+
+    assertEquals(LanguageMode.Japanese, dataSource.languageModeFlow.value)
+  }
+
+  @Test
+  fun `languageModeFlow is initialized with stored value on construction`() {
+    every { sharedPreferences.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null) } returns
+        "Japanese"
+
+    val newDataSource = LocalSettingsDataSource(context)
+
+    assertEquals(LanguageMode.Japanese, newDataSource.languageModeFlow.value)
   }
 }
