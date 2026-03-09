@@ -110,6 +110,14 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Exhaustive When**: Sealed interfaces enable exhaustive when expressions for type-safe state handling
 - **State Variants**: Common states include `Idle`, `Loading`, `Success`, and nested `Error` sealed interfaces
 
+### Release Build
+
+- **R8 Minification**: `isMinifyEnabled = true` for release builds; dead code removal reduces APK size
+- **Resource Shrinking**: `isShrinkResources = true` for release builds
+- **Obfuscation**: Disabled by Quartz consumer ProGuard rules (class names preserved)
+- **ProGuard Rules**: `app/proguard-rules.pro` — suppresses optional re2j warnings from Jsoup; preserves `SourceFile` and `LineNumberTable` for readable crash stack traces
+- **Retracing**: Original file names preserved (no `-renamesourcefileattribute`) to support AGP's automatic `r8-map-id` injection for mapping file retracing
+
 ### Code Quality
 
 - **Documentation**: Public APIs documented with KDoc comments
@@ -129,4 +137,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-03-08 - AboutLibraries 14.0.0-b02; added NIP-B0 and nip22/ constants to NIP section_
+_Updated: 2026-03-09 - Added Release Build section (R8 minification, resource shrinking, ProGuard rules)_
