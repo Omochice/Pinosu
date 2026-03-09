@@ -2,7 +2,7 @@ package io.github.omochice.pinosu
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -77,7 +77,7 @@ import kotlinx.coroutines.launch
  * mode observation for applying user's theme preference.
  */
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
   private val loginViewModel: LoginViewModel by viewModels()
 
