@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.settings.data.repository
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.data.local.LocalSettingsDataSource
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import javax.inject.Inject
@@ -22,6 +23,8 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override val themeModeFlow: StateFlow<ThemeMode> = localSettingsDataSource.themeModeFlow
 
+  override val languageModeFlow: StateFlow<LanguageMode> = localSettingsDataSource.languageModeFlow
+
   override fun getDisplayMode(): BookmarkDisplayMode = localSettingsDataSource.getDisplayMode()
 
   override fun setDisplayMode(mode: BookmarkDisplayMode) {
@@ -32,5 +35,11 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override fun setThemeMode(mode: ThemeMode) {
     localSettingsDataSource.setThemeMode(mode)
+  }
+
+  override fun getLanguageMode(): LanguageMode = localSettingsDataSource.getLanguageMode()
+
+  override fun setLanguageMode(mode: LanguageMode) {
+    localSettingsDataSource.setLanguageMode(mode)
   }
 }
