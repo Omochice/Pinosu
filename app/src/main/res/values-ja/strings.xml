@@ -69,6 +69,15 @@
     <string name="language_mode_english">英語</string>
     <string name="language_mode_japanese">日本語</string>
 
+    <string name="title_post_bookmark">ブックマークを追加</string>
+    <string name="label_title">タイトル</string>
+    <string name="hint_bookmark_title">ブックマークのタイトル</string>
+    <string name="label_categories">カテゴリ</string>
+    <string name="hint_categories_help">カンマ区切りで複数入力できます</string>
+    <string name="label_comment">コメント</string>
+    <string name="hint_bookmark_comment">ブックマークについてのメモ</string>
+    <string name="button_submit_bookmark">投稿する</string>
+
     <string name="title_bookmark_detail">ブックマーク詳細</string>
     <string name="hint_comment_input">コメントを入力</string>
     <string name="button_post_comment">投稿</string>

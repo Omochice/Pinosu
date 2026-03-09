@@ -74,6 +74,15 @@
     <string name="language_mode_english">English</string>
     <string name="language_mode_japanese">Japanese</string>
 
+    <string name="title_post_bookmark">Add Bookmark</string>
+    <string name="label_title">Title</string>
+    <string name="hint_bookmark_title">Bookmark title</string>
+    <string name="label_categories">Categories</string>
+    <string name="hint_categories_help">Separate with commas</string>
+    <string name="label_comment">Comment</string>
+    <string name="hint_bookmark_comment">Notes about this bookmark</string>
+    <string name="button_submit_bookmark">Post</string>
+
     <string name="title_bookmark_detail">Bookmark Detail</string>
     <string name="hint_comment_input">Enter a comment</string>
     <string name="button_post_comment">Post</string>

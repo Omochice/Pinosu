@@ -26,10 +26,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
 import io.github.omochice.pinosu.ui.component.ErrorDialog
 
@@ -60,18 +62,23 @@ fun PostBookmarkScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("ブックマークを追加") },
+            title = { Text(stringResource(R.string.title_post_bookmark)) },
             navigationIcon = {
               IconButton(onClick = onNavigateBack) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.cd_navigate_up))
               }
             })
       }) { paddingValues ->
         if (uiState.isSubmitting) {
           Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            val loadingDescription = stringResource(R.string.message_loading)
             CircularProgressIndicator(
                 modifier =
-                    Modifier.align(Alignment.Center).semantics { contentDescription = "読み込み中" })
+                    Modifier.align(Alignment.Center).semantics {
+                      contentDescription = loadingDescription
+                    })
           }
         } else {
           Column(
@@ -109,9 +116,9 @@ fun PostBookmarkScreen(
                     value = uiState.title,
                     onValueChange = onTitleChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("タイトル") },
+                    label = { Text(stringResource(R.string.label_title)) },
                     singleLine = true,
-                    placeholder = { Text("ブックマークのタイトル") })
+                    placeholder = { Text(stringResource(R.string.hint_bookmark_title)) })
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -119,10 +126,10 @@ fun PostBookmarkScreen(
                     value = uiState.categories,
                     onValueChange = onCategoriesChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("カテゴリ") },
+                    label = { Text(stringResource(R.string.label_categories)) },
                     singleLine = true,
                     placeholder = { Text("tech, programming, kotlin") },
-                    supportingText = { Text("カンマ区切りで複数入力できます") })
+                    supportingText = { Text(stringResource(R.string.hint_categories_help)) })
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -130,8 +137,8 @@ fun PostBookmarkScreen(
                     value = uiState.comment,
                     onValueChange = onCommentChange,
                     modifier = Modifier.fillMaxWidth().height(120.dp),
-                    label = { Text("コメント") },
-                    placeholder = { Text("ブックマークについてのメモ") },
+                    label = { Text(stringResource(R.string.label_comment)) },
+                    placeholder = { Text(stringResource(R.string.hint_bookmark_comment)) },
                     maxLines = 5)
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -140,7 +147,7 @@ fun PostBookmarkScreen(
                     onClick = onPostClick,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = uiState.url.isNotBlank()) {
-                      Text("投稿する")
+                      Text(stringResource(R.string.button_submit_bookmark))
                     }
 
                 Spacer(modifier = Modifier.height(16.dp))
