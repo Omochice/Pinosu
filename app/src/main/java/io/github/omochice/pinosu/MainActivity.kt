@@ -64,6 +64,7 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.feature.settings.data.local.LocalSettingsDataSource
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
@@ -104,8 +105,9 @@ class MainActivity : ComponentActivity() {
 
   override fun attachBaseContext(newBase: Context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      val prefs = newBase.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      val languageValue = prefs.getString(KEY_LANGUAGE_MODE, null)
+      val prefs =
+          newBase.getSharedPreferences(LocalSettingsDataSource.PREFS_NAME, Context.MODE_PRIVATE)
+      val languageValue = prefs.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null)
       val locale =
           when (languageValue) {
             LanguageMode.English.name -> Locale.ENGLISH
@@ -185,8 +187,6 @@ class MainActivity : ComponentActivity() {
 
   companion object {
     private const val KEY_CONTENT_CONSUMED = "shared_content_consumed"
-    private const val PREFS_NAME = "pinosu_settings"
-    private const val KEY_LANGUAGE_MODE = "language_mode"
   }
 }
 

@@ -114,7 +114,7 @@ constructor(@param:ApplicationContext private val context: Context) {
   }
 
   companion object {
-    private const val PREFS_NAME = "pinosu_settings"
+    internal const val PREFS_NAME = "pinosu_settings"
     internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
     internal const val KEY_THEME_MODE = "theme_mode"
     internal const val KEY_LANGUAGE_MODE = "language_mode"
