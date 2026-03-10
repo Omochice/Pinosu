@@ -4,6 +4,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -30,9 +32,9 @@ class AppDrawerTest {
           onCloseDrawer = {})
     }
 
-    composeTestRule.onNodeWithText("ライセンス").assertIsDisplayed()
-    composeTestRule.onNodeWithText("アプリ情報").assertIsDisplayed()
-    composeTestRule.onNodeWithText("ログアウト").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_licenses)).assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_app_info)).assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_logout)).assertIsDisplayed()
   }
 
   @Test
@@ -49,7 +51,7 @@ class AppDrawerTest {
           onCloseDrawer = { drawerClosed = true })
     }
 
-    composeTestRule.onNodeWithText("ライセンス").performClick()
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_licenses)).performClick()
     assertTrue("License navigation should be triggered", licenseClicked)
     assertTrue("Drawer should be closed after click", drawerClosed)
   }
@@ -68,7 +70,7 @@ class AppDrawerTest {
           onCloseDrawer = { drawerClosed = true })
     }
 
-    composeTestRule.onNodeWithText("ログアウト").performClick()
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_logout)).performClick()
     assertTrue("Logout should be triggered", logoutClicked)
     assertTrue("Drawer should be closed after logout click", drawerClosed)
   }

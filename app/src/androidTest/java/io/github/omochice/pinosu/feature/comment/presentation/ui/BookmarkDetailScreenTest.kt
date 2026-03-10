@@ -8,8 +8,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -106,7 +108,9 @@ class BookmarkDetailScreenTest {
           isReadOnly = false)
     }
 
-    composeTestRule.onNodeWithContentDescription("コメントを投稿").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_post_comment))
+        .assertIsDisplayed()
   }
 
   @Test
@@ -127,6 +131,8 @@ class BookmarkDetailScreenTest {
           isReadOnly = true)
     }
 
-    composeTestRule.onNodeWithContentDescription("コメントを投稿").assertDoesNotExist()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_post_comment))
+        .assertDoesNotExist()
   }
 }

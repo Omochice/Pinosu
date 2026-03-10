@@ -1,7 +1,12 @@
 package io.github.omochice.pinosu
 
+import android.app.LocaleManager
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -59,6 +64,9 @@ import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkViewModel
+import io.github.omochice.pinosu.feature.settings.data.local.LocalSettingsDataSource
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.presentation.ui.SettingsScreen
 import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.SettingsViewModel
@@ -66,6 +74,7 @@ import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
 import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractSharedContentUseCase
 import io.github.omochice.pinosu.ui.drawer.AppDrawer
 import io.github.omochice.pinosu.ui.theme.PinosuTheme
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -87,10 +96,38 @@ class MainActivity : ComponentActivity() {
 
   @Inject lateinit var observeThemeModeUseCase: ObserveThemeModeUseCase
 
+  @Inject lateinit var observeLanguageModeUseCase: ObserveLanguageModeUseCase
+
   @androidx.annotation.VisibleForTesting
   internal var pendingSharedContent by mutableStateOf<SharedContent?>(null)
 
   @androidx.annotation.VisibleForTesting internal var contentConsumed = false
+
+  override fun attachBaseContext(newBase: Context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      val prefs =
+          newBase.getSharedPreferences(LocalSettingsDataSource.PREFS_NAME, Context.MODE_PRIVATE)
+      val languageValue = prefs.getString(LocalSettingsDataSource.KEY_LANGUAGE_MODE, null)
+      val locale =
+          when (languageValue) {
+            LanguageMode.English.name -> Locale.ENGLISH
+            LanguageMode.Japanese.name -> Locale.JAPANESE
+            else -> null
+          }
+      if (locale != null) {
+        Locale.setDefault(locale)
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocales(LocaleList(locale))
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+        return
+      } else {
+        // Restore system locale in case a previous session set Locale.setDefault
+        // to an app-specific locale; otherwise date/number formatting stays stale.
+        Locale.setDefault(newBase.resources.configuration.locales[0])
+      }
+    }
+    super.attachBaseContext(newBase)
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -105,6 +142,27 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       val themeMode by observeThemeModeUseCase().collectAsStateWithLifecycle()
+      val languageMode by observeLanguageModeUseCase().collectAsStateWithLifecycle()
+
+      // Skip the initial emission to avoid unnecessary recreate() on launch;
+      // attachBaseContext already applied the saved locale for API < 33.
+      var appliedLanguageOnce by remember { mutableStateOf(false) }
+      LaunchedEffect(languageMode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          val localeList =
+              when (languageMode) {
+                LanguageMode.System -> LocaleList.getEmptyLocaleList()
+                LanguageMode.English -> LocaleList.forLanguageTags("en")
+                LanguageMode.Japanese -> LocaleList.forLanguageTags("ja")
+              }
+          getSystemService(LocaleManager::class.java).applicationLocales = localeList
+        } else {
+          if (appliedLanguageOnce) {
+            recreate()
+          }
+          appliedLanguageOnce = true
+        }
+      }
 
       PinosuTheme(themeMode = themeMode) {
         PinosuApp(
@@ -449,7 +507,8 @@ fun PinosuApp(
                     uiState = settingsUiState,
                     onNavigateUp = { navController.navigateUp() },
                     onDisplayModeChange = { mode -> settingsViewModel.setDisplayMode(mode) },
-                    onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) })
+                    onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) },
+                    onLanguageModeChange = { mode -> settingsViewModel.setLanguageMode(mode) })
               }
         }
       }

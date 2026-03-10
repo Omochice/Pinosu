@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +23,8 @@ import kotlinx.coroutines.flow.update
 /**
  * ViewModel for Settings screen.
  *
- * Manages settings state and handles settings updates. Observes display mode and theme mode changes
- * for reactive UI updates.
+ * Manages settings state and handles settings updates. Observes display mode, theme mode, and
+ * language mode changes for reactive UI updates.
  */
 @HiltViewModel
 class SettingsViewModel
@@ -31,6 +34,8 @@ constructor(
     private val setDisplayModeUseCase: SetDisplayModeUseCase,
     observeThemeModeUseCase: ObserveThemeModeUseCase,
     private val setThemeModeUseCase: SetThemeModeUseCase,
+    observeLanguageModeUseCase: ObserveLanguageModeUseCase,
+    private val setLanguageModeUseCase: SetLanguageModeUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(SettingsUiState())
@@ -45,6 +50,10 @@ constructor(
 
     observeThemeModeUseCase()
         .onEach { themeMode -> _uiState.update { it.copy(themeMode = themeMode) } }
+        .launchIn(viewModelScope)
+
+    observeLanguageModeUseCase()
+        .onEach { languageMode -> _uiState.update { it.copy(languageMode = languageMode) } }
         .launchIn(viewModelScope)
   }
 
@@ -64,5 +73,14 @@ constructor(
    */
   fun setThemeMode(mode: ThemeMode) {
     setThemeModeUseCase(mode)
+  }
+
+  /**
+   * Update language mode preference.
+   *
+   * @param mode New language mode to save
+   */
+  fun setLanguageMode(mode: LanguageMode) {
+    setLanguageModeUseCase(mode)
   }
 }

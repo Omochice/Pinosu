@@ -4,8 +4,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
+import io.github.omochice.pinosu.getTestString
 import org.junit.Rule
 import org.junit.Test
 
@@ -51,6 +53,8 @@ class CommentCardTest {
 
     composeTestRule.setContent { CommentCard(comment = comment, profileImageUrl = null) }
 
-    composeTestRule.onNodeWithContentDescription("コメント投稿者のプロフィール画像").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_commenter_avatar))
+        .assertIsDisplayed()
   }
 }

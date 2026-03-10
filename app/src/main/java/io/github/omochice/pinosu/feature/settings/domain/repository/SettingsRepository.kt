@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.domain.repository
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
+import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import kotlinx.coroutines.flow.StateFlow
 
@@ -15,6 +16,9 @@ interface SettingsRepository {
 
   /** Observable StateFlow of theme mode preference for reactive updates */
   val themeModeFlow: StateFlow<ThemeMode>
+
+  /** Observable StateFlow of language mode preference for reactive updates */
+  val languageModeFlow: StateFlow<LanguageMode>
 
   /**
    * Retrieve bookmark display mode preference.
@@ -43,4 +47,18 @@ interface SettingsRepository {
    * @param mode Theme mode to save
    */
   fun setThemeMode(mode: ThemeMode)
+
+  /**
+   * Retrieve language mode preference.
+   *
+   * @return Stored language mode, defaults to System if not set
+   */
+  fun getLanguageMode(): LanguageMode
+
+  /**
+   * Save language mode preference.
+   *
+   * @param mode Language mode to save
+   */
+  fun setLanguageMode(mode: LanguageMode)
 }

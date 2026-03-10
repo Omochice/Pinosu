@@ -37,7 +37,9 @@ class NavigationTest {
   @Test
   fun `navigation when not logged in should display login screen`() {
 
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
   }
 
   /** This test simulates the state where LoginViewModel.mainUiState.userPubkey is not null */

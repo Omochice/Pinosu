@@ -125,15 +125,20 @@ class ShareIntentNavigationTest {
 
   @Test
   fun `shared content navigates to PostBookmark after login`() {
-    composeTestRule.onNodeWithText("NIP-55対応アプリでログイン").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.button_login_with_nip55))
+        .assertIsDisplayed()
 
     val loginViewModel = ViewModelProvider(composeTestRule.activity)[LoginViewModel::class.java]
     loginViewModel.processNip55Response(Activity.RESULT_OK, Intent())
 
     composeTestRule.waitUntil(timeoutMillis = 10000) {
-      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.title_post_bookmark)).assertIsDisplayed()
 
     // URL field: "https://example.com" → stripUrlScheme → "example.com"
     // The OutlinedTextField shows "example.com", "https://" is a separate Text prefix
@@ -148,9 +153,12 @@ class ShareIntentNavigationTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.title_post_bookmark)).assertIsDisplayed()
   }
 
   @Test
@@ -161,9 +169,12 @@ class ShareIntentNavigationTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマーク").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_bookmarks))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマーク").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.title_bookmarks)).assertIsDisplayed()
 
     // Set pendingSharedContent directly because
     // Instrumentation.callActivityOnNewIntent does not reliably propagate
@@ -174,9 +185,12 @@ class ShareIntentNavigationTest {
     }
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.title_post_bookmark)).assertIsDisplayed()
 
     composeTestRule.onNodeWithText("example.com").assertIsDisplayed()
     composeTestRule.onNodeWithText("Check this out").assertIsDisplayed()
@@ -189,9 +203,12 @@ class ShareIntentNavigationTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule.onAllNodesWithText("ブックマークを追加").fetchSemanticsNodes().isNotEmpty()
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
     }
-    composeTestRule.onNodeWithText("ブックマークを追加").assertIsDisplayed()
+    composeTestRule.onNodeWithText(getTestString(R.string.title_post_bookmark)).assertIsDisplayed()
 
     // Wait for onSharedContentConsumed to set contentConsumed = true
     composeTestRule.waitUntil(timeoutMillis = 5000) {
