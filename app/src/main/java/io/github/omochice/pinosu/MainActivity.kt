@@ -120,6 +120,10 @@ class MainActivity : ComponentActivity() {
         config.setLocales(LocaleList(locale))
         super.attachBaseContext(newBase.createConfigurationContext(config))
         return
+      } else {
+        // Restore system locale in case a previous session set Locale.setDefault
+        // to an app-specific locale; otherwise date/number formatting stays stale.
+        Locale.setDefault(newBase.resources.configuration.locales[0])
       }
     }
     super.attachBaseContext(newBase)
