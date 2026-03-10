@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/Omochice/Pinosu/compare/v0.13.0...v0.14.0) (2026-03-10)
+
+
+### Features
+
+* add i18n support with English/Japanese/System language selector ([#316](https://github.com/Omochice/Pinosu/issues/316)) ([20212e9](https://github.com/Omochice/Pinosu/commit/20212e9073d8b2eaf4dc8ab7ef12865c3c01522a))
+
 ## [0.13.0](https://github.com/Omochice/Pinosu/compare/v0.12.0...v0.13.0) (2026-03-08)
 
 
