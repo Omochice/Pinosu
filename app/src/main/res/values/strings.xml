@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pinosu</string>
+    <string name="app_name" translatable="false">Pinosu</string>
 
     <string name="button_login_with_nip55">Log in with NIP-55 app</string>
     <string name="button_logout">Log out</string>
@@ -20,7 +20,7 @@
     <string name="error_invalid_pubkey">Invalid public key format.</string>
 
     <string name="button_login_read_only">Browse with public key</string>
-    <string name="hint_npub_input">npub1…</string>
+    <string name="hint_npub_input" translatable="false">npub1…</string>
     <string name="button_submit_read_only">Log in with public key</string>
     <string name="label_read_only_mode">Read-only mode</string>
     <string name="dialog_title_read_only_share_warning">Read-only mode</string>
