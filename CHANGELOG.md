@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.15.0](https://github.com/Omochice/Pinosu/compare/v0.14.0...v0.15.0) (2026-03-14)
+
+
+### Features
+
+* make bootstrap relays user-configurable with 3 defaults ([#330](https://github.com/Omochice/Pinosu/issues/330)) ([acc794d](https://github.com/Omochice/Pinosu/commit/acc794da948fc4e43869fbd63e056caf62ea4029))
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.activity:activity-compose to v1.13.0 ([#321](https://github.com/Omochice/Pinosu/issues/321)) ([e5268d3](https://github.com/Omochice/Pinosu/commit/e5268d379cc7af1f0057aa81611c0ae7221f2861))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.03.00 ([#322](https://github.com/Omochice/Pinosu/issues/322)) ([560aea1](https://github.com/Omochice/Pinosu/commit/560aea1dae8836cecb85b9c540d3b856a9e139b9))
+* **deps:** update dependency androidx.core:core-ktx to v1.18.0 ([#323](https://github.com/Omochice/Pinosu/issues/323)) ([e98f483](https://github.com/Omochice/Pinosu/commit/e98f483d4427a96f4316f5f4092adf20fb0c5a23))
+* **deps:** update dependency androidx.datastore:datastore to v1.2.1 ([#320](https://github.com/Omochice/Pinosu/issues/320)) ([fe1c007](https://github.com/Omochice/Pinosu/commit/fe1c0074cf0722861917bbd7b6599e98d24581e8))
+
 ## [0.14.0](https://github.com/Omochice/Pinosu/compare/v0.13.0...v0.14.0) (2026-03-10)
 
 
