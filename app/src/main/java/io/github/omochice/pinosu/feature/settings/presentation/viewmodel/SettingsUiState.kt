@@ -15,4 +15,5 @@ data class SettingsUiState(
     val displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
     val themeMode: ThemeMode = ThemeMode.System,
     val languageMode: LanguageMode = LanguageMode.System,
+    val bootstrapRelays: Set<String> = emptySet(),
 )

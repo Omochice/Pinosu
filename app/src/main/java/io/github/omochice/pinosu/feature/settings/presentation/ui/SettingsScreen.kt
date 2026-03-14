@@ -4,21 +4,34 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +52,8 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onDisplayModeChange Callback when display mode is changed
  * @param onThemeModeChange Callback when theme mode is changed
  * @param onLanguageModeChange Callback when language mode is changed
+ * @param onAddBootstrapRelay Callback when a bootstrap relay URL is added
+ * @param onRemoveBootstrapRelay Callback when a bootstrap relay URL is removed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +63,8 @@ fun SettingsScreen(
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageModeChange: (LanguageMode) -> Unit,
+    onAddBootstrapRelay: (String) -> Unit = {},
+    onRemoveBootstrapRelay: (String) -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -66,7 +83,9 @@ fun SettingsScreen(
             uiState = uiState,
             onDisplayModeChange = onDisplayModeChange,
             onThemeModeChange = onThemeModeChange,
-            onLanguageModeChange = onLanguageModeChange)
+            onLanguageModeChange = onLanguageModeChange,
+            onAddBootstrapRelay = onAddBootstrapRelay,
+            onRemoveBootstrapRelay = onRemoveBootstrapRelay)
       }
 }
 
@@ -78,8 +97,10 @@ private fun SettingsContent(
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
     onLanguageModeChange: (LanguageMode) -> Unit,
+    onAddBootstrapRelay: (String) -> Unit,
+    onRemoveBootstrapRelay: (String) -> Unit,
 ) {
-  Column(modifier = modifier) {
+  Column(modifier = modifier.verticalScroll(rememberScrollState())) {
     Text(
         text = stringResource(R.string.settings_display_mode),
         style = MaterialTheme.typography.titleMedium)
@@ -147,6 +168,74 @@ private fun SettingsContent(
           onClick = { onLanguageModeChange(LanguageMode.Japanese) },
           label = { Text(stringResource(R.string.language_mode_japanese)) })
     }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    BootstrapRelaysSection(
+        relays = uiState.bootstrapRelays,
+        onAddRelay = onAddBootstrapRelay,
+        onRemoveRelay = onRemoveBootstrapRelay)
+  }
+}
+
+@Composable
+private fun BootstrapRelaysSection(
+    relays: Set<String>,
+    onAddRelay: (String) -> Unit,
+    onRemoveRelay: (String) -> Unit,
+) {
+  Text(
+      text = stringResource(R.string.settings_bootstrap_relays),
+      style = MaterialTheme.typography.titleMedium)
+
+  Spacer(modifier = Modifier.height(4.dp))
+
+  Text(
+      text = stringResource(R.string.settings_bootstrap_relays_description),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+  Spacer(modifier = Modifier.height(8.dp))
+
+  relays.forEach { url ->
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+          Text(
+              text = url,
+              modifier = Modifier.weight(1f),
+              style = MaterialTheme.typography.bodyMedium)
+          IconButton(onClick = { onRemoveRelay(url) }) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = stringResource(R.string.cd_remove_relay))
+          }
+        }
+  }
+
+  var newRelayUrl by rememberSaveable { mutableStateOf("") }
+
+  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    OutlinedTextField(
+        value = newRelayUrl,
+        onValueChange = { newRelayUrl = it },
+        modifier = Modifier.weight(1f),
+        placeholder = { Text(stringResource(R.string.hint_relay_url)) },
+        singleLine = true)
+
+    Spacer(modifier = Modifier.width(8.dp))
+
+    OutlinedButton(
+        onClick = {
+          val trimmed = newRelayUrl.trim()
+          if (trimmed.startsWith("wss://") || trimmed.startsWith("ws://")) {
+            onAddRelay(trimmed)
+            newRelayUrl = ""
+          }
+        },
+        enabled = newRelayUrl.trim().let { it.startsWith("wss://") || it.startsWith("ws://") }) {
+          Text(stringResource(R.string.button_add_relay))
+        }
   }
 }
 

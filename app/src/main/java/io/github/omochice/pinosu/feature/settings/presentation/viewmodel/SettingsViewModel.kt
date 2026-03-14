@@ -6,9 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
@@ -23,8 +25,8 @@ import kotlinx.coroutines.flow.update
 /**
  * ViewModel for Settings screen.
  *
- * Manages settings state and handles settings updates. Observes display mode, theme mode, and
- * language mode changes for reactive UI updates.
+ * Manages settings state and handles settings updates. Observes display mode, theme mode, language
+ * mode, and bootstrap relay changes for reactive UI updates.
  */
 @HiltViewModel
 class SettingsViewModel
@@ -36,6 +38,8 @@ constructor(
     private val setThemeModeUseCase: SetThemeModeUseCase,
     observeLanguageModeUseCase: ObserveLanguageModeUseCase,
     private val setLanguageModeUseCase: SetLanguageModeUseCase,
+    observeBootstrapRelaysUseCase: ObserveBootstrapRelaysUseCase,
+    private val setBootstrapRelaysUseCase: SetBootstrapRelaysUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(SettingsUiState())
@@ -54,6 +58,10 @@ constructor(
 
     observeLanguageModeUseCase()
         .onEach { languageMode -> _uiState.update { it.copy(languageMode = languageMode) } }
+        .launchIn(viewModelScope)
+
+    observeBootstrapRelaysUseCase()
+        .onEach { relays -> _uiState.update { it.copy(bootstrapRelays = relays) } }
         .launchIn(viewModelScope)
   }
 
@@ -82,5 +90,25 @@ constructor(
    */
   fun setLanguageMode(mode: LanguageMode) {
     setLanguageModeUseCase(mode)
+  }
+
+  /**
+   * Add a bootstrap relay URL to the user-configured set.
+   *
+   * @param url Relay URL to add
+   */
+  fun addBootstrapRelay(url: String) {
+    val current = _uiState.value.bootstrapRelays
+    setBootstrapRelaysUseCase(current + url)
+  }
+
+  /**
+   * Remove a bootstrap relay URL from the user-configured set.
+   *
+   * @param url Relay URL to remove
+   */
+  fun removeBootstrapRelay(url: String) {
+    val current = _uiState.value.bootstrapRelays
+    setBootstrapRelaysUseCase(current - url)
   }
 }
