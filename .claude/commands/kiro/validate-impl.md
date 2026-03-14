@@ -52,7 +52,7 @@ For each detected feature:
 - Read `.kiro/specs/<feature>/requirements.md` for requirements
 - Read `.kiro/specs/<feature>/design.md` for design structure
 - Read `.kiro/specs/<feature>/tasks.md` for task list
-- **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
+- **Load ALL steering context**: Read entire `doc/steering/` directory including:
     - Default files: `structure.md`, `tech.md`, `product.md`
     - All custom steering files (regardless of mode settings)
 

@@ -34,7 +34,7 @@ jobs:
           permission-pull-requests: write
       - uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
-          add-paths: .kiro/steering/*.md
+          add-paths: doc/steering/*.md
           body: SSIA
           commit-message: "docs: update steering files"
           title: "docs: update steering files"

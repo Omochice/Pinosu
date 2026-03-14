@@ -8,7 +8,7 @@ The issue should include the build version where the problem occurred, the steps
 
 ## Tech Stack
 
-See [steering files](./.kiro/steering).
+See [steering files](./doc/steering).
 
 ## Setup
 
@@ -39,3 +39,9 @@ devbox run check
 ```console
 devbox run fmt
 ```
+
+## Design
+
+Design files are managed under `doc/design.pen`.
+
+When making changes related to UI or design, it is recommended to update the corresponding `.pen` file as well to keep the design and implementation in sync.

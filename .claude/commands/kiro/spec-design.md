@@ -29,7 +29,7 @@ Generate technical design document for feature **$1** based on approved requirem
 **Read all necessary context**:
 
 - `.kiro/specs/$1/spec.json`, `requirements.md`, `design.md` (if exists)
-- **Entire `.kiro/steering/` directory** for complete project memory
+- **Entire `doc/steering/` directory** for complete project memory
 - `.kiro/settings/templates/specs/design.md` for document structure
 - `.kiro/settings/rules/design-principles.md` for design principles
 - `.kiro/settings/templates/specs/research.md` for discovery log structure

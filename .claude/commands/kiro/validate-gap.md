@@ -27,7 +27,7 @@ Analyze implementation gap for feature **$1** based on approved requirements and
 1. **Load Context**:
    - Read `.kiro/specs/$1/spec.json` for language and metadata
    - Read `.kiro/specs/$1/requirements.md` for requirements
-   - **Load ALL steering context**: Read entire `.kiro/steering/` directory including:
+   - **Load ALL steering context**: Read entire `doc/steering/` directory including:
         - Default files: `structure.md`, `tech.md`, `product.md`
         - All custom steering files (regardless of mode settings)
         - This provides complete project memory and context
