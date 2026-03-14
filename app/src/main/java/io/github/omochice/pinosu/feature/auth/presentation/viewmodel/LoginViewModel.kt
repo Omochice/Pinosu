@@ -1,9 +1,11 @@
 package io.github.omochice.pinosu.feature.auth.presentation.viewmodel
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
@@ -155,14 +157,11 @@ constructor(
     }
   }
 
-  private suspend fun fetchRelayListIfNeeded(
-      user: io.github.omochice.pinosu.feature.auth.domain.model.User?
-  ) {
+  private suspend fun fetchRelayListIfNeeded(user: User?) {
     user?.pubkey?.let { pubkey ->
       val relayResult = fetchRelayListUseCase(pubkey.npub)
       if (relayResult.isFailure) {
-        android.util.Log.w(
-            TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
+        Log.w(TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
       }
     }
   }
