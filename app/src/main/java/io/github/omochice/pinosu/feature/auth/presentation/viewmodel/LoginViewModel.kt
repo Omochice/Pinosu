@@ -90,6 +90,16 @@ constructor(
 
       if (result.isSuccess) {
         val user = result.getOrNull()
+
+        // Fetch NIP-65 relay list and wait for completion before login success
+        user?.pubkey?.let { pubkey ->
+          val relayResult = fetchRelayListUseCase(pubkey.npub)
+          if (relayResult.isFailure) {
+            Log.w(
+                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
+          }
+        }
+
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = true)
         _uiState.value = LoginUiState.Success
       } else {
