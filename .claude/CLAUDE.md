@@ -6,12 +6,12 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 
 ### Paths
 
-- Steering: `.kiro/steering/`
+- Steering: `doc/steering/`
 - Specs: `.kiro/specs/`
 
 ### Steering vs Specification
 
-**Steering** (`.kiro/steering/`) - Guide AI with project-wide rules and context
+**Steering** (`doc/steering/`) - Guide AI with project-wide rules and context
 **Specs** (`.kiro/specs/`) - Formalize development process for individual features
 
 ### Active Specifications
@@ -46,6 +46,6 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 
 ## Steering Configuration
 
-- Load entire `.kiro/steering/` as project memory
+- Load entire `doc/steering/` as project memory
 - Default files: `product.md`, `tech.md`, `structure.md`
 - Custom files are supported (managed via `/kiro:steering-custom`)

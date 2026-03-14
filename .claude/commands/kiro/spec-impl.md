@@ -29,7 +29,7 @@ Execute implementation tasks for feature **$1** using Test-Driven Development.
 **Read all necessary context**:
 
 - `.kiro/specs/$1/spec.json`, `requirements.md`, `design.md`, `tasks.md`
-- **Entire `.kiro/steering/` directory** for complete project memory
+- **Entire `doc/steering/` directory** for complete project memory
 
 **Validate approvals**:
 

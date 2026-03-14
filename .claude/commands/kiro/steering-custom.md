@@ -40,7 +40,7 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
    - Focus on patterns, not exhaustive lists
    - Keep to 100-200 lines (2-3 minute read)
 
-5. **Create file** in `.kiro/steering/{name}.md`
+5. **Create file** in `doc/steering/{name}.md`
 
 ## Available Templates
 
@@ -85,7 +85,7 @@ Chat summary with file location (file created directly).
 ✅ Custom Steering Created
 
 ## Created:
-- .kiro/steering/api-standards.md
+- doc/steering/api-standards.md
 
 ## Based On:
 - Template: api-standards.md
@@ -128,4 +128,4 @@ Review and customize as needed.
 - All steering files loaded as project memory
 - Custom files equally important as core files
 - Avoid documenting agent-specific tooling directories (e.g. `.cursor/`, `.gemini/`, `.claude/`)
-- Light references to `.kiro/specs/` and `.kiro/steering/` are acceptable; avoid other `.kiro/` directories
+- Light references to `.kiro/specs/` and `doc/steering/` are acceptable; avoid other `.kiro/` directories

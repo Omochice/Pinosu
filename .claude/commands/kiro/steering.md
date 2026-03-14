@@ -1,12 +1,12 @@
 ---
-description: Manage .kiro/steering/ as persistent project knowledge
+description: Manage doc/steering/ as persistent project knowledge
 allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 ---
 
 # Kiro Steering Management
 
 <background_information>
-**Role**: Maintain `.kiro/steering/` as persistent project memory.
+**Role**: Maintain `doc/steering/` as persistent project memory.
 
 **Mission**:
 
@@ -18,14 +18,14 @@ allowed-tools: Bash, Read, Write, Edit, MultiEdit, Glob, Grep, LS
 
 - Steering captures patterns and principles, not exhaustive lists
 - Code drift detected and reported
-- All `.kiro/steering/*.md` treated equally (core + custom)
+- All `doc/steering/*.md` treated equally (core + custom)
 </background_information>
 
 <instructions>
 
 ## Scenario Detection
 
-Check `.kiro/steering/` status:
+Check `doc/steering/` status:
 
 **Bootstrap Mode**: Empty OR missing core files (product.md, tech.md, structure.md)  
 **Sync Mode**: All core files exist
@@ -53,7 +53,7 @@ Check `.kiro/steering/` status:
 
 ## Sync Flow
 
-1. Load all existing steering (`.kiro/steering/*.md`)
+1. Load all existing steering (`doc/steering/*.md`)
 2. Analyze codebase for changes (JIT)
 3. Detect drift:
    - **Steering → Code**: Missing elements → Warning
@@ -141,10 +141,10 @@ Review and approve as Source of Truth.
 
 ## Notes
 
-- All `.kiro/steering/*.md` loaded as project memory
+- All `doc/steering/*.md` loaded as project memory
 - Templates and principles are external for customization
 - Focus on patterns, not catalogs
 - "Golden Rule": New code following patterns shouldn't require steering updates
 - Avoid documenting agent-specific tooling directories (e.g. `.cursor/`, `.gemini/`, `.claude/`)
 - `.kiro/settings/` content should NOT be documented in steering files (settings are metadata, not project knowledge)
-- Light references to `.kiro/specs/` and `.kiro/steering/` are acceptable; avoid other `.kiro/` directories
+- Light references to `.kiro/specs/` and `doc/steering/` are acceptable; avoid other `.kiro/` directories

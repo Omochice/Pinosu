@@ -8,7 +8,7 @@ The issue should include the build version where the problem occurred, the steps
 
 ## Tech Stack
 
-See [steering files](./.kiro/steering).
+See [steering files](./doc/steering).
 
 ## Setup
 

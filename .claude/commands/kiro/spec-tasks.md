@@ -30,7 +30,7 @@ Generate implementation tasks for feature **$1** based on approved requirements 
 
 - `.kiro/specs/$1/spec.json`, `requirements.md`, `design.md`
 - `.kiro/specs/$1/tasks.md` (if exists, for merge mode)
-- **Entire `.kiro/steering/` directory** for complete project memory
+- **Entire `doc/steering/` directory** for complete project memory
 
 **Validate approvals**:
 
