@@ -39,3 +39,9 @@ devbox run check
 ```console
 devbox run fmt
 ```
+
+## Design
+
+Design files are managed under `doc/design.pen`.
+
+When making changes related to UI or design, it is recommended to update the corresponding `.pen` file as well to keep the design and implementation in sync.
