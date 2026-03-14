@@ -7,14 +7,7 @@ import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
-import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
-import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SettingsUseCases
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,18 +23,7 @@ import kotlinx.coroutines.flow.update
  * mode, and bootstrap relay changes for reactive UI updates.
  */
 @HiltViewModel
-class SettingsViewModel
-@Inject
-constructor(
-    observeDisplayModeUseCase: ObserveDisplayModeUseCase,
-    private val setDisplayModeUseCase: SetDisplayModeUseCase,
-    observeThemeModeUseCase: ObserveThemeModeUseCase,
-    private val setThemeModeUseCase: SetThemeModeUseCase,
-    observeLanguageModeUseCase: ObserveLanguageModeUseCase,
-    private val setLanguageModeUseCase: SetLanguageModeUseCase,
-    observeBootstrapRelaysUseCase: ObserveBootstrapRelaysUseCase,
-    private val setBootstrapRelaysUseCase: SetBootstrapRelaysUseCase,
-) : ViewModel() {
+class SettingsViewModel @Inject constructor(private val useCases: SettingsUseCases) : ViewModel() {
 
   private val _uiState = MutableStateFlow(SettingsUiState())
 
@@ -49,19 +31,23 @@ constructor(
   val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
   init {
-    observeDisplayModeUseCase()
+    useCases
+        .observeDisplayMode()
         .onEach { displayMode -> _uiState.update { it.copy(displayMode = displayMode) } }
         .launchIn(viewModelScope)
 
-    observeThemeModeUseCase()
+    useCases
+        .observeThemeMode()
         .onEach { themeMode -> _uiState.update { it.copy(themeMode = themeMode) } }
         .launchIn(viewModelScope)
 
-    observeLanguageModeUseCase()
+    useCases
+        .observeLanguageMode()
         .onEach { languageMode -> _uiState.update { it.copy(languageMode = languageMode) } }
         .launchIn(viewModelScope)
 
-    observeBootstrapRelaysUseCase()
+    useCases
+        .observeBootstrapRelays()
         .onEach { relays -> _uiState.update { it.copy(bootstrapRelays = relays) } }
         .launchIn(viewModelScope)
   }
@@ -72,7 +58,7 @@ constructor(
    * @param mode New display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode) {
-    setDisplayModeUseCase(mode)
+    useCases.setDisplayMode(mode)
   }
 
   /**
@@ -81,7 +67,7 @@ constructor(
    * @param mode New theme mode to save
    */
   fun setThemeMode(mode: ThemeMode) {
-    setThemeModeUseCase(mode)
+    useCases.setThemeMode(mode)
   }
 
   /**
@@ -90,7 +76,7 @@ constructor(
    * @param mode New language mode to save
    */
   fun setLanguageMode(mode: LanguageMode) {
-    setLanguageModeUseCase(mode)
+    useCases.setLanguageMode(mode)
   }
 
   /**
@@ -100,7 +86,7 @@ constructor(
    */
   fun addBootstrapRelay(url: String) {
     val current = _uiState.value.bootstrapRelays
-    setBootstrapRelaysUseCase(current + url)
+    useCases.setBootstrapRelays(current + url)
   }
 
   /**
@@ -110,11 +96,11 @@ constructor(
    */
   fun removeBootstrapRelay(url: String) {
     val current = _uiState.value.bootstrapRelays
-    setBootstrapRelaysUseCase(current - url)
+    useCases.setBootstrapRelays(current - url)
   }
 
   /** Reset bootstrap relays to the default set. */
   fun resetBootstrapRelays() {
-    setBootstrapRelaysUseCase(Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
+    useCases.setBootstrapRelays(Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
   }
 }
