@@ -54,6 +54,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onLanguageModeChange Callback when language mode is changed
  * @param onAddBootstrapRelay Callback when a bootstrap relay URL is added
  * @param onRemoveBootstrapRelay Callback when a bootstrap relay URL is removed
+ * @param onResetBootstrapRelays Callback when bootstrap relays are reset to defaults
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +66,7 @@ fun SettingsScreen(
     onLanguageModeChange: (LanguageMode) -> Unit,
     onAddBootstrapRelay: (String) -> Unit = {},
     onRemoveBootstrapRelay: (String) -> Unit = {},
+    onResetBootstrapRelays: () -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -101,7 +103,8 @@ fun SettingsScreen(
               BootstrapRelaysSection(
                   relays = uiState.bootstrapRelays,
                   onAddRelay = onAddBootstrapRelay,
-                  onRemoveRelay = onRemoveBootstrapRelay)
+                  onRemoveRelay = onRemoveBootstrapRelay,
+                  onResetDefaults = onResetBootstrapRelays)
             }
       }
 }
@@ -193,6 +196,7 @@ private fun BootstrapRelaysSection(
     relays: Set<String>,
     onAddRelay: (String) -> Unit,
     onRemoveRelay: (String) -> Unit,
+    onResetDefaults: () -> Unit,
 ) {
   Text(
       text = stringResource(R.string.settings_bootstrap_relays),
@@ -246,6 +250,12 @@ private fun BootstrapRelaysSection(
         enabled = newRelayUrl.trim().let { it.startsWith("wss://") || it.startsWith("ws://") }) {
           Text(stringResource(R.string.button_add_relay))
         }
+  }
+
+  Spacer(modifier = Modifier.height(8.dp))
+
+  androidx.compose.material3.TextButton(onClick = onResetDefaults) {
+    Text(stringResource(R.string.button_reset_defaults))
   }
 }
 

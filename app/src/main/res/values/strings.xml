@@ -105,8 +105,9 @@
     <string name="cd_remove_relay">Remove relay</string>
 
     <string name="settings_bootstrap_relays">Bootstrap Relays</string>
-    <string name="settings_bootstrap_relays_description">Additional relays used to fetch relay list metadata (kind 10002)</string>
+    <string name="settings_bootstrap_relays_description">Relays used to fetch relay list metadata (kind 10002)</string>
     <string name="hint_relay_url" translatable="false">wss://</string>
     <string name="button_add_relay">Add</string>
+    <string name="button_reset_defaults">Reset to defaults</string>
 
 </resources>

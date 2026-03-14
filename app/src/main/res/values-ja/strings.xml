@@ -102,6 +102,7 @@
     <string name="cd_remove_relay">リレーを削除</string>
 
     <string name="settings_bootstrap_relays">ブートストラップリレー</string>
-    <string name="settings_bootstrap_relays_description">リレーリストメタデータ（kind 10002）の取得に使用する追加リレー</string>
+    <string name="settings_bootstrap_relays_description">リレーリストメタデータ（kind 10002）の取得に使用するリレー</string>
     <string name="button_add_relay">追加</string>
+    <string name="button_reset_defaults">デフォルトに戻す</string>
 </resources>

@@ -249,4 +249,20 @@ class SettingsViewModelTest {
 
     assertEquals(setOf("wss://relay.example.com"), viewModel.uiState.first().bootstrapRelays)
   }
+
+  @Test
+  fun `resetBootstrapRelays sets default relay URLs via use case`() = runTest {
+    bootstrapRelaysFlow.value = setOf("wss://custom-relay.example.com")
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.resetBootstrapRelays()
+
+    verify {
+      setBootstrapRelaysUseCase(
+          io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
+              .DEFAULT_BOOTSTRAP_RELAY_URLS
+              .toSet())
+    }
+  }
 }

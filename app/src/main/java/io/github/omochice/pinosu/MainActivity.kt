@@ -510,7 +510,8 @@ fun PinosuApp(
                     onThemeModeChange = { mode -> settingsViewModel.setThemeMode(mode) },
                     onLanguageModeChange = { mode -> settingsViewModel.setLanguageMode(mode) },
                     onAddBootstrapRelay = { url -> settingsViewModel.addBootstrapRelay(url) },
-                    onRemoveBootstrapRelay = { url -> settingsViewModel.removeBootstrapRelay(url) })
+                    onRemoveBootstrapRelay = { url -> settingsViewModel.removeBootstrapRelay(url) },
+                    onResetBootstrapRelays = { settingsViewModel.resetBootstrapRelays() })
               }
         }
       }

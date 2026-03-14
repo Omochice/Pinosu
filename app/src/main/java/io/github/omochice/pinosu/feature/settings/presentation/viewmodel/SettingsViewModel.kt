@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
@@ -110,5 +111,10 @@ constructor(
   fun removeBootstrapRelay(url: String) {
     val current = _uiState.value.bootstrapRelays
     setBootstrapRelaysUseCase(current - url)
+  }
+
+  /** Reset bootstrap relays to the default set. */
+  fun resetBootstrapRelays() {
+    setBootstrapRelaysUseCase(Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.toSet())
   }
 }
