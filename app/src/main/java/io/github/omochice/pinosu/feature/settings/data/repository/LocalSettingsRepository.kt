@@ -25,6 +25,9 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override val languageModeFlow: StateFlow<LanguageMode> = localSettingsDataSource.languageModeFlow
 
+  override val bootstrapRelaysFlow: StateFlow<Set<String>> =
+      localSettingsDataSource.bootstrapRelaysFlow
+
   override fun getDisplayMode(): BookmarkDisplayMode = localSettingsDataSource.getDisplayMode()
 
   override fun setDisplayMode(mode: BookmarkDisplayMode) {
@@ -42,9 +45,6 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
   override fun setLanguageMode(mode: LanguageMode) {
     localSettingsDataSource.setLanguageMode(mode)
   }
-
-  override val bootstrapRelaysFlow: StateFlow<Set<String>> =
-      localSettingsDataSource.bootstrapRelaysFlow
 
   override fun getBootstrapRelays(): Set<String> = localSettingsDataSource.getBootstrapRelays()
 

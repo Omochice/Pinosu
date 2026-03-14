@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.core.nip.nip65
 
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.relay.BootstrapRelayProvider
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -73,37 +74,48 @@ constructor(
   private suspend fun fetchFirstNonEmpty(
       relays: List<RelayConfig>,
       filter: String,
-  ): List<RelayConfig> = coroutineScope {
-    if (relays.isEmpty()) return@coroutineScope emptyList()
+  ): List<RelayConfig> {
+    if (relays.isEmpty()) return emptyList()
 
-    val resultChannel = Channel<List<RelayConfig>>(capacity = relays.size)
+    return coroutineScope {
+      val resultChannel = Channel<List<RelayConfig>>(capacity = relays.size)
 
-    val jobs =
-        relays.map { relay ->
-          async {
-            try {
-              val events = relayPool.subscribeWithTimeout(listOf(relay), filter, RELAY_TIMEOUT_MS)
-              if (events.isNotEmpty()) {
-                val mostRecentEvent = events.maxByOrNull { it.createdAt }
-                if (mostRecentEvent != null) {
-                  val parsed = parser.parseRelayListEvent(mostRecentEvent)
-                  if (parsed.isNotEmpty()) {
-                    resultChannel.send(parsed)
-                  }
-                }
-              }
-            } catch (_: IOException) {}
+      val jobs =
+          relays.map { relay ->
+            async { queryRelay(relay, filter)?.let { resultChannel.send(it) } }
           }
-        }
 
-    launch {
-      jobs.forEach { it.join() }
-      resultChannel.close()
+      launch {
+        jobs.forEach { it.join() }
+        resultChannel.close()
+      }
+
+      val result = resultChannel.receiveCatching().getOrNull() ?: emptyList()
+      jobs.forEach { it.cancel() }
+      result
     }
+  }
 
-    val result = resultChannel.receiveCatching().getOrNull() ?: emptyList()
-    jobs.forEach { it.cancel() }
-    result
+  /**
+   * Query a single relay and parse the response.
+   *
+   * @return Parsed relay list if the relay returns a non-empty result, null otherwise
+   */
+  private suspend fun queryRelay(relay: RelayConfig, filter: String): List<RelayConfig>? {
+    val events =
+        try {
+          relayPool.subscribeWithTimeout(listOf(relay), filter, RELAY_TIMEOUT_MS)
+        } catch (_: IOException) {
+          return null
+        }
+    return parseEvents(events)
+  }
+
+  private fun parseEvents(events: List<NostrEvent>): List<RelayConfig>? {
+    if (events.isEmpty()) return null
+    val mostRecentEvent = events.maxByOrNull { it.createdAt } ?: return null
+    val parsed = parser.parseRelayListEvent(mostRecentEvent)
+    return parsed.ifEmpty { null }
   }
 
   /** Validate that the pubkey is a valid 64-character hex string */

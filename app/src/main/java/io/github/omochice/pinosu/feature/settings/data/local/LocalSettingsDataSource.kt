@@ -123,9 +123,8 @@ constructor(@param:ApplicationContext private val context: Context) {
    *
    * @return Set of relay URLs, empty if none configured
    */
-  fun getBootstrapRelays(): Set<String> {
-    return sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
-  }
+  fun getBootstrapRelays(): Set<String> =
+      sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
 
   /**
    * Save user-configured bootstrap relay URLs and emit to observers.

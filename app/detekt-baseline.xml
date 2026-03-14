@@ -4,6 +4,7 @@
   <CurrentIssues>
     <ID>CognitiveComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>CognitiveComplexMethod:RelayPool.kt$RelayPoolImpl$private suspend fun publishToRelay( relayUrl: String, signedEventJson: String ): Pair&lt;String, String&gt;</ID>
+    <ID>ComplexInterface:SettingsRepository.kt$SettingsRepository</ID>
     <ID>CyclomaticComplexMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenNip55InstallDialogPreview()</ID>
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenTimeoutDialogPreview()</ID>
@@ -15,6 +16,7 @@
     <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:PostBookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PostBookmarkScreen( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
     <ID>LongParameterList:PostBookmarkScreen.kt$( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
+    <ID>LongParameterList:SettingsViewModel.kt$SettingsViewModel$( observeDisplayModeUseCase: ObserveDisplayModeUseCase, private val setDisplayModeUseCase: SetDisplayModeUseCase, observeThemeModeUseCase: ObserveThemeModeUseCase, private val setThemeModeUseCase: SetThemeModeUseCase, observeLanguageModeUseCase: ObserveLanguageModeUseCase, private val setLanguageModeUseCase: SetLanguageModeUseCase, observeBootstrapRelaysUseCase: ObserveBootstrapRelaysUseCase, private val setBootstrapRelaysUseCase: SetBootstrapRelaysUseCase, )</ID>
     <ID>MagicNumber:MainScreen.kt$16</ID>
     <ID>MagicNumber:MainScreen.kt$8</ID>
     <ID>MagicNumber:NetworkModule.kt$NetworkModule$10</ID>
@@ -28,7 +30,6 @@
     <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>
-    <ID>ReturnCount:Nip65RelayListFetcher.kt$Nip65RelayListFetcherImpl$override suspend fun fetchRelayList(hexPubkey: String): Result&lt;List&lt;RelayConfig&gt;&gt;</ID>
     <ID>ReturnCount:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String, until: Long?): Result&lt;BookmarkList?&gt;</ID>
     <ID>ReturnCount:RelayPool.kt$RelayPoolImpl$override suspend fun publishEvent( relays: List&lt;RelayConfig&gt;, signedEventJson: String, timeoutMs: Long ): Result&lt;PublishResult&gt;</ID>
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>

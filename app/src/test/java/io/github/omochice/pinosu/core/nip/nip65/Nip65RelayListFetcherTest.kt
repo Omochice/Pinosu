@@ -104,17 +104,15 @@ class Nip65RelayListFetcherTest {
   }
 
   @Test
-  fun `fetchRelayList should handle relay pool exception gracefully`() = runTest {
+  fun `fetchRelayList should return empty list when all relays fail with IOException`() = runTest {
     val hexPubkey = "a".repeat(64)
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } throws
         IOException("Network error")
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
-    assertTrue("Should return failure on exception", result.isFailure)
-    assertTrue(
-        "Exception message should be preserved",
-        result.exceptionOrNull()?.message?.contains("Network error") == true)
+    assertTrue("Should return success", result.isSuccess)
+    assertTrue("Should return empty list", result.getOrNull()!!.isEmpty())
   }
 
   @Test

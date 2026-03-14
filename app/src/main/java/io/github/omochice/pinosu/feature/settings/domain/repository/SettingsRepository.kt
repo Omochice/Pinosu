@@ -20,6 +20,9 @@ interface SettingsRepository {
   /** Observable StateFlow of language mode preference for reactive updates */
   val languageModeFlow: StateFlow<LanguageMode>
 
+  /** Observable StateFlow of user-configured bootstrap relay URLs for reactive updates */
+  val bootstrapRelaysFlow: StateFlow<Set<String>>
+
   /**
    * Retrieve bookmark display mode preference.
    *
@@ -61,9 +64,6 @@ interface SettingsRepository {
    * @param mode Language mode to save
    */
   fun setLanguageMode(mode: LanguageMode)
-
-  /** Observable StateFlow of user-configured bootstrap relay URLs for reactive updates */
-  val bootstrapRelaysFlow: StateFlow<Set<String>>
 
   /**
    * Retrieve user-configured bootstrap relay URLs.

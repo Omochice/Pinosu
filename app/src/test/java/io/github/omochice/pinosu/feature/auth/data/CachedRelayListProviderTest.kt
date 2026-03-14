@@ -42,7 +42,7 @@ class CachedRelayListProviderTest {
     val result = provider.getRelays()
 
     assertEquals(1, result.size)
-    assertEquals("wss://yabu.me", result[0].url)
+    assertEquals("wss://directory.yabu.me/", result[0].url)
   }
 
   @Test
@@ -52,6 +52,6 @@ class CachedRelayListProviderTest {
     val result = provider.getRelays()
 
     assertEquals(1, result.size)
-    assertEquals("wss://yabu.me", result[0].url)
+    assertEquals("wss://directory.yabu.me/", result[0].url)
   }
 }

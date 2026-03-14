@@ -56,12 +56,11 @@ object SettingsModule {
       impl
 
   @Provides
-  fun provideSetBootstrapRelaysUseCase(
-      impl: SetBootstrapRelaysUseCaseImpl
-  ): SetBootstrapRelaysUseCase = impl
+  fun provideSetBootstrapRelays(impl: SetBootstrapRelaysUseCaseImpl): SetBootstrapRelaysUseCase =
+      impl
 
   @Provides
-  fun provideObserveBootstrapRelaysUseCase(
+  fun provideObserveBootstrapRelays(
       impl: ObserveBootstrapRelaysUseCaseImpl
   ): ObserveBootstrapRelaysUseCase = impl
 }

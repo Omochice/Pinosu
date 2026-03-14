@@ -78,103 +78,113 @@ fun SettingsScreen(
               }
             })
       }) { paddingValues ->
-        SettingsContent(
-            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp),
-            uiState = uiState,
-            onDisplayModeChange = onDisplayModeChange,
-            onThemeModeChange = onThemeModeChange,
-            onLanguageModeChange = onLanguageModeChange,
-            onAddBootstrapRelay = onAddBootstrapRelay,
-            onRemoveBootstrapRelay = onRemoveBootstrapRelay)
+        Column(
+            modifier =
+                Modifier.padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())) {
+              DisplayModeSection(
+                  displayMode = uiState.displayMode, onDisplayModeChange = onDisplayModeChange)
+
+              Spacer(modifier = Modifier.height(24.dp))
+
+              ThemeModeSection(themeMode = uiState.themeMode, onThemeModeChange = onThemeModeChange)
+
+              Spacer(modifier = Modifier.height(24.dp))
+
+              LanguageModeSection(
+                  languageMode = uiState.languageMode, onLanguageModeChange = onLanguageModeChange)
+
+              Spacer(modifier = Modifier.height(24.dp))
+
+              BootstrapRelaysSection(
+                  relays = uiState.bootstrapRelays,
+                  onAddRelay = onAddBootstrapRelay,
+                  onRemoveRelay = onRemoveBootstrapRelay)
+            }
       }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SettingsContent(
-    modifier: Modifier = Modifier,
-    uiState: SettingsUiState,
+private fun DisplayModeSection(
+    displayMode: BookmarkDisplayMode,
     onDisplayModeChange: (BookmarkDisplayMode) -> Unit,
-    onThemeModeChange: (ThemeMode) -> Unit,
-    onLanguageModeChange: (LanguageMode) -> Unit,
-    onAddBootstrapRelay: (String) -> Unit,
-    onRemoveBootstrapRelay: (String) -> Unit,
 ) {
-  Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-    Text(
-        text = stringResource(R.string.settings_display_mode),
-        style = MaterialTheme.typography.titleMedium)
+  Text(
+      text = stringResource(R.string.settings_display_mode),
+      style = MaterialTheme.typography.titleMedium)
 
-    Spacer(modifier = Modifier.height(8.dp))
+  Spacer(modifier = Modifier.height(8.dp))
 
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      FilterChip(
-          selected = uiState.displayMode == BookmarkDisplayMode.List,
-          onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
-          label = { Text(stringResource(R.string.display_mode_list)) })
+  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FilterChip(
+        selected = displayMode == BookmarkDisplayMode.List,
+        onClick = { onDisplayModeChange(BookmarkDisplayMode.List) },
+        label = { Text(stringResource(R.string.display_mode_list)) })
 
-      FilterChip(
-          selected = uiState.displayMode == BookmarkDisplayMode.Grid,
-          onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
-          label = { Text(stringResource(R.string.display_mode_grid)) })
-    }
+    FilterChip(
+        selected = displayMode == BookmarkDisplayMode.Grid,
+        onClick = { onDisplayModeChange(BookmarkDisplayMode.Grid) },
+        label = { Text(stringResource(R.string.display_mode_grid)) })
+  }
+}
 
-    Spacer(modifier = Modifier.height(24.dp))
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ThemeModeSection(themeMode: ThemeMode, onThemeModeChange: (ThemeMode) -> Unit) {
+  Text(
+      text = stringResource(R.string.settings_theme_mode),
+      style = MaterialTheme.typography.titleMedium)
 
-    Text(
-        text = stringResource(R.string.settings_theme_mode),
-        style = MaterialTheme.typography.titleMedium)
+  Spacer(modifier = Modifier.height(8.dp))
 
-    Spacer(modifier = Modifier.height(8.dp))
+  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FilterChip(
+        selected = themeMode == ThemeMode.System,
+        onClick = { onThemeModeChange(ThemeMode.System) },
+        label = { Text(stringResource(R.string.theme_mode_system)) })
 
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      FilterChip(
-          selected = uiState.themeMode == ThemeMode.System,
-          onClick = { onThemeModeChange(ThemeMode.System) },
-          label = { Text(stringResource(R.string.theme_mode_system)) })
+    FilterChip(
+        selected = themeMode == ThemeMode.Light,
+        onClick = { onThemeModeChange(ThemeMode.Light) },
+        label = { Text(stringResource(R.string.theme_mode_light)) })
 
-      FilterChip(
-          selected = uiState.themeMode == ThemeMode.Light,
-          onClick = { onThemeModeChange(ThemeMode.Light) },
-          label = { Text(stringResource(R.string.theme_mode_light)) })
+    FilterChip(
+        selected = themeMode == ThemeMode.Dark,
+        onClick = { onThemeModeChange(ThemeMode.Dark) },
+        label = { Text(stringResource(R.string.theme_mode_dark)) })
+  }
+}
 
-      FilterChip(
-          selected = uiState.themeMode == ThemeMode.Dark,
-          onClick = { onThemeModeChange(ThemeMode.Dark) },
-          label = { Text(stringResource(R.string.theme_mode_dark)) })
-    }
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun LanguageModeSection(
+    languageMode: LanguageMode,
+    onLanguageModeChange: (LanguageMode) -> Unit,
+) {
+  Text(
+      text = stringResource(R.string.settings_language_mode),
+      style = MaterialTheme.typography.titleMedium)
 
-    Spacer(modifier = Modifier.height(24.dp))
+  Spacer(modifier = Modifier.height(8.dp))
 
-    Text(
-        text = stringResource(R.string.settings_language_mode),
-        style = MaterialTheme.typography.titleMedium)
+  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    FilterChip(
+        selected = languageMode == LanguageMode.System,
+        onClick = { onLanguageModeChange(LanguageMode.System) },
+        label = { Text(stringResource(R.string.language_mode_system)) })
 
-    Spacer(modifier = Modifier.height(8.dp))
+    FilterChip(
+        selected = languageMode == LanguageMode.English,
+        onClick = { onLanguageModeChange(LanguageMode.English) },
+        label = { Text(stringResource(R.string.language_mode_english)) })
 
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      FilterChip(
-          selected = uiState.languageMode == LanguageMode.System,
-          onClick = { onLanguageModeChange(LanguageMode.System) },
-          label = { Text(stringResource(R.string.language_mode_system)) })
-
-      FilterChip(
-          selected = uiState.languageMode == LanguageMode.English,
-          onClick = { onLanguageModeChange(LanguageMode.English) },
-          label = { Text(stringResource(R.string.language_mode_english)) })
-
-      FilterChip(
-          selected = uiState.languageMode == LanguageMode.Japanese,
-          onClick = { onLanguageModeChange(LanguageMode.Japanese) },
-          label = { Text(stringResource(R.string.language_mode_japanese)) })
-    }
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    BootstrapRelaysSection(
-        relays = uiState.bootstrapRelays,
-        onAddRelay = onAddBootstrapRelay,
-        onRemoveRelay = onRemoveBootstrapRelay)
+    FilterChip(
+        selected = languageMode == LanguageMode.Japanese,
+        onClick = { onLanguageModeChange(LanguageMode.Japanese) },
+        label = { Text(stringResource(R.string.language_mode_japanese)) })
   }
 }
 

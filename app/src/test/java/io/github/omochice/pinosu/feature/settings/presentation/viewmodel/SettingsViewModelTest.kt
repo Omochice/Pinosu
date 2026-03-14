@@ -3,9 +3,11 @@ package io.github.omochice.pinosu.feature.settings.presentation.viewmodel
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
@@ -34,9 +36,12 @@ class SettingsViewModelTest {
   private lateinit var setThemeModeUseCase: SetThemeModeUseCase
   private lateinit var observeLanguageModeUseCase: ObserveLanguageModeUseCase
   private lateinit var setLanguageModeUseCase: SetLanguageModeUseCase
+  private lateinit var observeBootstrapRelaysUseCase: ObserveBootstrapRelaysUseCase
+  private lateinit var setBootstrapRelaysUseCase: SetBootstrapRelaysUseCase
   private lateinit var displayModeFlow: MutableStateFlow<BookmarkDisplayMode>
   private lateinit var themeModeFlow: MutableStateFlow<ThemeMode>
   private lateinit var languageModeFlow: MutableStateFlow<LanguageMode>
+  private lateinit var bootstrapRelaysFlow: MutableStateFlow<Set<String>>
   private val testDispatcher = StandardTestDispatcher()
 
   @Before
@@ -45,6 +50,7 @@ class SettingsViewModelTest {
     displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
     themeModeFlow = MutableStateFlow(ThemeMode.System)
     languageModeFlow = MutableStateFlow(LanguageMode.System)
+    bootstrapRelaysFlow = MutableStateFlow(emptySet())
     observeDisplayModeUseCase = mockk()
     every { observeDisplayModeUseCase() } returns displayModeFlow
     setDisplayModeUseCase = mockk(relaxed = true)
@@ -54,6 +60,9 @@ class SettingsViewModelTest {
     observeLanguageModeUseCase = mockk()
     every { observeLanguageModeUseCase() } returns languageModeFlow
     setLanguageModeUseCase = mockk(relaxed = true)
+    observeBootstrapRelaysUseCase = mockk()
+    every { observeBootstrapRelaysUseCase() } returns bootstrapRelaysFlow
+    setBootstrapRelaysUseCase = mockk(relaxed = true)
   }
 
   @After
@@ -68,7 +77,9 @@ class SettingsViewModelTest {
           observeThemeModeUseCase,
           setThemeModeUseCase,
           observeLanguageModeUseCase,
-          setLanguageModeUseCase)
+          setLanguageModeUseCase,
+          observeBootstrapRelaysUseCase,
+          setBootstrapRelaysUseCase)
 
   @Test
   fun `initial state loads display mode from observed flow`() = runTest {
@@ -203,5 +214,39 @@ class SettingsViewModelTest {
     testDispatcher.scheduler.advanceUntilIdle()
 
     assertEquals(LanguageMode.Japanese, viewModel.uiState.first().languageMode)
+  }
+
+  @Test
+  fun `addBootstrapRelay adds relay URL via use case`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.addBootstrapRelay("wss://custom-relay.example.com")
+
+    verify { setBootstrapRelaysUseCase(setOf("wss://custom-relay.example.com")) }
+  }
+
+  @Test
+  fun `removeBootstrapRelay removes relay URL via use case`() = runTest {
+    bootstrapRelaysFlow.value = setOf("wss://relay1.example.com", "wss://relay2.example.com")
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.removeBootstrapRelay("wss://relay1.example.com")
+
+    verify { setBootstrapRelaysUseCase(setOf("wss://relay2.example.com")) }
+  }
+
+  @Test
+  fun `bootstrap relays state updates when observed flow emits new value`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(emptySet<String>(), viewModel.uiState.first().bootstrapRelays)
+
+    bootstrapRelaysFlow.value = setOf("wss://relay.example.com")
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(setOf("wss://relay.example.com"), viewModel.uiState.first().bootstrapRelays)
   }
 }
