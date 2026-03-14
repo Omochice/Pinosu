@@ -1,4 +1,5 @@
 walk = "git"
+excludes = ["CHANGELOG.md", "doc/design.pen", "detekt-baseline.xml"]
 
 [formatter.biome]
 command = "biome"
@@ -17,7 +18,6 @@ includes = ["*.kt", "*.kts"]
 [formatter.rumdl]
 command = "rumdl"
 options = ["fmt"]
-excludes = ["CHANGELOG.md"]
 includes = ["*.md"]
 
 [formatter.tombi]
@@ -34,7 +34,6 @@ options = ["--in-place"]
 command = "typos"
 options = ["--write-changes", "--force-exclude"]
 includes = ["*"]
-excludes = ["CHANGELOG.md", "detekt-baseline.xml"]
 
 [formatter.yamlfmt]
 command = "yamlfmt"
