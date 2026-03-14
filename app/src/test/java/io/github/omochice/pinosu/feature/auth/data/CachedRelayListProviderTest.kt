@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.data
 
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.feature.auth.data.local.LocalAuthDataSource
 import io.mockk.coEvery
@@ -14,6 +15,9 @@ class CachedRelayListProviderTest {
 
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var provider: CachedRelayListProvider
+
+  private val expectedDefaults =
+      Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.map { RelayConfig(url = it) }
 
   @Before
   fun setup() {
@@ -36,22 +40,20 @@ class CachedRelayListProviderTest {
   }
 
   @Test
-  fun `getRelays returns default relay when cached relays are null`() = runTest {
+  fun `getRelays returns default relays when cached relays are null`() = runTest {
     coEvery { localAuthDataSource.getRelayList() } returns null
 
     val result = provider.getRelays()
 
-    assertEquals(1, result.size)
-    assertEquals("wss://directory.yabu.me/", result[0].url)
+    assertEquals(expectedDefaults, result)
   }
 
   @Test
-  fun `getRelays returns default relay when cached relays are empty`() = runTest {
+  fun `getRelays returns default relays when cached relays are empty`() = runTest {
     coEvery { localAuthDataSource.getRelayList() } returns emptyList()
 
     val result = provider.getRelays()
 
-    assertEquals(1, result.size)
-    assertEquals("wss://directory.yabu.me/", result[0].url)
+    assertEquals(expectedDefaults, result)
   }
 }
