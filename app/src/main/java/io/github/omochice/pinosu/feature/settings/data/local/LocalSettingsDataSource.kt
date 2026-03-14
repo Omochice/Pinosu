@@ -41,6 +41,11 @@ constructor(@param:ApplicationContext private val context: Context) {
   /** Observable StateFlow of language mode preference */
   val languageModeFlow: StateFlow<LanguageMode> = _languageModeFlow.asStateFlow()
 
+  private val _bootstrapRelaysFlow = MutableStateFlow(getBootstrapRelays())
+
+  /** Observable StateFlow of user-configured bootstrap relay URLs */
+  val bootstrapRelaysFlow: StateFlow<Set<String>> = _bootstrapRelaysFlow.asStateFlow()
+
   /**
    * Retrieve bookmark display mode preference.
    *
@@ -113,10 +118,30 @@ constructor(@param:ApplicationContext private val context: Context) {
     _languageModeFlow.value = mode
   }
 
+  /**
+   * Retrieve user-configured bootstrap relay URLs.
+   *
+   * @return Set of relay URLs, empty if none configured
+   */
+  fun getBootstrapRelays(): Set<String> {
+    return sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
+  }
+
+  /**
+   * Save user-configured bootstrap relay URLs and emit to observers.
+   *
+   * @param relays Set of relay URLs to save
+   */
+  fun setBootstrapRelays(relays: Set<String>) {
+    sharedPreferences.edit().putStringSet(KEY_BOOTSTRAP_RELAYS, relays).apply()
+    _bootstrapRelaysFlow.value = relays
+  }
+
   companion object {
     internal const val PREFS_NAME = "pinosu_settings"
     internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
     internal const val KEY_THEME_MODE = "theme_mode"
     internal const val KEY_LANGUAGE_MODE = "language_mode"
+    internal const val KEY_BOOTSTRAP_RELAYS = "bootstrap_relays"
   }
 }
