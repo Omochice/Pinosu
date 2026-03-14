@@ -261,8 +261,7 @@ class SettingsViewModelTest {
     verify {
       setBootstrapRelaysUseCase(
           io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
-              .DEFAULT_BOOTSTRAP_RELAY_URLS
-              .toSet())
+              .DEFAULT_BOOTSTRAP_RELAY_URLS)
     }
   }
 }

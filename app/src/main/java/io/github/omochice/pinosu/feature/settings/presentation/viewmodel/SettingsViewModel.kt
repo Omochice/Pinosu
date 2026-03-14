@@ -115,6 +115,6 @@ constructor(
 
   /** Reset bootstrap relays to the default set. */
   fun resetBootstrapRelays() {
-    setBootstrapRelaysUseCase(Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.toSet())
+    setBootstrapRelaysUseCase(Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
   }
 }
