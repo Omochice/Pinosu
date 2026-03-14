@@ -123,8 +123,13 @@ constructor(
       pubkey.length == HEX_PUBKEY_LENGTH && pubkey.all { it in HEX_CHARS }
 
   companion object {
-    /** Bootstrap relay URL used to fetch NIP-65 events */
-    const val BOOTSTRAP_RELAY_URL = "wss://directory.yabu.me/"
+    /** Default bootstrap relay URLs used to fetch NIP-65 events */
+    val DEFAULT_BOOTSTRAP_RELAY_URLS =
+        listOf(
+            "wss://directory.yabu.me/",
+            "wss://purplepag.es/",
+            "wss://indexer.coracle.social/",
+        )
 
     /** Timeout for relay queries in milliseconds */
     const val RELAY_TIMEOUT_MS = 10_000L

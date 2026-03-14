@@ -46,7 +46,7 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
     localSettingsDataSource.setLanguageMode(mode)
   }
 
-  override fun getBootstrapRelays(): Set<String> = localSettingsDataSource.getBootstrapRelays()
+  override fun getBootstrapRelays(): Set<String>? = localSettingsDataSource.getBootstrapRelays()
 
   override fun setBootstrapRelays(relays: Set<String>) {
     localSettingsDataSource.setBootstrapRelays(relays)

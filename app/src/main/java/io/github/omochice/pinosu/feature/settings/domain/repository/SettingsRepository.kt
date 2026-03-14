@@ -68,9 +68,9 @@ interface SettingsRepository {
   /**
    * Retrieve user-configured bootstrap relay URLs.
    *
-   * @return Set of relay URLs, empty if none configured
+   * @return Set of relay URLs, or null if user has never configured relays
    */
-  fun getBootstrapRelays(): Set<String>
+  fun getBootstrapRelays(): Set<String>?
 
   /**
    * Save user-configured bootstrap relay URLs.

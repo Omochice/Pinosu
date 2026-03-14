@@ -28,7 +28,7 @@ class Nip65RelayListFetcherTest {
     parser = Nip65EventParserImpl()
     bootstrapRelayProvider = mockk()
     every { bootstrapRelayProvider.getBootstrapRelays() } returns
-        listOf(RelayConfig(url = "wss://directory.yabu.me/"))
+        Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.map { RelayConfig(url = it) }
     fetcher = Nip65RelayListFetcherImpl(relayPool, parser, bootstrapRelayProvider)
   }
 
@@ -81,7 +81,13 @@ class Nip65RelayListFetcherTest {
 
     coVerify {
       relayPool.subscribeWithTimeout(
-          match { relays -> relays.any { it.url == "wss://directory.yabu.me/" } }, any(), any())
+          match { relays ->
+            Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.any { url ->
+              relays.any { it.url == url }
+            }
+          },
+          any(),
+          any())
     }
   }
 
@@ -118,16 +124,12 @@ class Nip65RelayListFetcherTest {
   @Test
   fun `fetchRelayList should query multiple bootstrap relays`() = runTest {
     val hexPubkey = "a".repeat(64)
-    every { bootstrapRelayProvider.getBootstrapRelays() } returns
-        listOf(
-            RelayConfig(url = "wss://directory.yabu.me/"),
-            RelayConfig(url = "wss://custom-relay.example.com"))
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
     assertTrue("Should return success", result.isSuccess)
-    coVerify(atLeast = 2) { relayPool.subscribeWithTimeout(any(), any(), any()) }
+    coVerify(atLeast = 3) { relayPool.subscribeWithTimeout(any(), any(), any()) }
   }
 
   private fun createNip65Event(

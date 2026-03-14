@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
@@ -41,9 +42,13 @@ constructor(@param:ApplicationContext private val context: Context) {
   /** Observable StateFlow of language mode preference */
   val languageModeFlow: StateFlow<LanguageMode> = _languageModeFlow.asStateFlow()
 
-  private val _bootstrapRelaysFlow = MutableStateFlow(getBootstrapRelays())
+  private val _bootstrapRelaysFlow =
+      MutableStateFlow(
+          getBootstrapRelays() ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.toSet())
 
-  /** Observable StateFlow of user-configured bootstrap relay URLs */
+  /**
+   * Observable StateFlow of bootstrap relay URLs (defaults are used when user has not configured)
+   */
   val bootstrapRelaysFlow: StateFlow<Set<String>> = _bootstrapRelaysFlow.asStateFlow()
 
   /**
@@ -121,10 +126,12 @@ constructor(@param:ApplicationContext private val context: Context) {
   /**
    * Retrieve user-configured bootstrap relay URLs.
    *
-   * @return Set of relay URLs, empty if none configured
+   * @return Set of relay URLs, or null if user has never configured relays
    */
-  fun getBootstrapRelays(): Set<String> =
-      sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
+  fun getBootstrapRelays(): Set<String>? {
+    if (!sharedPreferences.contains(KEY_BOOTSTRAP_RELAYS)) return null
+    return sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
+  }
 
   /**
    * Save user-configured bootstrap relay URLs and emit to observers.
