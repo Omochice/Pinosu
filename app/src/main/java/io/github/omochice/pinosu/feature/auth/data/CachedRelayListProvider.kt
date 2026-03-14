@@ -26,6 +26,6 @@ constructor(private val localAuthDataSource: LocalAuthDataSource) : RelayListPro
   }
 
   companion object {
-    private const val DEFAULT_RELAY_URL = "wss://yabu.me"
+    private const val DEFAULT_RELAY_URL = "wss://directory.yabu.me/"
   }
 }

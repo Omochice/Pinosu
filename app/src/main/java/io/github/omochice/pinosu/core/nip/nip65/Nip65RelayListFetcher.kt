@@ -72,7 +72,7 @@ constructor(
 
   companion object {
     /** Bootstrap relay URL used to fetch NIP-65 events */
-    const val BOOTSTRAP_RELAY_URL = "wss://yabu.me"
+    const val BOOTSTRAP_RELAY_URL = "wss://directory.yabu.me/"
 
     /** Timeout for relay queries in milliseconds */
     const val RELAY_TIMEOUT_MS = 10_000L

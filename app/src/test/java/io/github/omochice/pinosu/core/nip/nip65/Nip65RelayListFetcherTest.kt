@@ -95,7 +95,7 @@ class Nip65RelayListFetcherTest {
 
     coVerify {
       relayPool.subscribeWithTimeout(
-          match { relays -> relays.any { it.url == "wss://yabu.me" } }, any(), any())
+          match { relays -> relays.any { it.url == "wss://directory.yabu.me/" } }, any(), any())
     }
   }
 
