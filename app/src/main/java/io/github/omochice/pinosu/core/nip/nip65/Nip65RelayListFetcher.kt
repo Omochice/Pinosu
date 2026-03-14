@@ -1,10 +1,15 @@
 package io.github.omochice.pinosu.core.nip.nip65
 
+import io.github.omochice.pinosu.core.relay.BootstrapRelayProvider
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Fetcher for NIP-65 relay list metadata from Nostr relays
@@ -28,6 +33,7 @@ interface Nip65RelayListFetcher {
  *
  * @param relayPool Pool for querying Nostr relays
  * @param parser Parser for NIP-65 events
+ * @param bootstrapRelayProvider Provider for bootstrap relay configurations
  */
 @Singleton
 class Nip65RelayListFetcherImpl
@@ -35,6 +41,7 @@ class Nip65RelayListFetcherImpl
 constructor(
     private val relayPool: RelayPool,
     private val parser: Nip65EventParser,
+    private val bootstrapRelayProvider: BootstrapRelayProvider,
 ) : Nip65RelayListFetcher {
 
   override suspend fun fetchRelayList(hexPubkey: String): Result<List<RelayConfig>> {
@@ -44,26 +51,59 @@ constructor(
     }
 
     return try {
-      val bootstrapRelays = listOf(RelayConfig(url = BOOTSTRAP_RELAY_URL))
+      val bootstrapRelays = bootstrapRelayProvider.getBootstrapRelays()
       val filter =
           """{"kinds":[${Nip65EventParserImpl.KIND_RELAY_LIST_METADATA}],"authors":["$hexPubkey"],"limit":1}"""
 
-      val events = relayPool.subscribeWithTimeout(bootstrapRelays, filter, RELAY_TIMEOUT_MS)
-
-      if (events.isEmpty()) {
-        return Result.success(emptyList())
-      }
-
-      val mostRecentEvent =
-          events.maxByOrNull { it.createdAt } ?: return Result.success(emptyList())
-      val relays = parser.parseRelayListEvent(mostRecentEvent)
-
+      val relays = fetchFirstNonEmpty(bootstrapRelays, filter)
       Result.success(relays)
     } catch (e: IOException) {
       Result.failure(e)
     } catch (e: IllegalArgumentException) {
       Result.failure(e)
     }
+  }
+
+  /**
+   * Query all relays in parallel and return the first non-empty result.
+   *
+   * Each relay is queried individually. The first relay to return a non-empty event list wins, and
+   * remaining queries are cancelled. If all relays return empty or fail, returns an empty list.
+   */
+  private suspend fun fetchFirstNonEmpty(
+      relays: List<RelayConfig>,
+      filter: String,
+  ): List<RelayConfig> = coroutineScope {
+    if (relays.isEmpty()) return@coroutineScope emptyList()
+
+    val resultChannel = Channel<List<RelayConfig>>(capacity = relays.size)
+
+    val jobs =
+        relays.map { relay ->
+          async {
+            try {
+              val events = relayPool.subscribeWithTimeout(listOf(relay), filter, RELAY_TIMEOUT_MS)
+              if (events.isNotEmpty()) {
+                val mostRecentEvent = events.maxByOrNull { it.createdAt }
+                if (mostRecentEvent != null) {
+                  val parsed = parser.parseRelayListEvent(mostRecentEvent)
+                  if (parsed.isNotEmpty()) {
+                    resultChannel.send(parsed)
+                  }
+                }
+              }
+            } catch (_: IOException) {}
+          }
+        }
+
+    launch {
+      jobs.forEach { it.join() }
+      resultChannel.close()
+    }
+
+    val result = resultChannel.receiveCatching().getOrNull() ?: emptyList()
+    jobs.forEach { it.cancel() }
+    result
   }
 
   /** Validate that the pubkey is a valid 64-character hex string */

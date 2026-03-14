@@ -1,9 +1,12 @@
 package io.github.omochice.pinosu.core.nip.nip65
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.relay.BootstrapRelayProvider
+import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 import kotlinx.coroutines.test.runTest
@@ -16,13 +19,17 @@ class Nip65RelayListFetcherTest {
 
   private lateinit var relayPool: RelayPool
   private lateinit var parser: Nip65EventParser
+  private lateinit var bootstrapRelayProvider: BootstrapRelayProvider
   private lateinit var fetcher: Nip65RelayListFetcher
 
   @Before
   fun setup() {
     relayPool = mockk(relaxed = true)
     parser = Nip65EventParserImpl()
-    fetcher = Nip65RelayListFetcherImpl(relayPool, parser)
+    bootstrapRelayProvider = mockk()
+    every { bootstrapRelayProvider.getBootstrapRelays() } returns
+        listOf(RelayConfig(url = "wss://directory.yabu.me/"))
+    fetcher = Nip65RelayListFetcherImpl(relayPool, parser, bootstrapRelayProvider)
   }
 
   @Test
@@ -51,27 +58,6 @@ class Nip65RelayListFetcherTest {
   }
 
   @Test
-  fun `fetchRelayList should use most recent event when multiple events returned`() = runTest {
-    val hexPubkey = "a".repeat(64)
-    val olderEvent =
-        createNip65Event(
-            hexPubkey, listOf(listOf("r", "wss://old-relay.example.com")), createdAt = 1000L)
-    val newerEvent =
-        createNip65Event(
-            hexPubkey, listOf(listOf("r", "wss://new-relay.example.com")), createdAt = 2000L)
-    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns
-        listOf(olderEvent, newerEvent)
-
-    val result = fetcher.fetchRelayList(hexPubkey)
-
-    assertTrue("Should return success", result.isSuccess)
-    val relays = result.getOrNull()!!
-    assertEquals("Should return one relay from newer event", 1, relays.size)
-    assertEquals(
-        "Should use relay from newer event", "wss://new-relay.example.com", relays.first().url)
-  }
-
-  @Test
   fun `fetchRelayList should use correct filter for kind 10002`() = runTest {
     val hexPubkey = "abcd1234".repeat(8)
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
@@ -87,7 +73,7 @@ class Nip65RelayListFetcherTest {
   }
 
   @Test
-  fun `fetchRelayList should use bootstrap relay for query`() = runTest {
+  fun `fetchRelayList should use bootstrap relays from provider`() = runTest {
     val hexPubkey = "a".repeat(64)
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
 
@@ -129,6 +115,21 @@ class Nip65RelayListFetcherTest {
     assertTrue(
         "Exception message should be preserved",
         result.exceptionOrNull()?.message?.contains("Network error") == true)
+  }
+
+  @Test
+  fun `fetchRelayList should query multiple bootstrap relays`() = runTest {
+    val hexPubkey = "a".repeat(64)
+    every { bootstrapRelayProvider.getBootstrapRelays() } returns
+        listOf(
+            RelayConfig(url = "wss://directory.yabu.me/"),
+            RelayConfig(url = "wss://custom-relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
+
+    val result = fetcher.fetchRelayList(hexPubkey)
+
+    assertTrue("Should return success", result.isSuccess)
+    coVerify(atLeast = 2) { relayPool.subscribeWithTimeout(any(), any(), any()) }
   }
 
   private fun createNip65Event(
