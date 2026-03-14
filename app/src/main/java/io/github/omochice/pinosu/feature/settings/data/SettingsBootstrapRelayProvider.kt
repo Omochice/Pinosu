@@ -19,8 +19,8 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Boot
 
   override fun getBootstrapRelays(): List<RelayConfig> {
     val urls =
-        localSettingsDataSource.getBootstrapRelays()
-            ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.toSet()
+        localSettingsDataSource.getBootstrapRelays().takeUnless { it.isNullOrEmpty() }
+            ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS
     return urls.map { url -> RelayConfig(url = url) }
   }
 }
