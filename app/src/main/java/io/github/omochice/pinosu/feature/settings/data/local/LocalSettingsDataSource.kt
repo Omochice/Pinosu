@@ -44,7 +44,7 @@ constructor(@param:ApplicationContext private val context: Context) {
 
   private val _bootstrapRelaysFlow =
       MutableStateFlow(
-          getBootstrapRelays() ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.toSet())
+          getBootstrapRelays() ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
 
   /**
    * Observable StateFlow of bootstrap relay URLs (defaults are used when user has not configured)
@@ -128,10 +128,8 @@ constructor(@param:ApplicationContext private val context: Context) {
    *
    * @return Set of relay URLs, or null if user has never configured relays
    */
-  fun getBootstrapRelays(): Set<String>? {
-    if (!sharedPreferences.contains(KEY_BOOTSTRAP_RELAYS)) return null
-    return sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, emptySet()) ?: emptySet()
-  }
+  fun getBootstrapRelays(): Set<String>? =
+      sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, null)?.toSet()
 
   /**
    * Save user-configured bootstrap relay URLs and emit to observers.
@@ -139,7 +137,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @param relays Set of relay URLs to save
    */
   fun setBootstrapRelays(relays: Set<String>) {
-    sharedPreferences.edit().putStringSet(KEY_BOOTSTRAP_RELAYS, relays).apply()
+    sharedPreferences.edit().putStringSet(KEY_BOOTSTRAP_RELAYS, relays.toSet()).apply()
     _bootstrapRelaysFlow.value = relays
   }
 
