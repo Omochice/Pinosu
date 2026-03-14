@@ -31,8 +31,8 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Min SDK**: 30
 - **Target SDK**: 36
 - **Kotlin**: 2.3.10
-- **Compose BOM**: 2026.02.01
-- **Gradle Plugin**: 9.0.1
+- **Compose BOM**: 2026.03.00
+- **Gradle Plugin**: 9.1.0
 - **Hilt**: 2.59.2 (requires metadata compatibility workaround for Kotlin 2.3.x)
 
 ### Architecture
@@ -83,6 +83,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Coroutine Testing**: kotlinx-coroutines-test
 - **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test
 - **DI Testing**: Hilt Android Testing
+- **Architecture Tests**: ArchUnit 1.4.1 (`archunit-junit4`) for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
 
 ## Technical Conventions
 
@@ -137,4 +138,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-03-09 - Added Release Build section (R8 minification, resource shrinking, ProGuard rules)_
+_Updated: 2026-03-14 - AGP 9.1.0, Compose BOM 2026.03.00, added ArchUnit architecture tests_
