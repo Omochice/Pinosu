@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.presentation.viewmodel
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,14 +90,7 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
 
-        // Fetch NIP-65 relay list and wait for completion before login success
-        user?.pubkey?.let { pubkey ->
-          val relayResult = fetchRelayListUseCase(pubkey.npub)
-          if (relayResult.isFailure) {
-            Log.w(
-                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
-          }
-        }
+        fetchRelayListIfNeeded(user)
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = true)
         _uiState.value = LoginUiState.Success
@@ -140,14 +132,7 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
 
-        // Fetch NIP-65 relay list and wait for completion before login success
-        user?.pubkey?.let { pubkey ->
-          val relayResult = fetchRelayListUseCase(pubkey.npub)
-          if (relayResult.isFailure) {
-            Log.w(
-                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
-          }
-        }
+        fetchRelayListIfNeeded(user)
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub)
         _uiState.value = LoginUiState.Success
@@ -166,6 +151,18 @@ constructor(
               is LoginError.UnknownError -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
               else -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
+      }
+    }
+  }
+
+  private suspend fun fetchRelayListIfNeeded(
+      user: io.github.omochice.pinosu.feature.auth.domain.model.User?
+  ) {
+    user?.pubkey?.let { pubkey ->
+      val relayResult = fetchRelayListUseCase(pubkey.npub)
+      if (relayResult.isFailure) {
+        android.util.Log.w(
+            TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
       }
     }
   }
