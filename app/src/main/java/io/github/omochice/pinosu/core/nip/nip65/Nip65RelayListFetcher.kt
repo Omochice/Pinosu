@@ -24,7 +24,7 @@ interface Nip65RelayListFetcher {
    *
    * @param hexPubkey 64-character hex-encoded public key
    * @return Success(List<RelayConfig>) with the parsed relay list, or empty list if not found.
-   *   Failure if pubkey is invalid or network error occurs.
+   *   Failure if pubkey is invalid or a relay returns an unparsable event.
    */
   suspend fun fetchRelayList(hexPubkey: String): Result<List<RelayConfig>>
 }
@@ -58,8 +58,6 @@ constructor(
 
       val relays = fetchFirstNonEmpty(bootstrapRelays, filter)
       Result.success(relays)
-    } catch (e: IOException) {
-      Result.failure(e)
     } catch (e: IllegalArgumentException) {
       Result.failure(e)
     }
@@ -108,7 +106,11 @@ constructor(
         } catch (_: IOException) {
           return null
         }
-    return parseEvents(events)
+    return try {
+      parseEvents(events)
+    } catch (_: IllegalArgumentException) {
+      null
+    }
   }
 
   private fun parseEvents(events: List<NostrEvent>): List<RelayConfig>? {
@@ -125,7 +127,7 @@ constructor(
   companion object {
     /** Default bootstrap relay URLs used to fetch NIP-65 events */
     val DEFAULT_BOOTSTRAP_RELAY_URLS =
-        listOf(
+        setOf(
             "wss://directory.yabu.me/",
             "wss://purplepag.es/",
             "wss://indexer.coracle.social/",
