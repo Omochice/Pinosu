@@ -190,7 +190,8 @@
                       "width": "fill_container",
                       "content": "https://example.com/article",
                       "fontFamily": "Inter",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -199,7 +200,8 @@
                       "fill": "$OnSurfaceVariant",
                       "content": "2023-11-15 12:00",
                       "fontFamily": "Inter",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -266,7 +268,8 @@
                           "width": "fill_container",
                           "content": "This is my bookmark note",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -275,7 +278,8 @@
                           "fill": "$OnSurfaceVariant",
                           "content": "2 hours ago",
                           "fontFamily": "Inter",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -326,7 +330,8 @@
                           "width": "fill_container",
                           "content": "Nice bookmark!",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -335,7 +340,8 @@
                           "fill": "$OnSurfaceVariant",
                           "content": "1 hour ago",
                           "fontFamily": "Inter",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -389,7 +395,8 @@
                   "fill": "$OnSurfaceVariant",
                   "content": "Add a comment...",
                   "fontFamily": "Inter",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -577,7 +584,8 @@
                   "fill": "$OnSurfaceVariant",
                   "content": "https://",
                   "fontFamily": "Inter",
-                  "fontSize": 16
+                  "fontSize": 16,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -603,7 +611,8 @@
                       "fill": "$OnSurfaceVariant",
                       "content": "example.com/path",
                       "fontFamily": "Inter",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -641,7 +650,8 @@
                       "fill": "$OnSurfaceVariant",
                       "content": "Title",
                       "fontFamily": "Inter",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -679,7 +689,8 @@
                       "fill": "$OnSurfaceVariant",
                       "content": "Categories",
                       "fontFamily": "Inter",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -692,7 +703,8 @@
                   "width": "fill_container",
                   "content": "Separate categories with commas",
                   "fontFamily": "Inter",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -725,7 +737,8 @@
                       "fill": "$OnSurfaceVariant",
                       "content": "Comment",
                       "fontFamily": "Inter",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -1234,7 +1247,8 @@
                   "width": "fill_container",
                   "content": "Relays used to fetch relay list metadata (kind 10002)",
                   "fontFamily": "Inter",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -1256,7 +1270,8 @@
                       "width": "fill_container",
                       "content": "wss://directory.yabu.me/",
                       "fontFamily": "Inter",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -1301,7 +1316,8 @@
                       "width": "fill_container",
                       "content": "wss://purplepag.es/",
                       "fontFamily": "Inter",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -1588,7 +1604,8 @@
               "fill": "$OnSurface",
               "content": "App Info",
               "fontFamily": "Outfit",
-              "fontSize": 22
+              "fontSize": 22,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -1647,7 +1664,8 @@
               "fill": "$OnSurface",
               "content": "Pinosu",
               "fontFamily": "Outfit",
-              "fontSize": 28
+              "fontSize": 28,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
@@ -1680,7 +1698,8 @@
                   "fill": "$OnSurface",
                   "content": "0.15.0 (abc1234)",
                   "fontFamily": "Inter",
-                  "fontSize": 16
+                  "fontSize": 16,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -1729,7 +1748,8 @@
               "fill": "$Primary",
               "content": "https://github.com/Omochice/Pinosu",
               "fontFamily": "Inter",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         }
@@ -1753,7 +1773,66 @@
           "name": "BookmarkHeader",
           "width": "fill_container",
           "x": 0,
-          "y": 0
+          "y": 0,
+          "height": "fit_content",
+          "descendants": {
+            "t95Al": {
+              "width": "fill_container"
+            },
+            "zMm1O": {
+              "x": 24,
+              "y": 22
+            },
+            "k7kkO": {
+              "width": "fit_content",
+              "height": "fit_content",
+              "x": 318,
+              "y": 23
+            },
+            "shkOL": {
+              "x": 22
+            },
+            "Aajkp": {
+              "x": 44
+            },
+            "m1uG6": {
+              "width": "fill_container",
+              "y": 62
+            },
+            "1udqY": {
+              "x": 16,
+              "y": 4
+            },
+            "TFNdR": {
+              "x": 12,
+              "y": 12
+            },
+            "kBJCG": {
+              "x": 68,
+              "y": 14
+            },
+            "yUFSE": {
+              "width": "fill_container",
+              "y": 118
+            },
+            "Ka6gO": {
+              "width": "fill_container",
+              "height": "fill_container"
+            },
+            "l4pIa": {
+              "x": 82,
+              "y": 15.5
+            },
+            "LIXTE": {
+              "width": "fill_container",
+              "height": "fill_container",
+              "x": 201
+            },
+            "EQUtG": {
+              "x": 79,
+              "y": 15.5
+            }
+          }
         },
         {
           "type": "frame",
@@ -1774,15 +1853,30 @@
               "width": "fill_container",
               "x": 16,
               "y": 16,
+              "height": "fit_content",
               "descendants": {
+                "hX0a3": {
+                  "x": 16,
+                  "y": 16
+                },
+                "UmL26": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 108,
+                  "y": 16
+                },
                 "iQV4Z": {
-                  "content": "Example Article Title"
+                  "content": "Example Article Title",
+                  "width": "fill_container"
                 },
                 "QLjji": {
-                  "content": "https://example.com/article"
+                  "content": "https://example.com/article",
+                  "width": "fill_container",
+                  "y": 26
                 },
                 "fmaRN": {
-                  "content": "2 hours ago"
+                  "content": "2 hours ago",
+                  "y": 47
                 }
               }
             },
@@ -1794,15 +1888,30 @@
               "width": "fill_container",
               "x": 16,
               "y": 136,
+              "height": "fit_content",
               "descendants": {
+                "hX0a3": {
+                  "x": 16,
+                  "y": 16
+                },
+                "UmL26": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 108,
+                  "y": 16
+                },
                 "iQV4Z": {
-                  "content": "Another Bookmark"
+                  "content": "Another Bookmark",
+                  "width": "fill_container"
                 },
                 "QLjji": {
-                  "content": "https://example.com/another"
+                  "content": "https://example.com/another",
+                  "width": "fill_container",
+                  "y": 26
                 },
                 "fmaRN": {
-                  "content": "1 hour ago"
+                  "content": "1 hour ago",
+                  "y": 47
                 }
               }
             },
@@ -1814,15 +1923,30 @@
               "width": "fill_container",
               "x": 16,
               "y": 256,
+              "height": "fit_content",
               "descendants": {
+                "hX0a3": {
+                  "x": 16,
+                  "y": 16
+                },
+                "UmL26": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 108,
+                  "y": 16
+                },
                 "iQV4Z": {
-                  "content": "Nostr Protocol Deep Dive"
+                  "content": "Nostr Protocol Deep Dive",
+                  "width": "fill_container"
                 },
                 "QLjji": {
-                  "content": "https://nostr.com/deep-dive"
+                  "content": "https://nostr.com/deep-dive",
+                  "width": "fill_container",
+                  "y": 26
                 },
                 "fmaRN": {
-                  "content": "3 hours ago"
+                  "content": "3 hours ago",
+                  "y": 47
                 }
               }
             },
@@ -1832,15 +1956,32 @@
               "ref": "aSW88",
               "name": "BookmarkCard 4",
               "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 376,
               "descendants": {
+                "hX0a3": {
+                  "x": 16,
+                  "y": 16
+                },
+                "UmL26": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 108,
+                  "y": 16
+                },
                 "iQV4Z": {
-                  "content": "Android Compose Tips"
+                  "content": "Android Compose Tips",
+                  "width": "fill_container"
                 },
                 "QLjji": {
-                  "content": "https://developer.android.com/compose"
+                  "content": "https://developer.android.com/compose",
+                  "width": "fill_container",
+                  "y": 26
                 },
                 "fmaRN": {
-                  "content": "5 hours ago"
+                  "content": "5 hours ago",
+                  "y": 47
                 }
               }
             }
@@ -1858,7 +1999,7 @@
               "type": "frame",
               "id": "TwLE2",
               "x": 330,
-              "y": 802,
+              "y": 282,
               "name": "FAB",
               "width": 56,
               "height": 56,
@@ -2057,7 +2198,66 @@
           "name": "BookmarkHeader",
           "width": "fill_container",
           "x": 0,
-          "y": 0
+          "y": 0,
+          "height": "fit_content",
+          "descendants": {
+            "t95Al": {
+              "width": "fill_container"
+            },
+            "zMm1O": {
+              "x": 24,
+              "y": 22
+            },
+            "k7kkO": {
+              "width": "fit_content",
+              "height": "fit_content",
+              "x": 318,
+              "y": 23
+            },
+            "shkOL": {
+              "x": 22
+            },
+            "Aajkp": {
+              "x": 44
+            },
+            "m1uG6": {
+              "width": "fill_container",
+              "y": 62
+            },
+            "1udqY": {
+              "x": 16,
+              "y": 4
+            },
+            "TFNdR": {
+              "x": 12,
+              "y": 12
+            },
+            "kBJCG": {
+              "x": 68,
+              "y": 14
+            },
+            "yUFSE": {
+              "width": "fill_container",
+              "y": 118
+            },
+            "Ka6gO": {
+              "width": "fill_container",
+              "height": "fill_container"
+            },
+            "l4pIa": {
+              "x": 82,
+              "y": 15.5
+            },
+            "LIXTE": {
+              "width": "fill_container",
+              "height": "fill_container",
+              "x": 201
+            },
+            "EQUtG": {
+              "x": 79,
+              "y": 15.5
+            }
+          }
         },
         {
           "type": "frame",
@@ -2084,24 +2284,33 @@
                   "width": "fill_container",
                   "x": 0,
                   "y": 0,
+                  "height": "fit_content",
                   "descendants": {
                     "pgJRZ": {
                       "width": "fill_container",
                       "fill": "#E8DEF8"
                     },
                     "BxVrs": {
-                      "width": "fill_container"
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "y": 100
                     },
                     "5k7BO": {
                       "width": "fill_container",
-                      "content": "Example Article Title"
+                      "content": "Example Article Title",
+                      "x": 12,
+                      "y": 12
                     },
                     "0ueMG": {
                       "width": "fill_container",
-                      "content": "example.com/article"
+                      "content": "example.com/article",
+                      "x": 12,
+                      "y": 34
                     },
                     "AibJ5": {
-                      "content": "2 hours ago"
+                      "content": "2 hours ago",
+                      "x": 12,
+                      "y": 51
                     }
                   }
                 },
@@ -2113,24 +2322,33 @@
                   "width": "fill_container",
                   "x": 0,
                   "y": 184,
+                  "height": "fit_content",
                   "descendants": {
                     "pgJRZ": {
                       "width": "fill_container",
                       "fill": "#CAC4D0"
                     },
                     "BxVrs": {
-                      "width": "fill_container"
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "y": 100
                     },
                     "5k7BO": {
                       "width": "fill_container",
-                      "content": "Nostr Protocol Overview and Discussion"
+                      "content": "Nostr Protocol Overview and Discussion",
+                      "x": 12,
+                      "y": 12
                     },
                     "0ueMG": {
                       "width": "fill_container",
-                      "content": "nostr.com/protocol"
+                      "content": "nostr.com/protocol",
+                      "x": 12,
+                      "y": 52
                     },
                     "AibJ5": {
-                      "content": "1 day ago"
+                      "content": "1 day ago",
+                      "x": 12,
+                      "y": 69
                     }
                   }
                 }
@@ -2152,24 +2370,33 @@
                   "width": "fill_container",
                   "x": 0,
                   "y": 0,
+                  "height": "fit_content",
                   "descendants": {
                     "pgJRZ": {
                       "width": "fill_container",
                       "fill": "#D0BCFF"
                     },
                     "BxVrs": {
-                      "width": "fill_container"
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "y": 100
                     },
                     "5k7BO": {
                       "width": "fill_container",
-                      "content": "Kotlin Coroutines Guide"
+                      "content": "Kotlin Coroutines Guide",
+                      "x": 12,
+                      "y": 12
                     },
                     "0ueMG": {
                       "width": "fill_container",
-                      "content": "kotlinlang.org/docs"
+                      "content": "kotlinlang.org/docs",
+                      "x": 12,
+                      "y": 34
                     },
                     "AibJ5": {
-                      "content": "5 hours ago"
+                      "content": "5 hours ago",
+                      "x": 12,
+                      "y": 51
                     }
                   }
                 },
@@ -2179,18 +2406,35 @@
                   "ref": "xulsk",
                   "name": "GridCard4",
                   "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 0,
+                  "y": 184,
                   "descendants": {
                     "pgJRZ": {
-                      "fill": "#C8BFD6"
+                      "fill": "#C8BFD6",
+                      "width": "fill_container"
+                    },
+                    "BxVrs": {
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "y": 100
                     },
                     "5k7BO": {
-                      "content": "Android Compose Tips"
+                      "content": "Android Compose Tips",
+                      "width": "fill_container",
+                      "x": 12,
+                      "y": 12
                     },
                     "0ueMG": {
-                      "content": "developer.android.com"
+                      "content": "developer.android.com",
+                      "width": "fill_container",
+                      "x": 12,
+                      "y": 34
                     },
                     "AibJ5": {
-                      "content": "3 days ago"
+                      "content": "3 days ago",
+                      "x": 12,
+                      "y": 51
                     }
                   }
                 }
@@ -2210,7 +2454,7 @@
               "type": "frame",
               "id": "UQ2eu",
               "x": 330,
-              "y": 802,
+              "y": 282,
               "name": "FAB",
               "width": 56,
               "height": 56,
@@ -2289,7 +2533,8 @@
                       "fill": "$OnSurface",
                       "content": "Pinosu",
                       "fontFamily": "Outfit",
-                      "fontSize": 22
+                      "fontSize": 22,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -2337,7 +2582,8 @@
                       "fill": "$OnSurface",
                       "content": "Licenses",
                       "fontFamily": "Inter",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -2370,7 +2616,8 @@
                       "fill": "$OnSurface",
                       "content": "App Info",
                       "fontFamily": "Inter",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -2403,7 +2650,8 @@
                       "fill": "$OnSurface",
                       "content": "Settings",
                       "fontFamily": "Inter",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -2444,7 +2692,8 @@
                       "fill": "$OnSurface",
                       "content": "Log out",
                       "fontFamily": "Inter",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
