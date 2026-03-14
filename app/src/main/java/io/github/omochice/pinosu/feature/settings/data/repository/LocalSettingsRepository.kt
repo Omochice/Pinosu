@@ -42,4 +42,13 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
   override fun setLanguageMode(mode: LanguageMode) {
     localSettingsDataSource.setLanguageMode(mode)
   }
+
+  override val bootstrapRelaysFlow: StateFlow<Set<String>> =
+      localSettingsDataSource.bootstrapRelaysFlow
+
+  override fun getBootstrapRelays(): Set<String> = localSettingsDataSource.getBootstrapRelays()
+
+  override fun setBootstrapRelays(relays: Set<String>) {
+    localSettingsDataSource.setBootstrapRelays(relays)
+  }
 }

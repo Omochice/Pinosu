@@ -61,4 +61,21 @@ interface SettingsRepository {
    * @param mode Language mode to save
    */
   fun setLanguageMode(mode: LanguageMode)
+
+  /** Observable StateFlow of user-configured bootstrap relay URLs for reactive updates */
+  val bootstrapRelaysFlow: StateFlow<Set<String>>
+
+  /**
+   * Retrieve user-configured bootstrap relay URLs.
+   *
+   * @return Set of relay URLs, empty if none configured
+   */
+  fun getBootstrapRelays(): Set<String>
+
+  /**
+   * Save user-configured bootstrap relay URLs.
+   *
+   * @param relays Set of relay URLs to save
+   */
+  fun setBootstrapRelays(relays: Set<String>)
 }
