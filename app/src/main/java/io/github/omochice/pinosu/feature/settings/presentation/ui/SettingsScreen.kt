@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -211,7 +212,7 @@ private fun BootstrapRelaysSection(
 
   Spacer(modifier = Modifier.height(8.dp))
 
-  relays.forEach { url ->
+  relays.sorted().forEach { url ->
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically) {
@@ -228,6 +229,8 @@ private fun BootstrapRelaysSection(
   }
 
   var newRelayUrl by rememberSaveable { mutableStateOf("") }
+  val trimmedUrl = newRelayUrl.trim()
+  val isUrlValid = trimmedUrl.startsWith("wss://") || trimmedUrl.startsWith("ws://")
 
   Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     OutlinedTextField(
@@ -241,22 +244,17 @@ private fun BootstrapRelaysSection(
 
     OutlinedButton(
         onClick = {
-          val trimmed = newRelayUrl.trim()
-          if (trimmed.startsWith("wss://") || trimmed.startsWith("ws://")) {
-            onAddRelay(trimmed)
-            newRelayUrl = ""
-          }
+          onAddRelay(trimmedUrl)
+          newRelayUrl = ""
         },
-        enabled = newRelayUrl.trim().let { it.startsWith("wss://") || it.startsWith("ws://") }) {
+        enabled = isUrlValid) {
           Text(stringResource(R.string.button_add_relay))
         }
   }
 
   Spacer(modifier = Modifier.height(8.dp))
 
-  androidx.compose.material3.TextButton(onClick = onResetDefaults) {
-    Text(stringResource(R.string.button_reset_defaults))
-  }
+  TextButton(onClick = onResetDefaults) { Text(stringResource(R.string.button_reset_defaults)) }
 }
 
 @Preview(showBackground = true)
