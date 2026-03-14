@@ -12,14 +12,16 @@ import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParser
 import io.github.omochice.pinosu.core.nip.nip65.Nip65EventParserImpl
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcher
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
+import io.github.omochice.pinosu.core.relay.BootstrapRelayProvider
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.feature.auth.data.CachedRelayListProvider
+import io.github.omochice.pinosu.feature.settings.data.SettingsBootstrapRelayProvider
 
 /**
  * Hilt module for NIP protocol dependency injection
  *
- * Provides NIP-01 profile metadata, NIP-65 relay list parser and fetcher implementations, and relay
- * list provider.
+ * Provides NIP-01 profile metadata, NIP-65 relay list parser and fetcher implementations, relay
+ * list provider, and bootstrap relay provider.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,4 +38,8 @@ object RepositoryModule {
   fun provideNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher = impl
 
   @Provides fun provideRelayListProvider(impl: CachedRelayListProvider): RelayListProvider = impl
+
+  @Provides
+  fun provideBootstrapRelayProvider(impl: SettingsBootstrapRelayProvider): BootstrapRelayProvider =
+      impl
 }
