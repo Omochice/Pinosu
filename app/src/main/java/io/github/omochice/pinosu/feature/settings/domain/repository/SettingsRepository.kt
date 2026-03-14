@@ -24,25 +24,11 @@ interface SettingsRepository {
   val bootstrapRelaysFlow: StateFlow<Set<String>>
 
   /**
-   * Retrieve bookmark display mode preference.
-   *
-   * @return Stored display mode, defaults to List if not set
-   */
-  fun getDisplayMode(): BookmarkDisplayMode
-
-  /**
    * Save bookmark display mode preference.
    *
    * @param mode Display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode)
-
-  /**
-   * Retrieve theme mode preference.
-   *
-   * @return Stored theme mode, defaults to System if not set
-   */
-  fun getThemeMode(): ThemeMode
 
   /**
    * Save theme mode preference.
@@ -52,25 +38,11 @@ interface SettingsRepository {
   fun setThemeMode(mode: ThemeMode)
 
   /**
-   * Retrieve language mode preference.
-   *
-   * @return Stored language mode, defaults to System if not set
-   */
-  fun getLanguageMode(): LanguageMode
-
-  /**
    * Save language mode preference.
    *
    * @param mode Language mode to save
    */
   fun setLanguageMode(mode: LanguageMode)
-
-  /**
-   * Retrieve user-configured bootstrap relay URLs.
-   *
-   * @return Set of relay URLs, or null if user has never configured relays
-   */
-  fun getBootstrapRelays(): Set<String>?
 
   /**
    * Save user-configured bootstrap relay URLs.

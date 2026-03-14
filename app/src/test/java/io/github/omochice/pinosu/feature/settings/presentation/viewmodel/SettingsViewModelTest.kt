@@ -11,6 +11,7 @@ import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRel
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SettingsUseCases
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -72,14 +73,16 @@ class SettingsViewModelTest {
 
   private fun createViewModel() =
       SettingsViewModel(
-          observeDisplayModeUseCase,
-          setDisplayModeUseCase,
-          observeThemeModeUseCase,
-          setThemeModeUseCase,
-          observeLanguageModeUseCase,
-          setLanguageModeUseCase,
-          observeBootstrapRelaysUseCase,
-          setBootstrapRelaysUseCase)
+          SettingsUseCases(
+              observeDisplayMode = observeDisplayModeUseCase,
+              setDisplayMode = setDisplayModeUseCase,
+              observeThemeMode = observeThemeModeUseCase,
+              setThemeMode = setThemeModeUseCase,
+              observeLanguageMode = observeLanguageModeUseCase,
+              setLanguageMode = setLanguageModeUseCase,
+              observeBootstrapRelays = observeBootstrapRelaysUseCase,
+              setBootstrapRelays = setBootstrapRelaysUseCase,
+          ))
 
   @Test
   fun `initial state loads display mode from observed flow`() = runTest {
