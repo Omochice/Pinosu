@@ -1,10 +1,16 @@
 package io.github.omochice.pinosu.core.nip.nip65
 
+import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.relay.BootstrapRelayProvider
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayPool
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Fetcher for NIP-65 relay list metadata from Nostr relays
@@ -18,7 +24,7 @@ interface Nip65RelayListFetcher {
    *
    * @param hexPubkey 64-character hex-encoded public key
    * @return Success(List<RelayConfig>) with the parsed relay list, or empty list if not found.
-   *   Failure if pubkey is invalid or network error occurs.
+   *   Failure if pubkey is invalid or a relay returns an unparsable event.
    */
   suspend fun fetchRelayList(hexPubkey: String): Result<List<RelayConfig>>
 }
@@ -28,6 +34,7 @@ interface Nip65RelayListFetcher {
  *
  * @param relayPool Pool for querying Nostr relays
  * @param parser Parser for NIP-65 events
+ * @param bootstrapRelayProvider Provider for bootstrap relay configurations
  */
 @Singleton
 class Nip65RelayListFetcherImpl
@@ -35,6 +42,7 @@ class Nip65RelayListFetcherImpl
 constructor(
     private val relayPool: RelayPool,
     private val parser: Nip65EventParser,
+    private val bootstrapRelayProvider: BootstrapRelayProvider,
 ) : Nip65RelayListFetcher {
 
   override suspend fun fetchRelayList(hexPubkey: String): Result<List<RelayConfig>> {
@@ -44,26 +52,72 @@ constructor(
     }
 
     return try {
-      val bootstrapRelays = listOf(RelayConfig(url = BOOTSTRAP_RELAY_URL))
+      val bootstrapRelays = bootstrapRelayProvider.getBootstrapRelays()
       val filter =
           """{"kinds":[${Nip65EventParserImpl.KIND_RELAY_LIST_METADATA}],"authors":["$hexPubkey"],"limit":1}"""
 
-      val events = relayPool.subscribeWithTimeout(bootstrapRelays, filter, RELAY_TIMEOUT_MS)
-
-      if (events.isEmpty()) {
-        return Result.success(emptyList())
-      }
-
-      val mostRecentEvent =
-          events.maxByOrNull { it.createdAt } ?: return Result.success(emptyList())
-      val relays = parser.parseRelayListEvent(mostRecentEvent)
-
+      val relays = fetchFirstNonEmpty(bootstrapRelays, filter)
       Result.success(relays)
-    } catch (e: IOException) {
-      Result.failure(e)
     } catch (e: IllegalArgumentException) {
       Result.failure(e)
     }
+  }
+
+  /**
+   * Query all relays in parallel and return the first non-empty result.
+   *
+   * Each relay is queried individually. The first relay to return a non-empty event list wins, and
+   * remaining queries are cancelled. If all relays return empty or fail, returns an empty list.
+   */
+  private suspend fun fetchFirstNonEmpty(
+      relays: List<RelayConfig>,
+      filter: String,
+  ): List<RelayConfig> {
+    if (relays.isEmpty()) return emptyList()
+
+    return coroutineScope {
+      val resultChannel = Channel<List<RelayConfig>>(capacity = relays.size)
+
+      val jobs =
+          relays.map { relay ->
+            async { queryRelay(relay, filter)?.let { resultChannel.send(it) } }
+          }
+
+      launch {
+        jobs.forEach { it.join() }
+        resultChannel.close()
+      }
+
+      val result = resultChannel.receiveCatching().getOrNull() ?: emptyList()
+      jobs.forEach { it.cancel() }
+      result
+    }
+  }
+
+  /**
+   * Query a single relay and parse the response.
+   *
+   * @return Parsed relay list if the relay returns a non-empty result, null otherwise
+   */
+  private suspend fun queryRelay(relay: RelayConfig, filter: String): List<RelayConfig>? {
+    val events =
+        try {
+          relayPool.subscribeWithTimeout(listOf(relay), filter, RELAY_TIMEOUT_MS)
+        } catch (_: IOException) {
+          return null
+        }
+    return try {
+      parseEvents(events)
+    } catch (_: IllegalArgumentException) {
+      null
+    }
+  }
+
+  private fun parseEvents(events: List<NostrEvent>): List<RelayConfig>? {
+    if (events.isEmpty()) return null
+    val mostRecentEvent = events.maxByOrNull { it.createdAt } ?: return null
+    val parsed = parser.parseRelayListEvent(mostRecentEvent)
+    return parsed.ifEmpty { null }
   }
 
   /** Validate that the pubkey is a valid 64-character hex string */
@@ -71,8 +125,13 @@ constructor(
       pubkey.length == HEX_PUBKEY_LENGTH && pubkey.all { it in HEX_CHARS }
 
   companion object {
-    /** Bootstrap relay URL used to fetch NIP-65 events */
-    const val BOOTSTRAP_RELAY_URL = "wss://yabu.me"
+    /** Default bootstrap relay URLs used to fetch NIP-65 events */
+    val DEFAULT_BOOTSTRAP_RELAY_URLS =
+        setOf(
+            "wss://directory.yabu.me/",
+            "wss://purplepag.es/",
+            "wss://indexer.coracle.social/",
+        )
 
     /** Timeout for relay queries in milliseconds */
     const val RELAY_TIMEOUT_MS = 10_000L

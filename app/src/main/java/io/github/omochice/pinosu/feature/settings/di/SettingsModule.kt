@@ -6,12 +6,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.settings.data.repository.LocalSettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCaseImpl
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
@@ -50,4 +54,13 @@ object SettingsModule {
   @Provides
   fun provideObserveLanguageMode(impl: ObserveLanguageModeUseCaseImpl): ObserveLanguageModeUseCase =
       impl
+
+  @Provides
+  fun provideSetBootstrapRelays(impl: SetBootstrapRelaysUseCaseImpl): SetBootstrapRelaysUseCase =
+      impl
+
+  @Provides
+  fun provideObserveBootstrapRelays(
+      impl: ObserveBootstrapRelaysUseCaseImpl
+  ): ObserveBootstrapRelaysUseCase = impl
 }

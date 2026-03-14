@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
@@ -40,6 +41,15 @@ constructor(@param:ApplicationContext private val context: Context) {
 
   /** Observable StateFlow of language mode preference */
   val languageModeFlow: StateFlow<LanguageMode> = _languageModeFlow.asStateFlow()
+
+  private val _bootstrapRelaysFlow =
+      MutableStateFlow(
+          getBootstrapRelays() ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
+
+  /**
+   * Observable StateFlow of bootstrap relay URLs (defaults are used when user has not configured)
+   */
+  val bootstrapRelaysFlow: StateFlow<Set<String>> = _bootstrapRelaysFlow.asStateFlow()
 
   /**
    * Retrieve bookmark display mode preference.
@@ -113,10 +123,29 @@ constructor(@param:ApplicationContext private val context: Context) {
     _languageModeFlow.value = mode
   }
 
+  /**
+   * Retrieve user-configured bootstrap relay URLs.
+   *
+   * @return Set of relay URLs, or null if user has never configured relays
+   */
+  fun getBootstrapRelays(): Set<String>? =
+      sharedPreferences.getStringSet(KEY_BOOTSTRAP_RELAYS, null)?.toSet()
+
+  /**
+   * Save user-configured bootstrap relay URLs and emit to observers.
+   *
+   * @param relays Set of relay URLs to save
+   */
+  fun setBootstrapRelays(relays: Set<String>) {
+    sharedPreferences.edit().putStringSet(KEY_BOOTSTRAP_RELAYS, relays.toSet()).apply()
+    _bootstrapRelaysFlow.value = relays
+  }
+
   companion object {
     internal const val PREFS_NAME = "pinosu_settings"
     internal const val KEY_DISPLAY_MODE = "bookmark_display_mode"
     internal const val KEY_THEME_MODE = "theme_mode"
     internal const val KEY_LANGUAGE_MODE = "language_mode"
+    internal const val KEY_BOOTSTRAP_RELAYS = "bootstrap_relays"
   }
 }
