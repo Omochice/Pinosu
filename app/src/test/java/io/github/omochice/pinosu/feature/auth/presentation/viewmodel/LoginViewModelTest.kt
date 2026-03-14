@@ -454,6 +454,66 @@ class LoginViewModelTest {
   }
 
   @Test
+  fun `onReadOnlyLoginSubmit should fetch relay list after successful login`() = runTest {
+    val npub = "npub1" + "a".repeat(59)
+    val user = User(Pubkey.parse(npub)!!)
+    val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()
+
+    coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
+    coEvery { fetchRelayListUseCase(any()) } coAnswers
+        {
+          kotlinx.coroutines.delay(100)
+          Result.success(emptyList())
+        }
+
+    val viewModelWithMock =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase)
+
+    viewModelWithMock.onReadOnlyLoginSubmit(npub)
+    advanceUntilIdle()
+
+    coVerify { fetchRelayListUseCase(npub) }
+
+    val state = viewModelWithMock.uiState.first()
+    assertTrue("state should be Success after relay fetch completes", state is LoginUiState.Success)
+  }
+
+  @Test
+  fun `onReadOnlyLoginSubmit should succeed even if relay list fetch fails`() = runTest {
+    val npub = "npub1" + "a".repeat(59)
+    val user = User(Pubkey.parse(npub)!!)
+    val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()
+
+    coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
+    coEvery { fetchRelayListUseCase(any()) } returns
+        Result.failure(RuntimeException("Network error"))
+
+    val viewModelWithMock =
+        LoginViewModel(
+            loginUseCase,
+            logoutUseCase,
+            getLoginStateUseCase,
+            authRepository,
+            fetchRelayListUseCase,
+            readOnlyLoginUseCase)
+
+    viewModelWithMock.onReadOnlyLoginSubmit(npub)
+    advanceUntilIdle()
+
+    val loginState = viewModelWithMock.uiState.first()
+    assertTrue(
+        "state should be Success even if relay fetch fails", loginState is LoginUiState.Success)
+    val mainState = viewModelWithMock.mainUiState.first()
+    assertTrue("isReadOnly should be true", mainState.isReadOnly)
+  }
+
+  @Test
   fun `onLogoutButtonClicked should reset isReadOnly`() = runTest {
     val npub = "npub1" + "a".repeat(59)
     val user = User(Pubkey.parse(npub)!!)
