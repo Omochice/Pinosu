@@ -460,7 +460,7 @@ class LoginViewModelTest {
     val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()
 
     coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
-    coEvery { fetchRelayListUseCase(any()) } coAnswers
+    coEvery { fetchRelayListUseCase(npub) } coAnswers
         {
           kotlinx.coroutines.delay(100)
           Result.success(emptyList())
@@ -491,7 +491,7 @@ class LoginViewModelTest {
     val fetchRelayListUseCase = mockk<FetchRelayListUseCase>()
 
     coEvery { readOnlyLoginUseCase(npub) } returns Result.success(user)
-    coEvery { fetchRelayListUseCase(any()) } returns
+    coEvery { fetchRelayListUseCase(npub) } returns
         Result.failure(RuntimeException("Network error"))
 
     val viewModelWithMock =
