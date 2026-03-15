@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LoginError
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.FetchRelayListUseCase
@@ -90,6 +91,9 @@ constructor(
 
       if (result.isSuccess) {
         val user = result.getOrNull()
+
+        fetchRelayListIfNeeded(user)
+
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub, isReadOnly = true)
         _uiState.value = LoginUiState.Success
       } else {
@@ -130,14 +134,7 @@ constructor(
       if (result.isSuccess) {
         val user = result.getOrNull()
 
-        // Fetch NIP-65 relay list and wait for completion before login success
-        user?.pubkey?.let { pubkey ->
-          val relayResult = fetchRelayListUseCase(pubkey.npub)
-          if (relayResult.isFailure) {
-            Log.w(
-                TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
-          }
-        }
+        fetchRelayListIfNeeded(user)
 
         _mainUiState.value = MainUiState(userPubkey = user?.pubkey?.npub)
         _uiState.value = LoginUiState.Success
@@ -156,6 +153,15 @@ constructor(
               is LoginError.UnknownError -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
               else -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
+      }
+    }
+  }
+
+  private suspend fun fetchRelayListIfNeeded(user: User?) {
+    user?.pubkey?.let { pubkey ->
+      val relayResult = fetchRelayListUseCase(pubkey.npub)
+      if (relayResult.isFailure) {
+        Log.w(TAG, "Failed to fetch NIP-65 relay list: ${relayResult.exceptionOrNull()?.message}")
       }
     }
   }
