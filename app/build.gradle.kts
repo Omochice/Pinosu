@@ -133,7 +133,7 @@ dependencies {
   ksp(libs.hilt.compiler)
   // Workaround for Hilt + Kotlin 2.3.0 metadata compatibility
   // https://github.com/google/dagger/issues/5001
-  annotationProcessor(libs.kotlin.metadata.jvm)
+  ksp(libs.kotlin.metadata.jvm)
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
 
