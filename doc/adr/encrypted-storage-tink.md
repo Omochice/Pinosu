@@ -14,7 +14,7 @@ PR #113 migrated the secure storage layer from `EncryptedSharedPreferences` to `
 
 ## Decision
 
-We will use Jetpack DataStore with Tink Android encryption for all local secure storage. A `TinkKeyManager` component manages AEAD (Authenticated Encryption with Associated Data) primitives backed by hardware-backed Android Keystore keys. DataStore handles structured, coroutine-friendly data persistence, while Tink provides the encryption layer using AES256-SIV for keys and AES256-GCM for values.
+We will use Jetpack DataStore with Tink Android encryption for all local secure storage. A `TinkKeyManager` component manages AEAD (Authenticated Encryption with Associated Data) primitives backed by hardware-backed Android Keystore keys. DataStore handles structured, coroutine-friendly data persistence, while Tink provides the encryption layer using AEAD with the AES256-GCM key template, backed by an Android Keystore master key managed via `AndroidKeysetManager`.
 
 ## Consequences
 
