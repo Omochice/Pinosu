@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -152,11 +153,11 @@ private fun RepositorySection(repositoryUrl: String, onOpenUrl: () -> Unit) {
 private fun rememberAppIcon(): ImageBitmap {
   val context = LocalContext.current
   val isInPreview = LocalInspectionMode.current
-  return remember(context) {
+  val density = LocalDensity.current.density
+  return remember(context, density) {
     if (isInPreview) {
       createBitmap(1, 1).asImageBitmap()
     } else {
-      val density = context.resources.displayMetrics.density
       val drawable = context.packageManager.getApplicationIcon(context.applicationInfo)
       adaptiveIconToBitmap(drawable, density).asImageBitmap()
     }
