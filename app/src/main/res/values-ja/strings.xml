@@ -6,21 +6,10 @@
     <string name="message_login_success">ログインに成功しました</string>
     <string name="message_loading">読み込み中…</string>
 
-    <string name="error_nip55_signer_not_installed">NIP-55対応アプリがインストールされていません。Google Play Storeからインストールしてください。</string>
-    <string name="error_user_rejected">ログインがキャンセルされました。再度お試しください。</string>
-    <string name="error_timeout">ログイン処理がタイムアウトしました。NIP-55対応アプリを確認して再試行してください。</string>
-    <string name="error_invalid_response">NIP-55対応アプリからの応答が不正です。アプリを更新してください。</string>
-
-    <string name="error_storage_write">ログイン状態の保存に失敗しました。</string>
-    <string name="error_storage_read">ログイン状態の読み込みに失敗しました。</string>
-    <string name="error_generic">エラーが発生しました。しばらくしてから再試行してください。</string>
     <string name="error_url_open_failed">URLを開けませんでした</string>
-
-    <string name="error_invalid_pubkey">公開鍵の形式が不正です。</string>
 
     <string name="button_login_read_only">公開鍵で閲覧</string>
     <string name="button_submit_read_only">公開鍵でログイン</string>
-    <string name="label_read_only_mode">閲覧専用モード</string>
     <string name="dialog_title_read_only_share_warning">閲覧専用モードです</string>
     <string name="dialog_message_read_only_share_warning">閲覧専用モードではブックマークを追加できません。NIP-55対応アプリでログインしてください。</string>
 
@@ -38,8 +27,6 @@
     <string name="text_not_logged_in">未ログイン</string>
 
     <string name="title_bookmarks">ブックマーク</string>
-    <string name="label_event_id">イベントID</string>
-    <string name="label_relay">リレー</string>
     <string name="message_no_bookmarks">ブックマークがありません</string>
     <string name="tab_local">Local</string>
     <string name="tab_global">Global</string>
@@ -82,7 +69,6 @@
 
     <string name="title_bookmark_detail">ブックマーク詳細</string>
     <string name="hint_comment_input">コメントを入力</string>
-    <string name="button_post_comment">投稿</string>
     <string name="message_no_comments">コメントはありません</string>
     <string name="error_comment_empty">コメントを入力してください</string>
     <string name="error_comment_create_failed">コメント作成に失敗しました</string>

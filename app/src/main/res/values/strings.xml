@@ -7,22 +7,11 @@
     <string name="message_login_success">Login successful</string>
     <string name="message_loading">Loading…</string>
 
-    <string name="error_nip55_signer_not_installed">NIP-55 compatible app is not installed. Please install one from Google Play Store.</string>
-    <string name="error_user_rejected">Login was cancelled. Please try again.</string>
-    <string name="error_timeout">Login timed out. Please check your NIP-55 app and try again.</string>
-    <string name="error_invalid_response">Invalid response from NIP-55 app. Please update the app.</string>
-
-    <string name="error_storage_write">Failed to save login state.</string>
-    <string name="error_storage_read">Failed to load login state.</string>
-    <string name="error_generic">An error occurred. Please try again later.</string>
     <string name="error_url_open_failed">Could not open URL</string>
-
-    <string name="error_invalid_pubkey">Invalid public key format.</string>
 
     <string name="button_login_read_only">Browse with public key</string>
     <string name="hint_npub_input" translatable="false">npub1…</string>
     <string name="button_submit_read_only">Log in with public key</string>
-    <string name="label_read_only_mode">Read-only mode</string>
     <string name="dialog_title_read_only_share_warning">Read-only mode</string>
     <string name="dialog_message_read_only_share_warning">You cannot add bookmarks in read-only mode. Please log in with a NIP-55 compatible app.</string>
 
@@ -40,8 +29,6 @@
     <string name="text_not_logged_in">Not logged in</string>
 
     <string name="title_bookmarks">Bookmarks</string>
-    <string name="label_event_id">Event ID</string>
-    <string name="label_relay">Relay</string>
     <string name="message_no_bookmarks">No bookmarks</string>
     <string name="tab_local">Local</string>
     <string name="tab_global">Global</string>
@@ -85,7 +72,6 @@
 
     <string name="title_bookmark_detail">Bookmark Detail</string>
     <string name="hint_comment_input">Enter a comment</string>
-    <string name="button_post_comment">Post</string>
     <string name="message_no_comments">No comments</string>
     <string name="error_comment_empty">Please enter a comment</string>
     <string name="error_comment_create_failed">Failed to create comment</string>
