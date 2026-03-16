@@ -132,13 +132,13 @@ dependencies {
   ksp(libs.hilt.compiler)
   // Workaround for Hilt + Kotlin 2.3.0 metadata compatibility
   // https://github.com/google/dagger/issues/5001
-  annotationProcessor("org.jetbrains.kotlin:kotlin-metadata-jvm:2.3.20")
+  annotationProcessor(libs.kotlin.metadata.jvm)
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
 
   // Compose compiler plugin is applied module-wide; testFixtures needs the runtime on classpath
   testFixturesImplementation(platform(libs.androidx.compose.bom))
-  testFixturesImplementation("androidx.compose.runtime:runtime")
+  testFixturesImplementation(libs.androidx.compose.runtime)
   testImplementation(testFixtures(project(":app")))
   testImplementation(libs.junit)
   testImplementation(libs.mockk)
