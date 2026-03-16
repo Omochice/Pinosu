@@ -38,12 +38,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
 import kotlinx.coroutines.launch
@@ -151,11 +153,11 @@ private fun RepositorySection(repositoryUrl: String, onOpenUrl: () -> Unit) {
 private fun rememberAppIcon(): ImageBitmap {
   val context = LocalContext.current
   val isInPreview = LocalInspectionMode.current
-  return remember(context) {
+  val density = LocalDensity.current.density
+  return remember(context, density) {
     if (isInPreview) {
-      Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888).asImageBitmap()
+      createBitmap(1, 1).asImageBitmap()
     } else {
-      val density = context.resources.displayMetrics.density
       val drawable = context.packageManager.getApplicationIcon(context.applicationInfo)
       adaptiveIconToBitmap(drawable, density).asImageBitmap()
     }
@@ -176,7 +178,7 @@ private fun adaptiveIconToBitmap(
     density: Float
 ): Bitmap {
   val size = (ADAPTIVE_ICON_SIZE_DP * density).toInt()
-  val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+  val bitmap = createBitmap(size, size)
   val canvas = Canvas(bitmap)
   if (drawable is android.graphics.drawable.AdaptiveIconDrawable) {
     drawable.background?.let { bg ->

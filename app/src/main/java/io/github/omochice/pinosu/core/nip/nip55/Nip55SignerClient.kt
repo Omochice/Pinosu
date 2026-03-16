@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.core.model.Pubkey
 import javax.inject.Inject
@@ -41,7 +41,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @return Constructed Intent
    */
   fun createPublicKeyIntent(): Intent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:"))
+    val intent = Intent(Intent.ACTION_VIEW, "$NOSTRSIGNER_SCHEME:".toUri())
     intent.`package` = NIP55_SIGNER_PACKAGE_NAME
     intent.putExtra("type", TYPE_GET_PUBLIC_KEY)
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -109,7 +109,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @return Constructed Intent for signing
    */
   fun createSignEventIntent(unsignedEventJson: String): Intent {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("$NOSTRSIGNER_SCHEME:$unsignedEventJson"))
+    val intent = Intent(Intent.ACTION_VIEW, "$NOSTRSIGNER_SCHEME:$unsignedEventJson".toUri())
     intent.`package` = NIP55_SIGNER_PACKAGE_NAME
     intent.putExtra("type", TYPE_SIGN_EVENT)
     intent.putExtra("returnType", RETURN_TYPE_EVENT)

@@ -29,9 +29,9 @@ import io.github.omochice.pinosu.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicenseScreen(onNavigateUp: () -> Unit) {
-  val context = LocalContext.current
+  val resources = LocalContext.current.resources
   val libraries by produceLibraries {
-    context.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
+    resources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
   }
   Scaffold(
       topBar = {

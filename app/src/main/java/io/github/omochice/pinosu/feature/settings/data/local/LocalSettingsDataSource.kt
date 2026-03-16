@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.settings.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.core.nip.nip65.Nip65RelayListFetcherImpl
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
@@ -71,7 +72,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @param mode Display mode to save
    */
   fun setDisplayMode(mode: BookmarkDisplayMode) {
-    sharedPreferences.edit().putString(KEY_DISPLAY_MODE, mode.name).apply()
+    sharedPreferences.edit { putString(KEY_DISPLAY_MODE, mode.name) }
     _displayModeFlow.value = mode
   }
 
@@ -95,7 +96,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @param mode Theme mode to save
    */
   fun setThemeMode(mode: ThemeMode) {
-    sharedPreferences.edit().putString(KEY_THEME_MODE, mode.name).apply()
+    sharedPreferences.edit { putString(KEY_THEME_MODE, mode.name) }
     _themeModeFlow.value = mode
   }
 
@@ -119,7 +120,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @param mode Language mode to save
    */
   fun setLanguageMode(mode: LanguageMode) {
-    sharedPreferences.edit().putString(KEY_LANGUAGE_MODE, mode.name).apply()
+    sharedPreferences.edit { putString(KEY_LANGUAGE_MODE, mode.name) }
     _languageModeFlow.value = mode
   }
 
@@ -137,7 +138,7 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @param relays Set of relay URLs to save
    */
   fun setBootstrapRelays(relays: Set<String>) {
-    sharedPreferences.edit().putStringSet(KEY_BOOTSTRAP_RELAYS, relays.toSet()).apply()
+    sharedPreferences.edit { putStringSet(KEY_BOOTSTRAP_RELAYS, relays.toSet()) }
     _bootstrapRelaysFlow.value = relays
   }
 
