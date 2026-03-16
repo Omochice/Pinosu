@@ -85,6 +85,7 @@ android {
       excludes += "/META-INF/LICENSE-notice.md"
     }
   }
+  bundle { language { enableSplit = false } }
 }
 
 dependencies {
