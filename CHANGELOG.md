@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.2](https://github.com/Omochice/Pinosu/compare/v0.15.1...v0.15.2) (2026-03-21)
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v14.0.0-b03 ([#350](https://github.com/Omochice/Pinosu/issues/350)) ([3e64939](https://github.com/Omochice/Pinosu/commit/3e64939e05d526d4f694e06b45267b2988cad4e1))
+* **deps:** update kotlin monorepo to v2.3.20 ([#344](https://github.com/Omochice/Pinosu/issues/344)) ([6030096](https://github.com/Omochice/Pinosu/commit/6030096d0af34d3710c019bd8c808553fadaff9f))
+
 ## [0.15.1](https://github.com/Omochice/Pinosu/compare/v0.15.0...v0.15.1) (2026-03-15)
 
 
