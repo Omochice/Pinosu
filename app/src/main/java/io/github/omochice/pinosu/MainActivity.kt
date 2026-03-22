@@ -346,7 +346,7 @@ fun PinosuApp(
 
                 BookmarkScreen(
                     uiState = bookmarkUiState,
-                    onRefresh = { bookmarkViewModel.refresh() },
+                    onRefresh = { bookmarkViewModel.loadBookmarks() },
                     onLoad = { bookmarkViewModel.loadBookmarks() },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
