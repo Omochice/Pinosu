@@ -52,15 +52,15 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
 
         if (!response.isSuccessful) {
           Log.w(TAG, "HTTP request failed with code: ${response.code}")
-          return@withContext Result.failure(Exception("HTTP ${response.code}"))
+          Result.failure(Exception("HTTP ${response.code}"))
+        } else {
+          val html = response.body.string()
+          val metadata = parseMetadata(html, url)
+
+          cache.put(url, metadata)
+
+          Result.success(metadata)
         }
-
-        val html = response.body.string()
-        val metadata = parseMetadata(html, url)
-
-        cache.put(url, metadata)
-
-        Result.success(metadata)
       } catch (e: IOException) {
         Log.w(TAG, "Failed to fetch metadata for $url: ${e.message}")
         Result.failure(e)
