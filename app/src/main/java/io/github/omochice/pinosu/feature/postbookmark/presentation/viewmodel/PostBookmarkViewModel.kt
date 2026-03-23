@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
 import io.github.omochice.pinosu.feature.postbookmark.domain.usecase.PostBookmarkUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,32 +140,28 @@ constructor(
   fun processSignedEvent(resultCode: Int, data: Intent?) {
     nip55SignerClient
         .handleSignEventResponse(resultCode, data)
-        .onSuccess { response ->
-          viewModelScope.launch {
-            val signedEventJson =
-                UnsignedNostrEvent.buildSignedEventJson(
-                    response.signedEventJson, pendingUnsignedEvent)
-                    ?: run {
-                      _uiState.update {
-                        it.copy(isSubmitting = false, errorMessage = "署名済みイベントの構築に失敗しました")
-                      }
-                      return@launch
-                    }
-
-            postBookmarkUseCase
-                .publishSignedEvent(signedEventJson)
-                .onSuccess { _uiState.update { it.copy(isSubmitting = false, postSuccess = true) } }
-                .onFailure { error ->
-                  _uiState.update {
-                    it.copy(
-                        isSubmitting = false, errorMessage = error.message ?: "ブックマークの投稿に失敗しました")
-                  }
-                }
-          }
-        }
+        .onSuccess { response -> viewModelScope.launch { performPublishSignedEvent(response) } }
         .onFailure { error ->
           _uiState.update {
             it.copy(isSubmitting = false, errorMessage = error.message ?: "署名がキャンセルされました")
+          }
+        }
+  }
+
+  private suspend fun performPublishSignedEvent(response: SignedEventResponse) {
+    val signedEventJson =
+        UnsignedNostrEvent.buildSignedEventJson(response.signedEventJson, pendingUnsignedEvent)
+            ?: run {
+              _uiState.update { it.copy(isSubmitting = false, errorMessage = "署名済みイベントの構築に失敗しました") }
+              return
+            }
+
+    postBookmarkUseCase
+        .publishSignedEvent(signedEventJson)
+        .onSuccess { _uiState.update { it.copy(isSubmitting = false, postSuccess = true) } }
+        .onFailure { error ->
+          _uiState.update {
+            it.copy(isSubmitting = false, errorMessage = error.message ?: "ブックマークの投稿に失敗しました")
           }
         }
   }

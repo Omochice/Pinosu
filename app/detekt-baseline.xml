@@ -9,9 +9,6 @@
     <ID>FunctionMaxLength:LoginScreen.kt$@Preview(showBackground = true) @Composable fun LoginScreenTimeoutDialogPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenFilledPreview()</ID>
     <ID>FunctionMaxLength:PostBookmarkScreen.kt$@Preview(showBackground = true) @Composable private fun PostBookmarkScreenLoadingPreview()</ID>
-    <ID>LabeledExpression:BookmarkViewModel.kt$BookmarkViewModel$@launch</ID>
-    <ID>LabeledExpression:PostBookmarkViewModel.kt$PostBookmarkViewModel$@launch</ID>
-    <ID>LabeledExpression:UrlMetadataFetcher.kt$OkHttpUrlMetadataFetcher$@withContext</ID>
     <ID>LongMethod:MainActivity.kt$@Composable fun PinosuApp( viewModel: LoginViewModel, nip55SignerClient: Nip55SignerClient, pendingSharedContent: SharedContent? = null, onSharedContentConsumed: () -&gt; Unit = {} )</ID>
     <ID>LongMethod:PostBookmarkScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PostBookmarkScreen( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>
     <ID>LongParameterList:PostBookmarkScreen.kt$( uiState: PostBookmarkUiState, onUrlChange: (String) -&gt; Unit, onTitleChange: (String) -&gt; Unit, onCategoriesChange: (String) -&gt; Unit, onCommentChange: (String) -&gt; Unit, onPostClick: () -&gt; Unit, onNavigateBack: () -&gt; Unit, onDismissError: () -&gt; Unit )</ID>

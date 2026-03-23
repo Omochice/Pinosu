@@ -57,42 +57,44 @@ constructor(
    * Composable layer (BookmarkPager).
    */
   fun loadBookmarks() {
-    viewModelScope.launch {
-      _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+    viewModelScope.launch { performLoadBookmarks() }
+  }
 
-      val user =
-          getLoginStateUseCase()
-              ?: run {
-                _uiState.value =
-                    _uiState.value.copy(
-                        isLoading = false, error = "Not logged in", allBookmarks = emptyList())
-                return@launch
-              }
+  private suspend fun performLoadBookmarks() {
+    _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-      val userHexPubkey = user.pubkey.hex
+    val user =
+        getLoginStateUseCase()
+            ?: run {
+              _uiState.value =
+                  _uiState.value.copy(
+                      isLoading = false, error = "Not logged in", allBookmarks = emptyList())
+              return
+            }
 
-      val result = getBookmarkListUseCase(user.pubkey.npub, until = null)
-      result.fold(
-          onSuccess = { bookmarkList ->
-            val allItems = bookmarkList?.items ?: emptyList()
-            _uiState.update { state ->
-              state.copy(
+    val userHexPubkey = user.pubkey.hex
+
+    val result = getBookmarkListUseCase(user.pubkey.npub, until = null)
+    result.fold(
+        onSuccess = { bookmarkList ->
+          val allItems = bookmarkList?.items ?: emptyList()
+          _uiState.update { state ->
+            state.copy(
+                isLoading = false,
+                isLoadingMore = false,
+                allBookmarks = allItems,
+                userHexPubkey = userHexPubkey,
+                hasMoreItems = allItems.size >= PAGE_SIZE,
+                error = null)
+          }
+        },
+        onFailure = { e ->
+          _uiState.value =
+              _uiState.value.copy(
                   isLoading = false,
                   isLoadingMore = false,
-                  allBookmarks = allItems,
-                  userHexPubkey = userHexPubkey,
-                  hasMoreItems = allItems.size >= PAGE_SIZE,
-                  error = null)
-            }
-          },
-          onFailure = { e ->
-            _uiState.value =
-                _uiState.value.copy(
-                    isLoading = false,
-                    isLoadingMore = false,
-                    error = e.message ?: "Failed to load bookmarks")
-          })
-    }
+                  error = e.message ?: "Failed to load bookmarks")
+        })
   }
 
   /**
@@ -110,11 +112,6 @@ constructor(
         state
       }
     }
-  }
-
-  /** Refresh bookmark list by reloading from relays */
-  fun refresh() {
-    loadBookmarks()
   }
 
   /**
@@ -158,30 +155,32 @@ constructor(
     val oldestCreatedAt =
         currentState.allBookmarks.mapNotNull { it.event?.createdAt }.minOrNull() ?: return
 
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoadingMore = true) }
+    viewModelScope.launch { performLoadMore(oldestCreatedAt) }
+  }
 
-      val user =
-          getLoginStateUseCase()
-              ?: run {
-                _uiState.update { it.copy(isLoadingMore = false) }
-                return@launch
-              }
+  private suspend fun performLoadMore(oldestCreatedAt: Long) {
+    _uiState.update { it.copy(isLoadingMore = true) }
 
-      val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt - 1)
-      result.fold(
-          onSuccess = { bookmarkList ->
-            val newItems = bookmarkList?.items ?: emptyList()
-            _uiState.update { state ->
-              val existingIds = state.allBookmarks.mapNotNull { it.eventId }.toSet()
-              val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
-              state.copy(
-                  isLoadingMore = false,
-                  allBookmarks = state.allBookmarks + uniqueNewItems,
-                  hasMoreItems = newItems.size >= PAGE_SIZE)
+    val user =
+        getLoginStateUseCase()
+            ?: run {
+              _uiState.update { it.copy(isLoadingMore = false) }
+              return
             }
-          },
-          onFailure = { _uiState.update { it.copy(isLoadingMore = false) } })
-    }
+
+    val result = getBookmarkListUseCase(user.pubkey.npub, until = oldestCreatedAt - 1)
+    result.fold(
+        onSuccess = { bookmarkList ->
+          val newItems = bookmarkList?.items ?: emptyList()
+          _uiState.update { state ->
+            val existingIds = state.allBookmarks.mapNotNull { it.eventId }.toSet()
+            val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+            state.copy(
+                isLoadingMore = false,
+                allBookmarks = state.allBookmarks + uniqueNewItems,
+                hasMoreItems = newItems.size >= PAGE_SIZE)
+          }
+        },
+        onFailure = { _uiState.update { it.copy(isLoadingMore = false) } })
   }
 }

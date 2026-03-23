@@ -237,13 +237,13 @@ class BookmarkViewModelTest {
   }
 
   @Test
-  fun `refresh should call loadBookmarks`() = runTest {
+  fun `loadBookmarks should fetch bookmarks from relays`() = runTest {
     val testUser = User(Pubkey.parse("npub1" + "a".repeat(58))!!)
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any()) } returns
         Result.success(BookmarkList("test", emptyList(), 0L))
 
-    viewModel.refresh()
+    viewModel.loadBookmarks()
     advanceUntilIdle()
 
     coVerify { getBookmarkListUseCase(any()) }
@@ -554,7 +554,7 @@ class BookmarkViewModelTest {
     assertFalse(
         "hasMoreItems should be false after exhausting", viewModel.uiState.first().hasMoreItems)
 
-    viewModel.refresh()
+    viewModel.loadBookmarks()
     advanceUntilIdle()
 
     assertTrue("hasMoreItems should be true after refresh", viewModel.uiState.first().hasMoreItems)
