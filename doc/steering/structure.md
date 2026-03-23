@@ -98,7 +98,7 @@ graph TB
 - `bookmark/` - Bookmark listing and display
 - `postbookmark/` - Creating and posting new bookmarks
 - `comment/` - Bookmark detail screen with kind 1111/1 comments viewing and posting
-- `settings/` - User preferences and display mode
+- `settings/` - User preferences: display mode, theme mode, language mode, and bootstrap relay configuration
 - `shareintent/` - Android share intent handling (receive shared URLs/text from other apps)
 - `main/` - Main screen container
 - `appinfo/` - Application information
@@ -141,7 +141,7 @@ feature/{name}/
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
     - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
-- `relay/` - WebSocket relay client (RelayPool, PublishResult)
+- `relay/` - WebSocket relay client (RelayPool, PublishResult, RelayConfig, NostrRelayMessage) and relay provider interfaces (BootstrapRelayProvider, RelayListProvider)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
 
@@ -189,7 +189,7 @@ io.github.omochice.pinosu/
 │   │   ├── nip55/           // Signer client
 │   │   ├── nip65/           // Relay list fetcher
 │   │   └── nipb0/           // NIP-B0 constants (kind 39701)
-│   ├── relay/               // RelayPool, PublishResult
+│   ├── relay/               // RelayPool, PublishResult, provider interfaces
 │   ├── timestamp/           // Timestamp formatting (java.time)
 │   └── ui/                  // UiText abstraction
 ├── feature/                 // Feature modules (vertical slices)
@@ -222,4 +222,4 @@ io.github.omochice.pinosu/
 
 ---
 
-_Updated: 2026-03-08 - Added nip22/ and nipb0/ to core/nip/; noted presentation/model/ pattern for viewmodel-free features_
+_Updated: 2026-03-23 - Expanded core/relay/ with provider interfaces; settings feature scope updated_
