@@ -48,18 +48,18 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
         val request =
             Request.Builder().url(url).header("User-Agent", "Pinosu/1.0 (Android)").build()
 
-        val response = okHttpClient.newCall(request).execute()
+        okHttpClient.newCall(request).execute().use { response ->
+          if (!response.isSuccessful) {
+            Log.w(TAG, "HTTP request failed with code: ${response.code}")
+            Result.failure(Exception("HTTP ${response.code}"))
+          } else {
+            val html = response.body.string()
+            val metadata = parseMetadata(html, url)
 
-        if (!response.isSuccessful) {
-          Log.w(TAG, "HTTP request failed with code: ${response.code}")
-          Result.failure(Exception("HTTP ${response.code}"))
-        } else {
-          val html = response.body.string()
-          val metadata = parseMetadata(html, url)
+            cache.put(url, metadata)
 
-          cache.put(url, metadata)
-
-          Result.success(metadata)
+            Result.success(metadata)
+          }
         }
       } catch (e: IOException) {
         Log.w(TAG, "Failed to fetch metadata for $url: ${e.message}")
