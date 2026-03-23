@@ -30,7 +30,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 - **Min SDK**: 30
 - **Target SDK**: 36
-- **Kotlin**: 2.3.10
+- **Kotlin**: 2.3.20
 - **Compose BOM**: 2026.03.00
 - **Gradle Plugin**: 9.1.0
 - **Hilt**: 2.59.2 (requires metadata compatibility workaround for Kotlin 2.3.x)
@@ -127,7 +127,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations
 - **Code Coverage**: Kover for unit test coverage, Jacoco for instrumentation test reports
 - **Version Tracking**: BuildConfig.COMMIT_HASH for git commit identification
-- **License Management**: AboutLibraries 14.0.0-b02 for open-source license display
+- **License Management**: AboutLibraries 14.0.0-b03 for open-source license display
 
 ### Development Tooling
 
@@ -138,4 +138,4 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ---
 
-_Updated: 2026-03-14 - AGP 9.1.0, Compose BOM 2026.03.00, added ArchUnit architecture tests_
+_Updated: 2026-03-23 - Kotlin 2.3.20, AboutLibraries 14.0.0-b03_
