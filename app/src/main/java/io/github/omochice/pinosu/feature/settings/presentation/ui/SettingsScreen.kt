@@ -273,18 +273,12 @@ private fun ClientTagSection(enabled: Boolean, onEnabledChange: (Boolean) -> Uni
 
   Spacer(modifier = Modifier.height(4.dp))
 
-  Text(
-      text = stringResource(R.string.settings_client_tag_description),
-      style = MaterialTheme.typography.bodySmall,
-      color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-  Spacer(modifier = Modifier.height(8.dp))
-
   Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     Text(
-        text = stringResource(R.string.settings_client_tag),
+        text = stringResource(R.string.settings_client_tag_description),
         modifier = Modifier.weight(1f),
-        style = MaterialTheme.typography.bodyMedium)
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
     Switch(checked = enabled, onCheckedChange = onEnabledChange)
   }
 }

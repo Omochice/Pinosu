@@ -4,6 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.github.omochice.pinosu.core.nip.nip89.Nip89
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
@@ -42,7 +43,7 @@ constructor(
     private val relayPool: RelayPool,
     private val relayListProvider: RelayListProvider,
     private val urlMetadataFetcher: UrlMetadataFetcher,
-    private val clientTagRepository: io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
+    private val clientTagRepository: ClientTagRepository
 ) : BookmarkRepository {
 
   /**
