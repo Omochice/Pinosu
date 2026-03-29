@@ -50,6 +50,11 @@ class SettingsViewModel @Inject constructor(private val useCases: SettingsUseCas
         .observeBootstrapRelays()
         .onEach { relays -> _uiState.update { it.copy(bootstrapRelays = relays) } }
         .launchIn(viewModelScope)
+
+    useCases
+        .observeClientTagEnabled()
+        .onEach { enabled -> _uiState.update { it.copy(clientTagEnabled = enabled) } }
+        .launchIn(viewModelScope)
   }
 
   /**
@@ -97,6 +102,15 @@ class SettingsViewModel @Inject constructor(private val useCases: SettingsUseCas
   fun removeBootstrapRelay(url: String) {
     val current = _uiState.value.bootstrapRelays
     useCases.setBootstrapRelays(current - url)
+  }
+
+  /**
+   * Update client tag enabled preference.
+   *
+   * @param enabled Whether to include client tag in published events
+   */
+  fun setClientTagEnabled(enabled: Boolean) {
+    useCases.setClientTagEnabled(enabled)
   }
 
   /** Reset bootstrap relays to the default set. */

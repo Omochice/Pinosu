@@ -17,4 +17,5 @@ data class SettingsUiState(
     val themeMode: ThemeMode = ThemeMode.System,
     val languageMode: LanguageMode = LanguageMode.System,
     val bootstrapRelays: Set<String> = emptySet(),
+    val clientTagEnabled: Boolean = true,
 )

@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -68,6 +69,7 @@ fun SettingsScreen(
     onAddBootstrapRelay: (String) -> Unit = {},
     onRemoveBootstrapRelay: (String) -> Unit = {},
     onResetBootstrapRelays: () -> Unit = {},
+    onClientTagEnabledChange: (Boolean) -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -106,6 +108,11 @@ fun SettingsScreen(
                   onAddRelay = onAddBootstrapRelay,
                   onRemoveRelay = onRemoveBootstrapRelay,
                   onResetDefaults = onResetBootstrapRelays)
+
+              Spacer(modifier = Modifier.height(24.dp))
+
+              ClientTagSection(
+                  enabled = uiState.clientTagEnabled, onEnabledChange = onClientTagEnabledChange)
             }
       }
 }
@@ -255,6 +262,30 @@ private fun BootstrapRelaysSection(
   Spacer(modifier = Modifier.height(8.dp))
 
   TextButton(onClick = onResetDefaults) { Text(stringResource(R.string.button_reset_defaults)) }
+}
+
+@Composable
+private fun ClientTagSection(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
+  Text(
+      text = stringResource(R.string.settings_client_tag),
+      style = MaterialTheme.typography.titleMedium)
+
+  Spacer(modifier = Modifier.height(4.dp))
+
+  Text(
+      text = stringResource(R.string.settings_client_tag_description),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+  Spacer(modifier = Modifier.height(8.dp))
+
+  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Text(
+        text = stringResource(R.string.settings_client_tag),
+        modifier = Modifier.weight(1f),
+        style = MaterialTheme.typography.bodyMedium)
+    Switch(checked = enabled, onCheckedChange = onEnabledChange)
+  }
 }
 
 @Preview(showBackground = true)
