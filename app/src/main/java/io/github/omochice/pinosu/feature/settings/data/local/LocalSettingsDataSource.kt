@@ -43,6 +43,11 @@ constructor(@param:ApplicationContext private val context: Context) {
   /** Observable StateFlow of language mode preference */
   val languageModeFlow: StateFlow<LanguageMode> = _languageModeFlow.asStateFlow()
 
+  private val _clientTagEnabledFlow = MutableStateFlow(getClientTagEnabled())
+
+  /** Observable StateFlow of client tag enabled preference */
+  val clientTagEnabledFlow: StateFlow<Boolean> = _clientTagEnabledFlow.asStateFlow()
+
   private val _bootstrapRelaysFlow =
       MutableStateFlow(
           getBootstrapRelays() ?: Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS)
@@ -125,6 +130,23 @@ constructor(@param:ApplicationContext private val context: Context) {
   }
 
   /**
+   * Retrieve client tag enabled preference.
+   *
+   * @return true if client tag should be included in published events, defaults to true
+   */
+  fun getClientTagEnabled(): Boolean = sharedPreferences.getBoolean(KEY_CLIENT_TAG_ENABLED, true)
+
+  /**
+   * Save client tag enabled preference and emit to observers.
+   *
+   * @param enabled Whether to include client tag in published events
+   */
+  fun setClientTagEnabled(enabled: Boolean) {
+    sharedPreferences.edit { putBoolean(KEY_CLIENT_TAG_ENABLED, enabled) }
+    _clientTagEnabledFlow.value = enabled
+  }
+
+  /**
    * Retrieve user-configured bootstrap relay URLs.
    *
    * @return Set of relay URLs, or null if user has never configured relays
@@ -148,5 +170,6 @@ constructor(@param:ApplicationContext private val context: Context) {
     internal const val KEY_THEME_MODE = "theme_mode"
     internal const val KEY_LANGUAGE_MODE = "language_mode"
     internal const val KEY_BOOTSTRAP_RELAYS = "bootstrap_relays"
+    internal const val KEY_CLIENT_TAG_ENABLED = "client_tag_enabled"
   }
 }

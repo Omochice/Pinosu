@@ -250,4 +250,52 @@ class LocalSettingsDataSourceTest {
 
     assertEquals(LanguageMode.Japanese, newDataSource.languageModeFlow.value)
   }
+
+  @Test
+  fun `getClientTagEnabled returns true when no value is stored`() {
+    every {
+      sharedPreferences.getBoolean(LocalSettingsDataSource.KEY_CLIENT_TAG_ENABLED, true)
+    } returns true
+
+    val result = dataSource.getClientTagEnabled()
+
+    assertEquals(true, result)
+  }
+
+  @Test
+  fun `getClientTagEnabled returns false when stored value is false`() {
+    every {
+      sharedPreferences.getBoolean(LocalSettingsDataSource.KEY_CLIENT_TAG_ENABLED, true)
+    } returns false
+
+    val result = dataSource.getClientTagEnabled()
+
+    assertEquals(false, result)
+  }
+
+  @Test
+  fun `setClientTagEnabled saves false value`() {
+    dataSource.setClientTagEnabled(false)
+
+    verify { editor.putBoolean(LocalSettingsDataSource.KEY_CLIENT_TAG_ENABLED, false) }
+    verify { editor.apply() }
+  }
+
+  @Test
+  fun `setClientTagEnabled updates clientTagEnabledFlow with new value`() {
+    dataSource.setClientTagEnabled(false)
+
+    assertEquals(false, dataSource.clientTagEnabledFlow.value)
+  }
+
+  @Test
+  fun `clientTagEnabledFlow is initialized with stored value on construction`() {
+    every {
+      sharedPreferences.getBoolean(LocalSettingsDataSource.KEY_CLIENT_TAG_ENABLED, true)
+    } returns false
+
+    val newDataSource = LocalSettingsDataSource(context)
+
+    assertEquals(false, newDataSource.clientTagEnabledFlow.value)
+  }
 }

@@ -20,6 +20,9 @@ interface SettingsRepository {
   /** Observable StateFlow of language mode preference for reactive updates */
   val languageModeFlow: StateFlow<LanguageMode>
 
+  /** Observable StateFlow of client tag enabled preference for reactive updates */
+  val clientTagEnabledFlow: StateFlow<Boolean>
+
   /** Observable StateFlow of user-configured bootstrap relay URLs for reactive updates */
   val bootstrapRelaysFlow: StateFlow<Set<String>>
 
@@ -43,6 +46,13 @@ interface SettingsRepository {
    * @param mode Language mode to save
    */
   fun setLanguageMode(mode: LanguageMode)
+
+  /**
+   * Save client tag enabled preference.
+   *
+   * @param enabled Whether to include client tag in published events
+   */
+  fun setClientTagEnabled(enabled: Boolean)
 
   /**
    * Save user-configured bootstrap relay URLs.
