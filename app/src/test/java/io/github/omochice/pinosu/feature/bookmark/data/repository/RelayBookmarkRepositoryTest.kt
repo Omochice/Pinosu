@@ -1,13 +1,13 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadata
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -36,7 +36,7 @@ class RelayBookmarkRepositoryTest {
   private lateinit var relayPool: RelayPool
   private lateinit var relayListProvider: RelayListProvider
   private lateinit var urlMetadataFetcher: UrlMetadataFetcher
-  private lateinit var settingsRepository: SettingsRepository
+  private lateinit var clientTagRepository: ClientTagRepository
   private lateinit var repository: RelayBookmarkRepository
 
   private val json = Json { ignoreUnknownKeys = true }
@@ -46,11 +46,11 @@ class RelayBookmarkRepositoryTest {
     relayPool = mockk()
     relayListProvider = mockk()
     urlMetadataFetcher = mockk()
-    settingsRepository = mockk(relaxed = true)
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+    clientTagRepository = mockk(relaxed = true)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
     repository =
         RelayBookmarkRepository(
-            relayPool, relayListProvider, urlMetadataFetcher, settingsRepository)
+            relayPool, relayListProvider, urlMetadataFetcher, clientTagRepository)
   }
 
   @Test
@@ -221,7 +221,7 @@ class RelayBookmarkRepositoryTest {
 
   @Test
   fun `createBookmarkEvent includes client tag when clientTagEnabled is true`() {
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
 
     val event =
         repository.createBookmarkEvent(
@@ -238,7 +238,7 @@ class RelayBookmarkRepositoryTest {
 
   @Test
   fun `createBookmarkEvent excludes client tag when clientTagEnabled is false`() {
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(false)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(false)
 
     val event =
         repository.createBookmarkEvent(

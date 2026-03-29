@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.feature.settings.domain.usecase
 
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class ObserveClientTagEnabledUseCaseImpl
 @Inject
-constructor(private val settingsRepository: SettingsRepository) : ObserveClientTagEnabledUseCase {
+constructor(private val clientTagRepository: ClientTagRepository) : ObserveClientTagEnabledUseCase {
 
-  override fun invoke(): StateFlow<Boolean> = settingsRepository.clientTagEnabledFlow
+  override fun invoke(): StateFlow<Boolean> = clientTagRepository.clientTagEnabledFlow
 }

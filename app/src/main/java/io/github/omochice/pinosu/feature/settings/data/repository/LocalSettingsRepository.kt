@@ -25,9 +25,6 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override val languageModeFlow: StateFlow<LanguageMode> = localSettingsDataSource.languageModeFlow
 
-  override val clientTagEnabledFlow: StateFlow<Boolean> =
-      localSettingsDataSource.clientTagEnabledFlow
-
   override val bootstrapRelaysFlow: StateFlow<Set<String>> =
       localSettingsDataSource.bootstrapRelaysFlow
 
@@ -41,10 +38,6 @@ constructor(private val localSettingsDataSource: LocalSettingsDataSource) : Sett
 
   override fun setLanguageMode(mode: LanguageMode) {
     localSettingsDataSource.setLanguageMode(mode)
-  }
-
-  override fun setClientTagEnabled(enabled: Boolean) {
-    localSettingsDataSource.setClientTagEnabled(enabled)
   }
 
   override fun setBootstrapRelays(relays: Set<String>) {

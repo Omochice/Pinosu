@@ -1,18 +1,18 @@
 package io.github.omochice.pinosu.feature.settings.domain.usecase
 
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import javax.inject.Inject
 
 /**
  * Implementation of SetClientTagEnabledUseCase.
  *
- * Delegates to SettingsRepository for client tag enabled persistence.
+ * Delegates to ClientTagRepository for client tag enabled persistence.
  */
 class SetClientTagEnabledUseCaseImpl
 @Inject
-constructor(private val settingsRepository: SettingsRepository) : SetClientTagEnabledUseCase {
+constructor(private val clientTagRepository: ClientTagRepository) : SetClientTagEnabledUseCase {
 
   override fun invoke(enabled: Boolean) {
-    settingsRepository.setClientTagEnabled(enabled)
+    clientTagRepository.setClientTagEnabled(enabled)
   }
 }

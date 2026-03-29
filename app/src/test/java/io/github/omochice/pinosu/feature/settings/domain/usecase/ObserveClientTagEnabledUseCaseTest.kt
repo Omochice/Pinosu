@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.feature.settings.domain.usecase
 
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,22 +11,22 @@ class ObserveClientTagEnabledUseCaseTest {
 
   @Test
   fun `invoke returns clientTagEnabledFlow from repository`() {
-    val settingsRepository: SettingsRepository = mockk(relaxed = true)
+    val clientTagRepository: ClientTagRepository = mockk(relaxed = true)
     val flow = MutableStateFlow(true)
-    every { settingsRepository.clientTagEnabledFlow } returns flow
+    every { clientTagRepository.clientTagEnabledFlow } returns flow
 
-    val useCase = ObserveClientTagEnabledUseCaseImpl(settingsRepository)
+    val useCase = ObserveClientTagEnabledUseCaseImpl(clientTagRepository)
 
     assertEquals(true, useCase().value)
   }
 
   @Test
   fun `invoke returns false when repository emits false`() {
-    val settingsRepository: SettingsRepository = mockk(relaxed = true)
+    val clientTagRepository: ClientTagRepository = mockk(relaxed = true)
     val flow = MutableStateFlow(false)
-    every { settingsRepository.clientTagEnabledFlow } returns flow
+    every { clientTagRepository.clientTagEnabledFlow } returns flow
 
-    val useCase = ObserveClientTagEnabledUseCaseImpl(settingsRepository)
+    val useCase = ObserveClientTagEnabledUseCaseImpl(clientTagRepository)
 
     assertEquals(false, useCase().value)
   }

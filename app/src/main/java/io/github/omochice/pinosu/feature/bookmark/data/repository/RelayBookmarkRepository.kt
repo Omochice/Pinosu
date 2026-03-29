@@ -14,7 +14,6 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
@@ -34,7 +33,7 @@ import kotlinx.serialization.json.Json
  * @param relayPool Pool for querying Nostr relays
  * @param relayListProvider Provider for relay list used in queries
  * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
- * @param settingsRepository Repository for accessing user settings
+ * @param clientTagRepository Repository for NIP-89 client tag settings
  */
 @Singleton
 class RelayBookmarkRepository
@@ -43,7 +42,7 @@ constructor(
     private val relayPool: RelayPool,
     private val relayListProvider: RelayListProvider,
     private val urlMetadataFetcher: UrlMetadataFetcher,
-    private val settingsRepository: SettingsRepository
+    private val clientTagRepository: io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 ) : BookmarkRepository {
 
   /**
@@ -134,7 +133,7 @@ constructor(
     val fullUrl = if (rawUrl != normalizedUrl) rawUrl else "$SCHEME_HTTPS$normalizedUrl"
     tags.add(listOf("r", fullUrl))
 
-    if (settingsRepository.clientTagEnabledFlow.value) {
+    if (clientTagRepository.clientTagEnabledFlow.value) {
       tags.add(Nip89.clientTag())
     }
 

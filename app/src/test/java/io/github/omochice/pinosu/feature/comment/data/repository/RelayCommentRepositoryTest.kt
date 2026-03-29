@@ -1,11 +1,11 @@
 package io.github.omochice.pinosu.feature.comment.data.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -33,7 +33,7 @@ class RelayCommentRepositoryTest {
 
   private lateinit var relayPool: RelayPool
   private lateinit var relayListProvider: RelayListProvider
-  private lateinit var settingsRepository: SettingsRepository
+  private lateinit var clientTagRepository: ClientTagRepository
   private lateinit var repository: RelayCommentRepository
 
   private val testRelays = listOf(RelayConfig(url = "wss://relay.test.com"))
@@ -42,9 +42,9 @@ class RelayCommentRepositoryTest {
   fun setup() {
     relayPool = mockk()
     relayListProvider = mockk()
-    settingsRepository = mockk(relaxed = true)
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
-    repository = RelayCommentRepository(relayPool, relayListProvider, settingsRepository)
+    clientTagRepository = mockk(relaxed = true)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+    repository = RelayCommentRepository(relayPool, relayListProvider, clientTagRepository)
 
     coEvery { relayListProvider.getRelays() } returns testRelays
   }
@@ -185,7 +185,7 @@ class RelayCommentRepositoryTest {
 
   @Test
   fun `createCommentEvent includes client tag when clientTagEnabled is true`() {
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
 
     val event =
         repository.createCommentEvent(
@@ -202,7 +202,7 @@ class RelayCommentRepositoryTest {
 
   @Test
   fun `createCommentEvent excludes client tag when clientTagEnabled is false`() {
-    every { settingsRepository.clientTagEnabledFlow } returns MutableStateFlow(false)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(false)
 
     val event =
         repository.createCommentEvent(
