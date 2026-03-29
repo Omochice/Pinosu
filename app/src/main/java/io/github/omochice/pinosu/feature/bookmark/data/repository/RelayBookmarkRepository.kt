@@ -4,6 +4,7 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.core.nip.nip89.Nip89
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
@@ -13,6 +14,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
+import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
@@ -32,6 +34,7 @@ import kotlinx.serialization.json.Json
  * @param relayPool Pool for querying Nostr relays
  * @param relayListProvider Provider for relay list used in queries
  * @param urlMetadataFetcher Fetcher for URL metadata (og:title, og:image)
+ * @param settingsRepository Repository for accessing user settings
  */
 @Singleton
 class RelayBookmarkRepository
@@ -39,7 +42,8 @@ class RelayBookmarkRepository
 constructor(
     private val relayPool: RelayPool,
     private val relayListProvider: RelayListProvider,
-    private val urlMetadataFetcher: UrlMetadataFetcher
+    private val urlMetadataFetcher: UrlMetadataFetcher,
+    private val settingsRepository: SettingsRepository
 ) : BookmarkRepository {
 
   /**
@@ -129,6 +133,10 @@ constructor(
 
     val fullUrl = if (rawUrl != normalizedUrl) rawUrl else "$SCHEME_HTTPS$normalizedUrl"
     tags.add(listOf("r", fullUrl))
+
+    if (settingsRepository.clientTagEnabledFlow.value) {
+      tags.add(Nip89.clientTag())
+    }
 
     return UnsignedNostrEvent(
         pubkey = hexPubkey,

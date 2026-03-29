@@ -57,6 +57,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onAddBootstrapRelay Callback when a bootstrap relay URL is added
  * @param onRemoveBootstrapRelay Callback when a bootstrap relay URL is removed
  * @param onResetBootstrapRelays Callback when bootstrap relays are reset to defaults
+ * @param onClientTagEnabledChange Callback when client tag enabled setting is changed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

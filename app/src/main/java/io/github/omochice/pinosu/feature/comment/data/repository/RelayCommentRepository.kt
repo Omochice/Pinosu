@@ -4,12 +4,14 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip22.Nip22
+import io.github.omochice.pinosu.core.nip.nip89.Nip89
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.domain.repository.CommentRepository
+import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,6 +44,7 @@ class RelayCommentRepository
 constructor(
     private val relayPool: RelayPool,
     private val relayListProvider: RelayListProvider,
+    private val settingsRepository: SettingsRepository,
 ) : CommentRepository {
 
   override suspend fun getCommentsForBookmark(
@@ -91,17 +94,19 @@ constructor(
   ): UnsignedNostrEvent {
     val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
 
-    val tags =
-        listOf(
-            listOf("A", aTagValue),
-            listOf("E", rootEventId),
-            listOf("K", NipB0.KIND_BOOKMARK_LIST.toString()),
-            listOf("P", rootPubkey),
-            listOf("a", aTagValue),
-            listOf("e", rootEventId),
-            listOf("k", NipB0.KIND_BOOKMARK_LIST.toString()),
-            listOf("p", rootPubkey),
-        )
+    val tags = buildList {
+      add(listOf("A", aTagValue))
+      add(listOf("E", rootEventId))
+      add(listOf("K", NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf("P", rootPubkey))
+      add(listOf("a", aTagValue))
+      add(listOf("e", rootEventId))
+      add(listOf("k", NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf("p", rootPubkey))
+      if (settingsRepository.clientTagEnabledFlow.value) {
+        add(Nip89.clientTag())
+      }
+    }
 
     return UnsignedNostrEvent(
         pubkey = hexPubkey,

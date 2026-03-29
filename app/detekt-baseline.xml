@@ -39,5 +39,7 @@
     <ID>UnderscoresInNumericLiterals:PostBookmarkUseCaseTest.kt$PostBookmarkUseCaseTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:PostBookmarkViewModelTest.kt$PostBookmarkViewModelTest$39701</ID>
     <ID>UnderscoresInNumericLiterals:RelayPoolTest.kt$RelayPoolTest$39701</ID>
+    <ID>TooManyFunctions:SettingsModule.kt$SettingsModule</ID>
+    <ID>ComplexInterface:SettingsRepository.kt$SettingsRepository</ID>
   </CurrentIssues>
 </SmellBaseline>
