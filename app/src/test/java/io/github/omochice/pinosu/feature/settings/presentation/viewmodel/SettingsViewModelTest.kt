@@ -266,13 +266,13 @@ class SettingsViewModelTest {
 
   @Test
   fun `initial state loads client tag enabled from observed flow`() = runTest {
-    clientTagEnabledFlow.value = true
+    clientTagEnabledFlow.value = false
 
     val viewModel = createViewModel()
     testDispatcher.scheduler.advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals(true, state.clientTagEnabled)
+    assertEquals(false, state.clientTagEnabled)
   }
 
   @Test
