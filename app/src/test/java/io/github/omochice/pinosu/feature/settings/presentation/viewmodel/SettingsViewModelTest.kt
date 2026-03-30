@@ -265,6 +265,40 @@ class SettingsViewModelTest {
   }
 
   @Test
+  fun `initial state loads client tag enabled from observed flow`() = runTest {
+    clientTagEnabledFlow.value = true
+
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(true, state.clientTagEnabled)
+  }
+
+  @Test
+  fun `setClientTagEnabled calls use case`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.setClientTagEnabled(false)
+
+    verify { setClientTagEnabledUseCase(false) }
+  }
+
+  @Test
+  fun `client tag enabled state updates when observed flow emits new value`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(true, viewModel.uiState.first().clientTagEnabled)
+
+    clientTagEnabledFlow.value = false
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(false, viewModel.uiState.first().clientTagEnabled)
+  }
+
+  @Test
   fun `resetBootstrapRelays sets default relay URLs via use case`() = runTest {
     bootstrapRelaysFlow.value = setOf("wss://custom-relay.example.com")
     val viewModel = createViewModel()
