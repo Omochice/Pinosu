@@ -11,6 +11,7 @@ jobs:
   release-please:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: write
       pull-requests: write
@@ -39,6 +40,7 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: write
     steps:
@@ -79,6 +81,7 @@ jobs:
     needs: release-please
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: write
     if: ${{ needs.release-please.outputs.prs_created == 'true' }}
