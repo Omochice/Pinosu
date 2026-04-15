@@ -389,51 +389,51 @@
         }
       }
     },
-    "renovate@43.59.4": {
-      "last_modified": "2026-03-15T17:58:12Z",
-      "resolved": "github:NixOS/nixpkgs/a07d4ce6bee67d7c838a8a5796e75dff9caa21ef#renovate",
+    "renovate@43.91.1": {
+      "last_modified": "2026-04-01T01:09:41Z",
+      "resolved": "github:NixOS/nixpkgs/62e3050a29278c985725a86704faa1e99236b51a#renovate",
       "source": "devbox-search",
-      "version": "43.59.4",
+      "version": "43.91.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/6jbg3dwnvcgn7z90dh1z1qcjfwadpcxx-renovate-43.59.4",
+              "path": "/nix/store/5yjn3x184wsa3xi3q6lcxq1x2igrzda2-renovate-43.91.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/6jbg3dwnvcgn7z90dh1z1qcjfwadpcxx-renovate-43.59.4"
+          "store_path": "/nix/store/5yjn3x184wsa3xi3q6lcxq1x2igrzda2-renovate-43.91.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/l6ikky8vpnv37s2m5vgcddr3sw3473lj-renovate-43.59.4",
+              "path": "/nix/store/h8jiwc0h39rbkag8cys52lhkxwqbmbkp-renovate-43.91.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/l6ikky8vpnv37s2m5vgcddr3sw3473lj-renovate-43.59.4"
+          "store_path": "/nix/store/h8jiwc0h39rbkag8cys52lhkxwqbmbkp-renovate-43.91.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/r7ar1ib572841pw43g0gzqm4xg3ighg3-renovate-43.59.4",
+              "path": "/nix/store/n6lcxq15i0qbm94vj7zpnxgab73iyv39-renovate-43.91.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/r7ar1ib572841pw43g0gzqm4xg3ighg3-renovate-43.59.4"
+          "store_path": "/nix/store/n6lcxq15i0qbm94vj7zpnxgab73iyv39-renovate-43.91.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/w7cnwixpbkmg91gba0gyvrsgcy80a07r-renovate-43.59.4",
+              "path": "/nix/store/8ckarlilprl54cjaxrx30bb4r0p6k8p7-renovate-43.91.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/w7cnwixpbkmg91gba0gyvrsgcy80a07r-renovate-43.59.4"
+          "store_path": "/nix/store/8ckarlilprl54cjaxrx30bb4r0p6k8p7-renovate-43.91.1"
         }
       }
     },
