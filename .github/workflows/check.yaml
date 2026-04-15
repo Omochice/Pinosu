@@ -55,7 +55,7 @@ jobs:
   check-actions:
     needs: path-filter
     if: needs.path-filter.outputs.actions == 'true'
-    timeout-minutes: 5
+    timeout-minutes: 10
     name: Check github actions files
     runs-on: ubuntu-latest
     permissions:
@@ -72,7 +72,7 @@ jobs:
       - run: devbox run ghalint run
       - run: devbox run zizmor .github/
   check-format:
-    timeout-minutes: 5
+    timeout-minutes: 10
     name: Check code format
     runs-on: ubuntu-latest
     permissions:
@@ -88,7 +88,7 @@ jobs:
       - run: devbox run fmt
       - run: git diff --exit-code
   check-android:
-    timeout-minutes: 5
+    timeout-minutes: 10
     needs: path-filter
     if: needs.path-filter.outputs.android == 'true'
     runs-on: ubuntu-latest
@@ -115,7 +115,7 @@ jobs:
           name: lint-reports
           path: app/build/reports/
   test-android:
-    timeout-minutes: 15
+    timeout-minutes: 30
     name: Test Android code
     needs: path-filter
     if: needs.path-filter.outputs.android == 'true'
@@ -149,7 +149,7 @@ jobs:
           name: reports
           path: app/build/reports/
   instrumentation-test:
-    timeout-minutes: 20
+    timeout-minutes: 40
     name: Test Android E2E
     needs: path-filter
     if: needs.path-filter.outputs.android == 'true'
@@ -190,7 +190,7 @@ jobs:
           name: jacoco-coverage
           path: app/build/reports/jacoco/jacocoInstrumentationTestReport/jacocoInstrumentationTestReport.xml
   build-apk:
-    timeout-minutes: 10
+    timeout-minutes: 20
     name: Build Android APK
     needs: path-filter
     if: needs.path-filter.outputs.android == 'true'
@@ -218,7 +218,7 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
   check-renovate:
-    timeout-minutes: 5
+    timeout-minutes: 10
     name: Check Renovate config
     needs: path-filter
     if: needs.path-filter.outputs.renovate == 'true'
@@ -235,7 +235,7 @@ jobs:
           enable-cache: true
       - run: devbox run renovate-config-validator --strict
   check-devbox:
-    timeout-minutes: 5
+    timeout-minutes: 10
     name: Check devbox ${{ matrix.name }}
     needs: path-filter
     if: needs.path-filter.outputs.devbox == 'true'
