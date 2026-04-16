@@ -596,67 +596,67 @@
         }
       }
     },
-    "toml-sort@0.24.3": {
-      "last_modified": "2026-02-23T15:40:43Z",
-      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#toml-sort",
+    "toml-sort@0.24.4": {
+      "last_modified": "2026-04-01T01:09:41Z",
+      "resolved": "github:NixOS/nixpkgs/62e3050a29278c985725a86704faa1e99236b51a#toml-sort",
       "source": "devbox-search",
-      "version": "0.24.3",
+      "version": "0.24.4",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/6s39rkpj5kpl7qka0v2ghfhr0ay210f6-toml-sort-0.24.3",
+              "path": "/nix/store/cpjghm9zsi30zinnn1iway96x4hfvy9v-toml-sort-0.24.4",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/5rkgd6jmdpf1jsgxlllgxc0y7gy8ad0d-toml-sort-0.24.3-dist"
+              "path": "/nix/store/vjiypcmb7lhw8vwgqdwzfzvd9ivd2hfb-toml-sort-0.24.4-dist"
             }
           ],
-          "store_path": "/nix/store/6s39rkpj5kpl7qka0v2ghfhr0ay210f6-toml-sort-0.24.3"
+          "store_path": "/nix/store/cpjghm9zsi30zinnn1iway96x4hfvy9v-toml-sort-0.24.4"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/f24w75d2l4sxhxxg30jp4383pa325dqk-toml-sort-0.24.3",
+              "path": "/nix/store/lpyb83dvg4fi8xaarjlcqj30x3rsxzlj-toml-sort-0.24.4",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/1lpksl5zsf3n7d791can1j3ksnzb3fx0-toml-sort-0.24.3-dist"
+              "path": "/nix/store/c1f3fxr082kflsjfpa3zrdc1bc9w5m8i-toml-sort-0.24.4-dist"
             }
           ],
-          "store_path": "/nix/store/f24w75d2l4sxhxxg30jp4383pa325dqk-toml-sort-0.24.3"
+          "store_path": "/nix/store/lpyb83dvg4fi8xaarjlcqj30x3rsxzlj-toml-sort-0.24.4"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/kmqpp4zs4ymyyrpxkkqiqgbcjk0mw5hy-toml-sort-0.24.3",
+              "path": "/nix/store/az5lw635xjnqfi71iaqym32xz0l7az4g-toml-sort-0.24.4",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/ds7cy3dagr7bbynll3fz4v2j62zmzxlx-toml-sort-0.24.3-dist"
+              "path": "/nix/store/161sjz9kf39lz7x01xsdrjhfvb4g4zyc-toml-sort-0.24.4-dist"
             }
           ],
-          "store_path": "/nix/store/kmqpp4zs4ymyyrpxkkqiqgbcjk0mw5hy-toml-sort-0.24.3"
+          "store_path": "/nix/store/az5lw635xjnqfi71iaqym32xz0l7az4g-toml-sort-0.24.4"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/0y74szziifw5q07ch5d8kwjm2fs4aj5m-toml-sort-0.24.3",
+              "path": "/nix/store/7myxm4fgq594vbgcnzir3sv47n1s5100-toml-sort-0.24.4",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/s3zngqb0fwkiva8ifd1l232zqgykfxk4-toml-sort-0.24.3-dist"
+              "path": "/nix/store/yy9468z0llq6sizqxvjmjivxbya6mhvl-toml-sort-0.24.4-dist"
             }
           ],
-          "store_path": "/nix/store/0y74szziifw5q07ch5d8kwjm2fs4aj5m-toml-sort-0.24.3"
+          "store_path": "/nix/store/7myxm4fgq594vbgcnzir3sv47n1s5100-toml-sort-0.24.4"
         }
       }
     },
