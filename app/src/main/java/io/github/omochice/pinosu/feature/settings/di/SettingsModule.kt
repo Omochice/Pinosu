@@ -4,10 +4,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
+import io.github.omochice.pinosu.feature.settings.data.repository.LocalClientTagRepository
 import io.github.omochice.pinosu.feature.settings.data.repository.LocalSettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCaseImpl
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveClientTagEnabledUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveClientTagEnabledUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
@@ -16,6 +20,8 @@ import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeMod
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCaseImpl
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetClientTagEnabledUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetClientTagEnabledUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCaseImpl
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
@@ -63,4 +69,16 @@ object SettingsModule {
   fun provideObserveBootstrapRelays(
       impl: ObserveBootstrapRelaysUseCaseImpl
   ): ObserveBootstrapRelaysUseCase = impl
+
+  @Provides
+  fun provideClientTagRepository(impl: LocalClientTagRepository): ClientTagRepository = impl
+
+  @Provides
+  fun provideObserveClientTagEnabled(
+      impl: ObserveClientTagEnabledUseCaseImpl
+  ): ObserveClientTagEnabledUseCase = impl
+
+  @Provides
+  fun provideSetClientTagEnabled(impl: SetClientTagEnabledUseCaseImpl): SetClientTagEnabledUseCase =
+      impl
 }
