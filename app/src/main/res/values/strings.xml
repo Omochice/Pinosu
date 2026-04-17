@@ -96,4 +96,7 @@
     <string name="button_add_relay">Add</string>
     <string name="button_reset_defaults">Reset to defaults</string>
 
+    <string name="settings_client_tag">Client Tag (NIP-89)</string>
+    <string name="settings_client_tag_description">Include Pinosu client identifier in published events</string>
+
 </resources>

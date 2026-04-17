@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -56,6 +59,7 @@ import io.github.omochice.pinosu.feature.settings.presentation.viewmodel.Setting
  * @param onAddBootstrapRelay Callback when a bootstrap relay URL is added
  * @param onRemoveBootstrapRelay Callback when a bootstrap relay URL is removed
  * @param onResetBootstrapRelays Callback when bootstrap relays are reset to defaults
+ * @param onClientTagEnabledChange Callback when client tag enabled setting is changed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +72,7 @@ fun SettingsScreen(
     onAddBootstrapRelay: (String) -> Unit = {},
     onRemoveBootstrapRelay: (String) -> Unit = {},
     onResetBootstrapRelays: () -> Unit = {},
+    onClientTagEnabledChange: (Boolean) -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -106,6 +111,11 @@ fun SettingsScreen(
                   onAddRelay = onAddBootstrapRelay,
                   onRemoveRelay = onRemoveBootstrapRelay,
                   onResetDefaults = onResetBootstrapRelays)
+
+              Spacer(modifier = Modifier.height(24.dp))
+
+              ClientTagSection(
+                  enabled = uiState.clientTagEnabled, onEnabledChange = onClientTagEnabledChange)
             }
       }
 }
@@ -255,6 +265,28 @@ private fun BootstrapRelaysSection(
   Spacer(modifier = Modifier.height(8.dp))
 
   TextButton(onClick = onResetDefaults) { Text(stringResource(R.string.button_reset_defaults)) }
+}
+
+@Composable
+private fun ClientTagSection(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
+  Text(
+      text = stringResource(R.string.settings_client_tag),
+      style = MaterialTheme.typography.titleMedium)
+
+  Spacer(modifier = Modifier.height(4.dp))
+
+  Row(
+      modifier =
+          Modifier.fillMaxWidth()
+              .toggleable(value = enabled, onValueChange = onEnabledChange, role = Role.Switch),
+      verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(R.string.settings_client_tag_description),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Switch(checked = enabled, onCheckedChange = null)
+      }
 }
 
 @Preview(showBackground = true)

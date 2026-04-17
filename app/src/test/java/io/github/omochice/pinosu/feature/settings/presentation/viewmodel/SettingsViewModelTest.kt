@@ -4,10 +4,12 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMo
 import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveBootstrapRelaysUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveClientTagEnabledUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveThemeModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetBootstrapRelaysUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.SetClientTagEnabledUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetDisplayModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetLanguageModeUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUseCase
@@ -39,10 +41,13 @@ class SettingsViewModelTest {
   private lateinit var setLanguageModeUseCase: SetLanguageModeUseCase
   private lateinit var observeBootstrapRelaysUseCase: ObserveBootstrapRelaysUseCase
   private lateinit var setBootstrapRelaysUseCase: SetBootstrapRelaysUseCase
+  private lateinit var observeClientTagEnabledUseCase: ObserveClientTagEnabledUseCase
+  private lateinit var setClientTagEnabledUseCase: SetClientTagEnabledUseCase
   private lateinit var displayModeFlow: MutableStateFlow<BookmarkDisplayMode>
   private lateinit var themeModeFlow: MutableStateFlow<ThemeMode>
   private lateinit var languageModeFlow: MutableStateFlow<LanguageMode>
   private lateinit var bootstrapRelaysFlow: MutableStateFlow<Set<String>>
+  private lateinit var clientTagEnabledFlow: MutableStateFlow<Boolean>
   private val testDispatcher = StandardTestDispatcher()
 
   @Before
@@ -52,6 +57,7 @@ class SettingsViewModelTest {
     themeModeFlow = MutableStateFlow(ThemeMode.System)
     languageModeFlow = MutableStateFlow(LanguageMode.System)
     bootstrapRelaysFlow = MutableStateFlow(emptySet())
+    clientTagEnabledFlow = MutableStateFlow(true)
     observeDisplayModeUseCase = mockk()
     every { observeDisplayModeUseCase() } returns displayModeFlow
     setDisplayModeUseCase = mockk(relaxed = true)
@@ -64,6 +70,9 @@ class SettingsViewModelTest {
     observeBootstrapRelaysUseCase = mockk()
     every { observeBootstrapRelaysUseCase() } returns bootstrapRelaysFlow
     setBootstrapRelaysUseCase = mockk(relaxed = true)
+    observeClientTagEnabledUseCase = mockk()
+    every { observeClientTagEnabledUseCase() } returns clientTagEnabledFlow
+    setClientTagEnabledUseCase = mockk(relaxed = true)
   }
 
   @After
@@ -82,6 +91,8 @@ class SettingsViewModelTest {
               setLanguageMode = setLanguageModeUseCase,
               observeBootstrapRelays = observeBootstrapRelaysUseCase,
               setBootstrapRelays = setBootstrapRelaysUseCase,
+              observeClientTagEnabled = observeClientTagEnabledUseCase,
+              setClientTagEnabled = setClientTagEnabledUseCase,
           ))
 
   @Test
@@ -251,6 +262,40 @@ class SettingsViewModelTest {
     testDispatcher.scheduler.advanceUntilIdle()
 
     assertEquals(setOf("wss://relay.example.com"), viewModel.uiState.first().bootstrapRelays)
+  }
+
+  @Test
+  fun `initial state loads client tag enabled from observed flow`() = runTest {
+    clientTagEnabledFlow.value = false
+
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals(false, state.clientTagEnabled)
+  }
+
+  @Test
+  fun `setClientTagEnabled calls use case`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    viewModel.setClientTagEnabled(false)
+
+    verify { setClientTagEnabledUseCase(false) }
+  }
+
+  @Test
+  fun `client tag enabled state updates when observed flow emits new value`() = runTest {
+    val viewModel = createViewModel()
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(true, viewModel.uiState.first().clientTagEnabled)
+
+    clientTagEnabledFlow.value = false
+    testDispatcher.scheduler.advanceUntilIdle()
+
+    assertEquals(false, viewModel.uiState.first().clientTagEnabled)
   }
 
   @Test

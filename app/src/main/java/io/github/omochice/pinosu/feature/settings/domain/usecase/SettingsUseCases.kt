@@ -18,4 +18,6 @@ constructor(
     val setLanguageMode: SetLanguageModeUseCase,
     val observeBootstrapRelays: ObserveBootstrapRelaysUseCase,
     val setBootstrapRelays: SetBootstrapRelaysUseCase,
+    val observeClientTagEnabled: ObserveClientTagEnabledUseCase,
+    val setClientTagEnabled: SetClientTagEnabledUseCase,
 )

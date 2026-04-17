@@ -1,14 +1,17 @@
 package io.github.omochice.pinosu.feature.comment.data.repository
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -30,6 +33,7 @@ class RelayCommentRepositoryTest {
 
   private lateinit var relayPool: RelayPool
   private lateinit var relayListProvider: RelayListProvider
+  private lateinit var clientTagRepository: ClientTagRepository
   private lateinit var repository: RelayCommentRepository
 
   private val testRelays = listOf(RelayConfig(url = "wss://relay.test.com"))
@@ -38,7 +42,9 @@ class RelayCommentRepositoryTest {
   fun setup() {
     relayPool = mockk()
     relayListProvider = mockk()
-    repository = RelayCommentRepository(relayPool, relayListProvider)
+    clientTagRepository = mockk(relaxed = true)
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+    repository = RelayCommentRepository(relayPool, relayListProvider, clientTagRepository)
 
     coEvery { relayListProvider.getRelays() } returns testRelays
   }
@@ -175,5 +181,38 @@ class RelayCommentRepositoryTest {
 
     val filter = filterSlot.captured
     assertTrue(filter.contains(""""ids":["abc123"]"""))
+  }
+
+  @Test
+  fun `createCommentEvent includes client tag when clientTagEnabled is true`() {
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(true)
+
+    val event =
+        repository.createCommentEvent(
+            hexPubkey = "my-pubkey",
+            content = "My comment",
+            rootPubkey = "root-pubkey",
+            dTag = "example.com/article",
+            rootEventId = "root-event-id")
+
+    val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
+    assertEquals("Should have exactly one client tag", 1, clientTags.size)
+    assertEquals("Pinosu", clientTags[0][1])
+  }
+
+  @Test
+  fun `createCommentEvent excludes client tag when clientTagEnabled is false`() {
+    every { clientTagRepository.clientTagEnabledFlow } returns MutableStateFlow(false)
+
+    val event =
+        repository.createCommentEvent(
+            hexPubkey = "my-pubkey",
+            content = "My comment",
+            rootPubkey = "root-pubkey",
+            dTag = "example.com/article",
+            rootEventId = "root-event-id")
+
+    val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
+    assertTrue("Should not have client tag", clientTags.isEmpty())
   }
 }

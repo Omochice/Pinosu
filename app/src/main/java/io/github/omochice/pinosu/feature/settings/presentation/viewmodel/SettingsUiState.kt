@@ -11,10 +11,12 @@ import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
  * @property themeMode Current theme mode preference
  * @property languageMode Current language mode preference
  * @property bootstrapRelays User-configured bootstrap relay URLs
+ * @property clientTagEnabled Whether to include NIP-89 client tag in published events
  */
 data class SettingsUiState(
     val displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
     val themeMode: ThemeMode = ThemeMode.System,
     val languageMode: LanguageMode = LanguageMode.System,
     val bootstrapRelays: Set<String> = emptySet(),
+    val clientTagEnabled: Boolean = true,
 )

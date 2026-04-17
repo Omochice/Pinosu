@@ -91,4 +91,7 @@
     <string name="settings_bootstrap_relays_description">リレーリストメタデータ（kind 10002）の取得に使用するリレー</string>
     <string name="button_add_relay">追加</string>
     <string name="button_reset_defaults">デフォルトに戻す</string>
+
+    <string name="settings_client_tag">クライアントタグ（NIP-89）</string>
+    <string name="settings_client_tag_description">公開するイベントにPinosuのクライアント識別子を含める</string>
 </resources>
