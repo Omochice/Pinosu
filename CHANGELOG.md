@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.0](https://github.com/Omochice/Pinosu/compare/v0.15.1...v0.16.0) (2026-04-17)
+
+
+### Features
+
+* support client tag ([#380](https://github.com/Omochice/Pinosu/issues/380)) ([82eeb4e](https://github.com/Omochice/Pinosu/commit/82eeb4ead94f703bfd90e4b892b9e4cc22646fa3))
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v14.0.0-b03 ([#350](https://github.com/Omochice/Pinosu/issues/350)) ([3e64939](https://github.com/Omochice/Pinosu/commit/3e64939e05d526d4f694e06b45267b2988cad4e1))
+* **deps:** update aboutlibraries to v14.0.1 ([#404](https://github.com/Omochice/Pinosu/issues/404)) ([79428bc](https://github.com/Omochice/Pinosu/commit/79428bc76f858d645cbe8b558da7c749f211bd3b))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.03.01 ([#372](https://github.com/Omochice/Pinosu/issues/372)) ([014f05b](https://github.com/Omochice/Pinosu/commit/014f05b879ebdebe3199fa992295715ef19148a4))
+* **deps:** update dependency com.google.crypto.tink:tink-android to v1.21.0 ([#367](https://github.com/Omochice/Pinosu/issues/367)) ([1854304](https://github.com/Omochice/Pinosu/commit/18543040f4b183472f6065b417baefa8aea941d6))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.1 ([#365](https://github.com/Omochice/Pinosu/issues/365)) ([b5898ca](https://github.com/Omochice/Pinosu/commit/b5898ca724542af5284e6f38a914e85d169d7d3b))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.2 ([#368](https://github.com/Omochice/Pinosu/issues/368)) ([19c61f8](https://github.com/Omochice/Pinosu/commit/19c61f895ffbcd26b018e220711ac1184308780b))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.3 ([#369](https://github.com/Omochice/Pinosu/issues/369)) ([1c43b7d](https://github.com/Omochice/Pinosu/commit/1c43b7d8da80a48a7b2adcb135e8a34f34df7547))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.08.0 ([#381](https://github.com/Omochice/Pinosu/issues/381)) ([2ece806](https://github.com/Omochice/Pinosu/commit/2ece806ed67f9ac6b7b29a4d96380ceb8fdf7a53))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.11.0 ([#408](https://github.com/Omochice/Pinosu/issues/408)) ([4cf15a7](https://github.com/Omochice/Pinosu/commit/4cf15a7c7a8a436c378322ad82da240d4d69c0f0))
+* **deps:** update kotlin monorepo to v2.3.20 ([#344](https://github.com/Omochice/Pinosu/issues/344)) ([6030096](https://github.com/Omochice/Pinosu/commit/6030096d0af34d3710c019bd8c808553fadaff9f))
+
 ## [0.15.1](https://github.com/Omochice/Pinosu/compare/v0.15.0...v0.15.1) (2026-03-15)
 
 
