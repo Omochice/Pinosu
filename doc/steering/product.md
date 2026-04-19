@@ -33,6 +33,7 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 - **NIP-B0 Integration**: Formal specification for Kind 39701 bookmark list storage and sync
 - **NIP-22 Integration**: Comment system for bookmark discussions with kind 1111 and kind 1 support
 - **NIP-55 Integration**: Secure external signing without key exposure (default: Amber)
+- **NIP-89 Integration**: Client tag identification for published events (opt-in via settings)
 - **NIP-65 Integration**: Dynamic relay list discovery from user preferences
 - **Android Native**: Built with Jetpack Compose and Material Design 3
 - **Encrypted Storage**: Tink Android with DataStore for secure local caching
