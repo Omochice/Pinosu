@@ -30,10 +30,10 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 - **Min SDK**: 30
 - **Target SDK**: 36
-- **Kotlin**: 2.3.10
-- **Compose BOM**: 2026.03.00
-- **Gradle Plugin**: 9.1.0
-- **Hilt**: 2.59.2 (requires metadata compatibility workaround for Kotlin 2.3.x)
+- **Kotlin**
+- **Compose BOM**
+- **Gradle Plugin**
+- **Hilt** (requires metadata compatibility workaround for recent Kotlin versions)
 
 ### Architecture
 
@@ -43,7 +43,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Security
 
-- **Tink Android**: com.google.crypto.tink:tink-android (v1.20.0) for encryption
+- **Tink Android**: com.google.crypto.tink:tink-android for encryption
 - **DataStore**: androidx.datastore with encrypted serializer (TinkKeyManager)
 - **EncryptedSharedPreferences**: androidx.security:security-crypto (legacy, migrated to DataStore)
 - **Android Keystore**: Hardware-backed key storage with AES256_GCM
@@ -51,13 +51,14 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Nostr Integration
 
-- **Amethyst Quartz**: com.vitorpamplona.quartz:quartz (v1.05.1)
+- **Amethyst Quartz**: com.vitorpamplona.quartz:quartz
 - **NIP-B0**: Bookmark list protocol (Kind 39701); constants in `core/nip/nipb0/NipB0`
 - **NIP-01**: User metadata fetching from kind 0 events; in-memory cached batch profile fetcher (`Nip01ProfileFetcher`)
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references; constants in `core/nip/nip22/Nip22`
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
+- **NIP-89**: Client tag identification; opt-in setting to include `["client", "Pinosu"]` tag in published events
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
 - **Event Types**: Kind 0 (NIP-01 user metadata), Kind 39701 (NIP-B0 bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
@@ -65,17 +66,17 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Serialization
 
-- **kotlinx-serialization-json**: 1.10.0 for type-safe JSON handling
+- **kotlinx-serialization-json**: Type-safe JSON handling
 - **Custom Serializers**: `KSerializer<T>` for Nostr protocol array-based messages
 - **Lazy Initialization**: Use `by lazy { }` for Json instances interacting with EncryptedSharedPreferences
 
 ### Network & HTTP
 
-- **OkHttp**: 5.3.2 with Hilt singleton injection
+- **OkHttp**: Hilt singleton injection
 - **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
-- **HTML Parsing**: Jsoup 1.22.1 for Open Graph metadata extraction
+- **HTML Parsing**: Jsoup for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
-- **Image Loading**: Coil 3.4.0 with OkHttp integration (coil-compose, coil-network-okhttp)
+- **Image Loading**: Coil with OkHttp integration (coil-compose, coil-network-okhttp)
 
 ### Testing
 
@@ -83,7 +84,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Coroutine Testing**: kotlinx-coroutines-test
 - **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test
 - **DI Testing**: Hilt Android Testing
-- **Architecture Tests**: ArchUnit 1.4.1 (`archunit-junit4`) for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
+- **Architecture Tests**: ArchUnit (`archunit-junit4`) for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
 
 ## Technical Conventions
 
@@ -127,7 +128,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **External Libraries**: Use established libraries (Quartz for Bech32) instead of custom implementations
 - **Code Coverage**: Kover for unit test coverage, Jacoco for instrumentation test reports
 - **Version Tracking**: BuildConfig.COMMIT_HASH for git commit identification
-- **License Management**: AboutLibraries 14.0.0-b02 for open-source license display
+- **License Management**: AboutLibraries for open-source license display
 
 ### Development Tooling
 
@@ -137,5 +138,3 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Scripts**: Managed via devbox shell scripts (fmt, check, test, version-up)
 
 ---
-
-_Updated: 2026-03-14 - AGP 9.1.0, Compose BOM 2026.03.00, added ArchUnit architecture tests_

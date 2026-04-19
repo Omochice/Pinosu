@@ -140,6 +140,7 @@ feature/{name}/
     - `nip22/` - NIP-22 protocol constants (Kind 1111 comments)
     - `nip55/` - NIP-55 signer client
     - `nip65/` - NIP-65 relay list fetcher
+    - `nip89/` - NIP-89 client tag identification (constants + repository interface)
     - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
@@ -188,6 +189,7 @@ io.github.omochice.pinosu/
 │   │   ├── nip22/           // NIP-22 constants (kind 1111)
 │   │   ├── nip55/           // Signer client
 │   │   ├── nip65/           // Relay list fetcher
+│   │   ├── nip89/           // Client tag identification
 │   │   └── nipb0/           // NIP-B0 constants (kind 39701)
 │   ├── relay/               // RelayPool, PublishResult
 │   ├── timestamp/           // Timestamp formatting (java.time)
@@ -221,5 +223,3 @@ io.github.omochice.pinosu/
 - **State Management**: Immutable data classes with StateFlow for reactive UI updates
 
 ---
-
-_Updated: 2026-03-08 - Added nip22/ and nipb0/ to core/nip/; noted presentation/model/ pattern for viewmodel-free features_

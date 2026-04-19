@@ -25,7 +25,7 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 
 ## Minimal Workflow
 
-- Phase 0 (optional): `/kiro:steering`, `/kiro:steering-custom`
+- Phase 0 (optional): `/steering`
 - Phase 1 (Specification):
     - `/kiro:spec-init "description"`
     - `/kiro:spec-requirements {feature}`
