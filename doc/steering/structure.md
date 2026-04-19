@@ -221,5 +221,3 @@ io.github.omochice.pinosu/
 - **State Management**: Immutable data classes with StateFlow for reactive UI updates
 
 ---
-
-_Updated: 2026-03-08 - Added nip22/ and nipb0/ to core/nip/; noted presentation/model/ pattern for viewmodel-free features_

@@ -38,5 +38,3 @@ Provides a Google Keep-like experience with Nostr's decentralization benefits: o
 - **Encrypted Storage**: Tink Android with DataStore for secure local caching
 
 ---
-
-_Updated: 2026-03-08 - Added NIP-B0 as formal spec for Kind 39701 bookmarks_
