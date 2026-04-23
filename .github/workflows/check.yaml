@@ -342,8 +342,10 @@ jobs:
       - instrumentation-test
       - test-android
       # keep-sorted end
-    permissions: {}
+    permissions:
+      actions: read
     if: always()
     steps:
+      - uses: Kesin11/actions-timeline@44c9c178ffb2fb1d9859614a3ffa79ccfb77565e # v3.1.0
       - if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: exit 1
