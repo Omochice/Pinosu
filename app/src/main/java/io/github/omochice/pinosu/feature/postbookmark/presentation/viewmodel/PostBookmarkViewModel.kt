@@ -44,6 +44,7 @@ constructor(
    * @param input Raw URL input from user
    */
   fun updateUrl(input: String) {
+    if (_uiState.value.isEditMode) return
     val strippedUrl = stripUrlScheme(input)
     _uiState.update { it.copy(url = strippedUrl) }
   }
