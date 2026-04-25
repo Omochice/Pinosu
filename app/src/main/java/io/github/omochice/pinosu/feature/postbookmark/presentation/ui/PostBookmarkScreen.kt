@@ -62,7 +62,12 @@ fun PostBookmarkScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text(stringResource(R.string.title_post_bookmark)) },
+            title = {
+              Text(
+                  stringResource(
+                      if (uiState.isEditMode) R.string.title_edit_bookmark
+                      else R.string.title_post_bookmark))
+            },
             navigationIcon = {
               IconButton(onClick = onNavigateBack) {
                 Icon(
@@ -107,6 +112,7 @@ fun PostBookmarkScreen(
                           onValueChange = onUrlChange,
                           modifier = Modifier.weight(1f),
                           singleLine = true,
+                          enabled = !uiState.isEditMode,
                           placeholder = { Text("example.com/path") })
                     }
 
