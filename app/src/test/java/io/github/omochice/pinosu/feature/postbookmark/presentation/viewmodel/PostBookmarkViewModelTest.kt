@@ -328,6 +328,39 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `prepareSignEventIntent in edit mode should use original URL`() = runTest {
+    val realEvent =
+        UnsignedNostrEvent(
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
+            createdAt = 1_234_567_890,
+            kind = 39701,
+            tags = listOf(listOf("d", "example.com/article")),
+            content = "Updated comment")
+    val mockIntent = mockk<Intent>()
+
+    coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
+        Result.success(realEvent)
+    every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
+
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Original Title",
+        categories = "tech",
+        comment = "Original comment")
+    viewModel.updateTitle("Updated Title")
+    viewModel.updateComment("Updated comment")
+    advanceUntilIdle()
+
+    viewModel.prepareSignEventIntent {}
+    advanceUntilIdle()
+
+    coVerify {
+      postBookmarkUseCase.createUnsignedEvent(
+          "example.com/article", "Updated Title", any(), "Updated comment")
+    }
+  }
+
+  @Test
   fun `prepareSignEventIntent should parse categories correctly`() = runTest {
     val realEvent =
         UnsignedNostrEvent(
