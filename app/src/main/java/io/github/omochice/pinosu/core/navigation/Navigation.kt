@@ -24,9 +24,20 @@ sealed interface Route
  *
  * @property sharedUrl Pre-filled URL from share intent, or null
  * @property sharedComment Pre-filled comment from share intent, or null
+ * @property editUrl URL of the bookmark being edited (without scheme), or null for new bookmark
+ * @property editTitle Title of the bookmark being edited, or null for new bookmark
+ * @property editCategories Comma-separated categories of the bookmark being edited, or null
+ * @property editComment Comment of the bookmark being edited, or null
  */
 @Serializable
-data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String? = null) : Route
+data class PostBookmark(
+    val sharedUrl: String? = null,
+    val sharedComment: String? = null,
+    val editUrl: String? = null,
+    val editTitle: String? = null,
+    val editCategories: String? = null,
+    val editComment: String? = null,
+) : Route
 
 /**
  * Bookmark detail screen route
@@ -39,6 +50,7 @@ data class PostBookmark(val sharedUrl: String? = null, val sharedComment: String
  * @property createdAt Unix timestamp of the bookmark event
  * @property urls List of bookmark URLs
  * @property imageUrl OGP image URL, or null if not available
+ * @property categories Comma-separated category string from t-tags
  */
 @Serializable
 data class BookmarkDetail(
@@ -50,6 +62,7 @@ data class BookmarkDetail(
     val createdAt: Long = 0L,
     val urls: List<String> = emptyList(),
     val imageUrl: String? = null,
+    val categories: String = "",
 ) : Route
 
 /** Settings screen route */
