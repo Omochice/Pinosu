@@ -311,6 +311,23 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `initializeForEdit should set edit mode with existing values`() = runTest {
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = "tech, kotlin",
+        comment = "Existing comment")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertTrue("isEditMode should be true", state.isEditMode)
+    assertEquals("url should be set", "example.com/article", state.url)
+    assertEquals("title should be set", "Existing Title", state.title)
+    assertEquals("categories should be set", "tech, kotlin", state.categories)
+    assertEquals("comment should be set", "Existing comment", state.comment)
+  }
+
+  @Test
   fun `prepareSignEventIntent should parse categories correctly`() = runTest {
     val realEvent =
         UnsignedNostrEvent(
