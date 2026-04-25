@@ -389,8 +389,16 @@ fun PinosuApp(
                 }
 
                 LaunchedEffect(postBookmarkRoute) {
-                  postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
-                  postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                  if (postBookmarkRoute.editUrl != null) {
+                    postBookmarkViewModel.initializeForEdit(
+                        url = postBookmarkRoute.editUrl,
+                        title = postBookmarkRoute.editTitle.orEmpty(),
+                        categories = postBookmarkRoute.editCategories.orEmpty(),
+                        comment = postBookmarkRoute.editComment.orEmpty())
+                  } else {
+                    postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
+                    postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                  }
                 }
 
                 PostBookmarkScreen(
@@ -469,7 +477,22 @@ fun PinosuApp(
                     onNavigateBack = { navController.navigateUp() },
                     onDismissError = { detailViewModel.dismissError() },
                     onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() },
-                    isReadOnly = mainUiState.isReadOnly)
+                    isReadOnly = mainUiState.isReadOnly,
+                    onEditBookmark =
+                        if (!mainUiState.isReadOnly &&
+                            route.authorPubkey == mainUiState.userPubkey) {
+                          {
+                            navController.navigate(
+                                PostBookmark(
+                                    editUrl = route.dTag,
+                                    editTitle = route.title,
+                                    editCategories = route.categories,
+                                    editComment = route.content,
+                                ))
+                          }
+                        } else {
+                          null
+                        })
               }
 
           composable<License>(
