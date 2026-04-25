@@ -63,10 +63,13 @@ fun PostBookmarkScreen(
       topBar = {
         TopAppBar(
             title = {
-              Text(
-                  stringResource(
-                      if (uiState.isEditMode) R.string.title_edit_bookmark
-                      else R.string.title_post_bookmark))
+              val titleRes =
+                  if (uiState.isEditMode) {
+                    R.string.title_edit_bookmark
+                  } else {
+                    R.string.title_post_bookmark
+                  }
+              Text(stringResource(titleRes))
             },
             navigationIcon = {
               IconButton(onClick = onNavigateBack) {

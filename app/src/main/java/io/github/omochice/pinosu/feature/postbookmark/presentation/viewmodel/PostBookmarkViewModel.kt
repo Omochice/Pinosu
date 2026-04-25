@@ -181,18 +181,12 @@ constructor(
           }
         }
   }
+}
 
-  /**
-   * Strip http:// or https:// scheme from URL
-   *
-   * @param url URL that may contain scheme
-   * @return URL without scheme
-   */
-  private fun stripUrlScheme(url: String): String {
-    return when {
-      url.startsWith("https://", ignoreCase = true) -> url.substring("https://".length)
-      url.startsWith("http://", ignoreCase = true) -> url.substring("http://".length)
-      else -> url
-    }
+private fun stripUrlScheme(url: String): String {
+  return when {
+    url.startsWith("https://", ignoreCase = true) -> url.substring("https://".length)
+    url.startsWith("http://", ignoreCase = true) -> url.substring("http://".length)
+    else -> url
   }
 }
