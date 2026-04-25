@@ -114,6 +114,51 @@ class BookmarkDetailScreenTest {
   }
 
   @Test
+  fun editButtonShouldBeVisibleWhenOnEditBookmarkIsProvided() {
+    composeTestRule.setContent {
+      BookmarkDetailScreen(
+          uiState = BookmarkDetailUiState(),
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
+          onCommentInputChange = {},
+          onPostComment = {},
+          onNavigateBack = {},
+          onDismissError = {},
+          onEditBookmark = {})
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_edit_bookmark))
+        .assertIsDisplayed()
+  }
+
+  @Test
+  fun editButtonShouldBeHiddenWhenOnEditBookmarkIsNull() {
+    composeTestRule.setContent {
+      BookmarkDetailScreen(
+          uiState = BookmarkDetailUiState(),
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
+          onCommentInputChange = {},
+          onPostComment = {},
+          onNavigateBack = {},
+          onDismissError = {})
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_edit_bookmark))
+        .assertDoesNotExist()
+  }
+
+  @Test
   fun commentInputBarShouldBeHiddenWhenReadOnly() {
     composeTestRule.setContent {
       BookmarkDetailScreen(
