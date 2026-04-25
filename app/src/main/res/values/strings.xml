@@ -62,6 +62,7 @@
     <string name="language_mode_japanese">Japanese</string>
 
     <string name="title_post_bookmark">Add Bookmark</string>
+    <string name="title_edit_bookmark">Edit Bookmark</string>
     <string name="label_title">Title</string>
     <string name="hint_bookmark_title">Bookmark title</string>
     <string name="label_categories">Categories</string>
