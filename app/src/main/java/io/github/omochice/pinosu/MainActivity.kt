@@ -37,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.navigation.AppInfo
 import io.github.omochice.pinosu.core.navigation.Bookmark
 import io.github.omochice.pinosu.core.navigation.BookmarkDetail
@@ -480,7 +481,8 @@ fun PinosuApp(
                     isReadOnly = mainUiState.isReadOnly,
                     onEditBookmark =
                         if (!mainUiState.isReadOnly &&
-                            route.authorPubkey == mainUiState.userPubkey) {
+                            route.authorPubkey ==
+                                mainUiState.userPubkey?.let { Pubkey.parse(it)?.hex }) {
                           {
                             navController.navigate(
                                 PostBookmark(
