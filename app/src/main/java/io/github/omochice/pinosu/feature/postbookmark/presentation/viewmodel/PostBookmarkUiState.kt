@@ -10,6 +10,7 @@ package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
  * @property isSubmitting Whether the form is being submitted
  * @property errorMessage Error message to display
  * @property postSuccess Whether the post was successful
+ * @property isEditMode Whether the form is in edit mode (editing an existing bookmark)
  */
 data class PostBookmarkUiState(
     val url: String = "",
@@ -19,4 +20,5 @@ data class PostBookmarkUiState(
     val isSubmitting: Boolean = false,
     val errorMessage: String? = null,
     val postSuccess: Boolean = false,
+    val isEditMode: Boolean = false,
 )

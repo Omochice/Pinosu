@@ -75,6 +75,21 @@ constructor(
     _uiState.update { it.copy(comment = comment) }
   }
 
+  /**
+   * Initialize the form for editing an existing bookmark
+   *
+   * @param url URL without scheme (read-only in edit mode)
+   * @param title Existing bookmark title
+   * @param categories Existing comma-separated categories
+   * @param comment Existing bookmark comment
+   */
+  fun initializeForEdit(url: String, title: String, categories: String, comment: String) {
+    _uiState.update {
+      it.copy(
+          url = url, title = title, categories = categories, comment = comment, isEditMode = true)
+    }
+  }
+
   /** Dismiss error message */
   fun dismissError() {
     _uiState.update { it.copy(errorMessage = null) }
