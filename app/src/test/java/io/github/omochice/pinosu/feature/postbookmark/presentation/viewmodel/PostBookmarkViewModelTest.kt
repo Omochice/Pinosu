@@ -328,6 +328,19 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `updateUrl should be ignored in edit mode`() = runTest {
+    viewModel.initializeForEdit(
+        url = "example.com/article", title = "Title", categories = "tech", comment = "Comment")
+    advanceUntilIdle()
+
+    viewModel.updateUrl("other.com/different")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertEquals("url should remain unchanged", "example.com/article", state.url)
+  }
+
+  @Test
   fun `prepareSignEventIntent in edit mode should use original URL`() = runTest {
     val realEvent =
         UnsignedNostrEvent(
