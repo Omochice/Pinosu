@@ -153,15 +153,6 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
-  fun `resetPostSuccess should set postSuccess to false`() = runTest {
-    viewModel.resetPostSuccess()
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertFalse("postSuccess should be false", state.postSuccess)
-  }
-
-  @Test
   fun `prepareSignEventIntent should set error when URL is blank`() = runTest {
     viewModel.updateUrl("")
     advanceUntilIdle()
@@ -308,6 +299,76 @@ class PostBookmarkViewModelTest {
     assertNotNull("errorMessage should be set", state.errorMessage)
     assertFalse("isSubmitting should be false", state.isSubmitting)
     assertFalse("postSuccess should be false", state.postSuccess)
+  }
+
+  @Test
+  fun `initializeForEdit should set edit mode with existing values`() = runTest {
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = listOf("tech", "kotlin"),
+        comment = "Existing comment")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertTrue("isEditMode should be true", state.isEditMode)
+    assertEquals("url should be set", "example.com/article", state.url)
+    assertEquals("title should be set", "Existing Title", state.title)
+    assertEquals("categories should be set", "tech, kotlin", state.categories)
+    assertEquals("comment should be set", "Existing comment", state.comment)
+  }
+
+  @Test
+  fun `resetForm should clear edit mode and all fields`() = runTest {
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Title",
+        categories = listOf("tech"),
+        comment = "Comment")
+    advanceUntilIdle()
+
+    viewModel.resetForm()
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse("isEditMode should be false", state.isEditMode)
+    assertEquals("url should be empty", "", state.url)
+    assertEquals("title should be empty", "", state.title)
+    assertEquals("categories should be empty", "", state.categories)
+    assertEquals("comment should be empty", "", state.comment)
+  }
+
+  @Test
+  fun `prepareSignEventIntent in edit mode should use original URL`() = runTest {
+    val realEvent =
+        UnsignedNostrEvent(
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
+            createdAt = 1_234_567_890,
+            kind = 39701,
+            tags = listOf(listOf("d", "example.com/article")),
+            content = "Updated comment")
+    val mockIntent = mockk<Intent>()
+
+    coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
+        Result.success(realEvent)
+    every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
+
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Original Title",
+        categories = listOf("tech"),
+        comment = "Original comment")
+    viewModel.updateTitle("Updated Title")
+    viewModel.updateComment("Updated comment")
+    advanceUntilIdle()
+
+    viewModel.prepareSignEventIntent {}
+    advanceUntilIdle()
+
+    coVerify {
+      postBookmarkUseCase.createUnsignedEvent(
+          "example.com/article", "Updated Title", any(), "Updated comment")
+    }
   }
 
   @Test

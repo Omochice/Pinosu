@@ -75,14 +75,33 @@ constructor(
     _uiState.update { it.copy(comment = comment) }
   }
 
+  /**
+   * Initialize the form for editing an existing bookmark
+   *
+   * @param url URL without scheme (read-only in edit mode)
+   * @param title Existing bookmark title
+   * @param categories Existing categories list
+   * @param comment Existing bookmark comment
+   */
+  fun initializeForEdit(url: String, title: String, categories: List<String>, comment: String) {
+    _uiState.update {
+      it.copy(
+          url = url,
+          title = title,
+          categories = categories.joinToString(", "),
+          comment = comment,
+          isEditMode = true)
+    }
+  }
+
+  /** Reset form to initial state for new bookmark creation */
+  fun resetForm() {
+    _uiState.value = PostBookmarkUiState()
+  }
+
   /** Dismiss error message */
   fun dismissError() {
     _uiState.update { it.copy(errorMessage = null) }
-  }
-
-  /** Reset post success state */
-  fun resetPostSuccess() {
-    _uiState.update { it.copy(postSuccess = false) }
   }
 
   /**
@@ -165,18 +184,12 @@ constructor(
           }
         }
   }
+}
 
-  /**
-   * Strip http:// or https:// scheme from URL
-   *
-   * @param url URL that may contain scheme
-   * @return URL without scheme
-   */
-  private fun stripUrlScheme(url: String): String {
-    return when {
-      url.startsWith("https://", ignoreCase = true) -> url.substring("https://".length)
-      url.startsWith("http://", ignoreCase = true) -> url.substring("http://".length)
-      else -> url
-    }
+private fun stripUrlScheme(url: String): String {
+  return when {
+    url.startsWith("https://", ignoreCase = true) -> url.substring("https://".length)
+    url.startsWith("http://", ignoreCase = true) -> url.substring("http://".length)
+    else -> url
   }
 }

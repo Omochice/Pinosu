@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +60,7 @@ import io.github.omochice.pinosu.ui.component.ErrorDialog
  * @param onDismissError Callback to dismiss error dialog
  * @param onOpenUrlFailed Callback when opening a URL fails
  * @param isReadOnly Whether to hide comment input for read-only login
+ * @param onEditBookmark Callback when edit button is clicked, or null to hide the button
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +73,7 @@ fun BookmarkDetailScreen(
     onDismissError: () -> Unit = {},
     onOpenUrlFailed: () -> Unit = {},
     isReadOnly: Boolean = false,
+    onEditBookmark: (() -> Unit)? = null,
 ) {
   Scaffold(
       topBar = {
@@ -86,6 +89,15 @@ fun BookmarkDetailScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.cd_navigate_up))
+              }
+            },
+            actions = {
+              onEditBookmark?.let { onEdit ->
+                IconButton(onClick = onEdit) {
+                  Icon(
+                      imageVector = Icons.Filled.Edit,
+                      contentDescription = stringResource(R.string.cd_edit_bookmark))
+                }
               }
             })
       },

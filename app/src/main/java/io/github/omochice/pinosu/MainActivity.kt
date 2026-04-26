@@ -37,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.navigation.AppInfo
 import io.github.omochice.pinosu.core.navigation.Bookmark
 import io.github.omochice.pinosu.core.navigation.BookmarkDetail
@@ -383,14 +384,23 @@ fun PinosuApp(
 
                 LaunchedEffect(postBookmarkUiState.postSuccess) {
                   if (postBookmarkUiState.postSuccess) {
-                    postBookmarkViewModel.resetPostSuccess()
+                    postBookmarkViewModel.resetForm()
                     navController.navigateUp()
                   }
                 }
 
                 LaunchedEffect(postBookmarkRoute) {
-                  postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
-                  postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                  if (postBookmarkRoute.editUrl != null) {
+                    postBookmarkViewModel.initializeForEdit(
+                        url = postBookmarkRoute.editUrl,
+                        title = postBookmarkRoute.editTitle.orEmpty(),
+                        categories = postBookmarkRoute.editCategories.orEmpty(),
+                        comment = postBookmarkRoute.editComment.orEmpty())
+                  } else {
+                    postBookmarkViewModel.resetForm()
+                    postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
+                    postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                  }
                 }
 
                 PostBookmarkScreen(
@@ -469,7 +479,25 @@ fun PinosuApp(
                     onNavigateBack = { navController.navigateUp() },
                     onDismissError = { detailViewModel.dismissError() },
                     onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() },
-                    isReadOnly = mainUiState.isReadOnly)
+                    isReadOnly = mainUiState.isReadOnly,
+                    onEditBookmark =
+                        remember(mainUiState.isReadOnly, mainUiState.userPubkey, route) {
+                          if (!mainUiState.isReadOnly &&
+                              route.authorPubkey ==
+                                  mainUiState.userPubkey?.let { Pubkey.parse(it)?.hex }) {
+                            {
+                              navController.navigate(
+                                  PostBookmark(
+                                      editUrl = route.dTag,
+                                      editTitle = route.title,
+                                      editCategories = route.categories,
+                                      editComment = route.content,
+                                  ))
+                            }
+                          } else {
+                            null
+                          }
+                        })
               }
 
           composable<License>(
@@ -533,6 +561,7 @@ private fun navigateToBookmarkDetail(
   val event = bookmark.event ?: return
   val dTag = event.tags.firstOrNull { it.isNotEmpty() && it[0] == "d" }?.getOrNull(1) ?: return
   val eventId = bookmark.eventId ?: return
+  val categories = event.tags.filter { it.size >= 2 && it[0] == "t" }.map { it[1] }
   navController.navigate(
       BookmarkDetail(
           eventId = eventId,
@@ -543,5 +572,6 @@ private fun navigateToBookmarkDetail(
           createdAt = event.createdAt,
           urls = bookmark.urls,
           imageUrl = bookmark.imageUrl,
+          categories = categories,
       ))
 }

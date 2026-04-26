@@ -62,6 +62,7 @@
     <string name="language_mode_japanese">Japanese</string>
 
     <string name="title_post_bookmark">Add Bookmark</string>
+    <string name="title_edit_bookmark">Edit Bookmark</string>
     <string name="label_title">Title</string>
     <string name="hint_bookmark_title">Bookmark title</string>
     <string name="label_categories">Categories</string>
@@ -89,6 +90,7 @@
     <string name="cd_author_avatar">Author profile image</string>
     <string name="cd_commenter_avatar">Commenter profile image</string>
     <string name="cd_remove_relay">Remove relay</string>
+    <string name="cd_edit_bookmark">Edit bookmark</string>
 
     <string name="settings_bootstrap_relays">Bootstrap Relays</string>
     <string name="settings_bootstrap_relays_description">Relays used to fetch relay list metadata (kind 10002)</string>

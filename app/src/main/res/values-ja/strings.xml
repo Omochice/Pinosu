@@ -59,6 +59,7 @@
     <string name="language_mode_japanese">日本語</string>
 
     <string name="title_post_bookmark">ブックマークを追加</string>
+    <string name="title_edit_bookmark">ブックマークを編集</string>
     <string name="label_title">タイトル</string>
     <string name="hint_bookmark_title">ブックマークのタイトル</string>
     <string name="label_categories">カテゴリ</string>
@@ -86,6 +87,7 @@
     <string name="cd_author_avatar">投稿者のプロフィール画像</string>
     <string name="cd_commenter_avatar">コメント投稿者のプロフィール画像</string>
     <string name="cd_remove_relay">リレーを削除</string>
+    <string name="cd_edit_bookmark">ブックマークを編集</string>
 
     <string name="settings_bootstrap_relays">ブートストラップリレー</string>
     <string name="settings_bootstrap_relays_description">リレーリストメタデータ（kind 10002）の取得に使用するリレー</string>
