@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.17.0](https://github.com/Omochice/Pinosu/compare/v0.16.0...v0.17.0) (2026-04-26)
+
+
+### Features
+
+* edit own kind 39701 bookmark events ([#440](https://github.com/Omochice/Pinosu/issues/440)) ([2e0bd21](https://github.com/Omochice/Pinosu/commit/2e0bd213547b36aff45c3e007a86ee9ae89b77fc))
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.compose:compose-bom to v2026.04.01 ([#429](https://github.com/Omochice/Pinosu/issues/429)) ([b9000a5](https://github.com/Omochice/Pinosu/commit/b9000a58d217c84c090966ef8d08312bcb6b6932))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.9.8 ([#428](https://github.com/Omochice/Pinosu/issues/428)) ([7713c97](https://github.com/Omochice/Pinosu/commit/7713c97deb44a875ffbd48cd79289a7d7692d09a))
+* **deps:** update dependency com.tngtech.archunit:archunit-junit4 to v1.4.2 ([#414](https://github.com/Omochice/Pinosu/issues/414)) ([68f0bee](https://github.com/Omochice/Pinosu/commit/68f0beee4b7e5e8d254020d4fef77e9cd81759b8))
+* **deps:** update dependency org.jsoup:jsoup to v1.22.2 ([#419](https://github.com/Omochice/Pinosu/issues/419)) ([853c27f](https://github.com/Omochice/Pinosu/commit/853c27f22a675cafe3fa483af960b784ad517a78))
+* **deps:** update kotlin monorepo to v2.3.21 ([#434](https://github.com/Omochice/Pinosu/issues/434)) ([bcc1b55](https://github.com/Omochice/Pinosu/commit/bcc1b55b6efa746895594615db52ca1557c88fce))
+
 ## [0.16.0](https://github.com/Omochice/Pinosu/compare/v0.15.1...v0.16.0) (2026-04-17)
 
 
