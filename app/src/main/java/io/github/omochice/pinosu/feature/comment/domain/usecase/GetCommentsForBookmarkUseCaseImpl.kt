@@ -23,12 +23,12 @@ constructor(
 
   override suspend fun invoke(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
       authorContent: String,
       authorCreatedAt: Long,
   ): Result<List<Comment>> {
-    val relayResult = commentRepository.getCommentsForBookmark(rootPubkey, dTag, rootEventId)
+    val relayResult = commentRepository.getCommentsForBookmark(rootPubkey, identifier, rootEventId)
     val relayComments =
         relayResult.getOrElse {
           return Result.failure(it)

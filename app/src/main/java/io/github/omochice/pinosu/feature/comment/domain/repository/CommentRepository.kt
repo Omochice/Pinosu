@@ -16,13 +16,13 @@ interface CommentRepository {
    * Fetch kind 1111 comments for a kind 39701 bookmark event
    *
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event (URL without scheme)
+   * @param identifier The bookmark identifier (URL without scheme)
    * @param rootEventId The event ID of the bookmark event
    * @return Result containing list of Comments on success or error on failure
    */
   suspend fun getCommentsForBookmark(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String
   ): Result<List<Comment>>
 
@@ -40,7 +40,7 @@ interface CommentRepository {
    * @param hexPubkey Author's public key (hex-encoded)
    * @param content Comment text
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event
+   * @param identifier The bookmark identifier
    * @param rootEventId The event ID of the bookmark event
    * @return Unsigned event ready for NIP-55 signing
    */
@@ -48,7 +48,7 @@ interface CommentRepository {
       hexPubkey: String,
       content: String,
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String
   ): UnsignedNostrEvent
 

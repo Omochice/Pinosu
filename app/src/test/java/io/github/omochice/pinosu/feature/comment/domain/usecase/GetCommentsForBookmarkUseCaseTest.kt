@@ -51,7 +51,7 @@ class GetCommentsForBookmarkUseCaseTest {
     val result =
         useCase(
             rootPubkey = "root-pubkey",
-            dTag = "d-tag",
+            identifier = "d-tag",
             rootEventId = "event-id",
             authorContent = "My bookmark note",
             authorCreatedAt = 1_700_000_000L)
@@ -78,7 +78,7 @@ class GetCommentsForBookmarkUseCaseTest {
     val result =
         useCase(
             rootPubkey = "root-pubkey",
-            dTag = "d-tag",
+            identifier = "d-tag",
             rootEventId = "event-id",
             authorContent = "",
             authorCreatedAt = 1_700_000_000L)
@@ -102,7 +102,7 @@ class GetCommentsForBookmarkUseCaseTest {
     val result =
         useCase(
             rootPubkey = "root-pubkey",
-            dTag = "d-tag",
+            identifier = "d-tag",
             rootEventId = "event-id",
             authorContent = "",
             authorCreatedAt = 1_700_000_000L)
@@ -141,7 +141,7 @@ class GetCommentsForBookmarkUseCaseTest {
         val result =
             useCase(
                 rootPubkey = "root-pubkey",
-                dTag = "d-tag",
+                identifier = "d-tag",
                 rootEventId = "event-id",
                 authorContent = authorContent,
                 authorCreatedAt = 1_700_000_000L)

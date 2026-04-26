@@ -444,7 +444,7 @@ fun PinosuApp(
                 val loadComments = {
                   detailViewModel.loadComments(
                       rootPubkey = route.authorPubkey,
-                      dTag = route.dTag,
+                      identifier = route.identifier,
                       rootEventId = route.eventId,
                       authorContent = route.content,
                       authorCreatedAt = route.createdAt)
@@ -472,7 +472,7 @@ fun PinosuApp(
                     onPostComment = {
                       detailViewModel.prepareSignCommentIntent(
                           rootPubkey = route.authorPubkey,
-                          dTag = route.dTag,
+                          identifier = route.identifier,
                           rootEventId = route.eventId) { intent ->
                             intent?.let { signCommentLauncher.launch(it) }
                           }
@@ -489,7 +489,7 @@ fun PinosuApp(
                             {
                               navController.navigate(
                                   PostBookmark(
-                                      editUrl = route.dTag,
+                                      editUrl = route.identifier,
                                       editTitle = route.title,
                                       editCategories = route.categories,
                                       editComment = route.content,
@@ -560,7 +560,7 @@ private fun navigateToBookmarkDetail(
     bookmark: io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem,
 ) {
   val event = bookmark.event ?: return
-  val dTag =
+  val identifier =
       event.tags.firstOrNull { it.isNotEmpty() && it[0] == NipB0.Tag.IDENTIFIER }?.getOrNull(1)
           ?: return
   val eventId = bookmark.eventId ?: return
@@ -569,7 +569,7 @@ private fun navigateToBookmarkDetail(
       BookmarkDetail(
           eventId = eventId,
           authorPubkey = event.author,
-          dTag = dTag,
+          identifier = identifier,
           title = bookmark.title,
           content = event.content,
           createdAt = event.createdAt,

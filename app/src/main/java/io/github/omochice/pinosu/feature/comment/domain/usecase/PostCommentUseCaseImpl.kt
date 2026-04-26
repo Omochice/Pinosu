@@ -24,7 +24,7 @@ constructor(
   override suspend fun createUnsignedEvent(
       content: String,
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
   ): Result<UnsignedNostrEvent> {
     val user =
@@ -38,7 +38,7 @@ constructor(
             hexPubkey = hexPubkey,
             content = content,
             rootPubkey = rootPubkey,
-            dTag = dTag,
+            identifier = identifier,
             rootEventId = rootEventId))
   }
 

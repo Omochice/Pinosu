@@ -15,14 +15,14 @@ interface PostCommentUseCase {
    *
    * @param content Comment text
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event
+   * @param identifier The bookmark identifier
    * @param rootEventId The event ID of the bookmark event
    * @return Result containing unsigned event on success or error on failure
    */
   suspend fun createUnsignedEvent(
       content: String,
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
   ): Result<UnsignedNostrEvent>
 
