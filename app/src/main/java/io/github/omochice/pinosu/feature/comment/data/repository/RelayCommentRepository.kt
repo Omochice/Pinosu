@@ -92,7 +92,11 @@ constructor(
       identifier: String,
       rootEventId: String
   ): UnsignedNostrEvent {
+<<<<<<< HEAD
     val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$identifier"
+=======
+    val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
+>>>>>>> 050cc419 (refactor: rename aTagValue to addressTagValue in RelayCommentRepository)
 
     val tags = buildList {
       add(listOf(Nip22.Tag.ADDRESS_ROOT, addressTagValue))
