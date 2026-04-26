@@ -481,20 +481,22 @@ fun PinosuApp(
                     onOpenUrlFailed = { detailViewModel.onOpenUrlFailed() },
                     isReadOnly = mainUiState.isReadOnly,
                     onEditBookmark =
-                        if (!mainUiState.isReadOnly &&
-                            route.authorPubkey ==
-                                mainUiState.userPubkey?.let { Pubkey.parse(it)?.hex }) {
-                          {
-                            navController.navigate(
-                                PostBookmark(
-                                    editUrl = route.dTag,
-                                    editTitle = route.title,
-                                    editCategories = route.categories,
-                                    editComment = route.content,
-                                ))
+                        remember(mainUiState.isReadOnly, mainUiState.userPubkey, route) {
+                          if (!mainUiState.isReadOnly &&
+                              route.authorPubkey ==
+                                  mainUiState.userPubkey?.let { Pubkey.parse(it)?.hex }) {
+                            {
+                              navController.navigate(
+                                  PostBookmark(
+                                      editUrl = route.dTag,
+                                      editTitle = route.title,
+                                      editCategories = route.categories,
+                                      editComment = route.content,
+                                  ))
+                            }
+                          } else {
+                            null
                           }
-                        } else {
-                          null
                         })
               }
 
