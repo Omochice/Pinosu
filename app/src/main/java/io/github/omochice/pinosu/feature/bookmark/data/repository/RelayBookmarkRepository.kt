@@ -147,14 +147,14 @@ constructor(
   }
 
   private suspend fun buildBookmarkItem(event: NostrEvent): BookmarkItem? {
-    val dTags =
+    val identifierUrls =
         event.tags
             .filter { it.isNotEmpty() && it[0] == NipB0.Tag.IDENTIFIER }
             .mapNotNull { it.getOrNull(1) }
             .map { "https://$it" }
             .filter { isValidUrl(it) }
 
-    val rTags =
+    val urlTags =
         event.tags
             .filter { it.isNotEmpty() && it[0] == NipB0.Tag.URL }
             .mapNotNull { it.getOrNull(1) }
@@ -162,8 +162,8 @@ constructor(
 
     val urls =
         when {
-          dTags.isNotEmpty() -> dTags
-          rTags.isNotEmpty() -> rTags
+          identifierUrls.isNotEmpty() -> identifierUrls
+          urlTags.isNotEmpty() -> urlTags
           else -> return null
         }
 
