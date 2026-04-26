@@ -115,7 +115,7 @@ fun PostBookmarkScreen(
                           onValueChange = onUrlChange,
                           modifier = Modifier.weight(1f),
                           singleLine = true,
-                          enabled = !uiState.isEditMode,
+                          readOnly = uiState.isEditMode,
                           placeholder = { Text("example.com/path") })
                     }
 

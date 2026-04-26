@@ -1,11 +1,12 @@
 package io.github.omochice.pinosu.feature.postbookmark.presentation.ui
 
-import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
 import io.github.omochice.pinosu.getTestString
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 
@@ -15,7 +16,8 @@ class PostBookmarkScreenTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun urlFieldShouldBeDisabledInEditMode() {
+  fun urlFieldShouldBeReadOnlyInEditMode() {
+    var urlChanged = false
     composeTestRule.setContent {
       PostBookmarkScreen(
           uiState =
@@ -25,7 +27,7 @@ class PostBookmarkScreenTest {
                   categories = "tech",
                   comment = "Comment",
                   isEditMode = true),
-          onUrlChange = {},
+          onUrlChange = { urlChanged = true },
           onTitleChange = {},
           onCategoriesChange = {},
           onCommentChange = {},
@@ -34,7 +36,8 @@ class PostBookmarkScreenTest {
           onDismissError = {})
     }
 
-    composeTestRule.onNodeWithText("example.com/article").assertIsNotEnabled()
+    composeTestRule.onNodeWithText("example.com/article").assertIsDisplayed()
+    assertFalse("onUrlChange should not be called in read-only mode", urlChanged)
   }
 
   @Test
