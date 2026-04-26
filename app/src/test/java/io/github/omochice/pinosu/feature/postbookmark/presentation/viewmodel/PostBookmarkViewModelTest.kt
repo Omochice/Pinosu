@@ -153,15 +153,6 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
-  fun `resetPostSuccess should set postSuccess to false`() = runTest {
-    viewModel.resetPostSuccess()
-    advanceUntilIdle()
-
-    val state = viewModel.uiState.first()
-    assertFalse("postSuccess should be false", state.postSuccess)
-  }
-
-  @Test
   fun `prepareSignEventIntent should set error when URL is blank`() = runTest {
     viewModel.updateUrl("")
     advanceUntilIdle()
@@ -328,16 +319,20 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
-  fun `updateUrl should be ignored in edit mode`() = runTest {
+  fun `resetForm should clear edit mode and all fields`() = runTest {
     viewModel.initializeForEdit(
         url = "example.com/article", title = "Title", categories = "tech", comment = "Comment")
     advanceUntilIdle()
 
-    viewModel.updateUrl("other.com/different")
+    viewModel.resetForm()
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("url should remain unchanged", "example.com/article", state.url)
+    assertFalse("isEditMode should be false", state.isEditMode)
+    assertEquals("url should be empty", "", state.url)
+    assertEquals("title should be empty", "", state.title)
+    assertEquals("categories should be empty", "", state.categories)
+    assertEquals("comment should be empty", "", state.comment)
   }
 
   @Test
