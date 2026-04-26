@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -113,7 +114,7 @@ fun PostBookmarkScreen(
                       OutlinedTextField(
                           value = uiState.url,
                           onValueChange = onUrlChange,
-                          modifier = Modifier.weight(1f),
+                          modifier = Modifier.weight(1f).testTag(URL_FIELD_TEST_TAG),
                           singleLine = true,
                           readOnly = uiState.isEditMode,
                           placeholder = { Text("example.com/path") })
@@ -215,3 +216,6 @@ private fun PostBookmarkScreenLoadingPreview() {
       onNavigateBack = {},
       onDismissError = {})
 }
+
+/** Test tag for the URL input field */
+const val URL_FIELD_TEST_TAG = "url_field"

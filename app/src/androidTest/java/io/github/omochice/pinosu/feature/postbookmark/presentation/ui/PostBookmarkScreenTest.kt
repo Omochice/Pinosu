@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.postbookmark.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
@@ -36,7 +37,7 @@ class PostBookmarkScreenTest {
           onDismissError = {})
     }
 
-    composeTestRule.onNodeWithText("example.com/article").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(URL_FIELD_TEST_TAG).assertIsDisplayed()
     assertFalse("onUrlChange should not be called in read-only mode", urlChanged)
   }
 
