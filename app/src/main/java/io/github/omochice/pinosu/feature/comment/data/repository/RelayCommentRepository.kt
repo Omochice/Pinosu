@@ -54,7 +54,7 @@ constructor(
   ): Result<List<Comment>> {
     return try {
       val relays = relayListProvider.getRelays()
-      val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$identifier"
+      val addressTagValue = NipB0.createAddress(rootPubkey, identifier)
       val filter =
           Json.encodeToString(
               CommentFilter(
@@ -92,7 +92,7 @@ constructor(
       identifier: String,
       rootEventId: String
   ): UnsignedNostrEvent {
-    val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$identifier"
+    val addressTagValue = NipB0.createAddress(rootPubkey, identifier)
 
     val tags = buildList {
       add(listOf(Nip22.Tag.ADDRESS_ROOT, addressTagValue))
