@@ -95,14 +95,14 @@ constructor(
     val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
 
     val tags = buildList {
-      add(listOf("A", aTagValue))
-      add(listOf("E", rootEventId))
-      add(listOf("K", NipB0.KIND_BOOKMARK_LIST.toString()))
-      add(listOf("P", rootPubkey))
-      add(listOf("a", aTagValue))
-      add(listOf("e", rootEventId))
-      add(listOf("k", NipB0.KIND_BOOKMARK_LIST.toString()))
-      add(listOf("p", rootPubkey))
+      add(listOf(Nip22.Tag.ADDRESS_ROOT, aTagValue))
+      add(listOf(Nip22.Tag.EVENT_ROOT, rootEventId))
+      add(listOf(Nip22.Tag.KIND_ROOT, NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf(Nip22.Tag.PUBKEY_ROOT, rootPubkey))
+      add(listOf(Nip22.Tag.ADDRESS, aTagValue))
+      add(listOf(Nip22.Tag.EVENT, rootEventId))
+      add(listOf(Nip22.Tag.KIND, NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf(Nip22.Tag.PUBKEY, rootPubkey))
       if (clientTagRepository.clientTagEnabledFlow.value) {
         add(Nip89.clientTag())
       }
