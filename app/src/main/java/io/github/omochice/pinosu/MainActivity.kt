@@ -52,6 +52,7 @@ import io.github.omochice.pinosu.core.navigation.defaultExitTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopExitTransition
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
 import io.github.omochice.pinosu.feature.appinfo.presentation.ui.AppInfoScreen
 import io.github.omochice.pinosu.feature.auth.presentation.ui.LoginScreen
@@ -559,9 +560,11 @@ private fun navigateToBookmarkDetail(
     bookmark: io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem,
 ) {
   val event = bookmark.event ?: return
-  val dTag = event.tags.firstOrNull { it.isNotEmpty() && it[0] == "d" }?.getOrNull(1) ?: return
+  val dTag =
+      event.tags.firstOrNull { it.isNotEmpty() && it[0] == NipB0.Tag.IDENTIFIER }?.getOrNull(1)
+          ?: return
   val eventId = bookmark.eventId ?: return
-  val categories = event.tags.filter { it.size >= 2 && it[0] == "t" }.map { it[1] }
+  val categories = event.tags.filter { it.size >= 2 && it[0] == NipB0.Tag.CATEGORY }.map { it[1] }
   navController.navigate(
       BookmarkDetail(
           eventId = eventId,
