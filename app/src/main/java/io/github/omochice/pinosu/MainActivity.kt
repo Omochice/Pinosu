@@ -561,7 +561,7 @@ private fun navigateToBookmarkDetail(
   val event = bookmark.event ?: return
   val dTag = event.tags.firstOrNull { it.isNotEmpty() && it[0] == "d" }?.getOrNull(1) ?: return
   val eventId = bookmark.eventId ?: return
-  val categories = event.tags.filter { it.size >= 2 && it[0] == "t" }.joinToString(", ") { it[1] }
+  val categories = event.tags.filter { it.size >= 2 && it[0] == "t" }.map { it[1] }
   navController.navigate(
       BookmarkDetail(
           eventId = eventId,

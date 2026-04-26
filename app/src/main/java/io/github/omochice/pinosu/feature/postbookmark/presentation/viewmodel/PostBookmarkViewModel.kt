@@ -80,13 +80,17 @@ constructor(
    *
    * @param url URL without scheme (read-only in edit mode)
    * @param title Existing bookmark title
-   * @param categories Existing comma-separated categories
+   * @param categories Existing categories list
    * @param comment Existing bookmark comment
    */
-  fun initializeForEdit(url: String, title: String, categories: String, comment: String) {
+  fun initializeForEdit(url: String, title: String, categories: List<String>, comment: String) {
     _uiState.update {
       it.copy(
-          url = url, title = title, categories = categories, comment = comment, isEditMode = true)
+          url = url,
+          title = title,
+          categories = categories.joinToString(", "),
+          comment = comment,
+          isEditMode = true)
     }
   }
 

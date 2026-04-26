@@ -306,7 +306,7 @@ class PostBookmarkViewModelTest {
     viewModel.initializeForEdit(
         url = "example.com/article",
         title = "Existing Title",
-        categories = "tech, kotlin",
+        categories = listOf("tech", "kotlin"),
         comment = "Existing comment")
     advanceUntilIdle()
 
@@ -321,7 +321,10 @@ class PostBookmarkViewModelTest {
   @Test
   fun `resetForm should clear edit mode and all fields`() = runTest {
     viewModel.initializeForEdit(
-        url = "example.com/article", title = "Title", categories = "tech", comment = "Comment")
+        url = "example.com/article",
+        title = "Title",
+        categories = listOf("tech"),
+        comment = "Comment")
     advanceUntilIdle()
 
     viewModel.resetForm()
@@ -353,7 +356,7 @@ class PostBookmarkViewModelTest {
     viewModel.initializeForEdit(
         url = "example.com/article",
         title = "Original Title",
-        categories = "tech",
+        categories = listOf("tech"),
         comment = "Original comment")
     viewModel.updateTitle("Updated Title")
     viewModel.updateComment("Updated comment")
