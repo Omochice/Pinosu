@@ -44,14 +44,14 @@ constructor(
    * Load comments for a bookmark event
    *
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event
+   * @param identifier The bookmark identifier
    * @param rootEventId The event ID of the bookmark event
    * @param authorContent The bookmark event's content field
    * @param authorCreatedAt The bookmark event's created_at timestamp
    */
   fun loadComments(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
       authorContent: String,
       authorCreatedAt: Long,
@@ -61,7 +61,7 @@ constructor(
     viewModelScope.launch {
       getCommentsUseCase(
               rootPubkey = rootPubkey,
-              dTag = dTag,
+              identifier = identifier,
               rootEventId = rootEventId,
               authorContent = authorContent,
               authorCreatedAt = authorCreatedAt)
@@ -96,13 +96,13 @@ constructor(
    * Prepare sign comment Intent for NIP-55 signer
    *
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event
+   * @param identifier The bookmark identifier
    * @param rootEventId The event ID of the bookmark event
    * @param onReady Callback with Intent when ready, or null on failure
    */
   fun prepareSignCommentIntent(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
       onReady: (Intent?) -> Unit,
   ) {
@@ -119,7 +119,10 @@ constructor(
     viewModelScope.launch {
       postCommentUseCase
           .createUnsignedEvent(
-              content = content, rootPubkey = rootPubkey, dTag = dTag, rootEventId = rootEventId)
+              content = content,
+              rootPubkey = rootPubkey,
+              identifier = identifier,
+              rootEventId = rootEventId)
           .onSuccess { unsignedEvent ->
             pendingUnsignedEvent = unsignedEvent
             val eventJson = unsignedEvent.toJson()

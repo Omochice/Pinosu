@@ -44,7 +44,7 @@ class PostCommentUseCaseTest {
         useCase.createUnsignedEvent(
             content = "My comment",
             rootPubkey = "root-pubkey",
-            dTag = "example.com/article",
+            identifier = "example.com/article",
             rootEventId = "event-123")
 
     assertTrue(result.isFailure)
@@ -69,7 +69,7 @@ class PostCommentUseCaseTest {
           hexPubkey = any(),
           content = "My comment",
           rootPubkey = "root-pubkey",
-          dTag = "example.com/article",
+          identifier = "example.com/article",
           rootEventId = "event-123")
     } returns expectedEvent
 
@@ -77,7 +77,7 @@ class PostCommentUseCaseTest {
         useCase.createUnsignedEvent(
             content = "My comment",
             rootPubkey = "root-pubkey",
-            dTag = "example.com/article",
+            identifier = "example.com/article",
             rootEventId = "event-123")
 
     assertTrue(result.isSuccess)
@@ -87,7 +87,7 @@ class PostCommentUseCaseTest {
           hexPubkey = any(),
           content = "My comment",
           rootPubkey = "root-pubkey",
-          dTag = "example.com/article",
+          identifier = "example.com/article",
           rootEventId = "event-123")
     }
   }

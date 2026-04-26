@@ -31,7 +31,7 @@ class Nip65EventParserImpl @Inject constructor() : Nip65EventParser {
     }
 
     return event.tags
-        .filter { tag -> tag.size >= 2 && tag[0] == TAG_RELAY }
+        .filter { tag -> tag.size >= 2 && tag[0] == Nip65.Tag.RELAY }
         .mapNotNull { tag -> parseRelayTag(tag) }
   }
 
@@ -68,7 +68,6 @@ class Nip65EventParserImpl @Inject constructor() : Nip65EventParser {
     /** NIP-65 Relay List Metadata event kind */
     const val KIND_RELAY_LIST_METADATA = 10002
 
-    private const val TAG_RELAY = "r"
     private const val MARKER_READ = "read"
     private const val MARKER_WRITE = "write"
   }

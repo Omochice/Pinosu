@@ -44,7 +44,7 @@ data class PostBookmark(
  *
  * @property eventId Event ID of the kind 39701 bookmark
  * @property authorPubkey Hex-encoded public key of the bookmark author
- * @property dTag The d-tag of the bookmark event (URL without scheme)
+ * @property identifier The bookmark identifier (URL without scheme)
  * @property title Bookmark title, or null if not available
  * @property content Bookmark event content (author's comment)
  * @property createdAt Unix timestamp of the bookmark event
@@ -56,7 +56,7 @@ data class PostBookmark(
 data class BookmarkDetail(
     val eventId: String,
     val authorPubkey: String,
-    val dTag: String,
+    val identifier: String,
     val title: String? = null,
     val content: String = "",
     val createdAt: Long = 0L,

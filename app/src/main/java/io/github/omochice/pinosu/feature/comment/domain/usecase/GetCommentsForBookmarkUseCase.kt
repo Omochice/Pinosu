@@ -16,7 +16,7 @@ interface GetCommentsForBookmarkUseCase {
    * comments are sorted by createdAt ascending.
    *
    * @param rootPubkey Hex-encoded public key of the bookmark author
-   * @param dTag The d-tag of the bookmark event
+   * @param identifier The bookmark identifier
    * @param rootEventId The event ID of the bookmark event
    * @param authorContent The bookmark event's content field (may be empty)
    * @param authorCreatedAt The bookmark event's created_at timestamp
@@ -24,7 +24,7 @@ interface GetCommentsForBookmarkUseCase {
    */
   suspend operator fun invoke(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String,
       authorContent: String,
       authorCreatedAt: Long,

@@ -87,7 +87,7 @@ class BookmarkDetailViewModelTest {
         coEvery {
           getCommentsUseCase(
               rootPubkey = "author-pk",
-              dTag = "example.com",
+              identifier = "example.com",
               rootEventId = "evt-1",
               authorContent = "My note",
               authorCreatedAt = 1_699_999_999L)
@@ -95,7 +95,7 @@ class BookmarkDetailViewModelTest {
 
         viewModel.loadComments(
             rootPubkey = "author-pk",
-            dTag = "example.com",
+            identifier = "example.com",
             rootEventId = "evt-1",
             authorContent = "My note",
             authorCreatedAt = 1_699_999_999L)
@@ -115,7 +115,7 @@ class BookmarkDetailViewModelTest {
 
         viewModel.loadComments(
             rootPubkey = "pk",
-            dTag = "d",
+            identifier = "d",
             rootEventId = "e",
             authorContent = "",
             authorCreatedAt = 0L)
@@ -146,7 +146,7 @@ class BookmarkDetailViewModelTest {
 
         viewModel.loadComments(
             rootPubkey = "author-pk",
-            dTag = "example.com",
+            identifier = "example.com",
             rootEventId = "evt-1",
             authorContent = "Author note",
             authorCreatedAt = 1_699_999_999L)
@@ -184,7 +184,7 @@ class BookmarkDetailViewModelTest {
           postCommentUseCase.createUnsignedEvent(
               content = "My comment",
               rootPubkey = "root-pk",
-              dTag = "example.com",
+              identifier = "example.com",
               rootEventId = "evt-1")
         } returns Result.success(unsignedEvent)
         every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
@@ -194,7 +194,7 @@ class BookmarkDetailViewModelTest {
 
         var receivedIntent: Intent? = null
         viewModel.prepareSignCommentIntent(
-            rootPubkey = "root-pk", dTag = "example.com", rootEventId = "evt-1") {
+            rootPubkey = "root-pk", identifier = "example.com", rootEventId = "evt-1") {
               receivedIntent = it
             }
         advanceUntilIdle()
@@ -290,7 +290,7 @@ class BookmarkDetailViewModelTest {
 
         viewModel.loadComments(
             rootPubkey = "author-pk",
-            dTag = "example.com",
+            identifier = "example.com",
             rootEventId = "evt-1",
             authorContent = "",
             authorCreatedAt = 0L)

@@ -55,7 +55,7 @@ class RelayCommentRepositoryTest {
 
     val result =
         repository.getCommentsForBookmark(
-            rootPubkey = "abc123", dTag = "example.com/article", rootEventId = "event123")
+            rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
 
     assertTrue(result.isSuccess)
     assertTrue(result.getOrNull()!!.isEmpty())
@@ -82,7 +82,7 @@ class RelayCommentRepositoryTest {
 
     val result =
         repository.getCommentsForBookmark(
-            rootPubkey = "abc123", dTag = "example.com/article", rootEventId = "event123")
+            rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
 
     assertTrue(result.isSuccess)
     val comments = result.getOrNull()!!
@@ -100,7 +100,7 @@ class RelayCommentRepositoryTest {
         emptyList()
 
     repository.getCommentsForBookmark(
-        rootPubkey = "abc123", dTag = "example.com/article", rootEventId = "event123")
+        rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
 
     val filter = filterSlot.captured
     assertTrue(filter.contains("\"kinds\":[1111]"))
@@ -115,7 +115,7 @@ class RelayCommentRepositoryTest {
             hexPubkey = "my-pubkey",
             content = "My comment",
             rootPubkey = "root-pubkey",
-            dTag = "example.com/article",
+            identifier = "example.com/article",
             rootEventId = "root-event-id")
 
     assertEquals(1111, event.kind)
@@ -192,7 +192,7 @@ class RelayCommentRepositoryTest {
             hexPubkey = "my-pubkey",
             content = "My comment",
             rootPubkey = "root-pubkey",
-            dTag = "example.com/article",
+            identifier = "example.com/article",
             rootEventId = "root-event-id")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
@@ -209,7 +209,7 @@ class RelayCommentRepositoryTest {
             hexPubkey = "my-pubkey",
             content = "My comment",
             rootPubkey = "root-pubkey",
-            dTag = "example.com/article",
+            identifier = "example.com/article",
             rootEventId = "root-event-id")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }

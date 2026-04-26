@@ -11,4 +11,9 @@ class Nip89Test {
 
     assertEquals(listOf("client", "Pinosu"), tag)
   }
+
+  @Test
+  fun `Tag CLIENT equals client`() {
+    assertEquals("client", Nip89.Tag.CLIENT)
+  }
 }

@@ -49,17 +49,17 @@ constructor(
 
   override suspend fun getCommentsForBookmark(
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String
   ): Result<List<Comment>> {
     return try {
       val relays = relayListProvider.getRelays()
-      val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
+      val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$identifier"
       val filter =
           Json.encodeToString(
               CommentFilter(
                   kinds = listOf(Nip22.KIND_COMMENT),
-                  aTag = listOf(aTagValue),
+                  aTag = listOf(addressTagValue),
                   eTag = listOf(rootEventId),
               ))
 
@@ -89,20 +89,20 @@ constructor(
       hexPubkey: String,
       content: String,
       rootPubkey: String,
-      dTag: String,
+      identifier: String,
       rootEventId: String
   ): UnsignedNostrEvent {
-    val aTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$dTag"
+    val addressTagValue = "${NipB0.KIND_BOOKMARK_LIST}:$rootPubkey:$identifier"
 
     val tags = buildList {
-      add(listOf("A", aTagValue))
-      add(listOf("E", rootEventId))
-      add(listOf("K", NipB0.KIND_BOOKMARK_LIST.toString()))
-      add(listOf("P", rootPubkey))
-      add(listOf("a", aTagValue))
-      add(listOf("e", rootEventId))
-      add(listOf("k", NipB0.KIND_BOOKMARK_LIST.toString()))
-      add(listOf("p", rootPubkey))
+      add(listOf(Nip22.Tag.ADDRESS_ROOT, addressTagValue))
+      add(listOf(Nip22.Tag.EVENT_ROOT, rootEventId))
+      add(listOf(Nip22.Tag.KIND_ROOT, NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf(Nip22.Tag.PUBKEY_ROOT, rootPubkey))
+      add(listOf(Nip22.Tag.ADDRESS, addressTagValue))
+      add(listOf(Nip22.Tag.EVENT, rootEventId))
+      add(listOf(Nip22.Tag.KIND, NipB0.KIND_BOOKMARK_LIST.toString()))
+      add(listOf(Nip22.Tag.PUBKEY, rootPubkey))
       if (clientTagRepository.clientTagEnabledFlow.value) {
         add(Nip89.clientTag())
       }

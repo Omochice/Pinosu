@@ -121,18 +121,18 @@ constructor(
           else -> rawUrl
         }
 
-    tags.add(listOf("d", normalizedUrl))
+    tags.add(listOf(NipB0.Tag.IDENTIFIER, normalizedUrl))
 
     if (title.isNotBlank()) {
-      tags.add(listOf("title", title))
+      tags.add(listOf(NipB0.Tag.TITLE, title))
     }
 
     categories
         .filter { it.isNotBlank() }
-        .forEach { category -> tags.add(listOf("t", category.trim())) }
+        .forEach { category -> tags.add(listOf(NipB0.Tag.CATEGORY, category.trim())) }
 
     val fullUrl = if (rawUrl != normalizedUrl) rawUrl else "$SCHEME_HTTPS$normalizedUrl"
-    tags.add(listOf("r", fullUrl))
+    tags.add(listOf(NipB0.Tag.URL, fullUrl))
 
     if (clientTagRepository.clientTagEnabledFlow.value) {
       tags.add(Nip89.clientTag())
@@ -147,27 +147,27 @@ constructor(
   }
 
   private suspend fun buildBookmarkItem(event: NostrEvent): BookmarkItem? {
-    val dTags =
+    val identifierUrls =
         event.tags
-            .filter { it.isNotEmpty() && it[0] == "d" }
+            .filter { it.isNotEmpty() && it[0] == NipB0.Tag.IDENTIFIER }
             .mapNotNull { it.getOrNull(1) }
             .map { "https://$it" }
             .filter { isValidUrl(it) }
 
-    val rTags =
+    val urlTags =
         event.tags
-            .filter { it.isNotEmpty() && it[0] == "r" }
+            .filter { it.isNotEmpty() && it[0] == NipB0.Tag.URL }
             .mapNotNull { it.getOrNull(1) }
             .filter { isValidUrl(it) }
 
     val urls =
         when {
-          dTags.isNotEmpty() -> dTags
-          rTags.isNotEmpty() -> rTags
+          identifierUrls.isNotEmpty() -> identifierUrls
+          urlTags.isNotEmpty() -> urlTags
           else -> return null
         }
 
-    val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == "title" }?.get(1)
+    val titleTag = event.tags.firstOrNull { it.size >= 2 && it[0] == NipB0.Tag.TITLE }?.get(1)
     val metadata = urlMetadataFetcher.fetchMetadata(urls.first()).getOrNull()
     val title = titleTag ?: metadata?.title
 
