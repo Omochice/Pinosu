@@ -15,15 +15,16 @@ interface CommentRepository {
   /**
    * Fetch kind 1111 comments for a kind 39701 bookmark event
    *
+   * Uses the NIP-33 address (kind:pubkey:identifier) to query comments, so that comments survive
+   * event replacement.
+   *
    * @param rootPubkey Hex-encoded public key of the bookmark author
    * @param identifier The bookmark identifier (URL without scheme)
-   * @param rootEventId The event ID of the bookmark event
    * @return Result containing list of Comments on success or error on failure
    */
   suspend fun getCommentsForBookmark(
       rootPubkey: String,
       identifier: String,
-      rootEventId: String
   ): Result<List<Comment>>
 
   /**
