@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/Omochice/Pinosu/compare/v0.17.0...v0.17.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* remove #E tag filter from comment query ([#447](https://github.com/Omochice/Pinosu/issues/447)) ([16e1cba](https://github.com/Omochice/Pinosu/commit/16e1cbaa3b509c84111ada2095d5b72dd0f48639))
+
 ## [0.17.0](https://github.com/Omochice/Pinosu/compare/v0.16.0...v0.17.0) (2026-04-26)
 
 
