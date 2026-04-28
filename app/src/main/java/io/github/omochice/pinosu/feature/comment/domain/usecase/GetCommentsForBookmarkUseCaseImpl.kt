@@ -28,7 +28,7 @@ constructor(
       authorContent: String,
       authorCreatedAt: Long,
   ): Result<List<Comment>> {
-    val relayResult = commentRepository.getCommentsForBookmark(rootPubkey, identifier, rootEventId)
+    val relayResult = commentRepository.getCommentsForBookmark(rootPubkey, identifier)
     val relayComments =
         relayResult.getOrElse {
           return Result.failure(it)

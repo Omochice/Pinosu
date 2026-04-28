@@ -45,7 +45,7 @@ class GetCommentsForBookmarkUseCaseTest {
             authorPubkey = "other-pubkey",
             createdAt = 1_700_000_100L)
 
-    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
+    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag") } returns
         Result.success(listOf(relayComment))
 
     val result =
@@ -72,7 +72,7 @@ class GetCommentsForBookmarkUseCaseTest {
             authorPubkey = "other-pubkey",
             createdAt = 1_700_000_100L)
 
-    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
+    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag") } returns
         Result.success(listOf(relayComment))
 
     val result =
@@ -96,7 +96,7 @@ class GetCommentsForBookmarkUseCaseTest {
     val older =
         Comment(id = "older", content = "Older", authorPubkey = "p2", createdAt = 1_700_000_100L)
 
-    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id") } returns
+    coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag") } returns
         Result.success(listOf(newer, older))
 
     val result =
@@ -134,9 +134,8 @@ class GetCommentsForBookmarkUseCaseTest {
 
         coEvery { commentRepository.getEventsByIds(listOf(eventId)) } returns
             Result.success(listOf(fetchedEvent))
-        coEvery {
-          commentRepository.getCommentsForBookmark("root-pubkey", "d-tag", "event-id")
-        } returns Result.success(emptyList())
+        coEvery { commentRepository.getCommentsForBookmark("root-pubkey", "d-tag") } returns
+            Result.success(emptyList())
 
         val result =
             useCase(

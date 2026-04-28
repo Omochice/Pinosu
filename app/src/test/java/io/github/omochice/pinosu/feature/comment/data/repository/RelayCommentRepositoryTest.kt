@@ -54,8 +54,7 @@ class RelayCommentRepositoryTest {
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
 
     val result =
-        repository.getCommentsForBookmark(
-            rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
+        repository.getCommentsForBookmark(rootPubkey = "abc123", identifier = "example.com/article")
 
     assertTrue(result.isSuccess)
     assertTrue(result.getOrNull()!!.isEmpty())
@@ -81,8 +80,7 @@ class RelayCommentRepositoryTest {
     coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
 
     val result =
-        repository.getCommentsForBookmark(
-            rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
+        repository.getCommentsForBookmark(rootPubkey = "abc123", identifier = "example.com/article")
 
     assertTrue(result.isSuccess)
     val comments = result.getOrNull()!!
@@ -99,13 +97,11 @@ class RelayCommentRepositoryTest {
     coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns
         emptyList()
 
-    repository.getCommentsForBookmark(
-        rootPubkey = "abc123", identifier = "example.com/article", rootEventId = "event123")
+    repository.getCommentsForBookmark(rootPubkey = "abc123", identifier = "example.com/article")
 
     val filter = filterSlot.captured
     assertTrue(filter.contains("\"kinds\":[1111]"))
     assertTrue(filter.contains(""""#A":["39701:abc123:example.com/article"]"""))
-    assertTrue(filter.contains(""""#E":["event123"]"""))
   }
 
   @Test

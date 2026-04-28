@@ -24,7 +24,6 @@ import kotlinx.serialization.json.Json
 private data class CommentFilter(
     val kinds: List<Int>,
     @SerialName("#A") val aTag: List<String>,
-    @SerialName("#E") val eTag: List<String>,
 )
 
 @Serializable
@@ -50,7 +49,6 @@ constructor(
   override suspend fun getCommentsForBookmark(
       rootPubkey: String,
       identifier: String,
-      rootEventId: String
   ): Result<List<Comment>> {
     return try {
       val relays = relayListProvider.getRelays()
@@ -60,7 +58,6 @@ constructor(
               CommentFilter(
                   kinds = listOf(Nip22.KIND_COMMENT),
                   aTag = listOf(addressTagValue),
-                  eTag = listOf(rootEventId),
               ))
 
       val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
