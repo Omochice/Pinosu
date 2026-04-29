@@ -121,15 +121,9 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     }
 
     val eventId =
-        try {
-          Json.parseToJsonElement(signedEventJson).jsonObject["id"]?.jsonPrimitive?.content ?: ""
-        } catch (e: IllegalArgumentException) {
-          Log.e(TAG, "Failed to parse signedEventJson", e)
-          return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
+        extractEventId(signedEventJson).getOrElse {
+          return Result.failure(it)
         }
-    if (eventId.isBlank()) {
-      return Result.failure(Exception("Missing event id"))
-    }
     Log.d(TAG, "publishEvent called for eventId=$eventId")
 
     return coroutineScope {
@@ -161,6 +155,26 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
         Result.success(PublishResult(eventId, successful, failed))
       }
     }
+  }
+
+  /**
+   * Extract event ID from a signed event JSON string
+   *
+   * @param signedEventJson Signed event as JSON string
+   * @return Success(eventId) or Failure with parse/validation error
+   */
+  private fun extractEventId(signedEventJson: String): Result<String> {
+    val id =
+        try {
+          Json.parseToJsonElement(signedEventJson).jsonObject["id"]?.jsonPrimitive?.content ?: ""
+        } catch (e: IllegalArgumentException) {
+          Log.e(TAG, "Failed to parse signedEventJson", e)
+          return Result.failure(IllegalArgumentException("Invalid JSON: ${e.message}"))
+        }
+    if (id.isBlank()) {
+      return Result.failure(Exception("Missing event id"))
+    }
+    return Result.success(id)
   }
 
   /**

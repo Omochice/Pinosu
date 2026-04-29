@@ -390,6 +390,34 @@ class RelayPoolTest {
   }
 
   @Test
+  fun `publishEvent should return failure when event id is missing`() = runBlocking {
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
+
+    val jsonWithoutId = """{"pubkey":"abc","kind":39701,"content":"test"}"""
+
+    val result = relayPool.publishEvent(relays, jsonWithoutId, 5000L)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should mention missing event id",
+        result.exceptionOrNull()?.message?.contains("Missing event id") == true)
+  }
+
+  @Test
+  fun `publishEvent should return failure when event id is blank`() = runBlocking {
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
+
+    val jsonWithBlankId = """{"id":"","pubkey":"abc","kind":39701,"content":"test"}"""
+
+    val result = relayPool.publishEvent(relays, jsonWithBlankId, 5000L)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should mention missing event id",
+        result.exceptionOrNull()?.message?.contains("Missing event id") == true)
+  }
+
+  @Test
   fun `publishEvent should return failure when signedEventJson is invalid JSON`() = runBlocking {
     val relays = listOf(RelayConfig(url = "wss://relay.example.com", write = true))
 
