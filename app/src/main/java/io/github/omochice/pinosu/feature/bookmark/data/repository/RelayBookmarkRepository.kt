@@ -68,21 +68,21 @@ constructor(
         return Result.success(null)
       }
 
-      val mostRecentEvent = events.maxByOrNull { it.createdAt }
+      val mostRecentEvent = events.maxBy { it.createdAt }
 
       val allItems = coroutineScope {
         events.map { event -> async { buildBookmarkItem(event) } }.awaitAll().filterNotNull()
       }
 
       val itemsWithEvents = allItems.sortedByDescending { it.event?.createdAt ?: 0L }
-      val event = mostRecentEvent ?: return Result.success(null)
-      val encryptedContent = if (event.content.isNotEmpty()) event.content else null
+      val encryptedContent =
+          if (mostRecentEvent.content.isNotEmpty()) mostRecentEvent.content else null
 
       Result.success(
           BookmarkList(
-              pubkey = event.pubkey,
+              pubkey = mostRecentEvent.pubkey,
               items = itemsWithEvents,
-              createdAt = event.createdAt,
+              createdAt = mostRecentEvent.createdAt,
               encryptedContent = encryptedContent))
     } catch (e: IOException) {
       Log.e(TAG, "Error getting bookmark list", e)

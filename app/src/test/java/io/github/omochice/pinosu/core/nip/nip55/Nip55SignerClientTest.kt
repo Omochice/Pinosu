@@ -224,6 +224,61 @@ class Nip55SignerClientTest {
   }
 
   @Test
+  fun `handleSignEventResponse on success should return SignedEventResponse`() {
+    val signedJson = """{"id":"abc","sig":"xyz"}"""
+    val intent = android.content.Intent()
+    intent.putExtra("result", signedJson)
+
+    val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return success", result.isSuccess)
+    assertEquals("Signed event JSON should match", signedJson, result.getOrNull()?.signedEventJson)
+  }
+
+  @Test
+  fun `handleSignEventResponse when canceled should return UserRejected`() {
+    val intent = android.content.Intent()
+
+    val result =
+        nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_CANCELED, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue("Error should be UserRejected", result.exceptionOrNull() is Nip55Error.UserRejected)
+  }
+
+  @Test
+  fun `handleSignEventResponse with null intent should return InvalidResponse`() {
+    val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, null)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should be InvalidResponse", result.exceptionOrNull() is Nip55Error.InvalidResponse)
+  }
+
+  @Test
+  fun `handleSignEventResponse when rejected should return UserRejected`() {
+    val intent = android.content.Intent()
+    intent.putExtra("rejected", true)
+
+    val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue("Error should be UserRejected", result.exceptionOrNull() is Nip55Error.UserRejected)
+  }
+
+  @Test
+  fun `handleSignEventResponse with empty result should return InvalidResponse`() {
+    val intent = android.content.Intent()
+    intent.putExtra("result", "")
+
+    val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue("Should return failure", result.isFailure)
+    assertTrue(
+        "Error should be InvalidResponse", result.exceptionOrNull() is Nip55Error.InvalidResponse)
+  }
+
+  @Test
   fun `maskPubkey with valid pubkey should return masked string`() {
     val pubkey = "npub1" + "abcdef0123456789".repeat(3) + "abcdef01234"
 

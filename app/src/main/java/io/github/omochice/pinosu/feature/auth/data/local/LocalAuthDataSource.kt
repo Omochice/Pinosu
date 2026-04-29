@@ -84,11 +84,7 @@ class LocalAuthDataSource @Inject constructor(private val dataStore: DataStore<A
   suspend fun getUser(): User? {
     return try {
       val data = activeDataStore.data.first()
-      val pubkeyStr = data.userPubkey ?: return null
-
-      val pubkey = Pubkey.parse(pubkeyStr) ?: return null
-
-      User(pubkey)
+      data.userPubkey?.let { Pubkey.parse(it) }?.let { User(it) }
     } catch (e: IOException) {
       Log.w(TAG, "Failed to read user data: ${e.message}")
       null
