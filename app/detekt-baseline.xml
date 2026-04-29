@@ -22,11 +22,11 @@
     <ID>MagicNumber:RelayPool.kt$RelayPoolImpl.&lt;no name provided&gt;$1000</ID>
     <ID>MaxLineLength:RelayPoolTest.kt$RelayPoolTest$"""{"id":"event123","pubkey":"abc","created_at":1234567890,"kind":39701,"tags":[],"content":"test","sig":"xyz"}"""</ID>
     <ID>MaximumLineLength:RelayPoolTest.kt$RelayPoolTest$ </ID>
-    <ID>ReturnCount:LocalAuthDataSource.kt$LocalAuthDataSource$suspend fun getUser(): User?</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleNip55Response(resultCode: Int, data: Intent?): Result&lt;Nip55Response&gt;</ID>
     <ID>ReturnCount:Nip55SignerClient.kt$Nip55SignerClient$fun handleSignEventResponse(resultCode: Int, data: Intent?): Result&lt;SignedEventResponse&gt;</ID>
     <ID>ReturnCount:RelayBookmarkRepository.kt$RelayBookmarkRepository$override suspend fun getBookmarkList(pubkey: String, until: Long?): Result&lt;BookmarkList?&gt;</ID>
     <ID>ReturnCount:RelayPool.kt$RelayPoolImpl$override suspend fun publishEvent( relays: List&lt;RelayConfig&gt;, signedEventJson: String, timeoutMs: Long ): Result&lt;PublishResult&gt;</ID>
+    <ID>ReturnCount:RelayPool.kt$RelayPoolImpl$private fun extractEventId(signedEventJson: String): Result&lt;String&gt;</ID>
     <ID>StringShouldBeRawString:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$"\"authors\":[\"$hexPubkey\"]"</ID>
     <ID>StringTemplate:Nip65RelayListFetcherTest.kt$Nip65RelayListFetcherTest$${createdAt}</ID>
     <ID>TryCatchFinallySpacing:RelayPoolTest.kt$RelayPoolTest.MockPublishWebSocketState${}</ID>
