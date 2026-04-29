@@ -56,18 +56,12 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @return Success(Nip55Response) or Failure(Nip55Error)
    */
   fun handleNip55Response(resultCode: Int, data: Intent?): Result<Nip55Response> {
-    if (resultCode == Activity.RESULT_CANCELED) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
+    val validatedData =
+        validateNip55Intent(resultCode, data).getOrElse {
+          return Result.failure(it)
+        }
 
-    data ?: return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
-
-    val rejected = data.getBooleanExtra("rejected", false)
-    if (rejected) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
-
-    val pubkey = data.getStringExtra("result")
+    val pubkey = validatedData.getStringExtra("result")
     if (pubkey.isNullOrEmpty()) {
       return Result.failure(Nip55Error.InvalidResponse("Result is null or empty"))
     }
@@ -125,18 +119,12 @@ constructor(@param:ApplicationContext private val context: Context) {
    * @return Success(SignedEventResponse) or Failure(Nip55Error)
    */
   fun handleSignEventResponse(resultCode: Int, data: Intent?): Result<SignedEventResponse> {
-    if (resultCode == Activity.RESULT_CANCELED) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
+    val validatedData =
+        validateNip55Intent(resultCode, data).getOrElse {
+          return Result.failure(it)
+        }
 
-    data ?: return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
-
-    val rejected = data.getBooleanExtra("rejected", false)
-    if (rejected) {
-      return Result.failure(Nip55Error.UserRejected)
-    }
-
-    val signedEventJson = data.getStringExtra("result")
+    val signedEventJson = validatedData.getStringExtra("result")
     Log.d(TAG, "Sign event response: $signedEventJson")
 
     if (signedEventJson.isNullOrEmpty()) {
@@ -144,6 +132,30 @@ constructor(@param:ApplicationContext private val context: Context) {
     }
 
     return Result.success(SignedEventResponse(signedEventJson))
+  }
+
+  /**
+   * Validate common NIP-55 intent response fields
+   *
+   * Checks result code cancellation, null intent data, and explicit rejection flag.
+   *
+   * @param resultCode ActivityResult's resultCode
+   * @param data Intent data from the signer
+   * @return Success(Intent) with validated non-null Intent, or Failure(Nip55Error)
+   */
+  private fun validateNip55Intent(resultCode: Int, data: Intent?): Result<Intent> {
+    if (resultCode == Activity.RESULT_CANCELED) {
+      return Result.failure(Nip55Error.UserRejected)
+    }
+
+    val intent = data ?: return Result.failure(Nip55Error.InvalidResponse("Intent data is null"))
+
+    val rejected = intent.getBooleanExtra("rejected", false)
+    if (rejected) {
+      return Result.failure(Nip55Error.UserRejected)
+    }
+
+    return Result.success(intent)
   }
 
   companion object {
