@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/Omochice/Pinosu/compare/v0.17.1...v0.17.2) (2026-05-03)
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v14.1.0 ([#458](https://github.com/Omochice/Pinosu/issues/458)) ([a455432](https://github.com/Omochice/Pinosu/commit/a455432a5af3f602994fe72a06df765fe2f3c829))
+
 ## [0.17.1](https://github.com/Omochice/Pinosu/compare/v0.17.0...v0.17.1) (2026-04-28)
 
 
