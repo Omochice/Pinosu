@@ -11,7 +11,7 @@
     "toml-sort@0.24.4",
     "formatjson5@0.2.6",
     "rumdl@0.1.72",
-    "biome@2.4.12",
+    "biome@2.4.13",
     "temurin-bin@21.0.8",
     "actionlint@1.7.12",
     "zizmor@1.24.1",
