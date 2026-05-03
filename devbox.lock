@@ -548,51 +548,51 @@
         }
       }
     },
-    "tombi@0.9.16": {
-      "last_modified": "2026-04-15T03:58:42Z",
-      "resolved": "github:NixOS/nixpkgs/975dad1a84d727dce241bb41b27191948fa5a956#tombi",
+    "tombi@0.9.24": {
+      "last_modified": "2026-04-28T17:03:49Z",
+      "resolved": "github:NixOS/nixpkgs/e75f25705c2934955ee5075e62530d74aca973c6#tombi",
       "source": "devbox-search",
-      "version": "0.9.16",
+      "version": "0.9.24",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/2ajy4rxwyrx48ml1hl9gvs2qywjcxswb-tombi-0.9.16",
+              "path": "/nix/store/ndb6ic3qiw514rpb84569jhp1npip895-tombi-0.9.24",
               "default": true
             }
           ],
-          "store_path": "/nix/store/2ajy4rxwyrx48ml1hl9gvs2qywjcxswb-tombi-0.9.16"
+          "store_path": "/nix/store/ndb6ic3qiw514rpb84569jhp1npip895-tombi-0.9.24"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ibpqypk0n6mydyb9k8lzphgi9mf8a9jc-tombi-0.9.16",
+              "path": "/nix/store/y4dxp4ilgk1kcq3l7qalyj1zck45r5gj-tombi-0.9.24",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ibpqypk0n6mydyb9k8lzphgi9mf8a9jc-tombi-0.9.16"
+          "store_path": "/nix/store/y4dxp4ilgk1kcq3l7qalyj1zck45r5gj-tombi-0.9.24"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/nvypj4zyanhy1ybgbssr37swmbgkz813-tombi-0.9.16",
+              "path": "/nix/store/mvbcsrabvxa8qd5vzh2igw4fhfv2l54k-tombi-0.9.24",
               "default": true
             }
           ],
-          "store_path": "/nix/store/nvypj4zyanhy1ybgbssr37swmbgkz813-tombi-0.9.16"
+          "store_path": "/nix/store/mvbcsrabvxa8qd5vzh2igw4fhfv2l54k-tombi-0.9.24"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/8z4d2fg1pi0d6f7mkliw1pclb58964bn-tombi-0.9.16",
+              "path": "/nix/store/pnljk0p20amnybcb4yawl407bidxbsj3-tombi-0.9.24",
               "default": true
             }
           ],
-          "store_path": "/nix/store/8z4d2fg1pi0d6f7mkliw1pclb58964bn-tombi-0.9.16"
+          "store_path": "/nix/store/pnljk0p20amnybcb4yawl407bidxbsj3-tombi-0.9.24"
         }
       }
     },
