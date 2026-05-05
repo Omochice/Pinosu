@@ -70,7 +70,8 @@ constructor(
                 content = event.content,
                 authorPubkey = event.pubkey,
                 createdAt = event.createdAt,
-                kind = event.kind)
+                kind = event.kind,
+                event = event)
           }
         }
         .getOrElse {
