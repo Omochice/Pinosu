@@ -33,16 +33,16 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
  * Long-press shows a context menu to copy the comment content or raw event JSON.
  *
  * @param comment The comment to display
- * @param profileImageUrl Profile image URL for the comment author, or null for fallback icon
  * @param onCopyContent Called when the user selects "Copy content"
+ * @param profileImageUrl Profile image URL for the comment author, or null for fallback icon
  * @param onCopyRawJson Called when the user selects "Copy raw JSON", or null to hide the option
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CommentCard(
     comment: Comment,
+    onCopyContent: (String) -> Unit,
     profileImageUrl: String? = null,
-    onCopyContent: (String) -> Unit = {},
     onCopyRawJson: (() -> Unit)? = null,
 ) {
   var showMenu by remember { mutableStateOf(false) }

@@ -25,7 +25,7 @@ class CommentCardTest {
             authorPubkey = "pk1",
             createdAt = 1_700_000_000L)
 
-    composeTestRule.setContent { CommentCard(comment = comment) }
+    composeTestRule.setContent { CommentCard(comment = comment, onCopyContent = {}) }
 
     composeTestRule.onNodeWithText("A regular comment").assertIsDisplayed()
   }
@@ -36,7 +36,7 @@ class CommentCardTest {
     val comment =
         Comment(id = "c2", content = "Some comment", authorPubkey = "pk1", createdAt = timestamp)
 
-    composeTestRule.setContent { CommentCard(comment = comment) }
+    composeTestRule.setContent { CommentCard(comment = comment, onCopyContent = {}) }
 
     val expected = formatTimestamp(timestamp)
     composeTestRule.onNodeWithText(expected).assertIsDisplayed()
@@ -51,7 +51,9 @@ class CommentCardTest {
             authorPubkey = "pk3",
             createdAt = 1_700_000_000L)
 
-    composeTestRule.setContent { CommentCard(comment = comment, profileImageUrl = null) }
+    composeTestRule.setContent {
+      CommentCard(comment = comment, onCopyContent = {}, profileImageUrl = null)
+    }
 
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_commenter_avatar))
