@@ -1,5 +1,7 @@
 package io.github.omochice.pinosu.feature.comment.domain.model
 
+import io.github.omochice.pinosu.core.model.NostrEvent
+
 /**
  * Comment displayed on the bookmark detail screen
  *
@@ -11,6 +13,7 @@ package io.github.omochice.pinosu.feature.comment.domain.model
  * @property authorPubkey Hex-encoded public key of the comment author
  * @property createdAt Unix timestamp in seconds
  * @property kind Nostr event kind (e.g., 1 for text note, 1111 for NIP-22 comment)
+ * @property event Original Nostr event, or null for synthetic author comments
  */
 data class Comment(
     val id: String,
@@ -18,6 +21,7 @@ data class Comment(
     val authorPubkey: String,
     val createdAt: Long,
     val kind: Int = KIND_COMMENT,
+    val event: NostrEvent? = null,
 ) {
   companion object {
     const val KIND_TEXT_NOTE = 1
