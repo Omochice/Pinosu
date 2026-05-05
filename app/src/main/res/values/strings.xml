@@ -101,4 +101,7 @@
     <string name="settings_client_tag">Client Tag (NIP-89)</string>
     <string name="settings_client_tag_description">Include Pinosu client identifier in published events</string>
 
+    <string name="menu_copy_content">Copy content</string>
+    <string name="menu_copy_raw_json">Copy raw JSON</string>
+
 </resources>

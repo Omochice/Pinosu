@@ -32,12 +32,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +51,8 @@ import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.ui.component.ErrorDialog
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Bookmark detail screen showing bookmark info and comments
@@ -129,6 +134,9 @@ private fun BookmarkDetailContent(
     paddingValues: PaddingValues,
     onOpenUrlFailed: () -> Unit,
 ) {
+  val clipboardManager = LocalClipboardManager.current
+  val json = remember { Json { prettyPrint = true } }
+
   if (uiState.isLoading) {
     Box(
         modifier = Modifier.fillMaxSize().padding(paddingValues),
@@ -163,7 +171,16 @@ private fun BookmarkDetailContent(
               if (comment.kind == Comment.KIND_TEXT_NOTE) {
                 QuoteCard(comment = comment, profileImageUrl = profileUrl)
               } else {
-                CommentCard(comment = comment, profileImageUrl = profileUrl)
+                CommentCard(
+                    comment = comment,
+                    profileImageUrl = profileUrl,
+                    onCopyContent = { content ->
+                      clipboardManager.setText(AnnotatedString(content))
+                    },
+                    onCopyRawJson =
+                        comment.event?.let { event ->
+                          { clipboardManager.setText(AnnotatedString(json.encodeToString(event))) }
+                        })
               }
             }
           }

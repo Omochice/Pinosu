@@ -96,4 +96,7 @@
 
     <string name="settings_client_tag">クライアントタグ（NIP-89）</string>
     <string name="settings_client_tag_description">公開するイベントにPinosuのクライアント識別子を含める</string>
+
+    <string name="menu_copy_content">内容をコピー</string>
+    <string name="menu_copy_raw_json">Raw JSONをコピー</string>
 </resources>
