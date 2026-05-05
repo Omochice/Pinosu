@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.18.0](https://github.com/Omochice/Pinosu/compare/v0.17.1...v0.18.0) (2026-05-05)
+
+
+### Features
+
+* add long-press menu to copy content or raw JSON ([#469](https://github.com/Omochice/Pinosu/issues/469)) ([d3ffce3](https://github.com/Omochice/Pinosu/commit/d3ffce3e8dc637a3d5b74c37f63427565a3385c0))
+
+
+### Bug Fixes
+
+* avoid OOM when bookmark URLs point to non-HTML resources ([#468](https://github.com/Omochice/Pinosu/issues/468)) ([4696dcf](https://github.com/Omochice/Pinosu/commit/4696dcf3eb8110639e782f330d070feebf3bfd85))
+* **deps:** update aboutlibraries to v14.1.0 ([#458](https://github.com/Omochice/Pinosu/issues/458)) ([a455432](https://github.com/Omochice/Pinosu/commit/a455432a5af3f602994fe72a06df765fe2f3c829))
+
 ## [0.17.1](https://github.com/Omochice/Pinosu/compare/v0.17.0...v0.17.1) (2026-04-28)
 
 
