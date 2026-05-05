@@ -24,7 +24,7 @@ jobs:
       - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
         id: app-token
         with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
           permission-contents: write
           permission-pull-requests: write
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
         id: app-token
         with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
           permission-contents: write
       - run: |
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
         id: app-token
         with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_PRIVATE_KEY }}
           permission-contents: write
       - uses: jetify-com/devbox-install-action@8c6a66ed6273138b1915457069de78cb52fe3bd7 # v0.15.0
