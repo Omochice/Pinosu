@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.feature.comment.presentation.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -37,7 +37,6 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
  * @param profileImageUrl Profile image URL for the comment author, or null for fallback icon
  * @param onCopyRawJson Called when the user selects "Copy raw JSON", or null to hide the option
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CommentCard(
     comment: Comment,
@@ -50,8 +49,9 @@ internal fun CommentCard(
   Box {
     Card(
         modifier =
-            Modifier.fillMaxWidth()
-                .combinedClickable(onClick = {}, onLongClick = { showMenu = true }),
+            Modifier.fillMaxWidth().pointerInput(Unit) {
+              detectTapGestures(onLongPress = { showMenu = true })
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
           Column(modifier = Modifier.padding(12.dp)) {
