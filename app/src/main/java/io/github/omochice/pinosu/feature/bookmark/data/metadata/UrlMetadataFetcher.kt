@@ -49,16 +49,24 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
             Request.Builder().url(url).header("User-Agent", "Pinosu/1.0 (Android)").build()
 
         okHttpClient.newCall(request).execute().use { response ->
-          if (!response.isSuccessful) {
-            Log.w(TAG, "HTTP request failed with code: ${response.code}")
-            Result.failure(Exception("HTTP ${response.code}"))
-          } else {
-            val html = response.body.string()
-            val metadata = parseMetadata(html, url)
+          val contentType = response.body.contentType()
+          when {
+            !response.isSuccessful -> {
+              Log.w(TAG, "HTTP request failed with code: ${response.code}")
+              Result.failure(Exception("HTTP ${response.code}"))
+            }
+            contentType == null || contentType.type != "text" || contentType.subtype != "html" -> {
+              Log.w(TAG, "Skipping non-HTML response: url=$url contentType=$contentType")
+              Result.failure(Exception("Unsupported Content-Type: $contentType"))
+            }
+            else -> {
+              val html = response.body.string()
+              val metadata = parseMetadata(html, url)
 
-            cache.put(url, metadata)
+              cache.put(url, metadata)
 
-            Result.success(metadata)
+              Result.success(metadata)
+            }
           }
         }
       } catch (e: IOException) {

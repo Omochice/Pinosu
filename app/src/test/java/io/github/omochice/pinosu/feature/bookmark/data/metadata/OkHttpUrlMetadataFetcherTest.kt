@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Request
@@ -43,7 +44,7 @@ class OkHttpUrlMetadataFetcherTest {
             .protocol(Protocol.HTTP_1_1)
             .code(code)
             .message("OK")
-            .body(body.toResponseBody())
+            .body(body.toResponseBody("text/html".toMediaTypeOrNull()))
             .build()
     every { okHttpClient.newCall(any()) } returns call
     every { call.execute() } returns response
