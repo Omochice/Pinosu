@@ -55,9 +55,7 @@ class OkHttpUrlMetadataFetcher @Inject constructor(private val okHttpClient: OkH
               Log.w(TAG, "HTTP request failed with code: ${response.code}")
               Result.failure(Exception("HTTP ${response.code}"))
             }
-            contentType == null ||
-                contentType.type != "text" ||
-                contentType.subtype != "html" -> {
+            contentType == null || contentType.type != "text" || contentType.subtype != "html" -> {
               Log.w(TAG, "Skipping non-HTML response: url=$url contentType=$contentType")
               Result.failure(Exception("Unsupported Content-Type: $contentType"))
             }
