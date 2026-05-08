@@ -23,11 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,6 +99,7 @@ private fun BookmarkCardShell(
   val hasMenuItems = onLongPress != null || onCopyNostrLink != null
   var showMenu by remember { mutableStateOf(false) }
   var pressOffset by remember { mutableStateOf(Offset.Zero) }
+  var anchorHeightPx by remember { mutableIntStateOf(0) }
   val interactionSource = remember { MutableInteractionSource() }
   val density = LocalDensity.current
 
@@ -125,7 +128,7 @@ private fun BookmarkCardShell(
         Modifier
       }
 
-  Box {
+  Box(modifier = Modifier.onGloballyPositioned { anchorHeightPx = it.size.height }) {
     Card(
         modifier = Modifier.fillMaxWidth().then(clickModifier),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -142,7 +145,10 @@ private fun BookmarkCardShell(
 
     BookmarkLongPressMenu(
         expanded = showMenu,
-        offset = with(density) { DpOffset(pressOffset.x.toDp(), pressOffset.y.toDp()) },
+        offset =
+            with(density) {
+              DpOffset(pressOffset.x.toDp(), (pressOffset.y - anchorHeightPx).toDp())
+            },
         onDismiss = { showMenu = false },
         onCopyRawJson = onLongPress?.let { handler -> { handler(bookmark) } },
         onCopyNostrLink = onCopyNostrLink?.let { handler -> { handler(bookmark) } })
