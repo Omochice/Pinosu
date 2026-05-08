@@ -21,8 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -48,12 +51,18 @@ internal fun CommentCard(
     onCopyNostrLink: (() -> Unit)? = null,
 ) {
   var showMenu by remember { mutableStateOf(false) }
+  var pressOffset by remember { mutableStateOf(Offset.Zero) }
+  val density = LocalDensity.current
 
   Box {
     Card(
         modifier =
             Modifier.fillMaxWidth().pointerInput(Unit) {
-              detectTapGestures(onLongPress = { showMenu = true })
+              detectTapGestures(
+                  onLongPress = { offset ->
+                    pressOffset = offset
+                    showMenu = true
+                  })
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
@@ -70,29 +79,32 @@ internal fun CommentCard(
           }
         }
 
-    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-      DropdownMenuItem(
-          text = { Text(stringResource(R.string.menu_copy_content)) },
-          onClick = {
-            onCopyContent(comment.content)
-            showMenu = false
-          })
-      if (onCopyRawJson != null) {
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.menu_copy_raw_json)) },
-            onClick = {
-              onCopyRawJson()
-              showMenu = false
-            })
-      }
-      if (onCopyNostrLink != null) {
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
-            onClick = {
-              onCopyNostrLink()
-              showMenu = false
-            })
-      }
-    }
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false },
+        offset = with(density) { DpOffset(pressOffset.x.toDp(), pressOffset.y.toDp()) }) {
+          DropdownMenuItem(
+              text = { Text(stringResource(R.string.menu_copy_content)) },
+              onClick = {
+                onCopyContent(comment.content)
+                showMenu = false
+              })
+          if (onCopyRawJson != null) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.menu_copy_raw_json)) },
+                onClick = {
+                  onCopyRawJson()
+                  showMenu = false
+                })
+          }
+          if (onCopyNostrLink != null) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+                onClick = {
+                  onCopyNostrLink()
+                  showMenu = false
+                })
+          }
+        }
   }
 }

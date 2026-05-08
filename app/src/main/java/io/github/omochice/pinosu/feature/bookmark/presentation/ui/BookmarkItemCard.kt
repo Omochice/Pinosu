@@ -1,7 +1,10 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,13 +21,17 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
@@ -89,6 +96,17 @@ private fun BookmarkCardShell(
   val hasUrls = bookmark.urls.isNotEmpty()
   val hasMenuItems = onLongPress != null || onCopyNostrLink != null
   var showMenu by remember { mutableStateOf(false) }
+  var pressOffset by remember { mutableStateOf(Offset.Zero) }
+  val interactionSource = remember { MutableInteractionSource() }
+  val density = LocalDensity.current
+
+  LaunchedEffect(interactionSource) {
+    interactionSource.interactions.collect { interaction ->
+      if (interaction is PressInteraction.Press) {
+        pressOffset = interaction.pressPosition
+      }
+    }
+  }
 
   val onLongClickHandler: (() -> Unit)? =
       if (hasMenuItems) {
@@ -99,7 +117,10 @@ private fun BookmarkCardShell(
   val clickModifier =
       if (hasUrls) {
         Modifier.combinedClickable(
-            onClick = { onClick(bookmark) }, onLongClick = onLongClickHandler)
+            interactionSource = interactionSource,
+            indication = LocalIndication.current,
+            onClick = { onClick(bookmark) },
+            onLongClick = onLongClickHandler)
       } else {
         Modifier
       }
@@ -119,23 +140,39 @@ private fun BookmarkCardShell(
           content()
         }
 
-    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-      onLongPress?.let { handler ->
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.menu_copy_raw_json)) },
-            onClick = {
-              handler(bookmark)
-              showMenu = false
-            })
-      }
-      onCopyNostrLink?.let { handler ->
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
-            onClick = {
-              handler(bookmark)
-              showMenu = false
-            })
-      }
+    BookmarkLongPressMenu(
+        expanded = showMenu,
+        offset = with(density) { DpOffset(pressOffset.x.toDp(), pressOffset.y.toDp()) },
+        onDismiss = { showMenu = false },
+        onCopyRawJson = onLongPress?.let { handler -> { handler(bookmark) } },
+        onCopyNostrLink = onCopyNostrLink?.let { handler -> { handler(bookmark) } })
+  }
+}
+
+@Composable
+private fun BookmarkLongPressMenu(
+    expanded: Boolean,
+    offset: DpOffset,
+    onDismiss: () -> Unit,
+    onCopyRawJson: (() -> Unit)?,
+    onCopyNostrLink: (() -> Unit)?,
+) {
+  DropdownMenu(expanded = expanded, onDismissRequest = onDismiss, offset = offset) {
+    onCopyRawJson?.let { handler ->
+      DropdownMenuItem(
+          text = { Text(stringResource(R.string.menu_copy_raw_json)) },
+          onClick = {
+            handler()
+            onDismiss()
+          })
+    }
+    onCopyNostrLink?.let { handler ->
+      DropdownMenuItem(
+          text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+          onClick = {
+            handler()
+            onDismiss()
+          })
     }
   }
 }
