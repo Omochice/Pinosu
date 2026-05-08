@@ -35,7 +35,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 fun BookmarkItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
+    onLongPress: ((BookmarkItem) -> Unit)?,
     onCopyNostrLink: ((BookmarkItem) -> Unit)? = null,
 ) {
   BookmarkCardShell(
@@ -59,7 +59,7 @@ fun BookmarkItemCard(
 fun BookmarkGridItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
+    onLongPress: ((BookmarkItem) -> Unit)?,
     onCopyNostrLink: ((BookmarkItem) -> Unit)? = null,
 ) {
   BookmarkCardShell(
@@ -82,7 +82,7 @@ fun BookmarkGridItemCard(
 private fun BookmarkCardShell(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
-    onLongPress: (BookmarkItem) -> Unit,
+    onLongPress: ((BookmarkItem) -> Unit)?,
     onCopyNostrLink: ((BookmarkItem) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
@@ -113,12 +113,14 @@ private fun BookmarkCardShell(
         }
 
     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-      DropdownMenuItem(
-          text = { Text(stringResource(R.string.menu_copy_raw_json)) },
-          onClick = {
-            onLongPress(bookmark)
-            showMenu = false
-          })
+      onLongPress?.let { handler ->
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.menu_copy_raw_json)) },
+            onClick = {
+              handler(bookmark)
+              showMenu = false
+            })
+      }
       onCopyNostrLink?.let { handler ->
         DropdownMenuItem(
             text = { Text(stringResource(R.string.menu_copy_nostr_link)) },

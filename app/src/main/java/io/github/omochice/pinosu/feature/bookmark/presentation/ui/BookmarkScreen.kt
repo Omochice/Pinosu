@@ -304,7 +304,7 @@ private fun BookmarkListView(
           BookmarkItemCard(
               bookmark = bookmark,
               onClick = callbacks.onClick,
-              onLongPress = callbacks.onLongPress,
+              onLongPress = bookmark.rawJson?.let { callbacks.onLongPress },
               onCopyNostrLink = bookmark.event?.dTag()?.let { callbacks.onCopyNostrLink })
         }
         if (isLoadingMore) {
@@ -348,7 +348,7 @@ private fun BookmarkGridView(
           BookmarkGridItemCard(
               bookmark = bookmark,
               onClick = callbacks.onClick,
-              onLongPress = callbacks.onLongPress,
+              onLongPress = bookmark.rawJson?.let { callbacks.onLongPress },
               onCopyNostrLink = bookmark.event?.dTag()?.let { callbacks.onCopyNostrLink })
         }
         if (isLoadingMore) {
