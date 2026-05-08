@@ -36,17 +36,22 @@ fun BookmarkItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
+    onCopyNostrLink: (BookmarkItem) -> Unit = {},
 ) {
-  BookmarkCardShell(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress) {
-    Row(modifier = Modifier.padding(16.dp)) {
-      OgpThumbnail(
-          imageUrl = bookmark.imageUrl,
-          contentDescription = bookmark.title,
-          modifier = Modifier.size(80.dp))
-      Spacer(modifier = Modifier.width(12.dp))
-      BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.weight(1f))
-    }
-  }
+  BookmarkCardShell(
+      bookmark = bookmark,
+      onClick = onClick,
+      onLongPress = onLongPress,
+      onCopyNostrLink = onCopyNostrLink) {
+        Row(modifier = Modifier.padding(16.dp)) {
+          OgpThumbnail(
+              imageUrl = bookmark.imageUrl,
+              contentDescription = bookmark.title,
+              modifier = Modifier.size(80.dp))
+          Spacer(modifier = Modifier.width(12.dp))
+          BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.weight(1f))
+        }
+      }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -55,16 +60,21 @@ fun BookmarkGridItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
+    onCopyNostrLink: (BookmarkItem) -> Unit = {},
 ) {
-  BookmarkCardShell(bookmark = bookmark, onClick = onClick, onLongPress = onLongPress) {
-    Column {
-      OgpThumbnail(
-          imageUrl = bookmark.imageUrl,
-          contentDescription = bookmark.title,
-          modifier = Modifier.fillMaxWidth().height(100.dp))
-      BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.padding(12.dp))
-    }
-  }
+  BookmarkCardShell(
+      bookmark = bookmark,
+      onClick = onClick,
+      onLongPress = onLongPress,
+      onCopyNostrLink = onCopyNostrLink) {
+        Column {
+          OgpThumbnail(
+              imageUrl = bookmark.imageUrl,
+              contentDescription = bookmark.title,
+              modifier = Modifier.fillMaxWidth().height(100.dp))
+          BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.padding(12.dp))
+        }
+      }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,6 +83,7 @@ private fun BookmarkCardShell(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
+    onCopyNostrLink: (BookmarkItem) -> Unit,
     content: @Composable () -> Unit,
 ) {
   val hasUrls = bookmark.urls.isNotEmpty()
@@ -106,6 +117,12 @@ private fun BookmarkCardShell(
           text = { Text(stringResource(R.string.menu_copy_raw_json)) },
           onClick = {
             onLongPress(bookmark)
+            showMenu = false
+          })
+      DropdownMenuItem(
+          text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+          onClick = {
+            onCopyNostrLink(bookmark)
             showMenu = false
           })
     }
