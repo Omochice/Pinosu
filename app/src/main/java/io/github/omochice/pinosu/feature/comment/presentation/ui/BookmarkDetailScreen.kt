@@ -32,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +53,21 @@ import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.Bookmark
 import io.github.omochice.pinosu.ui.component.ErrorDialog
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
+/**
+ * Shared JSON serializer for the bookmark detail screen.
+ *
+ * Hoisted to file scope so the prettyPrint configuration is allocated once for the entire app
+ * rather than per LazyColumn row.
+ */
+private val sharedJson = Json { prettyPrint = true }
+
+/**
+ * Shared NIP-19 encoder for the bookmark detail screen.
+ *
+ * Stateless and thread-safe; hoisted to avoid per-row re-allocation when the comment list scrolls.
+ */
+private val sharedEncoder = Nip19EventEncoder()
 
 /**
  * Bookmark detail screen showing bookmark info and comments
@@ -187,9 +201,6 @@ private fun CommentRow(
     onCopyNostrLink: (String) -> Unit,
 ) {
   val clipboardManager = LocalClipboardManager.current
-  val json = remember { Json { prettyPrint = true } }
-  val encoder = remember { Nip19EventEncoder() }
-
   if (comment.kind == Comment.KIND_TEXT_NOTE) {
     QuoteCard(comment = comment, profileImageUrl = profileImageUrl)
   } else {
@@ -199,13 +210,13 @@ private fun CommentRow(
         onCopyContent = { content -> clipboardManager.setText(AnnotatedString(content)) },
         onCopyRawJson =
             comment.event?.let { event ->
-              { clipboardManager.setText(AnnotatedString(json.encodeToString(event))) }
+              { clipboardManager.setText(AnnotatedString(sharedJson.encodeToString(event))) }
             },
         onCopyNostrLink =
             comment.event?.let { event ->
               {
                 val encoded =
-                    encoder.encodeNEvent(
+                    sharedEncoder.encodeNEvent(
                         eventId = event.id, pubkey = event.pubkey, kind = event.kind)
                 clipboardManager.setText(AnnotatedString(encoded))
                 onCopyNostrLink(encoded)
