@@ -36,7 +36,7 @@ fun BookmarkItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
-    onCopyNostrLink: (BookmarkItem) -> Unit = {},
+    onCopyNostrLink: ((BookmarkItem) -> Unit)? = null,
 ) {
   BookmarkCardShell(
       bookmark = bookmark,
@@ -60,7 +60,7 @@ fun BookmarkGridItemCard(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
-    onCopyNostrLink: (BookmarkItem) -> Unit = {},
+    onCopyNostrLink: ((BookmarkItem) -> Unit)? = null,
 ) {
   BookmarkCardShell(
       bookmark = bookmark,
@@ -83,7 +83,7 @@ private fun BookmarkCardShell(
     bookmark: BookmarkItem,
     onClick: (BookmarkItem) -> Unit,
     onLongPress: (BookmarkItem) -> Unit,
-    onCopyNostrLink: (BookmarkItem) -> Unit,
+    onCopyNostrLink: ((BookmarkItem) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
   val hasUrls = bookmark.urls.isNotEmpty()
@@ -119,12 +119,14 @@ private fun BookmarkCardShell(
             onLongPress(bookmark)
             showMenu = false
           })
-      DropdownMenuItem(
-          text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
-          onClick = {
-            onCopyNostrLink(bookmark)
-            showMenu = false
-          })
+      onCopyNostrLink?.let { handler ->
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+            onClick = {
+              handler(bookmark)
+              showMenu = false
+            })
+      }
     }
   }
 }
