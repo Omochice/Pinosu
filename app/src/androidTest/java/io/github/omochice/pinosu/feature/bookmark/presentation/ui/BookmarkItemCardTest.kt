@@ -79,4 +79,19 @@ class BookmarkItemCardTest {
         .onNodeWithText(getTestString(R.string.menu_copy_nostr_link))
         .assertDoesNotExist()
   }
+
+  @Test
+  fun copyRawJsonItemIsHiddenWhenLongPressCallbackIsNull() {
+    composeTestRule.setContent {
+      BookmarkItemCard(
+          bookmark = bookmark(rawJson = null),
+          onClick = {},
+          onLongPress = null,
+          onCopyNostrLink = { /* keep menu populated */ })
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_raw_json)).assertDoesNotExist()
+  }
 }
