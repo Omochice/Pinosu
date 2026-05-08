@@ -3,21 +3,25 @@ package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
+import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-/** Compose UI tests for long-press on bookmark card */
+/** Compose UI tests for the long-press menu integration on [BookmarkScreen] */
 class BookmarkScreenLongPressTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
   @Test
-  fun longPressOnBookmarkCardTriggersCallbackWithRawJson() {
+  fun selectingCopyRawJsonFromMenuInvokesCallbackWithRawJson() {
     val expectedRawJson =
         """{"id":"abc","pubkey":"def","created_at":1000,"kind":39701,"tags":[],"content":"hello","sig":"xyz"}"""
     var capturedRawJson: String? = null
@@ -33,11 +37,11 @@ class BookmarkScreenLongPressTest {
                 rawJson = expectedRawJson,
                 event =
                     BookmarkedEvent(
-                        kind = 39701,
+                        kind = NipB0.KIND_BOOKMARK_LIST,
                         content = "hello",
                         author = "def",
                         createdAt = 1000,
-                        tags = emptyList())))
+                        tags = listOf(listOf(NipB0.Tag.IDENTIFIER, "abc")))))
 
     composeTestRule.setContent {
       BookmarkScreen(
@@ -49,7 +53,11 @@ class BookmarkScreenLongPressTest {
     }
 
     composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_raw_json)).performClick()
 
-    assertEquals("Callback should receive rawJson", expectedRawJson, capturedRawJson)
+    assertEquals(
+        "Tapping Copy raw JSON should pass rawJson to the callback",
+        expectedRawJson,
+        capturedRawJson)
   }
 }
