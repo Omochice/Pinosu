@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.core.nip.nip19
 
 import com.vitorpamplona.quartz.nip19Bech32.Nip19Parser
 import com.vitorpamplona.quartz.nip19Bech32.entities.NAddress
+import com.vitorpamplona.quartz.nip19Bech32.entities.NEvent
 import io.github.omochice.pinosu.core.nip.nip22.Nip22
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import org.junit.Assert.assertEquals
@@ -49,5 +50,20 @@ class Nip19EventEncoderTest {
     assertTrue(
         "Encoded nevent should start with nostr:nevent1 but was '$result'",
         result.startsWith("nostr:nevent1"))
+  }
+
+  @Test
+  fun `encodeNEvent output decodes back to original event ID pubkey and kind`() {
+    val eventId = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"
+    val pubkey = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+
+    val encoded =
+        encoder.encodeNEvent(eventId = eventId, pubkey = pubkey, kind = Nip22.KIND_COMMENT)
+
+    val decoded = Nip19Parser.uriToRoute(encoded)?.entity as? NEvent
+    assertNotNull("Encoded nevent should be decodable", decoded)
+    assertEquals(eventId, decoded?.hex)
+    assertEquals(pubkey, decoded?.author)
+    assertEquals(Nip22.KIND_COMMENT, decoded?.kind)
   }
 }
