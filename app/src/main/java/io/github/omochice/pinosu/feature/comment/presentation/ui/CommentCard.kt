@@ -30,7 +30,8 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 /**
  * Card for displaying a NIP-22 kind 1111 comment
  *
- * Long-press shows a context menu to copy the comment content or raw event JSON.
+ * Long-press shows a context menu to copy the comment content, the raw event JSON, or a NIP-19
+ * `nostr:nevent1...` link to the comment.
  *
  * @param comment The comment to display
  * @param onCopyContent Called when the user selects "Copy content"
