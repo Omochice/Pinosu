@@ -104,13 +104,13 @@ fun BookmarkScreen(
   }
 
   val onBookmarkCopyNostrLink: (BookmarkItem) -> Unit = { bookmark ->
-    bookmark.event?.dTag()?.let { dTag ->
-      val encoded =
-          encoder.encodeNAddr(
-              kind = bookmark.event.kind, pubkey = bookmark.event.author, dTag = dTag)
-      clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
-      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-      onCopyNostrLink(encoded)
+    bookmark.event?.let { event ->
+      event.dTag()?.let { dTag ->
+        val encoded = encoder.encodeNAddr(kind = event.kind, pubkey = event.author, dTag = dTag)
+        clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+        onCopyNostrLink(encoded)
+      }
     }
   }
 
