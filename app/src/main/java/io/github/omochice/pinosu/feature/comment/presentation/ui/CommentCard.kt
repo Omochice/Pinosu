@@ -36,6 +36,7 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
  * @param onCopyContent Called when the user selects "Copy content"
  * @param profileImageUrl Profile image URL for the comment author, or null for fallback icon
  * @param onCopyRawJson Called when the user selects "Copy raw JSON", or null to hide the option
+ * @param onCopyNostrLink Called when the user selects "Copy nostr link", or null to hide the option
  */
 @Composable
 internal fun CommentCard(
@@ -43,6 +44,7 @@ internal fun CommentCard(
     onCopyContent: (String) -> Unit,
     profileImageUrl: String? = null,
     onCopyRawJson: (() -> Unit)? = null,
+    onCopyNostrLink: (() -> Unit)? = null,
 ) {
   var showMenu by remember { mutableStateOf(false) }
 
@@ -79,6 +81,14 @@ internal fun CommentCard(
             text = { Text(stringResource(R.string.menu_copy_raw_json)) },
             onClick = {
               onCopyRawJson()
+              showMenu = false
+            })
+      }
+      if (onCopyNostrLink != null) {
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+            onClick = {
+              onCopyNostrLink()
               showMenu = false
             })
       }
