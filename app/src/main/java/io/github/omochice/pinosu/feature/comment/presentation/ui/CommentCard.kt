@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -16,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,10 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -54,10 +52,8 @@ internal fun CommentCard(
 ) {
   var showMenu by remember { mutableStateOf(false) }
   var pressOffset by remember { mutableStateOf(Offset.Zero) }
-  var anchorHeightPx by remember { mutableIntStateOf(0) }
-  val density = LocalDensity.current
 
-  Box(modifier = Modifier.onGloballyPositioned { anchorHeightPx = it.size.height }) {
+  Box {
     Card(
         modifier =
             Modifier.fillMaxWidth().pointerInput(Unit) {
@@ -72,36 +68,32 @@ internal fun CommentCard(
           CommentCardBody(comment = comment, profileImageUrl = profileImageUrl)
         }
 
-    DropdownMenu(
-        expanded = showMenu,
-        onDismissRequest = { showMenu = false },
-        offset =
-            with(density) {
-              DpOffset(pressOffset.x.toDp(), (pressOffset.y - anchorHeightPx).toDp())
-            }) {
+    Box(modifier = Modifier.offset { IntOffset(pressOffset.x.toInt(), pressOffset.y.toInt()) }) {
+      DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.menu_copy_content)) },
+            onClick = {
+              onCopyContent(comment.content)
+              showMenu = false
+            })
+        onCopyRawJson?.let { handler ->
           DropdownMenuItem(
-              text = { Text(stringResource(R.string.menu_copy_content)) },
+              text = { Text(stringResource(R.string.menu_copy_raw_json)) },
               onClick = {
-                onCopyContent(comment.content)
+                handler()
                 showMenu = false
               })
-          onCopyRawJson?.let { handler ->
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.menu_copy_raw_json)) },
-                onClick = {
-                  handler()
-                  showMenu = false
-                })
-          }
-          onCopyNostrLink?.let { handler ->
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
-                onClick = {
-                  handler()
-                  showMenu = false
-                })
-          }
         }
+        onCopyNostrLink?.let { handler ->
+          DropdownMenuItem(
+              text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+              onClick = {
+                handler()
+                showMenu = false
+              })
+        }
+      }
+    }
   }
 }
 

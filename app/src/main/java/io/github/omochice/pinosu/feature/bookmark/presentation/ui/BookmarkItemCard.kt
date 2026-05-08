@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,17 +24,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
@@ -99,9 +98,7 @@ private fun BookmarkCardShell(
   val hasMenuItems = onLongPress != null || onCopyNostrLink != null
   var showMenu by remember { mutableStateOf(false) }
   var pressOffset by remember { mutableStateOf(Offset.Zero) }
-  var anchorHeightPx by remember { mutableIntStateOf(0) }
   val interactionSource = remember { MutableInteractionSource() }
-  val density = LocalDensity.current
 
   LaunchedEffect(interactionSource) {
     interactionSource.interactions.collect { interaction ->
@@ -128,7 +125,7 @@ private fun BookmarkCardShell(
         Modifier
       }
 
-  Box(modifier = Modifier.onGloballyPositioned { anchorHeightPx = it.size.height }) {
+  Box {
     Card(
         modifier = Modifier.fillMaxWidth().then(clickModifier),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -143,15 +140,14 @@ private fun BookmarkCardShell(
           content()
         }
 
-    BookmarkLongPressMenu(
-        expanded = showMenu,
-        offset =
-            with(density) {
-              DpOffset(pressOffset.x.toDp(), (pressOffset.y - anchorHeightPx).toDp())
-            },
-        onDismiss = { showMenu = false },
-        onCopyRawJson = onLongPress?.let { handler -> { handler(bookmark) } },
-        onCopyNostrLink = onCopyNostrLink?.let { handler -> { handler(bookmark) } })
+    Box(modifier = Modifier.offset { IntOffset(pressOffset.x.toInt(), pressOffset.y.toInt()) }) {
+      BookmarkLongPressMenu(
+          expanded = showMenu,
+          offset = DpOffset.Zero,
+          onDismiss = { showMenu = false },
+          onCopyRawJson = onLongPress?.let { handler -> { handler(bookmark) } },
+          onCopyNostrLink = onCopyNostrLink?.let { handler -> { handler(bookmark) } })
+    }
   }
 }
 
