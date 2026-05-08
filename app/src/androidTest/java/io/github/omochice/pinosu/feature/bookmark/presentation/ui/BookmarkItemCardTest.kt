@@ -65,4 +65,18 @@ class BookmarkItemCardTest {
 
     assertSame("onCopyNostrLink should receive the same bookmark instance", target, captured)
   }
+
+  @Test
+  fun copyNostrLinkItemIsHiddenWhenCallbackIsNull() {
+    composeTestRule.setContent {
+      BookmarkItemCard(
+          bookmark = bookmark(), onClick = {}, onLongPress = {}, onCopyNostrLink = null)
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.menu_copy_nostr_link))
+        .assertDoesNotExist()
+  }
 }
