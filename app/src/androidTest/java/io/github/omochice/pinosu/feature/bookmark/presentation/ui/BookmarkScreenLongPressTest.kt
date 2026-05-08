@@ -30,12 +30,12 @@ class BookmarkScreenLongPressTest {
           url = "https://example.com",
           urls = listOf("https://example.com"),
           rawJson =
-              """{"id":"abc","pubkey":"def","created_at":1000,"kind":39701,"tags":[],"content":"hello","sig":"xyz"}""",
+              """{"id":"abc","pubkey":"64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924","created_at":1000,"kind":39701,"tags":[],"content":"hello","sig":"xyz"}""",
           event =
               BookmarkedEvent(
                   kind = NipB0.KIND_BOOKMARK_LIST,
                   content = "hello",
-                  author = "def",
+                  author = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924",
                   createdAt = 1000,
                   tags = listOf(listOf(NipB0.Tag.IDENTIFIER, "abc"))))
 
@@ -47,7 +47,10 @@ class BookmarkScreenLongPressTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false, allBookmarks = listOf(sampleBookmark), userHexPubkey = "def"),
+                  isLoading = false,
+                  allBookmarks = listOf(sampleBookmark),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
           onRefresh = {},
           onLoad = {},
           onLongPressBookmark = { rawJson -> capturedRawJson = rawJson })
@@ -70,7 +73,10 @@ class BookmarkScreenLongPressTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false, allBookmarks = listOf(sampleBookmark), userHexPubkey = "def"),
+                  isLoading = false,
+                  allBookmarks = listOf(sampleBookmark),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
           onRefresh = {},
           onLoad = {},
           onCopyNostrLink = { encoded -> capturedNostrLink = encoded })

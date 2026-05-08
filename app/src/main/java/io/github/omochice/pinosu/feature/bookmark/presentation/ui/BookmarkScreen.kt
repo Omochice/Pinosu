@@ -46,6 +46,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
@@ -66,7 +68,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * @param onTabSelected Callback when a filter tab is selected
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
  * @param onBookmarkDetailNavigate Callback when a bookmark card is tapped to navigate to detail
- * @param onLongPressBookmark Callback when a bookmark card is long-pressed with rawJson
+ * @param onLongPressBookmark Callback notified with rawJson when "Copy raw JSON" is selected
+ * @param onCopyNostrLink Callback notified with the encoded nostr:naddr1 URI when "Copy nostr link"
+ *   is selected
  * @param onLoadMore Callback when user scrolls near the end of the list to load older bookmarks
  * @param isReadOnly Whether to hide write-only UI (FAB) for read-only login
  */
@@ -81,6 +85,7 @@ fun BookmarkScreen(
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
     onLongPressBookmark: (String) -> Unit = {},
+    onCopyNostrLink: (String) -> Unit = {},
     onLoadMore: () -> Unit = {},
     isReadOnly: Boolean = false,
 ) {
@@ -88,6 +93,7 @@ fun BookmarkScreen(
 
   val clipboardManager = LocalClipboardManager.current
   val hapticFeedback = LocalHapticFeedback.current
+  val encoder = remember { Nip19EventEncoder() }
 
   val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
     bookmark.rawJson?.let { rawJson ->
@@ -97,11 +103,23 @@ fun BookmarkScreen(
     }
   }
 
+  val onBookmarkCopyNostrLink: (BookmarkItem) -> Unit = { bookmark ->
+    bookmark.event?.dTag()?.let { dTag ->
+      val encoded =
+          encoder.encodeNAddr(
+              kind = bookmark.event.kind, pubkey = bookmark.event.author, dTag = dTag)
+      clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      onCopyNostrLink(encoded)
+    }
+  }
+
   val callbacks =
       BookmarkListCallbacks(
           onRefresh = onRefresh,
           onClick = onBookmarkDetailNavigate,
           onLongPress = onBookmarkLongPress,
+          onCopyNostrLink = onBookmarkCopyNostrLink,
           onLoadMore = onLoadMore,
       )
 
@@ -128,6 +146,9 @@ fun BookmarkScreen(
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
 }
+
+private fun BookmarkedEvent.dTag(): String? =
+    tags.firstOrNull { it.size >= 2 && it[0] == NipB0.Tag.IDENTIFIER }?.get(1)
 
 @Composable
 private fun BookmarkPager(
@@ -281,7 +302,10 @@ private fun BookmarkListView(
       verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
           BookmarkItemCard(
-              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
+              bookmark = bookmark,
+              onClick = callbacks.onClick,
+              onLongPress = callbacks.onLongPress,
+              onCopyNostrLink = callbacks.onCopyNostrLink)
         }
         if (isLoadingMore) {
           item {
@@ -322,7 +346,10 @@ private fun BookmarkGridView(
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(bookmarks, key = { bookmark -> bookmark.stableKey }) { bookmark ->
           BookmarkGridItemCard(
-              bookmark = bookmark, onClick = callbacks.onClick, onLongPress = callbacks.onLongPress)
+              bookmark = bookmark,
+              onClick = callbacks.onClick,
+              onLongPress = callbacks.onLongPress,
+              onCopyNostrLink = callbacks.onCopyNostrLink)
         }
         if (isLoadingMore) {
           item {
