@@ -90,4 +90,27 @@ class BookmarkScreenLongPressTest {
         "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'",
         capturedNostrLink!!.startsWith("nostr:naddr1"))
   }
+
+  @Test
+  fun copyNostrLinkIsHiddenWhenBookmarkHasNoDTag() {
+    val bookmarkWithoutDTag =
+        sampleBookmark.copy(event = sampleBookmark.event!!.copy(tags = emptyList()))
+
+    composeTestRule.setContent {
+      BookmarkScreen(
+          uiState =
+              BookmarkUiState(
+                  isLoading = false,
+                  allBookmarks = listOf(bookmarkWithoutDTag),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+          onRefresh = {},
+          onLoad = {})
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.menu_copy_nostr_link))
+        .assertDoesNotExist()
+  }
 }
