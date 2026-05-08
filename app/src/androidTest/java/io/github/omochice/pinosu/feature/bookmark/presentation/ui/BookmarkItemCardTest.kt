@@ -4,12 +4,14 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.getTestString
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 
@@ -46,5 +48,21 @@ class BookmarkItemCardTest {
     composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
 
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_raw_json)).assertIsDisplayed()
+  }
+
+  @Test
+  fun selectingCopyNostrLinkInvokesCallbackWithBookmark() {
+    val target = bookmark()
+    var captured: BookmarkItem? = null
+
+    composeTestRule.setContent {
+      BookmarkItemCard(
+          bookmark = target, onClick = {}, onLongPress = {}, onCopyNostrLink = { captured = it })
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
+
+    assertSame("onCopyNostrLink should receive the same bookmark instance", target, captured)
   }
 }
