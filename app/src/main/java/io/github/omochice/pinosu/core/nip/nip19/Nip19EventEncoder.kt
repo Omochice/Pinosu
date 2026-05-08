@@ -7,7 +7,9 @@ import javax.inject.Inject
 /**
  * Encodes Nostr events into NIP-19 `nostr:` URIs.
  *
- * @see Nip19EventResolver for the inverse operation.
+ * Currently produces `nevent` and `naddr` references. The reverse operation is partially handled by
+ * [Nip19EventResolver], which extracts hex event IDs from `nostr:nevent1...` references embedded in
+ * text content; it does not decode `naddr` or expose the full TLV payload.
  */
 class Nip19EventEncoder @Inject constructor() {
 
