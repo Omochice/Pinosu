@@ -87,12 +87,19 @@ private fun BookmarkCardShell(
     content: @Composable () -> Unit,
 ) {
   val hasUrls = bookmark.urls.isNotEmpty()
+  val hasMenuItems = onLongPress != null || onCopyNostrLink != null
   var showMenu by remember { mutableStateOf(false) }
 
+  val onLongClickHandler: (() -> Unit)? =
+      if (hasMenuItems) {
+        { showMenu = true }
+      } else {
+        null
+      }
   val clickModifier =
       if (hasUrls) {
         Modifier.combinedClickable(
-            onClick = { onClick(bookmark) }, onLongClick = { showMenu = true })
+            onClick = { onClick(bookmark) }, onLongClick = onLongClickHandler)
       } else {
         Modifier
       }
