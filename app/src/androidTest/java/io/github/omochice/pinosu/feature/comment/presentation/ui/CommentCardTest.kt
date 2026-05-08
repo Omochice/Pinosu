@@ -2,12 +2,17 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.getTestString
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -58,5 +63,34 @@ class CommentCardTest {
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_commenter_avatar))
         .assertIsDisplayed()
+  }
+
+  @Test
+  fun selectingCopyNostrLinkInvokesCallback() {
+    var invoked = false
+    val comment =
+        Comment(
+            id = "c-nostr",
+            content = "A comment to share",
+            authorPubkey = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924",
+            createdAt = 1_700_000_000L,
+            event =
+                NostrEvent(
+                    id = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+                    pubkey = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924",
+                    createdAt = 1_700_000_000L,
+                    kind = Comment.KIND_COMMENT,
+                    tags = emptyList(),
+                    content = "A comment to share",
+                    sig = "sig"))
+
+    composeTestRule.setContent {
+      CommentCard(comment = comment, onCopyContent = {}, onCopyNostrLink = { invoked = true })
+    }
+
+    composeTestRule.onNodeWithText("A comment to share").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
+
+    assertTrue("onCopyNostrLink should be invoked", invoked)
   }
 }
