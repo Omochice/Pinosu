@@ -103,5 +103,6 @@
 
     <string name="menu_copy_content">Copy content</string>
     <string name="menu_copy_raw_json">Copy raw JSON</string>
+    <string name="menu_copy_nostr_link">Copy nostr link</string>
 
 </resources>

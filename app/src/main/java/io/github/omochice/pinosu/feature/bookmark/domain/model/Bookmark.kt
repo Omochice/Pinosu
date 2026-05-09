@@ -1,5 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.domain.model
 
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
+
 /**
  * Bookmark item from kind:39701
  *
@@ -43,6 +45,15 @@ data class BookmarkedEvent(
     val createdAt: Long,
     val tags: List<List<String>> = emptyList(),
 )
+
+/**
+ * Returns the value of the NIP-B0 `d` tag identifier, or null if absent.
+ *
+ * The `d` tag is required to compute the addressable event coordinate used in `nostr:naddr1...`
+ * references for NIP-B0 (kind 39701) bookmarks.
+ */
+fun BookmarkedEvent.dTag(): String? =
+    tags.firstOrNull { it.size >= 2 && it[0] == NipB0.Tag.IDENTIFIER }?.get(1)
 
 /**
  * Bookmark list (kind:39701)

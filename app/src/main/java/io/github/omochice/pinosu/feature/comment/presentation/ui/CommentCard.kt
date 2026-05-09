@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -21,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
@@ -30,12 +33,14 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 /**
  * Card for displaying a NIP-22 kind 1111 comment
  *
- * Long-press shows a context menu to copy the comment content or raw event JSON.
+ * Long-press shows a context menu to copy the comment content, the raw event JSON, or a NIP-19
+ * `nostr:nevent1...` link to the comment.
  *
  * @param comment The comment to display
  * @param onCopyContent Called when the user selects "Copy content"
  * @param profileImageUrl Profile image URL for the comment author, or null for fallback icon
  * @param onCopyRawJson Called when the user selects "Copy raw JSON", or null to hide the option
+ * @param onCopyNostrLink Called when the user selects "Copy nostr link", or null to hide the option
  */
 @Composable
 internal fun CommentCard(
@@ -43,45 +48,66 @@ internal fun CommentCard(
     onCopyContent: (String) -> Unit,
     profileImageUrl: String? = null,
     onCopyRawJson: (() -> Unit)? = null,
+    onCopyNostrLink: (() -> Unit)? = null,
 ) {
   var showMenu by remember { mutableStateOf(false) }
+  var pressOffset by remember { mutableStateOf(Offset.Zero) }
 
   Box {
     Card(
         modifier =
             Modifier.fillMaxWidth().pointerInput(Unit) {
-              detectTapGestures(onLongPress = { showMenu = true })
+              detectTapGestures(
+                  onLongPress = { offset ->
+                    pressOffset = offset
+                    showMenu = true
+                  })
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-          Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              ProfileAvatar(
-                  imageUrl = profileImageUrl,
-                  contentDescription = stringResource(R.string.cd_commenter_avatar),
-                  size = 24.dp,
-              )
-              Spacer(modifier = Modifier.width(8.dp))
-              Column(modifier = Modifier.weight(1f)) { CommentBody(comment = comment) }
-            }
-          }
+          CommentCardBody(comment = comment, profileImageUrl = profileImageUrl)
         }
 
-    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-      DropdownMenuItem(
-          text = { Text(stringResource(R.string.menu_copy_content)) },
-          onClick = {
-            onCopyContent(comment.content)
-            showMenu = false
-          })
-      if (onCopyRawJson != null) {
+    Box(modifier = Modifier.offset { IntOffset(pressOffset.x.toInt(), pressOffset.y.toInt()) }) {
+      DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
         DropdownMenuItem(
-            text = { Text(stringResource(R.string.menu_copy_raw_json)) },
+            text = { Text(stringResource(R.string.menu_copy_content)) },
             onClick = {
-              onCopyRawJson()
+              onCopyContent(comment.content)
               showMenu = false
             })
+        onCopyRawJson?.let { handler ->
+          DropdownMenuItem(
+              text = { Text(stringResource(R.string.menu_copy_raw_json)) },
+              onClick = {
+                handler()
+                showMenu = false
+              })
+        }
+        onCopyNostrLink?.let { handler ->
+          DropdownMenuItem(
+              text = { Text(stringResource(R.string.menu_copy_nostr_link)) },
+              onClick = {
+                handler()
+                showMenu = false
+              })
+        }
       }
+    }
+  }
+}
+
+@Composable
+private fun CommentCardBody(comment: Comment, profileImageUrl: String?) {
+  Column(modifier = Modifier.padding(12.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      ProfileAvatar(
+          imageUrl = profileImageUrl,
+          contentDescription = stringResource(R.string.cd_commenter_avatar),
+          size = 24.dp,
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      Column(modifier = Modifier.weight(1f)) { CommentBody(comment = comment) }
     }
   }
 }

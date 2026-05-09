@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.comment.presentation.ui
 
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,27 +33,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.ui.component.ErrorDialog
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
+private val sharedJson = Json { prettyPrint = true }
+
+private val sharedEncoder = Nip19EventEncoder()
 
 /**
  * Bookmark detail screen showing bookmark info and comments
@@ -66,6 +71,8 @@ import kotlinx.serialization.json.Json
  * @param onOpenUrlFailed Callback when opening a URL fails
  * @param isReadOnly Whether to hide comment input for read-only login
  * @param onEditBookmark Callback when edit button is clicked, or null to hide the button
+ * @param onCopyNostrLink Callback notified with the encoded nostr:nevent1 URI when "Copy nostr
+ *   link" is selected on a kind-1111 comment
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +86,7 @@ fun BookmarkDetailScreen(
     onOpenUrlFailed: () -> Unit = {},
     isReadOnly: Boolean = false,
     onEditBookmark: (() -> Unit)? = null,
+    onCopyNostrLink: (String) -> Unit = {},
 ) {
   Scaffold(
       topBar = {
@@ -119,7 +127,8 @@ fun BookmarkDetailScreen(
             uiState = uiState,
             bookmarkInfo = bookmarkInfo,
             paddingValues = paddingValues,
-            onOpenUrlFailed = onOpenUrlFailed)
+            onOpenUrlFailed = onOpenUrlFailed,
+            onCopyNostrLink = onCopyNostrLink)
 
         uiState.error?.let { error ->
           ErrorDialog(message = error.asString(), onDismiss = onDismissError)
@@ -133,10 +142,8 @@ private fun BookmarkDetailContent(
     bookmarkInfo: BookmarkInfo,
     paddingValues: PaddingValues,
     onOpenUrlFailed: () -> Unit,
+    onCopyNostrLink: (String) -> Unit,
 ) {
-  val clipboardManager = LocalClipboardManager.current
-  val json = remember { Json { prettyPrint = true } }
-
   if (uiState.isLoading) {
     Box(
         modifier = Modifier.fillMaxSize().padding(paddingValues),
@@ -167,24 +174,49 @@ private fun BookmarkDetailContent(
             }
           } else {
             items(uiState.comments, key = { it.id }) { comment ->
-              val profileUrl = uiState.profiles[comment.authorPubkey]?.picture
-              if (comment.kind == Comment.KIND_TEXT_NOTE) {
-                QuoteCard(comment = comment, profileImageUrl = profileUrl)
-              } else {
-                CommentCard(
-                    comment = comment,
-                    profileImageUrl = profileUrl,
-                    onCopyContent = { content ->
-                      clipboardManager.setText(AnnotatedString(content))
-                    },
-                    onCopyRawJson =
-                        comment.event?.let { event ->
-                          { clipboardManager.setText(AnnotatedString(json.encodeToString(event))) }
-                        })
-              }
+              CommentRow(
+                  comment = comment,
+                  profileImageUrl = uiState.profiles[comment.authorPubkey]?.picture,
+                  onCopyNostrLink = onCopyNostrLink)
             }
           }
         }
+  }
+}
+
+@Composable
+private fun CommentRow(
+    comment: Comment,
+    profileImageUrl: String?,
+    onCopyNostrLink: (String) -> Unit,
+) {
+  val clipboardManager = LocalClipboardManager.current
+  if (comment.kind == Comment.KIND_TEXT_NOTE) {
+    QuoteCard(comment = comment, profileImageUrl = profileImageUrl)
+  } else {
+    CommentCard(
+        comment = comment,
+        profileImageUrl = profileImageUrl,
+        onCopyContent = { content ->
+          clipboardManager.setClip(ClipEntry(ClipData.newPlainText("content", content)))
+        },
+        onCopyRawJson =
+            comment.event?.let { event ->
+              {
+                clipboardManager.setClip(
+                    ClipEntry(ClipData.newPlainText("rawJson", sharedJson.encodeToString(event))))
+              }
+            },
+        onCopyNostrLink =
+            comment.event?.let { event ->
+              {
+                val encoded =
+                    sharedEncoder.encodeNEvent(
+                        eventId = event.id, pubkey = event.pubkey, kind = event.kind)
+                clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
+                onCopyNostrLink(encoded)
+              }
+            })
   }
 }
 

@@ -5,14 +5,19 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -178,6 +183,85 @@ class BookmarkDetailScreenTest {
 
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_post_comment))
+        .assertDoesNotExist()
+  }
+
+  @Test
+  fun selectingCopyNostrLinkOnKind1111CommentInvokesCallbackWithNEvent() {
+    var capturedNostrLink: String? = null
+    val pubkey = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"
+    val eventId = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    val comment =
+        Comment(
+            id = eventId,
+            content = "Shareable comment",
+            authorPubkey = pubkey,
+            createdAt = 1_700_000_000L,
+            kind = Comment.KIND_COMMENT,
+            event =
+                NostrEvent(
+                    id = eventId,
+                    pubkey = pubkey,
+                    createdAt = 1_700_000_000L,
+                    kind = Comment.KIND_COMMENT,
+                    tags = emptyList(),
+                    content = "Shareable comment",
+                    sig = "sig"))
+
+    composeTestRule.setContent {
+      BookmarkDetailScreen(
+          uiState = BookmarkDetailUiState(comments = listOf(comment)),
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
+          onCommentInputChange = {},
+          onPostComment = {},
+          onNavigateBack = {},
+          onDismissError = {},
+          onCopyNostrLink = { encoded -> capturedNostrLink = encoded })
+    }
+
+    composeTestRule.onNodeWithText("Shareable comment").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
+
+    assertNotNull("Tapping Copy nostr link should invoke the callback", capturedNostrLink)
+    assertTrue(
+        "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'",
+        capturedNostrLink!!.startsWith("nostr:nevent1"))
+  }
+
+  @Test
+  fun copyNostrLinkIsHiddenForSyntheticAuthorCommentWithoutEvent() {
+    val syntheticAuthorComment =
+        Comment(
+            id = "author",
+            content = "Synthetic author comment",
+            authorPubkey = "pk1",
+            createdAt = 1_700_000_000L,
+            kind = Comment.KIND_COMMENT,
+            event = null)
+
+    composeTestRule.setContent {
+      BookmarkDetailScreen(
+          uiState = BookmarkDetailUiState(comments = listOf(syntheticAuthorComment)),
+          bookmarkInfo =
+              BookmarkInfo(
+                  title = "Test",
+                  urls = listOf("https://example.com"),
+                  createdAt = 1_700_000_000L,
+                  authorPubkey = "pk_author"),
+          onCommentInputChange = {},
+          onPostComment = {},
+          onNavigateBack = {},
+          onDismissError = {})
+    }
+
+    composeTestRule.onNodeWithText("Synthetic author comment").performTouchInput { longClick() }
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.menu_copy_nostr_link))
         .assertDoesNotExist()
   }
 }

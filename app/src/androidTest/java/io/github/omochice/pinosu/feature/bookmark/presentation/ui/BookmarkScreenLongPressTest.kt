@@ -3,53 +3,114 @@ package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
+import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import io.github.omochice.pinosu.getTestString
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-/** Compose UI tests for long-press on bookmark card */
+/** Compose UI tests for the long-press menu integration on [BookmarkScreen] */
 class BookmarkScreenLongPressTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
-  @Test
-  fun longPressOnBookmarkCardTriggersCallbackWithRawJson() {
-    val expectedRawJson =
-        """{"id":"abc","pubkey":"def","created_at":1000,"kind":39701,"tags":[],"content":"hello","sig":"xyz"}"""
-    var capturedRawJson: String? = null
+  private val sampleBookmark =
+      BookmarkItem(
+          type = "event",
+          eventId = "abc",
+          title = "Test Bookmark",
+          url = "https://example.com",
+          urls = listOf("https://example.com"),
+          rawJson =
+              """{"id":"abc","pubkey":"64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924","created_at":1000,"kind":39701,"tags":[],"content":"hello","sig":"xyz"}""",
+          event =
+              BookmarkedEvent(
+                  kind = NipB0.KIND_BOOKMARK_LIST,
+                  content = "hello",
+                  author = "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924",
+                  createdAt = 1000,
+                  tags = listOf(listOf(NipB0.Tag.IDENTIFIER, "abc"))))
 
-    val bookmarks =
-        listOf(
-            BookmarkItem(
-                type = "event",
-                eventId = "abc",
-                title = "Test Bookmark",
-                url = "https://example.com",
-                urls = listOf("https://example.com"),
-                rawJson = expectedRawJson,
-                event =
-                    BookmarkedEvent(
-                        kind = 39701,
-                        content = "hello",
-                        author = "def",
-                        createdAt = 1000,
-                        tags = emptyList())))
+  @Test
+  fun selectingCopyRawJsonFromMenuInvokesCallbackWithRawJson() {
+    var capturedRawJson: String? = null
 
     composeTestRule.setContent {
       BookmarkScreen(
           uiState =
-              BookmarkUiState(isLoading = false, allBookmarks = bookmarks, userHexPubkey = "def"),
+              BookmarkUiState(
+                  isLoading = false,
+                  allBookmarks = listOf(sampleBookmark),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
           onRefresh = {},
           onLoad = {},
           onLongPressBookmark = { rawJson -> capturedRawJson = rawJson })
     }
 
     composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_raw_json)).performClick()
 
-    assertEquals("Callback should receive rawJson", expectedRawJson, capturedRawJson)
+    assertEquals(
+        "Tapping Copy raw JSON should pass rawJson to the callback",
+        sampleBookmark.rawJson,
+        capturedRawJson)
+  }
+
+  @Test
+  fun selectingCopyNostrLinkFromMenuInvokesCallbackWithNAddr() {
+    var capturedNostrLink: String? = null
+
+    composeTestRule.setContent {
+      BookmarkScreen(
+          uiState =
+              BookmarkUiState(
+                  isLoading = false,
+                  allBookmarks = listOf(sampleBookmark),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+          onRefresh = {},
+          onLoad = {},
+          onCopyNostrLink = { encoded -> capturedNostrLink = encoded })
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
+
+    assertNotNull("Tapping Copy nostr link should invoke the callback", capturedNostrLink)
+    assertTrue(
+        "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'",
+        capturedNostrLink!!.startsWith("nostr:naddr1"))
+  }
+
+  @Test
+  fun copyNostrLinkIsHiddenWhenBookmarkHasNoDTag() {
+    val bookmarkWithoutDTag =
+        sampleBookmark.copy(event = sampleBookmark.event!!.copy(tags = emptyList()))
+
+    composeTestRule.setContent {
+      BookmarkScreen(
+          uiState =
+              BookmarkUiState(
+                  isLoading = false,
+                  allBookmarks = listOf(bookmarkWithoutDTag),
+                  userHexPubkey =
+                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+          onRefresh = {},
+          onLoad = {})
+    }
+
+    composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.menu_copy_nostr_link))
+        .assertDoesNotExist()
   }
 }
