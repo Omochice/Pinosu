@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -143,7 +142,6 @@ private fun BookmarkCardShell(
     Box(modifier = Modifier.offset { IntOffset(pressOffset.x.toInt(), pressOffset.y.toInt()) }) {
       BookmarkLongPressMenu(
           expanded = showMenu,
-          offset = DpOffset.Zero,
           onDismiss = { showMenu = false },
           onCopyRawJson = onLongPress?.let { handler -> { handler(bookmark) } },
           onCopyNostrLink = onCopyNostrLink?.let { handler -> { handler(bookmark) } })
@@ -154,12 +152,11 @@ private fun BookmarkCardShell(
 @Composable
 private fun BookmarkLongPressMenu(
     expanded: Boolean,
-    offset: DpOffset,
     onDismiss: () -> Unit,
     onCopyRawJson: (() -> Unit)?,
     onCopyNostrLink: (() -> Unit)?,
 ) {
-  DropdownMenu(expanded = expanded, onDismissRequest = onDismiss, offset = offset) {
+  DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
     onCopyRawJson?.let { handler ->
       DropdownMenuItem(
           text = { Text(stringResource(R.string.menu_copy_raw_json)) },
