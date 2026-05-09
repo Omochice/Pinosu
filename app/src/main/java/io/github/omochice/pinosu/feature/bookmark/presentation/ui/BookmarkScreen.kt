@@ -47,10 +47,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
-import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.bookmark.domain.model.dTag
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -146,9 +146,6 @@ fun BookmarkScreen(
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
 }
-
-private fun BookmarkedEvent.dTag(): String? =
-    tags.firstOrNull { it.size >= 2 && it[0] == NipB0.Tag.IDENTIFIER }?.get(1)
 
 @Composable
 private fun BookmarkPager(
