@@ -54,19 +54,8 @@ import io.github.omochice.pinosu.ui.component.ErrorDialog
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/**
- * Shared JSON serializer for the bookmark detail screen.
- *
- * Hoisted to file scope so the prettyPrint configuration is allocated once for the entire app
- * rather than per LazyColumn row.
- */
 private val sharedJson = Json { prettyPrint = true }
 
-/**
- * Shared NIP-19 encoder for the bookmark detail screen.
- *
- * Stateless and thread-safe; hoisted to avoid per-row re-allocation when the comment list scrolls.
- */
 private val sharedEncoder = Nip19EventEncoder()
 
 /**
