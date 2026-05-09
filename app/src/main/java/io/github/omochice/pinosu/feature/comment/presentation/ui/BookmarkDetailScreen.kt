@@ -207,7 +207,7 @@ private fun CommentRow(
                 val encoded =
                     sharedEncoder.encodeNEvent(
                         eventId = event.id, pubkey = event.pubkey, kind = event.kind)
-                clipboardManager.setText(AnnotatedString(encoded))
+                clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
                 onCopyNostrLink(encoded)
               }
             })
