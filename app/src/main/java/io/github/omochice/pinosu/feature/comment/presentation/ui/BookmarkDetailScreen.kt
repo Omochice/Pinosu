@@ -39,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -196,10 +195,15 @@ private fun CommentRow(
     CommentCard(
         comment = comment,
         profileImageUrl = profileImageUrl,
-        onCopyContent = { content -> clipboardManager.setText(AnnotatedString(content)) },
+        onCopyContent = { content ->
+          clipboardManager.setClip(ClipEntry(ClipData.newPlainText("content", content)))
+        },
         onCopyRawJson =
             comment.event?.let { event ->
-              { clipboardManager.setText(AnnotatedString(sharedJson.encodeToString(event))) }
+              {
+                clipboardManager.setClip(
+                    ClipEntry(ClipData.newPlainText("rawJson", sharedJson.encodeToString(event))))
+              }
             },
         onCopyNostrLink =
             comment.event?.let { event ->
