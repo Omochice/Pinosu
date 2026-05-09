@@ -55,6 +55,8 @@ import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.Bookmar
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+private val sharedEncoder = Nip19EventEncoder()
+
 /**
  * Composable function for bookmark list screen
  *
@@ -93,7 +95,6 @@ fun BookmarkScreen(
 
   val clipboardManager = LocalClipboardManager.current
   val hapticFeedback = LocalHapticFeedback.current
-  val encoder = remember { Nip19EventEncoder() }
 
   val onBookmarkLongPress: (BookmarkItem) -> Unit = { bookmark ->
     bookmark.rawJson?.let { rawJson ->
@@ -106,7 +107,8 @@ fun BookmarkScreen(
   val onBookmarkCopyNostrLink: (BookmarkItem) -> Unit = { bookmark ->
     bookmark.event?.let { event ->
       event.dTag()?.let { dTag ->
-        val encoded = encoder.encodeNAddr(kind = event.kind, pubkey = event.author, dTag = dTag)
+        val encoded =
+            sharedEncoder.encodeNAddr(kind = event.kind, pubkey = event.author, dTag = dTag)
         clipboardManager.setClip(ClipEntry(ClipData.newPlainText("nostrLink", encoded)))
         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
         onCopyNostrLink(encoded)
