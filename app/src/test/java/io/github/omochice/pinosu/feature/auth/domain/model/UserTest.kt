@@ -69,7 +69,7 @@ class UserTest {
     val expectedHex = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
     val pubkey = Pubkey.parse(validNpub)
     assertNotNull(pubkey, "Should parse valid npub")
-    val user = User(pubkey!!)
+    val user = User(pubkey)
 
     assertEquals(expectedHex, user.pubkey.hex)
   }
