@@ -136,10 +136,10 @@ class Nip55SignerClientTest {
     assertTrue(result.isSuccess, "Should return success")
     val response = result.getOrNull()
     assertNotNull(response, "Response should not be null")
-    assertEquals(pubkey, response?.pubkey, "Pubkey should match")
+    assertEquals(pubkey, response.pubkey, "Pubkey should match")
     assertEquals(
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
-        response?.packageName,
+        response.packageName,
         "PackageName should be NIP-55 signer package")
   }
 
