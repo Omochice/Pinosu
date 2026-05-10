@@ -63,10 +63,9 @@ class ManifestConfigurationTest {
 
     assertNotNull(resolveInfo, "MainActivity should be resolvable")
 
-    val activityInfo = resolveInfo?.activityInfo
+    val activityInfo = resolveInfo.activityInfo
     assertNotNull(activityInfo, "ActivityInfo should not be null")
-    assertTrue(
-        activityInfo?.exported == true, "MainActivity should be exported for LAUNCHER intent")
+    assertTrue(activityInfo.exported, "MainActivity should be exported for LAUNCHER intent")
   }
 
   @Test
