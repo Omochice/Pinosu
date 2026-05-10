@@ -23,7 +23,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 import org.junit.Rule
 import org.junit.runner.RunWith
 
@@ -225,8 +225,8 @@ class ShareIntentNavigationTest {
     // when Compose navigation has PostBookmark on the back stack.
     composeTestRule.activityRule.scenario.onActivity { activity ->
       assertTrue(
-          "contentConsumed should be true after shared content is consumed",
           activity.contentConsumed,
+          "contentConsumed should be true after shared content is consumed",
       )
     }
   }

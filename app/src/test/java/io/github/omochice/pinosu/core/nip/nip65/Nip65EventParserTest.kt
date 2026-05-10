@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.core.nip.nip65
 import io.github.omochice.pinosu.core.model.NostrEvent
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class Nip65EventParserTest {
 
@@ -21,11 +21,11 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return one relay", 1, result.size)
+    assertEquals(1, result.size, "Should return one relay")
     val relay = result.first()
-    assertEquals("URL should match", "wss://relay.example.com", relay.url)
-    assertTrue("read should be true when no marker", relay.read)
-    assertTrue("write should be true when no marker", relay.write)
+    assertEquals("wss://relay.example.com", relay.url, "URL should match")
+    assertTrue(relay.read, "read should be true when no marker")
+    assertTrue(relay.write, "write should be true when no marker")
   }
 
   @Test
@@ -34,11 +34,11 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return one relay", 1, result.size)
+    assertEquals(1, result.size, "Should return one relay")
     val relay = result.first()
-    assertEquals("URL should match", "wss://read-relay.example.com", relay.url)
-    assertTrue("read should be true for read marker", relay.read)
-    assertEquals("write should be false for read marker", false, relay.write)
+    assertEquals("wss://read-relay.example.com", relay.url, "URL should match")
+    assertTrue(relay.read, "read should be true for read marker")
+    assertEquals(false, relay.write, "write should be false for read marker")
   }
 
   @Test
@@ -47,11 +47,11 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return one relay", 1, result.size)
+    assertEquals(1, result.size, "Should return one relay")
     val relay = result.first()
-    assertEquals("URL should match", "wss://write-relay.example.com", relay.url)
-    assertEquals("read should be false for write marker", false, relay.read)
-    assertTrue("write should be true for write marker", relay.write)
+    assertEquals("wss://write-relay.example.com", relay.url, "URL should match")
+    assertEquals(false, relay.read, "read should be false for write marker")
+    assertTrue(relay.write, "write should be true for write marker")
   }
 
   @Test
@@ -65,19 +65,19 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return three relays", 3, result.size)
+    assertEquals(3, result.size, "Should return three relays")
 
     val relay1 = result.find { it.url == "wss://relay1.example.com" }!!
-    assertTrue("relay1 should have read=true", relay1.read)
-    assertTrue("relay1 should have write=true", relay1.write)
+    assertTrue(relay1.read, "relay1 should have read=true")
+    assertTrue(relay1.write, "relay1 should have write=true")
 
     val relay2 = result.find { it.url == "wss://relay2.example.com" }!!
-    assertTrue("relay2 should have read=true", relay2.read)
-    assertEquals("relay2 should have write=false", false, relay2.write)
+    assertTrue(relay2.read, "relay2 should have read=true")
+    assertEquals(false, relay2.write, "relay2 should have write=false")
 
     val relay3 = result.find { it.url == "wss://relay3.example.com" }!!
-    assertEquals("relay3 should have read=false", false, relay3.read)
-    assertTrue("relay3 should have write=true", relay3.write)
+    assertEquals(false, relay3.read, "relay3 should have read=false")
+    assertTrue(relay3.write, "relay3 should have write=true")
   }
 
   @Test
@@ -86,7 +86,7 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertTrue("Should return empty list for empty tags", result.isEmpty())
+    assertTrue(result.isEmpty(), "Should return empty list for empty tags")
   }
 
   @Test
@@ -100,8 +100,8 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return only r tag relay", 1, result.size)
-    assertEquals("URL should match r tag", "wss://relay.example.com", result.first().url)
+    assertEquals(1, result.size, "Should return only r tag relay")
+    assertEquals("wss://relay.example.com", result.first().url, "URL should match r tag")
   }
 
   @Test
@@ -118,7 +118,7 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertTrue("Should return empty list for wrong kind", result.isEmpty())
+    assertTrue(result.isEmpty(), "Should return empty list for wrong kind")
   }
 
   @Test
@@ -131,8 +131,8 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return only valid relay", 1, result.size)
-    assertEquals("URL should be the valid one", "wss://valid-relay.example.com", result.first().url)
+    assertEquals(1, result.size, "Should return only valid relay")
+    assertEquals("wss://valid-relay.example.com", result.first().url, "URL should be the valid one")
   }
 
   @Test
@@ -145,9 +145,9 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return only valid wss relay", 1, result.size)
+    assertEquals(1, result.size, "Should return only valid wss relay")
     assertEquals(
-        "URL should be the valid wss one", "wss://valid-relay.example.com", result.first().url)
+        "wss://valid-relay.example.com", result.first().url, "URL should be the valid wss one")
   }
 
   @Test
@@ -156,10 +156,10 @@ class Nip65EventParserTest {
 
     val result = parser.parseRelayListEvent(event)
 
-    assertEquals("Should return one relay", 1, result.size)
+    assertEquals(1, result.size, "Should return one relay")
     val relay = result.first()
-    assertTrue("read should be true for unknown marker", relay.read)
-    assertTrue("write should be true for unknown marker", relay.write)
+    assertTrue(relay.read, "read should be true for unknown marker")
+    assertTrue(relay.write, "write should be true for unknown marker")
   }
 
   private fun createNip65Event(tags: List<List<String>>): NostrEvent {

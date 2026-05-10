@@ -11,10 +11,10 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 
 /**
  * Test class for PostBookmarkUseCaseImpl

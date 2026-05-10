@@ -5,8 +5,8 @@ import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepo
 import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.Assert.assertEquals
 
 class ObserveThemeModeUseCaseTest {
 

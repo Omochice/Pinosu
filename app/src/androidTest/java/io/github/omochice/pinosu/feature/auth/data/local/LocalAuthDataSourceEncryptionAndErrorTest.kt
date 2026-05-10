@@ -15,9 +15,11 @@ import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
 import org.junit.runner.RunWith
 
 /**
@@ -65,7 +67,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val fileContent = String(fileBytes, Charsets.UTF_8)
 
     assertFalse(
-        "Data should be encrypted, not stored in plaintext", fileContent.contains(user.pubkey.npub))
+        fileContent.contains(user.pubkey.npub), "Data should be encrypted, not stored in plaintext")
   }
 
   @Test
@@ -77,7 +79,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val retrieved = dataSource.getUser()
 
     assertNotNull(retrieved, "Encrypted data should be decryptable")
-    assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
+    assertEquals(user.pubkey, retrieved?.pubkey, "Decrypted data should match original")
   }
 
   @Test
@@ -91,7 +93,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val retrieved = newDataSource.getUser()
 
     assertNotNull(retrieved, "New instance should be able to decrypt data")
-    assertEquals("Data should be consistent across instances", user.pubkey, retrieved?.pubkey)
+    assertEquals(user.pubkey, retrieved?.pubkey, "Data should be consistent across instances")
   }
 
   @Test
@@ -109,7 +111,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
       val retrieved = dataSource.getUser()
 
       assertNotNull(retrieved, "User should be retrievable")
-      assertEquals("Retrieved user should match saved user", user.pubkey, retrieved?.pubkey)
+      assertEquals(user.pubkey, retrieved?.pubkey, "Retrieved user should match saved user")
     }
   }
 
@@ -137,7 +139,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
       val retrieved = dataSourceNoEncrypt.getUser()
 
-      assertNull("getUser should return null for invalid pubkey format: $invalidPubkey", retrieved)
+      assertNull(retrieved, "getUser should return null for invalid pubkey format: $invalidPubkey")
 
       dataSourceNoEncrypt.clearLoginState()
     }
@@ -147,7 +149,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `getUser with missing pubkey should return null`() = runTest {
     val retrieved = dataSource.getUser()
 
-    assertNull("getUser should return null when pubkey is missing", retrieved)
+    assertNull(retrieved, "getUser should return null when pubkey is missing")
   }
 
   @Test
@@ -164,7 +166,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     val retrieved = dataSourceNoEncrypt.getUser()
 
-    assertNull("getUser should return null for empty pubkey", retrieved)
+    assertNull(retrieved, "getUser should return null for empty pubkey")
   }
 
   @Test
@@ -176,7 +178,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val retrieved = dataSource.getUser()
 
     assertNotNull(retrieved, "User should be retrievable")
-    assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
+    assertEquals(user.pubkey, retrieved?.pubkey, "Pubkey should match")
   }
 
   @Test
@@ -189,7 +191,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     dataSource.clearLoginState()
 
-    assertNull("getUser should return null after clear", dataSource.getUser())
+    assertNull(dataSource.getUser(), "getUser should return null after clear")
   }
 
   @Test
@@ -199,7 +201,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     try {
       dataSource.saveUser(user, LoginMode.Nip55Signer)
       val retrieved = dataSource.getUser()
-      assertEquals("User should be saved successfully", user.pubkey, retrieved?.pubkey)
+      assertEquals(user.pubkey, retrieved?.pubkey, "User should be saved successfully")
     } catch (e: StorageError.WriteError) {
       assertNotNull(e.message, "Error message should be present")
     }
@@ -209,7 +211,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `clearLoginState should validate error type`() = runTest {
     try {
       dataSource.clearLoginState()
-      assertNull("Data should be cleared", dataSource.getUser())
+      assertNull(dataSource.getUser(), "Data should be cleared")
     } catch (e: StorageError.WriteError) {
       assertNotNull(e.message, "Error message should be present")
     }

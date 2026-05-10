@@ -12,7 +12,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 import org.junit.Rule
 
 /** Compose UI tests for [AppInfoScreen] */

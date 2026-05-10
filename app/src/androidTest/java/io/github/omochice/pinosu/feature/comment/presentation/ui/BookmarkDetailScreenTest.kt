@@ -16,9 +16,9 @@ import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 import org.junit.Rule
 
 /** Compose UI tests for [BookmarkDetailScreen] */
@@ -229,8 +229,8 @@ class BookmarkDetailScreenTest {
 
     assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'",
-        capturedNostrLink!!.startsWith("nostr:nevent1"))
+        capturedNostrLink!!.startsWith("nostr:nevent1"),
+        "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'")
   }
 
   @Test

@@ -12,9 +12,9 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 import org.junit.Rule
 
 /** Compose UI tests for the long-press menu integration on [BookmarkScreen] */
@@ -60,9 +60,9 @@ class BookmarkScreenLongPressTest {
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_raw_json)).performClick()
 
     assertEquals(
-        "Tapping Copy raw JSON should pass rawJson to the callback",
         sampleBookmark.rawJson,
-        capturedRawJson)
+        capturedRawJson,
+        "Tapping Copy raw JSON should pass rawJson to the callback")
   }
 
   @Test
@@ -87,8 +87,8 @@ class BookmarkScreenLongPressTest {
 
     assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'",
-        capturedNostrLink!!.startsWith("nostr:naddr1"))
+        capturedNostrLink!!.startsWith("nostr:naddr1"),
+        "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'")
   }
 
   @Test

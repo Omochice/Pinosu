@@ -7,8 +7,8 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
 
 /**
  * Unit tests for LogoutUseCase
@@ -33,7 +33,7 @@ class LogoutUseCaseTest {
 
     val result = logoutUseCase()
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     coVerify { authRepository.logout() }
   }
 
@@ -44,10 +44,10 @@ class LogoutUseCaseTest {
 
     val result = logoutUseCase()
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
     assertTrue(
-        "Exception should be LogoutError.StorageError", exception is LogoutError.StorageError)
+        exception is LogoutError.StorageError, "Exception should be LogoutError.StorageError")
     coVerify { authRepository.logout() }
   }
 
@@ -58,8 +58,8 @@ class LogoutUseCaseTest {
     val result1 = logoutUseCase()
     val result2 = logoutUseCase()
 
-    assertTrue("First call should succeed", result1.isSuccess)
-    assertTrue("Second call should succeed", result2.isSuccess)
+    assertTrue(result1.isSuccess, "First call should succeed")
+    assertTrue(result2.isSuccess, "Second call should succeed")
     coVerify(exactly = 2) { authRepository.logout() }
   }
 }

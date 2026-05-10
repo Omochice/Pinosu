@@ -2,10 +2,10 @@ package io.github.omochice.pinosu.feature.auth.domain.model
 
 import io.github.omochice.pinosu.core.model.Pubkey
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertSame
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class AuthEventTest {
 

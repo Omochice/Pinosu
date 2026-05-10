@@ -10,7 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 
 class LocalSettingsDataSourceTest {
 

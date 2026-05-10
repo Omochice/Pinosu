@@ -9,7 +9,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
-import org.junit.Assert.*
+import kotlin.test.assertTrue
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -30,7 +30,7 @@ class ManifestConfigurationTest {
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
     assertNotNull(appName, "Application name should not be null")
-    assertTrue("Application name should not be empty", appName.isNotEmpty())
+    assertTrue(appName.isNotEmpty(), "Application name should not be empty")
   }
 
   @Test
@@ -38,7 +38,7 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appIcon = applicationInfo.icon
 
-    assertTrue("Application icon should be set", appIcon != 0)
+    assertTrue(appIcon != 0, "Application icon should be set")
   }
 
   @Test
@@ -66,7 +66,7 @@ class ManifestConfigurationTest {
     val activityInfo = resolveInfo?.activityInfo
     assertNotNull(activityInfo, "ActivityInfo should not be null")
     assertTrue(
-        "MainActivity should be exported for LAUNCHER intent", activityInfo?.exported == true)
+        activityInfo?.exported == true, "MainActivity should be exported for LAUNCHER intent")
   }
 
   @Test
@@ -79,6 +79,6 @@ class ManifestConfigurationTest {
 
     val resolveInfo = packageManager.queryIntentActivities(intent, 0)
 
-    assertTrue("ACTION_SEND text/plain should resolve to an activity", resolveInfo.isNotEmpty())
+    assertTrue(resolveInfo.isNotEmpty(), "ACTION_SEND text/plain should resolve to an activity")
   }
 }

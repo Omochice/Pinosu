@@ -3,7 +3,7 @@ package io.github.omochice.pinosu
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlin.test.Test
-import org.junit.Assert.*
+import kotlin.test.assertEquals
 import org.junit.runner.RunWith
 
 /**

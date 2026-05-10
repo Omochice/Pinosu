@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.core.model
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import kotlin.test.assertNull
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -22,7 +22,7 @@ class PubkeyTest {
     val pubkey = Pubkey.parse(TEST_VALID_NPUB)
 
     assertNotNull(pubkey, "Should parse valid npub")
-    assertEquals("Should preserve npub value", TEST_VALID_NPUB, pubkey.npub)
+    assertEquals(TEST_VALID_NPUB, pubkey.npub, "Should preserve npub value")
   }
 
   @Test
@@ -31,14 +31,14 @@ class PubkeyTest {
 
     val result = Pubkey.parse(hexPubkey)
 
-    assertNull("Should return null for hex format pubkey", result)
+    assertNull(result, "Should return null for hex format pubkey")
   }
 
   @Test
   fun `parse returns null for empty string`() {
     val result = Pubkey.parse("")
 
-    assertNull("Should return null for empty string", result)
+    assertNull(result, "Should return null for empty string")
   }
 
   @Test
@@ -47,7 +47,7 @@ class PubkeyTest {
 
     val result = Pubkey.parse(nsec)
 
-    assertNull("Should return null for nsec format", result)
+    assertNull(result, "Should return null for nsec format")
   }
 
   @Test
@@ -56,7 +56,7 @@ class PubkeyTest {
 
     val result = Pubkey.parse(nprofile)
 
-    assertNull("Should return null for nprofile format", result)
+    assertNull(result, "Should return null for nprofile format")
   }
 
   @Test
@@ -65,7 +65,7 @@ class PubkeyTest {
 
     val result = Pubkey.parse(uppercaseNpub)
 
-    assertNull("Should return null for uppercase NPUB1", result)
+    assertNull(result, "Should return null for uppercase NPUB1")
   }
 
   @Test
@@ -73,7 +73,7 @@ class PubkeyTest {
     val pubkey = Pubkey.parse(TEST_VALID_NPUB)
 
     assertNotNull(pubkey, "Should parse valid npub")
-    assertEquals("Should return correct hex", TEST_VALID_HEX, pubkey.hex)
+    assertEquals(TEST_VALID_HEX, pubkey.hex, "Should return correct hex")
   }
 
   @Test
@@ -83,7 +83,7 @@ class PubkeyTest {
     val pubkey = Pubkey.parse(invalidChecksumNpub)
 
     assertNotNull(pubkey, "Should parse npub format")
-    assertNull("Should return null for invalid checksum", pubkey.hex)
+    assertNull(pubkey.hex, "Should return null for invalid checksum")
   }
 
   @Test
@@ -91,8 +91,8 @@ class PubkeyTest {
     val pubkey1 = Pubkey.parse(TEST_VALID_NPUB)
     val pubkey2 = Pubkey.parse(TEST_VALID_NPUB)
 
-    assertEquals("Same npub should be equal", pubkey1, pubkey2)
-    assertEquals("Same npub should have same hashCode", pubkey1?.hashCode(), pubkey2?.hashCode())
+    assertEquals(pubkey1, pubkey2, "Same npub should be equal")
+    assertEquals(pubkey1?.hashCode(), pubkey2?.hashCode(), "Same npub should have same hashCode")
   }
 
   @Test
@@ -109,7 +109,7 @@ class PubkeyTest {
   fun `isValidFormat returns true for valid npub`() {
     val result = Pubkey.isValidFormat(TEST_VALID_NPUB)
 
-    assertEquals("Should return true for valid npub", true, result)
+    assertEquals(true, result, "Should return true for valid npub")
   }
 
   @Test
@@ -118,14 +118,14 @@ class PubkeyTest {
 
     val result = Pubkey.isValidFormat(hexPubkey)
 
-    assertEquals("Should return false for hex format pubkey", false, result)
+    assertEquals(false, result, "Should return false for hex format pubkey")
   }
 
   @Test
   fun `isValidFormat returns false for empty string`() {
     val result = Pubkey.isValidFormat("")
 
-    assertEquals("Should return false for empty string", false, result)
+    assertEquals(false, result, "Should return false for empty string")
   }
 
   @Test
@@ -134,7 +134,7 @@ class PubkeyTest {
 
     val result = Pubkey.isValidFormat(nsec)
 
-    assertEquals("Should return false for nsec format", false, result)
+    assertEquals(false, result, "Should return false for nsec format")
   }
 
   @Test
@@ -143,7 +143,7 @@ class PubkeyTest {
 
     val result = Pubkey.isValidFormat(nprofile)
 
-    assertEquals("Should return false for nprofile format", false, result)
+    assertEquals(false, result, "Should return false for nprofile format")
   }
 
   @Test
@@ -152,7 +152,7 @@ class PubkeyTest {
 
     val result = Pubkey.isValidFormat(uppercaseNpub)
 
-    assertEquals("Should return false for uppercase NPUB1", false, result)
+    assertEquals(false, result, "Should return false for uppercase NPUB1")
   }
 
   companion object {

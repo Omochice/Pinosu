@@ -16,6 +16,10 @@ import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -24,10 +28,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 
 /**
  * Unit tests for LoginViewModel
@@ -77,16 +77,16 @@ class LoginViewModelTest {
   fun `initial LoginUiState should be Idle`() = runTest {
     val state = viewModel.uiState.first()
 
-    assertTrue("state should be Idle", state is LoginUiState.Idle)
+    assertTrue(state is LoginUiState.Idle, "state should be Idle")
   }
 
   @Test
   fun `initial MainUiState should have default values`() = runTest {
     val state = viewModel.mainUiState.first()
 
-    assertNull("userPubkey should be null", state.userPubkey)
-    assertFalse("isLoggingOut should be false", state.isLoggingOut)
-    assertFalse("isReadOnly should be false", state.isReadOnly)
+    assertNull(state.userPubkey, "userPubkey should be null")
+    assertFalse(state.isLoggingOut, "isLoggingOut should be false")
+    assertFalse(state.isReadOnly, "isReadOnly should be false")
   }
 
   @Test
@@ -99,7 +99,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertEquals("userPubkey should be set", testPubkey, state.userPubkey)
+    assertEquals(testPubkey, state.userPubkey, "userPubkey should be set")
     coVerify { getLoginStateUseCase() }
   }
 
@@ -111,7 +111,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertNull("userPubkey should be null", state.userPubkey)
+    assertNull(state.userPubkey, "userPubkey should be null")
     coVerify { getLoginStateUseCase() }
   }
 
@@ -135,7 +135,7 @@ class LoginViewModelTest {
 
         val state = viewModel.uiState.first()
         assertTrue(
-            "state should be RequiresNip55Install", state is LoginUiState.RequiresNip55Install)
+            state is LoginUiState.RequiresNip55Install, "state should be RequiresNip55Install")
       }
 
   @Test
@@ -147,7 +147,7 @@ class LoginViewModelTest {
 
     coVerify { logoutUseCase() }
     val state = viewModel.mainUiState.first()
-    assertNull("userPubkey should be null after logout", state.userPubkey)
+    assertNull(state.userPubkey, "userPubkey should be null after logout")
   }
 
   @Test
@@ -161,7 +161,7 @@ class LoginViewModelTest {
 
     coVerify { logoutUseCase() }
     val state = viewModel.mainUiState.first()
-    assertFalse("isLoggingOut should be false after failure", state.isLoggingOut)
+    assertFalse(state.isLoggingOut, "isLoggingOut should be false after failure")
   }
 
   @Test
@@ -174,7 +174,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("state should be Idle after dismissError", state is LoginUiState.Idle)
+    assertTrue(state is LoginUiState.Idle, "state should be Idle after dismissError")
   }
 
   @Test
@@ -243,8 +243,8 @@ class LoginViewModelTest {
 
     val loginState = viewModelWithMock.uiState.first()
     val mainState = viewModelWithMock.mainUiState.first()
-    assertTrue("state should be Success", loginState is LoginUiState.Success)
-    assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
+    assertTrue(loginState is LoginUiState.Success, "state should be Success")
+    assertEquals(testPubkey, mainState.userPubkey, "userPubkey should be set")
   }
 
   @Test
@@ -270,7 +270,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("state should be NonRetryable error", state is LoginUiState.Error.NonRetryable)
+    assertTrue(state is LoginUiState.Error.NonRetryable, "state should be NonRetryable error")
   }
 
   @Test
@@ -296,7 +296,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
+    assertTrue(state is LoginUiState.Error.Retryable, "state should be Retryable error")
   }
 
   @Test
@@ -324,7 +324,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
+    assertTrue(state is LoginUiState.Error.Retryable, "state should be Retryable error")
   }
 
   @Test
@@ -363,7 +363,7 @@ class LoginViewModelTest {
 
         val state = viewModelWithMock.uiState.first()
         assertTrue(
-            "state should be Success after relay fetch completes", state is LoginUiState.Success)
+            state is LoginUiState.Success, "state should be Success after relay fetch completes")
       }
 
   @Test
@@ -394,7 +394,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("state should be Success even if relay fetch fails", state is LoginUiState.Success)
+    assertTrue(state is LoginUiState.Success, "state should be Success even if relay fetch fails")
   }
 
   @Test
@@ -407,10 +407,10 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val mainState = viewModel.mainUiState.first()
-    assertTrue("isReadOnly should be true", mainState.isReadOnly)
-    assertEquals("userPubkey should be set", npub, mainState.userPubkey)
+    assertTrue(mainState.isReadOnly, "isReadOnly should be true")
+    assertEquals(npub, mainState.userPubkey, "userPubkey should be set")
     val loginState = viewModel.uiState.first()
-    assertTrue("login state should be Success", loginState is LoginUiState.Success)
+    assertTrue(loginState is LoginUiState.Success, "login state should be Success")
   }
 
   @Test
@@ -421,7 +421,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("state should be NonRetryable error", state is LoginUiState.Error.NonRetryable)
+    assertTrue(state is LoginUiState.Error.NonRetryable, "state should be NonRetryable error")
   }
 
   @Test
@@ -435,8 +435,8 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertEquals("userPubkey should be set", testPubkey, state.userPubkey)
-    assertTrue("isReadOnly should be true", state.isReadOnly)
+    assertEquals(testPubkey, state.userPubkey, "userPubkey should be set")
+    assertTrue(state.isReadOnly, "isReadOnly should be true")
   }
 
   @Test
@@ -450,7 +450,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertFalse("isReadOnly should be false", state.isReadOnly)
+    assertFalse(state.isReadOnly, "isReadOnly should be false")
   }
 
   @Test
@@ -481,7 +481,7 @@ class LoginViewModelTest {
     coVerify { fetchRelayListUseCase(npub) }
 
     val state = viewModelWithMock.uiState.first()
-    assertTrue("state should be Success after relay fetch completes", state is LoginUiState.Success)
+    assertTrue(state is LoginUiState.Success, "state should be Success after relay fetch completes")
   }
 
   @Test
@@ -508,9 +508,9 @@ class LoginViewModelTest {
 
     val loginState = viewModelWithMock.uiState.first()
     assertTrue(
-        "state should be Success even if relay fetch fails", loginState is LoginUiState.Success)
+        loginState is LoginUiState.Success, "state should be Success even if relay fetch fails")
     val mainState = viewModelWithMock.mainUiState.first()
-    assertTrue("isReadOnly should be true", mainState.isReadOnly)
+    assertTrue(mainState.isReadOnly, "isReadOnly should be true")
   }
 
   @Test
@@ -526,7 +526,7 @@ class LoginViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertNull("userPubkey should be null", state.userPubkey)
-    assertFalse("isReadOnly should be false after logout", state.isReadOnly)
+    assertNull(state.userPubkey, "userPubkey should be null")
+    assertFalse(state.isReadOnly, "isReadOnly should be false after logout")
   }
 }

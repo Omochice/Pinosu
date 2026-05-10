@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.feature.bookmark.domain.model
 
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /** Unit tests for [BookmarkItem] properties */
 class BookmarkItemTest {
@@ -11,7 +11,7 @@ class BookmarkItemTest {
   fun `rawJson defaults to null when not provided`() {
     val item = BookmarkItem(type = "event")
 
-    assertNull("rawJson should default to null", item.rawJson)
+    assertNull(item.rawJson, "rawJson should default to null")
   }
 
   @Test
@@ -20,14 +20,14 @@ class BookmarkItemTest {
         """{"id":"abc","pubkey":"def","created_at":1000,"kind":1,"tags":[],"content":"hello"}"""
     val item = BookmarkItem(type = "event", rawJson = expectedJson)
 
-    assertEquals("rawJson should retain provided value", expectedJson, item.rawJson)
+    assertEquals(expectedJson, item.rawJson, "rawJson should retain provided value")
   }
 
   @Test
   fun `imageUrl defaults to null when not provided`() {
     val item = BookmarkItem(type = "event")
 
-    assertNull("imageUrl should default to null", item.imageUrl)
+    assertNull(item.imageUrl, "imageUrl should default to null")
   }
 
   @Test
@@ -35,7 +35,7 @@ class BookmarkItemTest {
     val expectedUrl = "https://example.com/ogp-image.jpg"
     val item = BookmarkItem(type = "event", imageUrl = expectedUrl)
 
-    assertEquals("imageUrl should retain provided value", expectedUrl, item.imageUrl)
+    assertEquals(expectedUrl, item.imageUrl, "imageUrl should retain provided value")
   }
 
   @Test

@@ -12,7 +12,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
-import org.junit.Assert.*
+import kotlin.test.assertTrue
+import kotlin.test.fail
 import org.junit.runner.RunWith
 
 /**
@@ -56,7 +57,7 @@ class LocalAuthDataSourceTest {
   fun `DataStore creation should succeed`() {
     try {
       dataSource.toString()
-      assertTrue("DataStore should be created successfully", true)
+      assertTrue(true, "DataStore should be created successfully")
     } catch (e: Exception) {
       fail("DataStore creation failed: ${e.message}")
     }

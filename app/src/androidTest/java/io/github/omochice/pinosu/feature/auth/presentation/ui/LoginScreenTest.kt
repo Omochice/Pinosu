@@ -10,9 +10,9 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Rule
 
 /**
@@ -48,7 +48,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText(getTestString(R.string.button_login_with_nip55)).performClick()
 
-    assertTrue("Login button click should trigger callback", clicked)
+    assertTrue(clicked, "Login button click should trigger callback")
   }
 
   @Test
@@ -81,7 +81,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText(getTestString(R.string.button_login_with_nip55)).performClick()
 
-    assertEquals("Login button should be disabled when loading", 0, clickCount)
+    assertEquals(0, clickCount, "Login button should be disabled when loading")
   }
 
   @Test
@@ -126,7 +126,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText(getTestString(R.string.button_close)).performClick()
 
-    assertTrue("Dismiss dialog should trigger callback", dismissCalled)
+    assertTrue(dismissCalled, "Dismiss dialog should trigger callback")
   }
 
   @Test
@@ -142,7 +142,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText(getTestString(R.string.button_install)).performClick()
 
-    assertTrue("Install button should trigger callback", installCalled)
+    assertTrue(installCalled, "Install button should trigger callback")
   }
 
   @Test
@@ -160,7 +160,7 @@ class LoginScreenTest {
     }
     composeTestRule.onNodeWithText(getTestString(R.string.button_retry)).performClick()
 
-    assertTrue("Retry button should trigger callback", retryCalled)
+    assertTrue(retryCalled, "Retry button should trigger callback")
   }
 
   @Test
@@ -191,7 +191,7 @@ class LoginScreenTest {
     }
 
     composeTestRule.waitUntil(timeoutMillis = 1000) { navigationTriggered }
-    assertTrue("Navigation should be triggered when login succeeds", navigationTriggered)
+    assertTrue(navigationTriggered, "Navigation should be triggered when login succeeds")
   }
 
   @Test
@@ -208,7 +208,7 @@ class LoginScreenTest {
 
     composeTestRule.waitForIdle()
     assertFalse(
-        "Navigation should not be triggered when login is not successful", navigationTriggered)
+        navigationTriggered, "Navigation should not be triggered when login is not successful")
   }
 
   @Test
@@ -284,7 +284,7 @@ class LoginScreenTest {
 
     composeTestRule.onNodeWithText(getTestString(R.string.button_submit_read_only)).performClick()
 
-    assertEquals("Should submit the entered npub", npub, submittedNpub)
+    assertEquals(npub, submittedNpub, "Should submit the entered npub")
   }
 
   @Test

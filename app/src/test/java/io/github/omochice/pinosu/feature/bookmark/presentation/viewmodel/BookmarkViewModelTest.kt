@@ -16,7 +16,12 @@ import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,11 +31,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertSame
-import org.junit.Assert.assertTrue
 
 /**
  * Unit tests for BookmarkViewModel URL click functionality
@@ -72,10 +72,10 @@ class BookmarkViewModelTest {
   fun `initial BookmarkUiState should have default values`() = runTest {
     val state = viewModel.uiState.first()
 
-    assertFalse("isLoading should be false", state.isLoading)
-    assertNull("error should be null", state.error)
-    assertNull("selectedBookmarkForUrlDialog should be null", state.selectedBookmarkForUrlDialog)
-    assertNull("urlOpenError should be null", state.urlOpenError)
+    assertFalse(state.isLoading, "isLoading should be false")
+    assertNull(state.error, "error should be null")
+    assertNull(state.selectedBookmarkForUrlDialog, "selectedBookmarkForUrlDialog should be null")
+    assertNull(state.urlOpenError, "urlOpenError should be null")
   }
 
   @Test
@@ -84,9 +84,9 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertEquals(
-        "selectedTab should be Global after selecting",
         BookmarkFilterMode.Global,
-        state.selectedTab)
+        state.selectedTab,
+        "selectedTab should be Global after selecting")
   }
 
   @Test
@@ -95,7 +95,7 @@ class BookmarkViewModelTest {
     viewModel.selectTab(BookmarkFilterMode.Local)
     val newState = viewModel.uiState.first()
 
-    assertSame("State should be same reference when selecting same tab", initialState, newState)
+    assertSame(initialState, newState, "State should be same reference when selecting same tab")
   }
 
   @Test
@@ -118,9 +118,9 @@ class BookmarkViewModelTest {
             state.selectedBookmarkForUrlDialog,
             "selectedBookmarkForUrlDialog should be set for multiple URLs")
         assertEquals(
-            "selectedBookmarkForUrlDialog should be the clicked bookmark",
             bookmarkWithMultipleUrls,
-            state.selectedBookmarkForUrlDialog)
+            state.selectedBookmarkForUrlDialog,
+            "selectedBookmarkForUrlDialog should be the clicked bookmark")
       }
 
   @Test
@@ -140,8 +140,8 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNull(
-        "selectedBookmarkForUrlDialog should be null after dismissing",
-        state.selectedBookmarkForUrlDialog)
+        state.selectedBookmarkForUrlDialog,
+        "selectedBookmarkForUrlDialog should be null after dismissing")
   }
 
   @Test
@@ -153,7 +153,7 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNotNull(state.urlOpenError, "urlOpenError should be set")
-    assertEquals("urlOpenError should contain the error message", errorMessage, state.urlOpenError)
+    assertEquals(errorMessage, state.urlOpenError, "urlOpenError should contain the error message")
   }
 
   @Test
@@ -165,7 +165,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNull("urlOpenError should be null after dismissing", state.urlOpenError)
+    assertNull(state.urlOpenError, "urlOpenError should be null after dismissing")
   }
 
   @Test
@@ -182,7 +182,7 @@ class BookmarkViewModelTest {
     testScheduler.runCurrent()
 
     val state = viewModel.uiState.first()
-    assertTrue("isLoading should be true during loading", state.isLoading)
+    assertTrue(state.isLoading, "isLoading should be true during loading")
   }
 
   @Test
@@ -204,9 +204,9 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertFalse("isLoading should be false after loading", state.isLoading)
-    assertEquals("allBookmarks should be set", testBookmarks, state.allBookmarks)
-    assertNull("error should be null on success", state.error)
+    assertFalse(state.isLoading, "isLoading should be false after loading")
+    assertEquals(testBookmarks, state.allBookmarks, "allBookmarks should be set")
+    assertNull(state.error, "error should be null on success")
   }
 
   @Test
@@ -217,8 +217,8 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertFalse("isLoading should be false", state.isLoading)
-    assertEquals("error should indicate not logged in", "Not logged in", state.error)
+    assertFalse(state.isLoading, "isLoading should be false")
+    assertEquals("Not logged in", state.error, "error should indicate not logged in")
   }
 
   @Test
@@ -232,8 +232,8 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertFalse("isLoading should be false", state.isLoading)
-    assertEquals("error should be set", errorMessage, state.error)
+    assertFalse(state.isLoading, "isLoading should be false")
+    assertEquals(errorMessage, state.error, "error should be set")
   }
 
   @Test
@@ -268,7 +268,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     state = viewModel.uiState.first()
-    assertNull("Dialog should be dismissed", state.selectedBookmarkForUrlDialog)
+    assertNull(state.selectedBookmarkForUrlDialog, "Dialog should be dismissed")
   }
 
   @Test
@@ -283,23 +283,23 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     state = viewModel.uiState.first()
-    assertNull("Error should be dismissed", state.urlOpenError)
+    assertNull(state.urlOpenError, "Error should be dismissed")
   }
 
   @Test
   fun `observeDisplayMode should update uiState when display mode changes`() = runTest {
     assertEquals(
-        "Initial display mode should be List",
         BookmarkDisplayMode.List,
-        viewModel.uiState.first().displayMode)
+        viewModel.uiState.first().displayMode,
+        "Initial display mode should be List")
 
     displayModeFlow.value = BookmarkDisplayMode.Grid
     advanceUntilIdle()
 
     assertEquals(
-        "Display mode should be updated to Grid",
         BookmarkDisplayMode.Grid,
-        viewModel.uiState.first().displayMode)
+        viewModel.uiState.first().displayMode,
+        "Display mode should be updated to Grid")
   }
 
   @Test
@@ -323,7 +323,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val stateAfterDismissUrl = viewModel.uiState.first()
-    assertNull("URL dialog should be dismissed", stateAfterDismissUrl.selectedBookmarkForUrlDialog)
+    assertNull(stateAfterDismissUrl.selectedBookmarkForUrlDialog, "URL dialog should be dismissed")
     assertNotNull(stateAfterDismissUrl.urlOpenError, "Error dialog should still be shown")
   }
 
@@ -376,8 +376,8 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertEquals(
-        "allBookmarks should contain both initial and older items", 15, state.allBookmarks.size)
-    assertFalse("isLoadingMore should be false after loading", state.isLoadingMore)
+        15, state.allBookmarks.size, "allBookmarks should contain both initial and older items")
+    assertFalse(state.isLoadingMore, "isLoadingMore should be false after loading")
   }
 
   @Test
@@ -420,7 +420,7 @@ class BookmarkViewModelTest {
     viewModel.loadMore()
     advanceUntilIdle()
 
-    assertEquals("loadMore should only trigger one usecase call", 1, loadMoreCallCount)
+    assertEquals(1, loadMoreCallCount, "loadMore should only trigger one usecase call")
   }
 
   @Test
@@ -463,9 +463,9 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     assertEquals(
-        "loadMore should only be called once because hasMoreItems becomes false",
         1,
-        loadMoreCallCount)
+        loadMoreCallCount,
+        "loadMore should only be called once because hasMoreItems becomes false")
   }
 
   @Test
@@ -515,7 +515,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertFalse("hasMoreItems should be false when fewer than page size", state.hasMoreItems)
+    assertFalse(state.hasMoreItems, "hasMoreItems should be false when fewer than page size")
   }
 
   @Test
@@ -552,11 +552,11 @@ class BookmarkViewModelTest {
     viewModel.loadMore()
     advanceUntilIdle()
     assertFalse(
-        "hasMoreItems should be false after exhausting", viewModel.uiState.first().hasMoreItems)
+        viewModel.uiState.first().hasMoreItems, "hasMoreItems should be false after exhausting")
 
     viewModel.loadBookmarks()
     advanceUntilIdle()
 
-    assertTrue("hasMoreItems should be true after refresh", viewModel.uiState.first().hasMoreItems)
+    assertTrue(viewModel.uiState.first().hasMoreItems, "hasMoreItems should be true after refresh")
   }
 }

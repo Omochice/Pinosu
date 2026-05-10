@@ -2,10 +2,10 @@ package io.github.omochice.pinosu.feature.auth.domain.model
 
 import io.github.omochice.pinosu.core.model.Pubkey
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 
 class UserTest {
 
@@ -41,7 +41,7 @@ class UserTest {
 
     invalidFormats.forEach { invalid ->
       val result = Pubkey.parse(invalid)
-      assertEquals("Should return null for: $invalid", null, result)
+      assertEquals(null, result, "Should return null for: $invalid")
     }
   }
 

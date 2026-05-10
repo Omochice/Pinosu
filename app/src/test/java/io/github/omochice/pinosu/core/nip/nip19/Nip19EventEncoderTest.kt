@@ -6,9 +6,9 @@ import com.vitorpamplona.quartz.nip19Bech32.entities.NEvent
 import io.github.omochice.pinosu.core.nip.nip22.Nip22
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 
 class Nip19EventEncoderTest {
 
@@ -22,8 +22,8 @@ class Nip19EventEncoderTest {
     val result = encoder.encodeNAddr(kind = NipB0.KIND_BOOKMARK_LIST, pubkey = pubkey, dTag = dTag)
 
     assertTrue(
-        "Encoded naddr should start with nostr:naddr1 but was '$result'",
-        result.startsWith("nostr:naddr1"))
+        result.startsWith("nostr:naddr1"),
+        "Encoded naddr should start with nostr:naddr1 but was '$result'")
   }
 
   @Test
@@ -50,8 +50,8 @@ class Nip19EventEncoderTest {
     val result = encoder.encodeNEvent(eventId = eventId, pubkey = pubkey, kind = Nip22.KIND_COMMENT)
 
     assertTrue(
-        "Encoded nevent should start with nostr:nevent1 but was '$result'",
-        result.startsWith("nostr:nevent1"))
+        result.startsWith("nostr:nevent1"),
+        "Encoded nevent should start with nostr:nevent1 but was '$result'")
   }
 
   @Test

@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.feature.auth.domain.model
 
 import kotlin.test.Test
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class LoginModeTest {
 

@@ -8,8 +8,8 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.MainUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Rule
 
 /**
@@ -67,7 +67,7 @@ class MainScreenTest {
     composeTestRule.setContent { MainScreen(uiState = uiState, onLogout = onLogout) }
     composeTestRule.onNodeWithText(getTestString(R.string.button_logout)).performClick()
 
-    assertTrue("onLogoutコールバックが呼ばれませんでした", logoutCallbackCalled)
+    assertTrue(logoutCallbackCalled, "onLogoutコールバックが呼ばれませんでした")
   }
 
   @Test
@@ -96,7 +96,7 @@ class MainScreenTest {
     composeTestRule.onNodeWithText(getTestString(R.string.message_logging_out)).assertIsDisplayed()
 
     // Verify logout button is not clickable（since it doesn't exist）
-    assertFalse("ログアウト処理中はonLogoutコールバックが呼ばれてはいけません", logoutCallbackCalled)
+    assertFalse(logoutCallbackCalled, "ログアウト処理中はonLogoutコールバックが呼ばれてはいけません")
   }
 
   @Test
@@ -120,7 +120,7 @@ class MainScreenTest {
     // Wait for LaunchedEffect to execute
     composeTestRule.waitForIdle()
 
-    assertTrue("After logout completion, onNavigateToLogin should be called", navigateToLoginCalled)
+    assertTrue(navigateToLoginCalled, "After logout completion, onNavigateToLogin should be called")
   }
 
   @Test
@@ -137,7 +137,7 @@ class MainScreenTest {
     }
 
     composeTestRule.waitForIdle()
-    assertFalse("ログアウト処理中はナビゲーションが呼ばれてはいけません", navigateToLoginCalled)
+    assertFalse(navigateToLoginCalled, "ログアウト処理中はナビゲーションが呼ばれてはいけません")
   }
 
   @Test
@@ -154,7 +154,7 @@ class MainScreenTest {
     }
 
     composeTestRule.waitForIdle()
-    assertFalse("初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません", navigateToLoginCalled)
+    assertFalse(navigateToLoginCalled, "初期から未ログイン状態の場合はナビゲーションが呼ばれてはいけません")
   }
 
   @Test

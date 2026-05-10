@@ -6,10 +6,10 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertTrue
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -46,7 +46,7 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when NIP-55 signer is installed", result)
+    assertTrue(result, "Should return true when NIP-55 signer is installed")
   }
 
   @Test
@@ -58,7 +58,7 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when NIP-55 signer is not installed", result)
+    assertFalse(result, "Should return false when NIP-55 signer is not installed")
   }
 
   @Test
@@ -70,7 +70,7 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.checkNip55SignerInstalled()
 
-    assertFalse("Should return false on exception", result)
+    assertFalse(result, "Should return false on exception")
   }
 
   @Test
@@ -79,9 +79,9 @@ class Nip55SignerClientTest {
 
     assertNotNull(intent.data, "Intent should have data URI")
     assertEquals(
-        "URI scheme should be nostrsigner",
         Nip55SignerClient.NOSTRSIGNER_SCHEME,
-        intent.data?.scheme)
+        intent.data?.scheme,
+        "URI scheme should be nostrsigner")
   }
 
   @Test
@@ -89,9 +89,9 @@ class Nip55SignerClientTest {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
-        "Package should be NIP-55 signer package name",
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
-        intent.`package`)
+        intent.`package`,
+        "Package should be NIP-55 signer package name")
   }
 
   @Test
@@ -99,9 +99,9 @@ class Nip55SignerClientTest {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
-        "Type extra should be get_public_key",
         Nip55SignerClient.TYPE_GET_PUBLIC_KEY,
-        intent.getStringExtra("type"))
+        intent.getStringExtra("type"),
+        "Type extra should be get_public_key")
   }
 
   @Test
@@ -113,8 +113,8 @@ class Nip55SignerClientTest {
             android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 
     assertTrue(
-        "Intent should have SINGLE_TOP and CLEAR_TOP flags",
-        intent.flags and expectedFlags == expectedFlags)
+        intent.flags and expectedFlags == expectedFlags,
+        "Intent should have SINGLE_TOP and CLEAR_TOP flags")
   }
 
   @Test
@@ -122,7 +122,7 @@ class Nip55SignerClientTest {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
     assertEquals(
-        "Intent action should be ACTION_VIEW", android.content.Intent.ACTION_VIEW, intent.action)
+        android.content.Intent.ACTION_VIEW, intent.action, "Intent action should be ACTION_VIEW")
   }
 
   @Test
@@ -133,14 +133,14 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     val response = result.getOrNull()
     assertNotNull(response, "Response should not be null")
-    assertEquals("Pubkey should match", pubkey, response?.pubkey)
+    assertEquals(pubkey, response?.pubkey, "Pubkey should match")
     assertEquals(
-        "PackageName should be NIP-55 signer package",
         Nip55SignerClient.NIP55_SIGNER_PACKAGE_NAME,
-        response?.packageName)
+        response?.packageName,
+        "PackageName should be NIP-55 signer package")
   }
 
   @Test
@@ -150,11 +150,11 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be UserRejected",
-        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"),
+        "Error should be UserRejected")
   }
 
   @Test
@@ -163,22 +163,22 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_CANCELED, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be UserRejected",
-        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"))
+        error is Nip55Error.UserRejected || error.toString().contains("UserRejected"),
+        "Error should be UserRejected")
   }
 
   @Test
   fun `handleNip55Response with null intent should return InvalidResponse`() {
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, null)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be InvalidResponse",
-        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"),
+        "Error should be InvalidResponse")
   }
 
   @Test
@@ -188,11 +188,11 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be InvalidResponse",
-        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"),
+        "Error should be InvalidResponse")
   }
 
   @Test
@@ -202,11 +202,11 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be InvalidResponse",
-        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"),
+        "Error should be InvalidResponse")
   }
 
   @Test
@@ -216,11 +216,11 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
     assertTrue(
-        "Error should be InvalidResponse",
-        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"))
+        error is Nip55Error.InvalidResponse || error.toString().contains("InvalidResponse"),
+        "Error should be InvalidResponse")
   }
 
   @Test
@@ -231,8 +231,8 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return success", result.isSuccess)
-    assertEquals("Signed event JSON should match", signedJson, result.getOrNull()?.signedEventJson)
+    assertTrue(result.isSuccess, "Should return success")
+    assertEquals(signedJson, result.getOrNull()?.signedEventJson, "Signed event JSON should match")
   }
 
   @Test
@@ -242,17 +242,17 @@ class Nip55SignerClientTest {
     val result =
         nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_CANCELED, intent)
 
-    assertTrue("Should return failure", result.isFailure)
-    assertTrue("Error should be UserRejected", result.exceptionOrNull() is Nip55Error.UserRejected)
+    assertTrue(result.isFailure, "Should return failure")
+    assertTrue(result.exceptionOrNull() is Nip55Error.UserRejected, "Error should be UserRejected")
   }
 
   @Test
   fun `handleSignEventResponse with null intent should return InvalidResponse`() {
     val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, null)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should be InvalidResponse", result.exceptionOrNull() is Nip55Error.InvalidResponse)
+        result.exceptionOrNull() is Nip55Error.InvalidResponse, "Error should be InvalidResponse")
   }
 
   @Test
@@ -262,8 +262,8 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
-    assertTrue("Error should be UserRejected", result.exceptionOrNull() is Nip55Error.UserRejected)
+    assertTrue(result.isFailure, "Should return failure")
+    assertTrue(result.exceptionOrNull() is Nip55Error.UserRejected, "Error should be UserRejected")
   }
 
   @Test
@@ -273,9 +273,9 @@ class Nip55SignerClientTest {
 
     val result = nip55SignerClient.handleSignEventResponse(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should be InvalidResponse", result.exceptionOrNull() is Nip55Error.InvalidResponse)
+        result.exceptionOrNull() is Nip55Error.InvalidResponse, "Error should be InvalidResponse")
   }
 
   @Test
@@ -284,7 +284,7 @@ class Nip55SignerClientTest {
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Should mask pubkey as first8...last8", "npub1abc...def01234", masked)
+    assertEquals("npub1abc...def01234", masked, "Should mask pubkey as first8...last8")
   }
 
   @Test
@@ -293,7 +293,7 @@ class Nip55SignerClientTest {
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Should mask pubkey as first8...last8", "npub1123...4567890a", masked)
+    assertEquals("npub1123...4567890a", masked, "Should mask pubkey as first8...last8")
   }
 
   @Test
@@ -302,7 +302,7 @@ class Nip55SignerClientTest {
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Should return original string when pubkey is too short", pubkey, masked)
+    assertEquals(pubkey, masked, "Should return original string when pubkey is too short")
   }
 
   @Test
@@ -311,7 +311,7 @@ class Nip55SignerClientTest {
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Should return empty string when input is empty", "", masked)
+    assertEquals("", masked, "Should return empty string when input is empty")
   }
 
   @Test
@@ -320,6 +320,6 @@ class Nip55SignerClientTest {
 
     val masked = nip55SignerClient.maskPubkey(pubkey)
 
-    assertEquals("Masked string should be 19 characters (8+3+8)", 19, masked.length)
+    assertEquals(19, masked.length, "Masked string should be 19 characters (8+3+8)")
   }
 }

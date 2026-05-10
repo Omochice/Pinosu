@@ -4,8 +4,8 @@ import android.content.Intent
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 

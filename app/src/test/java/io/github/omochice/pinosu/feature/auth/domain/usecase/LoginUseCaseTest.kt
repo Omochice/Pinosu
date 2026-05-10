@@ -6,8 +6,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * Unit tests for LoginUseCase
@@ -31,7 +31,7 @@ class LoginUseCaseTest {
 
     val result = loginUseCase.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when NIP-55 signer is not installed", result)
+    assertFalse(result, "Should return false when NIP-55 signer is not installed")
     verify { authRepository.checkNip55SignerInstalled() }
   }
 
@@ -41,7 +41,7 @@ class LoginUseCaseTest {
 
     val result = loginUseCase.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when NIP-55 signer is installed", result)
+    assertTrue(result, "Should return true when NIP-55 signer is installed")
     verify { authRepository.checkNip55SignerInstalled() }
   }
 }

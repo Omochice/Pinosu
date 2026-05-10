@@ -10,7 +10,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 import org.junit.Rule
 
 /** Compose UI tests for swipe gesture tab switching on bookmark screen */
@@ -69,9 +69,9 @@ class BookmarkScreenSwipeTest {
     composeTestRule.waitForIdle()
 
     assertEquals(
-        "Swiping left from Local tab should select Global tab",
         BookmarkFilterMode.Global,
-        selectedTab)
+        selectedTab,
+        "Swiping left from Local tab should select Global tab")
   }
 
   @Test
@@ -95,8 +95,8 @@ class BookmarkScreenSwipeTest {
     composeTestRule.waitForIdle()
 
     assertEquals(
-        "Swiping right from Global tab should select Local tab",
         BookmarkFilterMode.Local,
-        selectedTab)
+        selectedTab,
+        "Swiping right from Global tab should select Local tab")
   }
 }

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.nip.nip22
 
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 
 class Nip22TagTest {
 

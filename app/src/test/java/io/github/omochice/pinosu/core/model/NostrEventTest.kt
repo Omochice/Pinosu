@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.core.model
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.serialization.json.Json
-import org.junit.Assert.assertEquals
 
 /** Unit tests for [NostrEvent] serialization with sig field */
 class NostrEventTest {
@@ -16,7 +16,7 @@ class NostrEventTest {
 
     val event = json.decodeFromString<NostrEvent>(jsonString)
 
-    assertEquals("sig should be parsed from JSON", "sigvalue", event.sig)
+    assertEquals("sigvalue", event.sig, "sig should be parsed from JSON")
   }
 
   @Test
@@ -34,8 +34,8 @@ class NostrEventTest {
     val serialized = json.encodeToString(NostrEvent.serializer(), event)
 
     assertEquals(
-        "sig should be present in serialized JSON",
         true,
-        serialized.contains(""""sig":"sigvalue""""))
+        serialized.contains(""""sig":"sigvalue""""),
+        "sig should be present in serialized JSON")
   }
 }

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.nip.nip89
 
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 
 class Nip89Test {
 

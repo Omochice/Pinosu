@@ -11,9 +11,9 @@ import io.mockk.mockk
 import io.mockk.runs
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -46,8 +46,8 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(TEST_VALID_NPUB)
 
-    assertTrue("Should return success", result.isSuccess)
-    assertEquals("Should return fetched relays", relays, result.getOrNull())
+    assertTrue(result.isSuccess, "Should return success")
+    assertEquals(relays, result.getOrNull(), "Should return fetched relays")
     coVerify { fetcher.fetchRelayList(TEST_VALID_HEX) }
     coVerify { authRepository.saveRelayList(relays) }
   }
@@ -58,7 +58,7 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(invalidNpub)
 
-    assertTrue("Should return failure for invalid npub", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure for invalid npub")
   }
 
   @Test
@@ -68,11 +68,11 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(TEST_VALID_NPUB)
 
-    assertTrue("Should return failure on fetch error", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure on fetch error")
     assertEquals(
-        "Should propagate original error message",
         "Network error",
-        result.exceptionOrNull()?.message)
+        result.exceptionOrNull()?.message,
+        "Should propagate original error message")
   }
 
   @Test
@@ -83,8 +83,8 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(TEST_VALID_NPUB)
 
-    assertTrue("Should return success even when cache fails", result.isSuccess)
-    assertEquals("Should return fetched relays", relays, result.getOrNull())
+    assertTrue(result.isSuccess, "Should return success even when cache fails")
+    assertEquals(relays, result.getOrNull(), "Should return fetched relays")
   }
 
   @Test
@@ -94,8 +94,8 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(TEST_VALID_NPUB)
 
-    assertTrue("Should return success", result.isSuccess)
-    assertTrue("Should return empty list", result.getOrNull()!!.isEmpty())
+    assertTrue(result.isSuccess, "Should return success")
+    assertTrue(result.getOrNull()!!.isEmpty(), "Should return empty list")
     coVerify { authRepository.saveRelayList(emptyList()) }
   }
 
@@ -105,7 +105,7 @@ class FetchRelayListUseCaseTest {
 
     val result = useCase(hexPubkey)
 
-    assertTrue("Should return failure for hex pubkey (not npub format)", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure for hex pubkey (not npub format)")
   }
 
   companion object {

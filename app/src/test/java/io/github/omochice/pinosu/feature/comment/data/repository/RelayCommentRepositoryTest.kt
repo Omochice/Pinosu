@@ -13,10 +13,10 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 
 /**
  * Test class for RelayCommentRepository
@@ -192,7 +192,7 @@ class RelayCommentRepositoryTest {
             rootEventId = "root-event-id")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
-    assertEquals("Should have exactly one client tag", 1, clientTags.size)
+    assertEquals(1, clientTags.size, "Should have exactly one client tag")
     assertEquals("Pinosu", clientTags[0][1])
   }
 
@@ -209,6 +209,6 @@ class RelayCommentRepositoryTest {
             rootEventId = "root-event-id")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
-    assertTrue("Should not have client tag", clientTags.isEmpty())
+    assertTrue(clientTags.isEmpty(), "Should not have client tag")
   }
 }

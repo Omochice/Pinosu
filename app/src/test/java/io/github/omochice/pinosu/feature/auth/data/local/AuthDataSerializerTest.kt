@@ -10,10 +10,10 @@ import java.io.ByteArrayOutputStream
 import java.security.GeneralSecurityException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -88,7 +88,7 @@ class AuthDataSerializerTest {
     serializer.writeTo(authData, output)
 
     verify { mockAead.encrypt(jsonBytes, associatedData) }
-    assertArrayEquals(encryptedBytes, output.toByteArray())
+    assertContentEquals(encryptedBytes, output.toByteArray())
   }
 
   @Test

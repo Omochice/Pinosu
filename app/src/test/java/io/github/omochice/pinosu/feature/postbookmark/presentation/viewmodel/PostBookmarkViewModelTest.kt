@@ -14,7 +14,11 @@ import io.mockk.verify
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -23,10 +27,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -58,13 +58,13 @@ class PostBookmarkViewModelTest {
   fun `initial state should have default values`() = runTest {
     val state = viewModel.uiState.first()
 
-    assertEquals("url should be empty", "", state.url)
-    assertEquals("title should be empty", "", state.title)
-    assertEquals("categories should be empty", "", state.categories)
-    assertEquals("comment should be empty", "", state.comment)
-    assertFalse("isSubmitting should be false", state.isSubmitting)
-    assertNull("errorMessage should be null", state.errorMessage)
-    assertFalse("postSuccess should be false", state.postSuccess)
+    assertEquals("", state.url, "url should be empty")
+    assertEquals("", state.title, "title should be empty")
+    assertEquals("", state.categories, "categories should be empty")
+    assertEquals("", state.comment, "comment should be empty")
+    assertFalse(state.isSubmitting, "isSubmitting should be false")
+    assertNull(state.errorMessage, "errorMessage should be null")
+    assertFalse(state.postSuccess, "postSuccess should be false")
   }
 
   @Test
@@ -73,7 +73,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("URL should have https:// stripped", "example.com/path", state.url)
+    assertEquals("example.com/path", state.url, "URL should have https:// stripped")
   }
 
   @Test
@@ -82,7 +82,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("URL should have http:// stripped", "example.com/path", state.url)
+    assertEquals("example.com/path", state.url, "URL should have http:// stripped")
   }
 
   @Test
@@ -91,7 +91,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("URL should have HTTPS:// stripped", "example.com/path", state.url)
+    assertEquals("example.com/path", state.url, "URL should have HTTPS:// stripped")
   }
 
   @Test
@@ -100,7 +100,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("URL should have HTTP:// stripped", "example.com/path", state.url)
+    assertEquals("example.com/path", state.url, "URL should have HTTP:// stripped")
   }
 
   @Test
@@ -109,7 +109,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("URL without scheme should remain unchanged", "example.com/path", state.url)
+    assertEquals("example.com/path", state.url, "URL without scheme should remain unchanged")
   }
 
   @Test
@@ -118,7 +118,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("title should be updated", "Test Title", state.title)
+    assertEquals("Test Title", state.title, "title should be updated")
   }
 
   @Test
@@ -127,7 +127,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("categories should be updated", "tech, kotlin, android", state.categories)
+    assertEquals("tech, kotlin, android", state.categories, "categories should be updated")
   }
 
   @Test
@@ -136,7 +136,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertEquals("comment should be updated", "Test comment", state.comment)
+    assertEquals("Test comment", state.comment, "comment should be updated")
   }
 
   @Test
@@ -149,7 +149,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNull("errorMessage should be null", state.errorMessage)
+    assertNull(state.errorMessage, "errorMessage should be null")
   }
 
   @Test
@@ -163,7 +163,7 @@ class PostBookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNotNull(state.errorMessage, "errorMessage should be set")
-    assertNull("callback should receive null", receivedIntent)
+    assertNull(receivedIntent, "callback should receive null")
   }
 
   @Test
@@ -195,7 +195,7 @@ class PostBookmarkViewModelTest {
       postBookmarkUseCase.createUnsignedEvent("example.com", "Test", any(), "Test comment")
     }
     verify { nip55SignerClient.createSignEventIntent(any()) }
-    assertEquals("callback should receive the intent", mockIntent, receivedIntent)
+    assertEquals(mockIntent, receivedIntent, "callback should receive the intent")
   }
 
   @Test
@@ -211,7 +211,7 @@ class PostBookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNotNull(state.errorMessage, "errorMessage should be set")
-    assertFalse("isSubmitting should be false", state.isSubmitting)
+    assertFalse(state.isSubmitting, "isSubmitting should be false")
   }
 
   @Test
@@ -246,8 +246,8 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("postSuccess should be true", state.postSuccess)
-    assertFalse("isSubmitting should be false", state.isSubmitting)
+    assertTrue(state.postSuccess, "postSuccess should be true")
+    assertFalse(state.isSubmitting, "isSubmitting should be false")
   }
 
   @Test
@@ -262,8 +262,8 @@ class PostBookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNotNull(state.errorMessage, "errorMessage should be set")
-    assertFalse("isSubmitting should be false", state.isSubmitting)
-    assertFalse("postSuccess should be false", state.postSuccess)
+    assertFalse(state.isSubmitting, "isSubmitting should be false")
+    assertFalse(state.postSuccess, "postSuccess should be false")
   }
 
   @Test
@@ -297,8 +297,8 @@ class PostBookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertNotNull(state.errorMessage, "errorMessage should be set")
-    assertFalse("isSubmitting should be false", state.isSubmitting)
-    assertFalse("postSuccess should be false", state.postSuccess)
+    assertFalse(state.isSubmitting, "isSubmitting should be false")
+    assertFalse(state.postSuccess, "postSuccess should be false")
   }
 
   @Test
@@ -311,11 +311,11 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("isEditMode should be true", state.isEditMode)
-    assertEquals("url should be set", "example.com/article", state.url)
-    assertEquals("title should be set", "Existing Title", state.title)
-    assertEquals("categories should be set", "tech, kotlin", state.categories)
-    assertEquals("comment should be set", "Existing comment", state.comment)
+    assertTrue(state.isEditMode, "isEditMode should be true")
+    assertEquals("example.com/article", state.url, "url should be set")
+    assertEquals("Existing Title", state.title, "title should be set")
+    assertEquals("tech, kotlin", state.categories, "categories should be set")
+    assertEquals("Existing comment", state.comment, "comment should be set")
   }
 
   @Test
@@ -331,11 +331,11 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertFalse("isEditMode should be false", state.isEditMode)
-    assertEquals("url should be empty", "", state.url)
-    assertEquals("title should be empty", "", state.title)
-    assertEquals("categories should be empty", "", state.categories)
-    assertEquals("comment should be empty", "", state.comment)
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("", state.url, "url should be empty")
+    assertEquals("", state.title, "title should be empty")
+    assertEquals("", state.categories, "categories should be empty")
+    assertEquals("", state.comment, "comment should be empty")
   }
 
   @Test

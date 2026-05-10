@@ -11,10 +11,12 @@ import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
 import org.junit.runner.RunWith
 
 /** Tests for LocalAuthDataSource save, get, and delete functionality */
@@ -67,7 +69,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource.saveUser(user2, LoginMode.Nip55Signer)
 
     val savedUser = dataSource.getUser()
-    assertEquals("Should retrieve the latest user", user2.pubkey, savedUser?.pubkey)
+    assertEquals(user2.pubkey, savedUser?.pubkey, "Should retrieve the latest user")
   }
 
   @Test
@@ -78,14 +80,14 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val retrieved = dataSource.getUser()
 
     assertNotNull(retrieved, "getUser should return saved user")
-    assertEquals("Retrieved pubkey should match", user.pubkey, retrieved?.pubkey)
+    assertEquals(user.pubkey, retrieved?.pubkey, "Retrieved pubkey should match")
   }
 
   @Test
   fun `getUser with no data should return null`() = runTest {
     val retrieved = dataSource.getUser()
 
-    assertNull("getUser should return null when no data exists", retrieved)
+    assertNull(retrieved, "getUser should return null when no data exists")
   }
 
   @Test
@@ -96,7 +98,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     val retrieved = dataSource.getUser()
     assertNotNull(retrieved, "User should be retrievable after save")
-    assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
+    assertEquals(user.pubkey, retrieved?.pubkey, "Pubkey should match")
   }
 
   @Test
@@ -109,7 +111,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     assertNotNull(firstRetrieval, "First retrieval should succeed")
     assertNotNull(secondRetrieval, "Second retrieval should succeed")
-    assertEquals("Data should be consistent", firstRetrieval?.pubkey, secondRetrieval?.pubkey)
+    assertEquals(firstRetrieval?.pubkey, secondRetrieval?.pubkey, "Data should be consistent")
   }
 
   @Test
@@ -120,7 +122,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource.clearLoginState()
 
     val retrieved = dataSource.getUser()
-    assertNull("User should be null after clear", retrieved)
+    assertNull(retrieved, "User should be null after clear")
   }
 
   @Test
@@ -133,11 +135,11 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     dataSource.clearLoginState()
 
-    assertNull("getUser should return null after clear", dataSource.getUser())
-    assertNull("getRelayList should return null after clear", dataSource.getRelayList())
+    assertNull(dataSource.getUser(), "getUser should return null after clear")
+    assertNull(dataSource.getRelayList(), "getRelayList should return null after clear")
   }
 
-  @org.junit.Ignore("TODO: Implement storage error handling test")
+  @Ignore("TODO: Implement storage error handling test")
   @Test
   fun `saveUser should handle storage error`() = runTest {}
 }

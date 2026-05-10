@@ -7,8 +7,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 
 /** Test class for [CachedRelayListProvider] relay list resolution and default fallback */
 class CachedRelayListProviderTest {
