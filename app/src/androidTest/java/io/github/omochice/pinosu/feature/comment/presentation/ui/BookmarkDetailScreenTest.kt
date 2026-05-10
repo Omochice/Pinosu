@@ -229,7 +229,7 @@ class BookmarkDetailScreenTest {
 
     assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        capturedNostrLink!!.startsWith("nostr:nevent1"),
+        capturedNostrLink.startsWith("nostr:nevent1"),
         "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'")
   }
 

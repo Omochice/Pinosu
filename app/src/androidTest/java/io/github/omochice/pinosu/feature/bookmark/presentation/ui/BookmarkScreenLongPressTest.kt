@@ -87,7 +87,7 @@ class BookmarkScreenLongPressTest {
 
     assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        capturedNostrLink!!.startsWith("nostr:naddr1"),
+        capturedNostrLink.startsWith("nostr:naddr1"),
         "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'")
   }
 
