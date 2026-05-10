@@ -227,10 +227,11 @@ class BookmarkDetailScreenTest {
     composeTestRule.onNodeWithText("Shareable comment").performTouchInput { longClick() }
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
 
-    assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
+    val link =
+        assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        capturedNostrLink.startsWith("nostr:nevent1"),
-        "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'")
+        link.startsWith("nostr:nevent1"),
+        "Encoded value should be a nostr:nevent1 URI but was '$link'")
   }
 
   @Test
