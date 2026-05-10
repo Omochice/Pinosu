@@ -148,7 +148,7 @@ class DataLayerIntegrationTest {
 
       val retrievedUser = localAuthDataSource.getUser()
       assertNotNull(retrievedUser, "Retrieved user should not be null")
-      assertEquals(user.pubkey, retrievedUser?.pubkey, "Retrieved pubkey should match")
+      assertEquals(user.pubkey, retrievedUser.pubkey, "Retrieved pubkey should match")
 
       localAuthDataSource.clearLoginState()
 
