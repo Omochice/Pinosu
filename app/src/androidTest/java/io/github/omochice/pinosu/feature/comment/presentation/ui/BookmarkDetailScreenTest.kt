@@ -15,11 +15,11 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.getTestString
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [BookmarkDetailScreen] */
 class BookmarkDetailScreenTest {
@@ -227,10 +227,11 @@ class BookmarkDetailScreenTest {
     composeTestRule.onNodeWithText("Shareable comment").performTouchInput { longClick() }
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
 
-    assertNotNull("Tapping Copy nostr link should invoke the callback", capturedNostrLink)
+    val link =
+        assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
-        "Encoded value should be a nostr:nevent1 URI but was '$capturedNostrLink'",
-        capturedNostrLink!!.startsWith("nostr:nevent1"))
+        link.startsWith("nostr:nevent1"),
+        "Encoded value should be a nostr:nevent1 URI but was '$link'")
   }
 
   @Test

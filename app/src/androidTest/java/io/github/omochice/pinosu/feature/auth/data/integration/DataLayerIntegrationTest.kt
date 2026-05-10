@@ -14,11 +14,14 @@ import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepositor
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -44,7 +47,7 @@ class DataLayerIntegrationTest {
   private lateinit var testDataStore: DataStore<AuthData>
   private lateinit var testFile: File
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
     testFile = File(context.filesDir, "test_integration_auth_data_${System.currentTimeMillis()}.pb")
@@ -56,7 +59,7 @@ class DataLayerIntegrationTest {
     authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     runTest { localAuthDataSource.clearLoginState() }
     testFile.delete()
@@ -75,7 +78,7 @@ class DataLayerIntegrationTest {
 
     val isInstalled = authRepository.checkNip55SignerInstalled()
 
-    assertTrue("checkNip55SignerInstalled should return boolean", isInstalled || !isInstalled)
+    assertTrue(isInstalled || !isInstalled, "checkNip55SignerInstalled should return boolean")
   }
 
   /**
@@ -95,8 +98,8 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val retrievedUser = localAuthDataSource.getUser()
-    assertNotNull("Retrieved user should not be null", retrievedUser)
-    assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
+    assertNotNull(retrievedUser, "Retrieved user should not be null")
+    assertEquals(testPubkey, retrievedUser?.pubkey, "Retrieved pubkey should match")
   }
 
   /**
@@ -115,13 +118,13 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val userBeforeDelete = localAuthDataSource.getUser()
-    assertNotNull("User should exist before delete", userBeforeDelete)
+    assertNotNull(userBeforeDelete, "User should exist before delete")
 
     localAuthDataSource.clearLoginState()
     advanceUntilIdle()
 
     val userAfterDelete = localAuthDataSource.getUser()
-    assertNull("User should be null after delete", userAfterDelete)
+    assertNull(userAfterDelete, "User should be null after delete")
   }
 
   /**
@@ -144,13 +147,13 @@ class DataLayerIntegrationTest {
       localAuthDataSource.saveUser(user, LoginMode.Nip55Signer)
 
       val retrievedUser = localAuthDataSource.getUser()
-      assertNotNull("Retrieved user should not be null", retrievedUser)
-      assertEquals("Retrieved pubkey should match", user.pubkey, retrievedUser?.pubkey)
+      assertNotNull(retrievedUser, "Retrieved user should not be null")
+      assertEquals(user.pubkey, retrievedUser.pubkey, "Retrieved pubkey should match")
 
       localAuthDataSource.clearLoginState()
 
       val userAfterDelete = localAuthDataSource.getUser()
-      assertNull("User should be null after delete", userAfterDelete)
+      assertNull(userAfterDelete, "User should be null after delete")
     }
   }
 
@@ -171,17 +174,17 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val userBeforeLogout = authRepository.getLoginState()
-    assertNotNull("User should exist before logout", userBeforeLogout)
-    assertEquals("Pubkey should match", testPubkey, userBeforeLogout?.pubkey)
+    assertNotNull(userBeforeLogout, "User should exist before logout")
+    assertEquals(testPubkey, userBeforeLogout?.pubkey, "Pubkey should match")
 
     authRepository.logout()
     advanceUntilIdle()
 
     val userAfterLogout = authRepository.getLoginState()
-    assertNull("User should be null after logout", userAfterLogout)
+    assertNull(userAfterLogout, "User should be null after logout")
 
     val directRetrieve = localAuthDataSource.getUser()
-    assertNull("User should be null in storage", directRetrieve)
+    assertNull(directRetrieve, "User should be null in storage")
   }
 
   /**
@@ -203,8 +206,8 @@ class DataLayerIntegrationTest {
     val newAuthRepository = Nip55AuthRepository(nip55SignerClient, newLocalAuthDataSource)
 
     val restoredUser = newAuthRepository.getLoginState()
-    assertNotNull("User should be restored after restart", restoredUser)
-    assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
+    assertNotNull(restoredUser, "User should be restored after restart")
+    assertEquals(testPubkey, restoredUser?.pubkey, "Restored pubkey should match")
   }
 
   /**
@@ -220,7 +223,7 @@ class DataLayerIntegrationTest {
     val invalidPubkey = "invalid_pubkey_format"
 
     val parsed = Pubkey.parse(invalidPubkey)
-    assertNull("Pubkey.parse should return null for invalid pubkey format", parsed)
+    assertNull(parsed, "Pubkey.parse should return null for invalid pubkey format")
   }
 
   private suspend fun advanceUntilIdle() {

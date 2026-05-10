@@ -12,14 +12,14 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -41,7 +41,7 @@ class RelayBookmarkRepositoryTest {
 
   private val json = Json { ignoreUnknownKeys = true }
 
-  @Before
+  @BeforeTest
   fun setup() {
     relayPool = mockk()
     relayListProvider = mockk()
@@ -74,20 +74,20 @@ class RelayBookmarkRepositoryTest {
 
     val result = repository.getBookmarkList(TEST_VALID_NPUB)
 
-    assertTrue("Result should be success", result.isSuccess)
+    assertTrue(result.isSuccess, "Result should be success")
     val bookmarkList = result.getOrNull()
-    assertNotNull("BookmarkList should not be null", bookmarkList)
-    val items = bookmarkList!!.items
-    assertEquals("Should have 1 bookmark item", 1, items.size)
+    assertNotNull(bookmarkList, "BookmarkList should not be null")
+    val items = bookmarkList.items
+    assertEquals(1, items.size, "Should have 1 bookmark item")
 
     val rawJson = items[0].rawJson
-    assertNotNull("rawJson should not be null", rawJson)
+    assertNotNull(rawJson, "rawJson should not be null")
 
-    val deserializedEvent = json.decodeFromString<NostrEvent>(rawJson!!)
-    assertEquals("Deserialized event id should match", "event123", deserializedEvent.id)
-    assertEquals("Deserialized event sig should match", "sig789", deserializedEvent.sig)
+    val deserializedEvent = json.decodeFromString<NostrEvent>(rawJson)
+    assertEquals("event123", deserializedEvent.id, "Deserialized event id should match")
+    assertEquals("sig789", deserializedEvent.sig, "Deserialized event sig should match")
     assertEquals(
-        "Deserialized event kind should match", NipB0.KIND_BOOKMARK_LIST, deserializedEvent.kind)
+        NipB0.KIND_BOOKMARK_LIST, deserializedEvent.kind, "Deserialized event kind should match")
   }
 
   @Test
@@ -110,13 +110,13 @@ class RelayBookmarkRepositoryTest {
 
     val result = repository.getBookmarkList(TEST_VALID_NPUB)
 
-    assertTrue("Result should be success", result.isSuccess)
+    assertTrue(result.isSuccess, "Result should be success")
     val items = result.getOrNull()!!.items
-    assertEquals("Should have 1 bookmark item", 1, items.size)
+    assertEquals(1, items.size, "Should have 1 bookmark item")
     assertEquals(
-        "imageUrl should be populated from metadata",
         "https://example.com/ogp.jpg",
-        items[0].imageUrl)
+        items[0].imageUrl,
+        "imageUrl should be populated from metadata")
   }
 
   @Test
@@ -139,11 +139,11 @@ class RelayBookmarkRepositoryTest {
 
     val result = repository.getBookmarkList(TEST_VALID_NPUB)
 
-    assertTrue("Result should be success", result.isSuccess)
+    assertTrue(result.isSuccess, "Result should be success")
     val items = result.getOrNull()!!.items
-    assertEquals("Should have 1 bookmark item", 1, items.size)
-    assertEquals("Title should fall back to title tag", "Fail Title", items[0].title)
-    assertEquals("imageUrl should be null when metadata fetch fails", null, items[0].imageUrl)
+    assertEquals(1, items.size, "Should have 1 bookmark item")
+    assertEquals("Fail Title", items[0].title, "Title should fall back to title tag")
+    assertEquals(null, items[0].imageUrl, "imageUrl should be null when metadata fetch fails")
   }
 
   @Test
@@ -164,9 +164,9 @@ class RelayBookmarkRepositoryTest {
 
     val result = repository.getBookmarkList(TEST_VALID_NPUB)
 
-    assertTrue("Result should be success", result.isSuccess)
+    assertTrue(result.isSuccess, "Result should be success")
     val items = result.getOrNull()!!.items
-    assertEquals("Event with only invalid rTags should be skipped", 0, items.size)
+    assertEquals(0, items.size, "Event with only invalid rTags should be skipped")
   }
 
   @Test
@@ -232,7 +232,7 @@ class RelayBookmarkRepositoryTest {
             comment = "")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
-    assertEquals("Should have exactly one client tag", 1, clientTags.size)
+    assertEquals(1, clientTags.size, "Should have exactly one client tag")
     assertEquals("Pinosu", clientTags[0][1])
   }
 
@@ -249,7 +249,7 @@ class RelayBookmarkRepositoryTest {
             comment = "")
 
     val clientTags = event.tags.filter { it.isNotEmpty() && it[0] == "client" }
-    assertTrue("Should not have client tag", clientTags.isEmpty())
+    assertTrue(clientTags.isEmpty(), "Should not have client tag")
   }
 
   companion object {

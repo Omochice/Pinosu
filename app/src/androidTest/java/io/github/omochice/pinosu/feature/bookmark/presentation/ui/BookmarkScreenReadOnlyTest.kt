@@ -6,8 +6,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 
 /**
  * Compose UI tests for BookmarkScreen read-only mode

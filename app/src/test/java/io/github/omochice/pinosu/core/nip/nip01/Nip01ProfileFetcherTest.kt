@@ -9,11 +9,11 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /** Test class for [Nip01ProfileFetcher] */
 class Nip01ProfileFetcherTest {
@@ -23,7 +23,7 @@ class Nip01ProfileFetcherTest {
   private lateinit var relayListProvider: RelayListProvider
   private lateinit var fetcher: Nip01ProfileFetcherImpl
 
-  @Before
+  @BeforeTest
   fun setup() {
     relayPool = mockk(relaxed = true)
     parser = mockk(relaxed = true)

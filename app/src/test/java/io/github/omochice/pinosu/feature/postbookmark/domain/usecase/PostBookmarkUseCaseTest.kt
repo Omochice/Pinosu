@@ -9,12 +9,12 @@ import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepo
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Test class for PostBookmarkUseCaseImpl
@@ -31,7 +31,7 @@ class PostBookmarkUseCaseTest {
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var postBookmarkUseCase: PostBookmarkUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     bookmarkRepository = mockk()
     getLoginStateUseCase = mockk()
@@ -53,7 +53,7 @@ class PostBookmarkUseCaseTest {
     val exception = result.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is IllegalStateException)
-    assertEquals("User not logged in", exception?.message)
+    assertEquals("User not logged in", exception.message)
   }
 
   @Test

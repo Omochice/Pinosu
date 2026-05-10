@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.comment.domain.model
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * Test class for Comment domain model

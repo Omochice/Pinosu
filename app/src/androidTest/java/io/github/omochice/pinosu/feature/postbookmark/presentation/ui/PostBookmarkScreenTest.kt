@@ -7,9 +7,9 @@ import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
 import io.github.omochice.pinosu.getTestString
-import org.junit.Assert.assertFalse
+import kotlin.test.Test
+import kotlin.test.assertFalse
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [PostBookmarkScreen] */
 class PostBookmarkScreenTest {
@@ -38,7 +38,7 @@ class PostBookmarkScreenTest {
     }
 
     composeTestRule.onNodeWithTag(URL_FIELD_TEST_TAG).assertIsDisplayed()
-    assertFalse("onUrlChange should not be called in read-only mode", urlChanged)
+    assertFalse(urlChanged, "onUrlChange should not be called in read-only mode")
   }
 
   @Test

@@ -8,9 +8,9 @@ import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class LocalSettingsDataSourceTest {
 
@@ -19,7 +19,7 @@ class LocalSettingsDataSourceTest {
   private lateinit var editor: SharedPreferences.Editor
   private lateinit var dataSource: LocalSettingsDataSource
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = mockk(relaxed = true)
     sharedPreferences = mockk(relaxed = true)

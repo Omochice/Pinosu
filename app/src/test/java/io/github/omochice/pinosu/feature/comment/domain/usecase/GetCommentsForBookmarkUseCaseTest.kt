@@ -7,11 +7,11 @@ import io.github.omochice.pinosu.feature.comment.domain.repository.CommentReposi
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Test class for GetCommentsForBookmarkUseCaseImpl
@@ -28,7 +28,7 @@ class GetCommentsForBookmarkUseCaseTest {
   private lateinit var nip19EventResolver: Nip19EventResolver
   private lateinit var useCase: GetCommentsForBookmarkUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     commentRepository = mockk()
     nip19EventResolver = mockk()

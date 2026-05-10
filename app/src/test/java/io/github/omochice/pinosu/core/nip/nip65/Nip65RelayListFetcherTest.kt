@@ -9,11 +9,11 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 class Nip65RelayListFetcherTest {
 
@@ -22,7 +22,7 @@ class Nip65RelayListFetcherTest {
   private lateinit var bootstrapRelayProvider: BootstrapRelayProvider
   private lateinit var fetcher: Nip65RelayListFetcher
 
-  @Before
+  @BeforeTest
   fun setup() {
     relayPool = mockk(relaxed = true)
     parser = Nip65EventParserImpl()
@@ -40,10 +40,10 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     val relays = result.getOrNull()!!
-    assertEquals("Should return one relay", 1, relays.size)
-    assertEquals("Relay URL should match", "wss://relay.example.com", relays.first().url)
+    assertEquals(1, relays.size, "Should return one relay")
+    assertEquals("wss://relay.example.com", relays.first().url, "Relay URL should match")
   }
 
   @Test
@@ -53,8 +53,8 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
-    assertTrue("Should return success", result.isSuccess)
-    assertTrue("Should return empty list", result.getOrNull()!!.isEmpty())
+    assertTrue(result.isSuccess, "Should return success")
+    assertTrue(result.getOrNull()!!.isEmpty(), "Should return empty list")
   }
 
   @Test
@@ -97,7 +97,7 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(invalidHexPubkey)
 
-    assertTrue("Should return failure for invalid pubkey", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure for invalid pubkey")
   }
 
   @Test
@@ -106,7 +106,7 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(shortPubkey)
 
-    assertTrue("Should return failure for short pubkey", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure for short pubkey")
   }
 
   @Test
@@ -117,8 +117,8 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
-    assertTrue("Should return success", result.isSuccess)
-    assertTrue("Should return empty list", result.getOrNull()!!.isEmpty())
+    assertTrue(result.isSuccess, "Should return success")
+    assertTrue(result.getOrNull()!!.isEmpty(), "Should return empty list")
   }
 
   @Test
@@ -128,7 +128,7 @@ class Nip65RelayListFetcherTest {
 
     val result = fetcher.fetchRelayList(hexPubkey)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     coVerify(atLeast = 3) { relayPool.subscribeWithTimeout(any(), any(), any()) }
   }
 

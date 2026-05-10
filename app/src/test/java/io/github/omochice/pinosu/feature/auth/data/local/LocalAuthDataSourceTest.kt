@@ -6,13 +6,13 @@ import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for [LocalAuthDataSource]
@@ -26,7 +26,7 @@ class LocalAuthDataSourceTest {
   private lateinit var testDataStore: DataStore<AuthData>
   private lateinit var dataFlow: MutableStateFlow<AuthData>
 
-  @Before
+  @BeforeTest
   fun setup() {
     dataFlow = MutableStateFlow(AuthData.DEFAULT)
 
@@ -56,7 +56,7 @@ class LocalAuthDataSourceTest {
     localAuthDataSource.saveRelayList(relays)
     val result = localAuthDataSource.getRelayList()
 
-    assertNotNull("Expected relay_list to be retrieved", result)
+    assertNotNull(result, "Expected relay_list to be retrieved")
     assertEquals(2, result?.size)
     assertEquals("wss://relay1.example.com", result?.get(0)?.url)
     assertEquals(true, result?.get(0)?.read)
@@ -89,7 +89,7 @@ class LocalAuthDataSourceTest {
   fun `getRelayList when not set should return null`() = runTest {
     val result = localAuthDataSource.getRelayList()
 
-    assertNull("Should return null when relay list is not set", result)
+    assertNull(result, "Should return null when relay list is not set")
   }
 
   @Test
@@ -99,7 +99,7 @@ class LocalAuthDataSourceTest {
 
     localAuthDataSource.clearLoginState()
 
-    assertNull("relay_list should be cleared", dataFlow.value.relayList)
+    assertNull(dataFlow.value.relayList, "relay_list should be cleared")
   }
 
   @Test

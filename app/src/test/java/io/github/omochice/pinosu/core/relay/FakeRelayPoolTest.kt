@@ -1,17 +1,17 @@
 package io.github.omochice.pinosu.core.relay
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 class FakeRelayPoolTest {
 
   private lateinit var fakeRelayPool: FakeRelayPool
 
-  @Before
+  @BeforeTest
   fun setup() {
     fakeRelayPool = FakeRelayPool()
   }

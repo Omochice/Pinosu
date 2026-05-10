@@ -8,8 +8,8 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [QuoteCard] */
 class QuoteCardTest {

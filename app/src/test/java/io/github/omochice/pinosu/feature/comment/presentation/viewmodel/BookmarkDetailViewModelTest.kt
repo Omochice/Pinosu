@@ -15,6 +15,13 @@ import io.github.omochice.pinosu.feature.comment.domain.usecase.PostCommentUseCa
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -23,13 +30,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -46,7 +46,7 @@ class BookmarkDetailViewModelTest {
 
   private val testDispatcher = StandardTestDispatcher()
 
-  @Before
+  @BeforeTest
   fun setup() {
     Dispatchers.setMain(testDispatcher)
     getCommentsUseCase = mockk(relaxed = true)
@@ -59,7 +59,7 @@ class BookmarkDetailViewModelTest {
             getCommentsUseCase, postCommentUseCase, nip55SignerClient, profileFetcher)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     Dispatchers.resetMain()
   }

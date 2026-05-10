@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.core.model
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /** Test class for UserProfile domain model */
 class UserProfileTest {

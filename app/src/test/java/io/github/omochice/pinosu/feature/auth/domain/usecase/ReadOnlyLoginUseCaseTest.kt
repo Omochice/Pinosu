@@ -7,11 +7,11 @@ import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for ReadOnlyLoginUseCase
@@ -24,7 +24,7 @@ class ReadOnlyLoginUseCaseTest {
   private lateinit var authRepository: AuthRepository
   private lateinit var useCase: ReadOnlyLoginUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     authRepository = mockk(relaxed = true)
     useCase = ReadOnlyLoginUseCaseImpl(authRepository)
@@ -37,9 +37,9 @@ class ReadOnlyLoginUseCaseTest {
 
     val result = useCase(npub)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     val user = result.getOrNull()!!
-    assertEquals("Pubkey should match", npub, user.pubkey.npub)
+    assertEquals(npub, user.pubkey.npub, "Pubkey should match")
     coVerify { authRepository.saveLoginState(any(), eq(LoginMode.ReadOnly)) }
   }
 
@@ -47,9 +47,9 @@ class ReadOnlyLoginUseCaseTest {
   fun `invoke with invalid npub should return failure`() = runTest {
     val result = useCase("invalid_npub")
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
-    assertTrue("Error should be InvalidPubkey", error is LoginError.InvalidPubkey)
+    assertTrue(error is LoginError.InvalidPubkey, "Error should be InvalidPubkey")
   }
 
   @Test
@@ -60,9 +60,9 @@ class ReadOnlyLoginUseCaseTest {
 
     val result = useCase(npub)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val error = result.exceptionOrNull()
-    assertTrue("Error should be UnknownError", error is LoginError.UnknownError)
+    assertTrue(error is LoginError.UnknownError, "Error should be UnknownError")
   }
 
   companion object {

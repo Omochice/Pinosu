@@ -8,10 +8,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.crypto.tink.aead.AeadConfig
 import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import java.io.File
-import org.junit.After
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 import org.junit.runner.RunWith
 
 /**
@@ -28,7 +30,7 @@ class LocalAuthDataSourceTest {
   private lateinit var testFile: File
   private lateinit var tinkKeyManager: TinkKeyManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     AeadConfig.register()
     context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -41,21 +43,21 @@ class LocalAuthDataSourceTest {
     dataSource = LocalAuthDataSource(testDataStore)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     testFile.delete()
   }
 
   @Test
   fun `initialization should succeed`() {
-    assertNotNull("LocalAuthDataSource should be initialized", dataSource)
+    assertNotNull(dataSource, "LocalAuthDataSource should be initialized")
   }
 
   @Test
   fun `DataStore creation should succeed`() {
     try {
       dataSource.toString()
-      assertTrue("DataStore should be created successfully", true)
+      assertTrue(true, "DataStore should be created successfully")
     } catch (e: Exception) {
       fail("DataStore creation failed: ${e.message}")
     }
@@ -63,13 +65,13 @@ class LocalAuthDataSourceTest {
 
   @Test
   fun `TinkKeyManager generation should succeed`() {
-    assertNotNull("TinkKeyManager should be generated", tinkKeyManager)
-    assertNotNull("AEAD should be available", tinkKeyManager.getAead())
+    assertNotNull(tinkKeyManager, "TinkKeyManager should be generated")
+    assertNotNull(tinkKeyManager.getAead(), "AEAD should be available")
   }
 
   @Test
   fun `encryption should be configured`() {
-    assertNotNull("DataStore with encryption should be configured", dataSource)
+    assertNotNull(dataSource, "DataStore with encryption should be configured")
   }
 
   @Test
@@ -81,8 +83,8 @@ class LocalAuthDataSourceTest {
     val dataSource1 = LocalAuthDataSource(testDataStore)
     val dataSource2 = LocalAuthDataSource(testDataStore2)
 
-    assertNotNull("First initialization should succeed", dataSource1)
-    assertNotNull("Second initialization should succeed", dataSource2)
+    assertNotNull(dataSource1, "First initialization should succeed")
+    assertNotNull(dataSource2, "Second initialization should succeed")
 
     testFile2.delete()
   }

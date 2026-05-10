@@ -6,9 +6,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -17,7 +18,7 @@ class ManifestConfigurationTest {
   private lateinit var context: Context
   private lateinit var packageManager: PackageManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
     packageManager = context.packageManager
@@ -28,8 +29,8 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
-    assertNotNull("Application name should not be null", appName)
-    assertTrue("Application name should not be empty", appName.isNotEmpty())
+    assertNotNull(appName, "Application name should not be null")
+    assertTrue(appName.isNotEmpty(), "Application name should not be empty")
   }
 
   @Test
@@ -37,7 +38,7 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appIcon = applicationInfo.icon
 
-    assertTrue("Application icon should be set", appIcon != 0)
+    assertTrue(appIcon != 0, "Application icon should be set")
   }
 
   @Test
@@ -47,7 +48,7 @@ class ManifestConfigurationTest {
     val resolveInfo =
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
-    assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
+    assertNotNull(resolveInfo, "Query for nostrsigner scheme should be possible")
   }
 
   @Test
@@ -60,12 +61,11 @@ class ManifestConfigurationTest {
 
     val resolveInfo = packageManager.queryIntentActivities(intent, 0).firstOrNull()
 
-    assertNotNull("MainActivity should be resolvable", resolveInfo)
+    assertNotNull(resolveInfo, "MainActivity should be resolvable")
 
-    val activityInfo = resolveInfo?.activityInfo
-    assertNotNull("ActivityInfo should not be null", activityInfo)
-    assertTrue(
-        "MainActivity should be exported for LAUNCHER intent", activityInfo?.exported == true)
+    val activityInfo = resolveInfo.activityInfo
+    assertNotNull(activityInfo, "ActivityInfo should not be null")
+    assertTrue(activityInfo.exported, "MainActivity should be exported for LAUNCHER intent")
   }
 
   @Test
@@ -78,6 +78,6 @@ class ManifestConfigurationTest {
 
     val resolveInfo = packageManager.queryIntentActivities(intent, 0)
 
-    assertTrue("ACTION_SEND text/plain should resolve to an activity", resolveInfo.isNotEmpty())
+    assertTrue(resolveInfo.isNotEmpty(), "ACTION_SEND text/plain should resolve to an activity")
   }
 }

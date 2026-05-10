@@ -5,6 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 import java.util.concurrent.Executors
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -14,10 +20,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -28,13 +30,13 @@ class RelayPoolTest {
   private lateinit var relayPool: RelayPoolImpl
   private val executor = Executors.newSingleThreadScheduledExecutor()
 
-  @Before
+  @BeforeTest
   fun setup() {
     okHttpClient = mockk(relaxed = true)
     relayPool = RelayPoolImpl(okHttpClient)
   }
 
-  @org.junit.After
+  @AfterTest
   fun tearDown() {
     executor.shutdown()
   }
@@ -170,9 +172,9 @@ class RelayPoolTest {
 
     val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
 
-    assertEquals("Should have 2 events", 2, result.size)
-    assertTrue("Should contain event1", result.any { it.id == "event1" })
-    assertTrue("Should contain event2", result.any { it.id == "event2" })
+    assertEquals(2, result.size, "Should have 2 events")
+    assertTrue(result.any { it.id == "event1" }, "Should contain event1")
+    assertTrue(result.any { it.id == "event2" }, "Should contain event2")
   }
 
   @Test
@@ -211,8 +213,8 @@ class RelayPoolTest {
 
     val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
 
-    assertEquals("Should have only 1 event after deduplication", 1, result.size)
-    assertEquals("Event ID should be same-event-id", "same-event-id", result.first().id)
+    assertEquals(1, result.size, "Should have only 1 event after deduplication")
+    assertEquals("same-event-id", result.first().id, "Event ID should be same-event-id")
   }
 
   @Test
@@ -232,8 +234,8 @@ class RelayPoolTest {
 
     val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
 
-    assertEquals("Should have 1 event", 1, result.size)
-    assertEquals("Event ID should be single-event", "single-event", result.first().id)
+    assertEquals(1, result.size, "Should have 1 event")
+    assertEquals("single-event", result.first().id, "Event ID should be single-event")
   }
 
   @Test
@@ -253,14 +255,14 @@ class RelayPoolTest {
 
     val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
 
-    assertTrue("Should return empty list when all relays fail", result.isEmpty())
+    assertTrue(result.isEmpty(), "Should return empty list when all relays fail")
   }
 
   @Test
   fun `subscribeWithTimeout with empty relay list should return empty list`() = runBlocking {
     val result = relayPool.subscribeWithTimeout(emptyList(), """{"kinds":[39701]}""", 5000L)
 
-    assertTrue("Should return empty list for empty relay list", result.isEmpty())
+    assertTrue(result.isEmpty(), "Should return empty list for empty relay list")
   }
 
   @Test
@@ -298,8 +300,8 @@ class RelayPoolTest {
 
     val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
 
-    assertEquals("Should have 1 event from working relay", 1, result.size)
-    assertEquals("Event should be from working relay", "working-event", result.first().id)
+    assertEquals(1, result.size, "Should have 1 event from working relay")
+    assertEquals("working-event", result.first().id, "Event should be from working relay")
   }
 
   /**
@@ -383,10 +385,10 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should mention no write-enabled relays",
-        result.exceptionOrNull()?.message?.contains("No write-enabled relays") == true)
+        result.exceptionOrNull()?.message?.contains("No write-enabled relays") == true,
+        "Error should mention no write-enabled relays")
   }
 
   @Test
@@ -397,10 +399,10 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, jsonWithoutId, 5000L)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should mention missing event id",
-        result.exceptionOrNull()?.message?.contains("Missing event id") == true)
+        result.exceptionOrNull()?.message?.contains("Missing event id") == true,
+        "Error should mention missing event id")
   }
 
   @Test
@@ -411,10 +413,10 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, jsonWithBlankId, 5000L)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should mention missing event id",
-        result.exceptionOrNull()?.message?.contains("Missing event id") == true)
+        result.exceptionOrNull()?.message?.contains("Missing event id") == true,
+        "Error should mention missing event id")
   }
 
   @Test
@@ -425,10 +427,10 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, invalidJson, 5000L)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     assertTrue(
-        "Error should mention invalid JSON",
-        result.exceptionOrNull()?.message?.contains("Invalid JSON") == true)
+        result.exceptionOrNull()?.message?.contains("Invalid JSON") == true,
+        "Error should mention invalid JSON")
   }
 
   @Test
@@ -449,14 +451,15 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
-    assertTrue("Should return success", result.isSuccess)
-    val publishResult = result.getOrNull()
-    assertEquals("Event ID should match", "event123", publishResult?.eventId)
+    assertTrue(result.isSuccess, "Should return success")
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
+    assertEquals("event123", publishResult.eventId, "Event ID should match")
     assertEquals(
-        "Should have 1 successful relay",
         listOf("wss://relay.example.com"),
-        publishResult?.successfulRelays)
-    assertTrue("Should have no failed relays", publishResult?.failedRelays?.isEmpty() == true)
+        publishResult.successfulRelays,
+        "Should have 1 successful relay")
+    assertTrue(publishResult.failedRelays.isEmpty(), "Should have no failed relays")
   }
 
   @Test
@@ -477,10 +480,10 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
-    assertTrue("Should return failure when all relays reject", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure when all relays reject")
     assertTrue(
-        "Error should mention failed to publish",
-        result.exceptionOrNull()?.message?.contains("Failed to publish") == true)
+        result.exceptionOrNull()?.message?.contains("Failed to publish") == true,
+        "Error should mention failed to publish")
   }
 
   @Test
@@ -507,12 +510,13 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
-    assertTrue("Should return success", result.isSuccess)
-    val publishResult = result.getOrNull()
+    assertTrue(result.isSuccess, "Should return success")
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
     assertEquals(
-        "Should only have write-enabled relay in success list",
         listOf("wss://write-relay.example.com"),
-        publishResult?.successfulRelays)
+        publishResult.successfulRelays,
+        "Should only have write-enabled relay in success list")
   }
 
   @Test
@@ -550,15 +554,16 @@ class RelayPoolTest {
 
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
-    assertTrue("Should return success when at least one relay accepts", result.isSuccess)
-    val publishResult = result.getOrNull()
-    assertEquals("Should have 1 successful relay", 1, publishResult?.successfulRelays?.size)
-    assertEquals("Should have 1 failed relay", 1, publishResult?.failedRelays?.size)
+    assertTrue(result.isSuccess, "Should return success when at least one relay accepts")
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
+    assertEquals(1, publishResult.successfulRelays.size, "Should have 1 successful relay")
+    assertEquals(1, publishResult.failedRelays.size, "Should have 1 failed relay")
     assertTrue(
-        "Successful relay should be accepting",
-        publishResult?.successfulRelays?.contains("wss://accepting.example.com") == true)
+        publishResult.successfulRelays.contains("wss://accepting.example.com"),
+        "Successful relay should be accepting")
     assertTrue(
-        "Failed relay should be rejecting",
-        publishResult?.failedRelays?.any { it.first == "wss://rejecting.example.com" } == true)
+        publishResult.failedRelays.any { it.first == "wss://rejecting.example.com" },
+        "Failed relay should be rejecting")
   }
 }

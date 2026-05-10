@@ -18,6 +18,13 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -26,13 +33,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Integration tests for Presentation and Domain layers
@@ -60,7 +60,7 @@ class PresentationDomainIntegrationTest {
 
   private val testDispatcher = StandardTestDispatcher()
 
-  @Before
+  @BeforeTest
   fun setup() {
     Dispatchers.setMain(testDispatcher)
 
@@ -82,7 +82,7 @@ class PresentationDomainIntegrationTest {
             readOnlyLoginUseCase)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     Dispatchers.resetMain()
   }
@@ -104,7 +104,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("state should be RequiresNip55Install", state is LoginUiState.RequiresNip55Install)
+    assertTrue(state is LoginUiState.RequiresNip55Install, "state should be RequiresNip55Install")
 
     // Verify AuthRepository.checkNip55SignerInstalled() is called
     io.mockk.verify { authRepository.checkNip55SignerInstalled() }
@@ -134,8 +134,8 @@ class PresentationDomainIntegrationTest {
         val loginState = viewModel.uiState.first()
         val mainState = viewModel.mainUiState.first()
 
-        assertTrue("state should be Success", loginState is LoginUiState.Success)
-        assertEquals("userPubkey should be set", testPubkey, mainState.userPubkey)
+        assertTrue(loginState is LoginUiState.Success, "state should be Success")
+        assertEquals(testPubkey, mainState.userPubkey, "userPubkey should be set")
 
         coVerify { authRepository.processNip55Response(any(), any()) }
       }
@@ -159,7 +159,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertEquals("userPubkey should be restored", testPubkey, state.userPubkey)
+    assertEquals(testPubkey, state.userPubkey, "userPubkey should be restored")
 
     coVerify { authRepository.getLoginState() }
   }
@@ -181,7 +181,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertNull("userPubkey should be null", state.userPubkey)
+    assertNull(state.userPubkey, "userPubkey should be null")
 
     coVerify { authRepository.getLoginState() }
   }
@@ -208,7 +208,7 @@ class PresentationDomainIntegrationTest {
 
     val stateAfterError = viewModel.uiState.first()
     assertTrue(
-        "state should be NonRetryable error", stateAfterError is LoginUiState.Error.NonRetryable)
+        stateAfterError is LoginUiState.Error.NonRetryable, "state should be NonRetryable error")
 
     viewModel.onRetryLogin()
     advanceUntilIdle()
@@ -235,7 +235,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
+    assertTrue(state is LoginUiState.Error.Retryable, "state should be Retryable error")
   }
 
   /**
@@ -257,7 +257,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertTrue("state should be Retryable error", state is LoginUiState.Error.Retryable)
+    assertTrue(state is LoginUiState.Error.Retryable, "state should be Retryable error")
   }
 
   /**
@@ -276,14 +276,14 @@ class PresentationDomainIntegrationTest {
 
     val stateBeforeDismiss = viewModel.uiState.first()
     assertTrue(
-        "state should be RequiresNip55Install",
-        stateBeforeDismiss is LoginUiState.RequiresNip55Install)
+        stateBeforeDismiss is LoginUiState.RequiresNip55Install,
+        "state should be RequiresNip55Install")
 
     viewModel.dismissError()
     advanceUntilIdle()
 
     val stateAfterDismiss = viewModel.uiState.first()
-    assertTrue("state should be Idle after dismissError", stateAfterDismiss is LoginUiState.Idle)
+    assertTrue(stateAfterDismiss is LoginUiState.Idle, "state should be Idle after dismissError")
   }
 
   /**
@@ -304,7 +304,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val stateBeforeLogout = viewModel.mainUiState.first()
-    assertEquals("userPubkey should be set", testPubkey, stateBeforeLogout.userPubkey)
+    assertEquals(testPubkey, stateBeforeLogout.userPubkey, "userPubkey should be set")
 
     coEvery { authRepository.logout() } returns Result.success(Unit)
 
@@ -312,8 +312,8 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val stateAfterLogout = viewModel.mainUiState.first()
-    assertNull("userPubkey should be null after logout", stateAfterLogout.userPubkey)
-    assertFalse("isLoggingOut should be false", stateAfterLogout.isLoggingOut)
+    assertNull(stateAfterLogout.userPubkey, "userPubkey should be null after logout")
+    assertFalse(stateAfterLogout.isLoggingOut, "isLoggingOut should be false")
 
     coVerify { authRepository.logout() }
   }
@@ -342,7 +342,7 @@ class PresentationDomainIntegrationTest {
     advanceUntilIdle()
 
     val state = viewModel.mainUiState.first()
-    assertFalse("isLoggingOut should be false after error", state.isLoggingOut)
+    assertFalse(state.isLoggingOut, "isLoggingOut should be false after error")
 
     coVerify { authRepository.logout() }
   }

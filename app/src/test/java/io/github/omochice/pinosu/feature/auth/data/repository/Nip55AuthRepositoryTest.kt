@@ -16,14 +16,14 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for Nip55AuthRepository
@@ -41,7 +41,7 @@ class Nip55AuthRepositoryTest {
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var authRepository: AuthRepository
 
-  @Before
+  @BeforeTest
   fun setup() {
     nip55SignerClient = mockk(relaxed = true)
     localAuthDataSource = mockk(relaxed = true)
@@ -55,7 +55,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.getLoginState()
 
-    assertEquals("Should return user from LocalAuthDataSource", expectedUser, result)
+    assertEquals(expectedUser, result, "Should return user from LocalAuthDataSource")
     coVerify { localAuthDataSource.getUser() }
   }
 
@@ -65,7 +65,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.getLoginState()
 
-    assertNull("Should return null when no user is stored", result)
+    assertNull(result, "Should return null when no user is stored")
     coVerify { localAuthDataSource.getUser() }
   }
 
@@ -76,7 +76,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.saveLoginState(user, LoginMode.Nip55Signer)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     coVerify { localAuthDataSource.saveUser(user, LoginMode.Nip55Signer) }
   }
 
@@ -88,9 +88,9 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.saveLoginState(user, LoginMode.Nip55Signer)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
-    assertTrue("Exception should be StorageError", exception is StorageError.WriteError)
+    assertTrue(exception is StorageError.WriteError, "Exception should be StorageError")
     coVerify { localAuthDataSource.saveUser(user, LoginMode.Nip55Signer) }
   }
 
@@ -110,7 +110,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.getLoginMode()
 
-    assertEquals("Should return login mode from LocalAuthDataSource", LoginMode.ReadOnly, result)
+    assertEquals(LoginMode.ReadOnly, result, "Should return login mode from LocalAuthDataSource")
     coVerify { localAuthDataSource.getLoginMode() }
   }
 
@@ -137,7 +137,7 @@ class Nip55AuthRepositoryTest {
       thrown = e
     }
 
-    assertTrue("Should throw StorageError", thrown is StorageError.WriteError)
+    assertTrue(thrown is StorageError.WriteError, "Should throw StorageError")
   }
 
   @Test
@@ -146,7 +146,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.logout()
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
@@ -157,10 +157,10 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.logout()
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
     assertTrue(
-        "Exception should be LogoutError.StorageError", exception is LogoutError.StorageError)
+        exception is LogoutError.StorageError, "Exception should be LogoutError.StorageError")
     coVerify { localAuthDataSource.clearLoginState() }
   }
 
@@ -176,10 +176,10 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return success", result.isSuccess)
+    assertTrue(result.isSuccess, "Should return success")
     val user = result.getOrNull()
-    assertNotNull("User should not be null", user)
-    assertEquals("Pubkey should match", pubkey, user?.pubkey?.npub)
+    assertNotNull(user, "User should not be null")
+    assertEquals(pubkey, user?.pubkey?.npub, "Pubkey should match")
     coVerify { localAuthDataSource.saveUser(any(), any()) }
   }
 
@@ -191,9 +191,9 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
-    assertTrue("Exception should be LoginError.UserRejected", exception is LoginError.UserRejected)
+    assertTrue(exception is LoginError.UserRejected, "Exception should be LoginError.UserRejected")
   }
 
   @Test
@@ -205,11 +205,11 @@ class Nip55AuthRepositoryTest {
 
         val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-        assertTrue("Should return failure", result.isFailure)
+        assertTrue(result.isFailure, "Should return failure")
         val exception = result.exceptionOrNull()
         assertTrue(
-            "Exception should be LoginError.Nip55SignerNotInstalled",
-            exception is LoginError.Nip55SignerNotInstalled)
+            exception is LoginError.Nip55SignerNotInstalled,
+            "Exception should be LoginError.Nip55SignerNotInstalled")
       }
 
   @Test
@@ -220,9 +220,9 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
-    assertTrue("Exception should be LoginError.Timeout", exception is LoginError.Timeout)
+    assertTrue(exception is LoginError.Timeout, "Exception should be LoginError.Timeout")
   }
 
   @Test
@@ -234,9 +234,9 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-    assertTrue("Should return failure", result.isFailure)
+    assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
-    assertTrue("Exception should be LoginError.NetworkError", exception is LoginError.NetworkError)
+    assertTrue(exception is LoginError.NetworkError, "Exception should be LoginError.NetworkError")
   }
 
   @Test
@@ -254,14 +254,14 @@ class Nip55AuthRepositoryTest {
 
         val result = authRepository.processNip55Response(android.app.Activity.RESULT_OK, intent)
 
-        assertTrue("Should return failure", result.isFailure)
+        assertTrue(result.isFailure, "Should return failure")
         val exception = result.exceptionOrNull()
         assertTrue(
-            "Exception should be LoginError.UnknownError", exception is LoginError.UnknownError)
+            exception is LoginError.UnknownError, "Exception should be LoginError.UnknownError")
 
         val unknownError = exception as LoginError.UnknownError
         assertTrue(
-            "Cause should be StorageError", unknownError.throwable is StorageError.WriteError)
+            unknownError.throwable is StorageError.WriteError, "Cause should be StorageError")
       }
 
   @Test
@@ -270,7 +270,7 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.checkNip55SignerInstalled()
 
-    assertTrue("Should return true when NIP-55 signer is installed", result)
+    assertTrue(result, "Should return true when NIP-55 signer is installed")
   }
 
   @Test
@@ -279,6 +279,6 @@ class Nip55AuthRepositoryTest {
 
     val result = authRepository.checkNip55SignerInstalled()
 
-    assertFalse("Should return false when NIP-55 signer is not installed", result)
+    assertFalse(result, "Should return false when NIP-55 signer is not installed")
   }
 }

@@ -12,11 +12,14 @@ import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -36,7 +39,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   private lateinit var testFile: File
   private lateinit var tinkKeyManager: TinkKeyManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     AeadConfig.register()
     context = ApplicationProvider.getApplicationContext()
@@ -49,7 +52,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     dataSource = LocalAuthDataSource(testDataStore)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     testFile.delete()
   }
@@ -64,7 +67,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     val fileContent = String(fileBytes, Charsets.UTF_8)
 
     assertFalse(
-        "Data should be encrypted, not stored in plaintext", fileContent.contains(user.pubkey.npub))
+        fileContent.contains(user.pubkey.npub), "Data should be encrypted, not stored in plaintext")
   }
 
   @Test
@@ -75,8 +78,8 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     val retrieved = dataSource.getUser()
 
-    assertNotNull("Encrypted data should be decryptable", retrieved)
-    assertEquals("Decrypted data should match original", user.pubkey, retrieved?.pubkey)
+    assertNotNull(retrieved, "Encrypted data should be decryptable")
+    assertEquals(user.pubkey, retrieved?.pubkey, "Decrypted data should match original")
   }
 
   @Test
@@ -89,8 +92,8 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     val retrieved = newDataSource.getUser()
 
-    assertNotNull("New instance should be able to decrypt data", retrieved)
-    assertEquals("Data should be consistent across instances", user.pubkey, retrieved?.pubkey)
+    assertNotNull(retrieved, "New instance should be able to decrypt data")
+    assertEquals(user.pubkey, retrieved?.pubkey, "Data should be consistent across instances")
   }
 
   @Test
@@ -107,8 +110,8 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
       val retrieved = dataSource.getUser()
 
-      assertNotNull("User should be retrievable", retrieved)
-      assertEquals("Retrieved user should match saved user", user.pubkey, retrieved?.pubkey)
+      assertNotNull(retrieved, "User should be retrievable")
+      assertEquals(user.pubkey, retrieved?.pubkey, "Retrieved user should match saved user")
     }
   }
 
@@ -136,7 +139,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
       val retrieved = dataSourceNoEncrypt.getUser()
 
-      assertNull("getUser should return null for invalid pubkey format: $invalidPubkey", retrieved)
+      assertNull(retrieved, "getUser should return null for invalid pubkey format: $invalidPubkey")
 
       dataSourceNoEncrypt.clearLoginState()
     }
@@ -146,7 +149,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `getUser with missing pubkey should return null`() = runTest {
     val retrieved = dataSource.getUser()
 
-    assertNull("getUser should return null when pubkey is missing", retrieved)
+    assertNull(retrieved, "getUser should return null when pubkey is missing")
   }
 
   @Test
@@ -163,7 +166,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     val retrieved = dataSourceNoEncrypt.getUser()
 
-    assertNull("getUser should return null for empty pubkey", retrieved)
+    assertNull(retrieved, "getUser should return null for empty pubkey")
   }
 
   @Test
@@ -174,8 +177,8 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     val retrieved = dataSource.getUser()
 
-    assertNotNull("User should be retrievable", retrieved)
-    assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
+    assertNotNull(retrieved, "User should be retrievable")
+    assertEquals(user.pubkey, retrieved?.pubkey, "Pubkey should match")
   }
 
   @Test
@@ -184,11 +187,11 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
 
     dataSource.saveUser(user, LoginMode.Nip55Signer)
 
-    assertNotNull("User should be saved", dataSource.getUser())
+    assertNotNull(dataSource.getUser(), "User should be saved")
 
     dataSource.clearLoginState()
 
-    assertNull("getUser should return null after clear", dataSource.getUser())
+    assertNull(dataSource.getUser(), "getUser should return null after clear")
   }
 
   @Test
@@ -198,9 +201,9 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     try {
       dataSource.saveUser(user, LoginMode.Nip55Signer)
       val retrieved = dataSource.getUser()
-      assertEquals("User should be saved successfully", user.pubkey, retrieved?.pubkey)
+      assertEquals(user.pubkey, retrieved?.pubkey, "User should be saved successfully")
     } catch (e: StorageError.WriteError) {
-      assertNotNull("Error message should be present", e.message)
+      assertNotNull(e.message, "Error message should be present")
     }
   }
 
@@ -208,9 +211,9 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   fun `clearLoginState should validate error type`() = runTest {
     try {
       dataSource.clearLoginState()
-      assertNull("Data should be cleared", dataSource.getUser())
+      assertNull(dataSource.getUser(), "Data should be cleared")
     } catch (e: StorageError.WriteError) {
-      assertNotNull("Error message should be present", e.message)
+      assertNotNull(e.message, "Error message should be present")
     }
   }
 }

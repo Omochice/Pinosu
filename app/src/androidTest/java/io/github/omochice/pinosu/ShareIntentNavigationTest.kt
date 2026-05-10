@@ -21,10 +21,10 @@ import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractShare
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertTrue
-import org.junit.Before
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertTrue
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -118,7 +118,7 @@ class ShareIntentNavigationTest {
     coEvery { mockGetLoginStateUseCase() } returns null
   }
 
-  @Before
+  @BeforeTest
   fun setup() {
     hiltRule.inject()
   }
@@ -225,8 +225,8 @@ class ShareIntentNavigationTest {
     // when Compose navigation has PostBookmark on the back stack.
     composeTestRule.activityRule.scenario.onActivity { activity ->
       assertTrue(
-          "contentConsumed should be true after shared content is consumed",
           activity.contentConsumed,
+          "contentConsumed should be true after shared content is consumed",
       )
     }
   }

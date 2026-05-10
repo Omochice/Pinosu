@@ -3,6 +3,12 @@ package io.github.omochice.pinosu.feature.bookmark.data.metadata
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -11,12 +17,6 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -29,7 +29,7 @@ class OkHttpUrlMetadataFetcherTest {
   private lateinit var okHttpClient: OkHttpClient
   private lateinit var fetcher: OkHttpUrlMetadataFetcher
 
-  @Before
+  @BeforeTest
   fun setup() {
     okHttpClient = mockk()
     fetcher = OkHttpUrlMetadataFetcher(okHttpClient)
@@ -68,7 +68,7 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(result.isSuccess)
     val metadata = result.getOrNull()
     assertNotNull(metadata)
-    assertEquals("Test Article", metadata!!.title)
+    assertEquals("Test Article", metadata.title)
     assertEquals("https://example.com/image.jpg", metadata.imageUrl)
   }
 
@@ -89,7 +89,7 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(result.isSuccess)
     val metadata = result.getOrNull()
     assertNotNull(metadata)
-    assertEquals("No Image Article", metadata!!.title)
+    assertEquals("No Image Article", metadata.title)
     assertNull(metadata.imageUrl)
   }
 
@@ -104,7 +104,7 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(result.isSuccess)
     val metadata = result.getOrNull()
     assertNotNull(metadata)
-    assertNull(metadata!!.title)
+    assertNull(metadata.title)
     assertNull(metadata.imageUrl)
   }
 
@@ -126,7 +126,7 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(result.isSuccess)
     val metadata = result.getOrNull()
     assertNotNull(metadata)
-    assertEquals("Fallback Title", metadata!!.title)
+    assertEquals("Fallback Title", metadata.title)
     assertEquals("https://example.com/img.png", metadata.imageUrl)
   }
 
@@ -158,7 +158,7 @@ class OkHttpUrlMetadataFetcherTest {
     assertTrue(result.isSuccess)
     val metadata = result.getOrNull()
     assertNotNull(metadata)
-    assertEquals("Relative Image", metadata!!.title)
+    assertEquals("Relative Image", metadata.title)
     assertEquals("https://example.com/images/og.jpg", metadata.imageUrl)
   }
 

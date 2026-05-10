@@ -38,6 +38,8 @@ tink-android = {group = "com.google.crypto.tink", name = "tink-android", version
 coil-compose = {group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil"}
 coil-network-okhttp = {group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil"}
 kotlin-metadata-jvm = {group = "org.jetbrains.kotlin", name = "kotlin-metadata-jvm", version.ref = "kotlin"}
+kotlin-test = {group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin"}
+kotlin-test-junit = {group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin"}
 androidx-compose-runtime = {group = "androidx.compose.runtime", name = "runtime"}
 
 [plugins]

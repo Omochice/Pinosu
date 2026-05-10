@@ -11,9 +11,9 @@ import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.getTestString
-import org.junit.Assert.assertSame
+import kotlin.test.Test
+import kotlin.test.assertSame
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [BookmarkItemCard] */
 class BookmarkItemCardTest {
@@ -63,7 +63,7 @@ class BookmarkItemCardTest {
     composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
 
-    assertSame("onCopyNostrLink should receive the same bookmark instance", target, captured)
+    assertSame(target, captured, "onCopyNostrLink should receive the same bookmark instance")
   }
 
   @Test

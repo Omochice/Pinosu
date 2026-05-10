@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.domain.model
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class LanguageModeTest {
 

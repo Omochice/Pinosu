@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.core.nip.nip19
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Test class for Nip19EventResolver

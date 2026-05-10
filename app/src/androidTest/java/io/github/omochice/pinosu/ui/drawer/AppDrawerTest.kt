@@ -6,9 +6,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.getTestString
-import org.junit.Assert.assertTrue
+import kotlin.test.Test
+import kotlin.test.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /**
  * UI tests for AppDrawer
@@ -52,8 +52,8 @@ class AppDrawerTest {
     }
 
     composeTestRule.onNodeWithText(getTestString(R.string.menu_licenses)).performClick()
-    assertTrue("License navigation should be triggered", licenseClicked)
-    assertTrue("Drawer should be closed after click", drawerClosed)
+    assertTrue(licenseClicked, "License navigation should be triggered")
+    assertTrue(drawerClosed, "Drawer should be closed after click")
   }
 
   @Test
@@ -71,7 +71,7 @@ class AppDrawerTest {
     }
 
     composeTestRule.onNodeWithText(getTestString(R.string.menu_logout)).performClick()
-    assertTrue("Logout should be triggered", logoutClicked)
-    assertTrue("Drawer should be closed after logout click", drawerClosed)
+    assertTrue(logoutClicked, "Logout should be triggered")
+    assertTrue(drawerClosed, "Drawer should be closed after logout click")
   }
 }
