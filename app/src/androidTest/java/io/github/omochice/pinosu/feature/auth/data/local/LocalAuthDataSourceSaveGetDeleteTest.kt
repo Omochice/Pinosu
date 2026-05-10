@@ -98,7 +98,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     val retrieved = dataSource.getUser()
     assertNotNull(retrieved, "User should be retrievable after save")
-    assertEquals(user.pubkey, retrieved?.pubkey, "Pubkey should match")
+    assertEquals(user.pubkey, retrieved.pubkey, "Pubkey should match")
   }
 
   @Test
