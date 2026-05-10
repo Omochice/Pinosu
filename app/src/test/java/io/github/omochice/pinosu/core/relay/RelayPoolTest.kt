@@ -9,6 +9,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -451,13 +452,14 @@ class RelayPoolTest {
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
     assertTrue(result.isSuccess, "Should return success")
-    val publishResult = result.getOrNull()
-    assertEquals("event123", publishResult?.eventId, "Event ID should match")
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
+    assertEquals("event123", publishResult.eventId, "Event ID should match")
     assertEquals(
         listOf("wss://relay.example.com"),
-        publishResult?.successfulRelays,
+        publishResult.successfulRelays,
         "Should have 1 successful relay")
-    assertTrue(publishResult?.failedRelays?.isEmpty() == true, "Should have no failed relays")
+    assertTrue(publishResult.failedRelays.isEmpty(), "Should have no failed relays")
   }
 
   @Test
@@ -509,10 +511,11 @@ class RelayPoolTest {
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
     assertTrue(result.isSuccess, "Should return success")
-    val publishResult = result.getOrNull()
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
     assertEquals(
         listOf("wss://write-relay.example.com"),
-        publishResult?.successfulRelays,
+        publishResult.successfulRelays,
         "Should only have write-enabled relay in success list")
   }
 
@@ -552,14 +555,15 @@ class RelayPoolTest {
     val result = relayPool.publishEvent(relays, signedEventJson, 5000L)
 
     assertTrue(result.isSuccess, "Should return success when at least one relay accepts")
-    val publishResult = result.getOrNull()
-    assertEquals(1, publishResult?.successfulRelays?.size, "Should have 1 successful relay")
-    assertEquals(1, publishResult?.failedRelays?.size, "Should have 1 failed relay")
+    val publishResult =
+        assertNotNull(result.getOrNull(), "Publish result should be present on success")
+    assertEquals(1, publishResult.successfulRelays.size, "Should have 1 successful relay")
+    assertEquals(1, publishResult.failedRelays.size, "Should have 1 failed relay")
     assertTrue(
-        publishResult?.successfulRelays?.contains("wss://accepting.example.com") == true,
+        publishResult.successfulRelays.contains("wss://accepting.example.com"),
         "Successful relay should be accepting")
     assertTrue(
-        publishResult?.failedRelays?.any { it.first == "wss://rejecting.example.com" } == true,
+        publishResult.failedRelays.any { it.first == "wss://rejecting.example.com" },
         "Failed relay should be rejecting")
   }
 }
