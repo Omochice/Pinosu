@@ -91,8 +91,10 @@ class PubkeyTest {
     val pubkey1 = Pubkey.parse(TEST_VALID_NPUB)
     val pubkey2 = Pubkey.parse(TEST_VALID_NPUB)
 
+    assertNotNull(pubkey1, "Should parse first npub")
+    assertNotNull(pubkey2, "Should parse second npub")
     assertEquals(pubkey1, pubkey2, "Same npub should be equal")
-    assertEquals(pubkey1?.hashCode(), pubkey2?.hashCode(), "Same npub should have same hashCode")
+    assertEquals(pubkey1.hashCode(), pubkey2.hashCode(), "Same npub should have same hashCode")
   }
 
   @Test
