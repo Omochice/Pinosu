@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.19.0](https://github.com/Omochice/Pinosu/compare/v0.18.0...v0.19.0) (2026-05-10)
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v14.2.0 ([#478](https://github.com/Omochice/Pinosu/issues/478)) ([cf86c1b](https://github.com/Omochice/Pinosu/commit/cf86c1bbe1ae91af8fdaf8aef7ebc119e5ca58b3))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.05.00 ([#475](https://github.com/Omochice/Pinosu/issues/475)) ([80d21ff](https://github.com/Omochice/Pinosu/commit/80d21ff45bc3347864c2b1025021e7efde19c30e))
+
+
+### Tests
+
+* migrate to kotlin.test ([#488](https://github.com/Omochice/Pinosu/issues/488)) ([4ba429a](https://github.com/Omochice/Pinosu/commit/4ba429af71359aedcc90c34f2ae274a0f015f705))
+
 ## [0.18.0](https://github.com/Omochice/Pinosu/compare/v0.17.1...v0.18.0) (2026-05-05)
 
 
