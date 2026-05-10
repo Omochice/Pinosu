@@ -6,13 +6,13 @@ import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for [LocalAuthDataSource]
@@ -26,7 +26,7 @@ class LocalAuthDataSourceTest {
   private lateinit var testDataStore: DataStore<AuthData>
   private lateinit var dataFlow: MutableStateFlow<AuthData>
 
-  @Before
+  @BeforeTest
   fun setup() {
     dataFlow = MutableStateFlow(AuthData.DEFAULT)
 

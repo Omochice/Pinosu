@@ -16,14 +16,14 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for Nip55AuthRepository
@@ -41,7 +41,7 @@ class Nip55AuthRepositoryTest {
   private lateinit var localAuthDataSource: LocalAuthDataSource
   private lateinit var authRepository: AuthRepository
 
-  @Before
+  @BeforeTest
   fun setup() {
     nip55SignerClient = mockk(relaxed = true)
     localAuthDataSource = mockk(relaxed = true)

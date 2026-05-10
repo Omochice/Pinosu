@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.appinfo.presentation.model
 
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
-import org.junit.Test
 
 /** Unit tests for [AppInfoUiState.versionDisplayText] formatting */
 class AppInfoUiStateTest {

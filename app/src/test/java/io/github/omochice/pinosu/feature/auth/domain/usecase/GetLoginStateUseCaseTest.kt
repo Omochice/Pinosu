@@ -6,11 +6,11 @@ import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Test class for GetLoginStateUseCase
@@ -25,7 +25,7 @@ class GetLoginStateUseCaseTest {
   private lateinit var authRepository: AuthRepository
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     authRepository = mockk()
     getLoginStateUseCase = Nip55GetLoginStateUseCase(authRepository)

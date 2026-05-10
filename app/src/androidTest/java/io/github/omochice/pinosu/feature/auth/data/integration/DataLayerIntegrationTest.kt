@@ -14,12 +14,12 @@ import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepositor
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -45,7 +45,7 @@ class DataLayerIntegrationTest {
   private lateinit var testDataStore: DataStore<AuthData>
   private lateinit var testFile: File
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
     testFile = File(context.filesDir, "test_integration_auth_data_${System.currentTimeMillis()}.pb")
@@ -57,7 +57,7 @@ class DataLayerIntegrationTest {
     authRepository = Nip55AuthRepository(nip55SignerClient, localAuthDataSource)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     runTest { localAuthDataSource.clearLoginState() }
     testFile.delete()

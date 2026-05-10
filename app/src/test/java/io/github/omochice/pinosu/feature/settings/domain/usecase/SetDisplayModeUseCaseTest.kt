@@ -4,15 +4,15 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMo
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class SetDisplayModeUseCaseTest {
 
   private lateinit var settingsRepository: SettingsRepository
   private lateinit var useCase: SetDisplayModeUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     settingsRepository = mockk(relaxed = true)
     useCase = SetDisplayModeUseCaseImpl(settingsRepository)

@@ -11,9 +11,9 @@ import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [AppInfoScreen] */
 class AppInfoScreenTest {

@@ -8,11 +8,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.crypto.tink.aead.AeadConfig
 import io.github.omochice.pinosu.core.crypto.TinkKeyManager
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
-import org.junit.After
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -29,7 +29,7 @@ class LocalAuthDataSourceTest {
   private lateinit var testFile: File
   private lateinit var tinkKeyManager: TinkKeyManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     AeadConfig.register()
     context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -42,7 +42,7 @@ class LocalAuthDataSourceTest {
     dataSource = LocalAuthDataSource(testDataStore)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     testFile.delete()
   }

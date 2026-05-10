@@ -1,10 +1,10 @@
 package io.github.omochice.pinosu.feature.auth.domain.model.error
 
 import io.github.omochice.pinosu.core.nip.nip55.Nip55Error
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Test
 
 class ErrorTypesTest {
 

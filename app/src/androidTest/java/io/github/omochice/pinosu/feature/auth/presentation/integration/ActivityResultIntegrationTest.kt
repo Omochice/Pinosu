@@ -11,9 +11,9 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.getTestString
 import javax.inject.Inject
-import org.junit.Before
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -32,7 +32,7 @@ class ActivityResultIntegrationTest {
 
   @Inject lateinit var nip55SignerClient: Nip55SignerClient
 
-  @Before
+  @BeforeTest
   fun setup() {
     hiltRule.inject()
   }

@@ -9,11 +9,11 @@ import androidx.compose.ui.test.performTextInput
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /**
  * Compose UI tests for LoginScreen

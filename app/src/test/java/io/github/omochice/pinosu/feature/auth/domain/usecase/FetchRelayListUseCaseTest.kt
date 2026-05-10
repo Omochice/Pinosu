@@ -9,11 +9,11 @@ import io.mockk.coVerify
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -31,7 +31,7 @@ class FetchRelayListUseCaseTest {
   private lateinit var authRepository: AuthRepository
   private lateinit var useCase: FetchRelayListUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     fetcher = mockk(relaxed = true)
     authRepository = mockk(relaxed = true)

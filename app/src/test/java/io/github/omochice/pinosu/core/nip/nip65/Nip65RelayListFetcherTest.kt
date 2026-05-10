@@ -9,11 +9,11 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 class Nip65RelayListFetcherTest {
 
@@ -22,7 +22,7 @@ class Nip65RelayListFetcherTest {
   private lateinit var bootstrapRelayProvider: BootstrapRelayProvider
   private lateinit var fetcher: Nip65RelayListFetcher
 
-  @Before
+  @BeforeTest
   fun setup() {
     relayPool = mockk(relaxed = true)
     parser = Nip65EventParserImpl()

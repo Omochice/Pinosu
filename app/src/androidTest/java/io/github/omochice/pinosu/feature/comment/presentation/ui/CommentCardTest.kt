@@ -12,9 +12,9 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [CommentCard] */
 class CommentCardTest {

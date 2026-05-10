@@ -17,6 +17,9 @@ import io.github.omochice.pinosu.feature.settings.domain.usecase.SettingsUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,10 +28,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -50,7 +50,7 @@ class SettingsViewModelTest {
   private lateinit var clientTagEnabledFlow: MutableStateFlow<Boolean>
   private val testDispatcher = StandardTestDispatcher()
 
-  @Before
+  @BeforeTest
   fun setup() {
     Dispatchers.setMain(testDispatcher)
     displayModeFlow = MutableStateFlow(BookmarkDisplayMode.List)
@@ -75,7 +75,7 @@ class SettingsViewModelTest {
     setClientTagEnabledUseCase = mockk(relaxed = true)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     Dispatchers.resetMain()
   }

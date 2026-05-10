@@ -11,12 +11,12 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Test class for RelayCommentRepository
@@ -38,7 +38,7 @@ class RelayCommentRepositoryTest {
 
   private val testRelays = listOf(RelayConfig(url = "wss://relay.test.com"))
 
-  @Before
+  @BeforeTest
   fun setup() {
     relayPool = mockk()
     relayListProvider = mockk()

@@ -14,9 +14,9 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Before
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -40,7 +40,7 @@ class UserFlowTest {
   val mockLocalAuthDataSource: LocalAuthDataSource =
       mockk(relaxed = true) { coEvery { getUser() } returns null }
 
-  @Before
+  @BeforeTest
   fun setup() {
     clearMocks(mockLocalAuthDataSource, mockNip55SignerClient, answers = false)
     coEvery { mockLocalAuthDataSource.getUser() } returns null

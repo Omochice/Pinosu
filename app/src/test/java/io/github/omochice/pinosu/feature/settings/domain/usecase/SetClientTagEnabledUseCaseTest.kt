@@ -3,15 +3,15 @@ package io.github.omochice.pinosu.feature.settings.domain.usecase
 import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class SetClientTagEnabledUseCaseTest {
 
   private lateinit var clientTagRepository: ClientTagRepository
   private lateinit var useCase: SetClientTagEnabledUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     clientTagRepository = mockk(relaxed = true)
     useCase = SetClientTagEnabledUseCaseImpl(clientTagRepository)

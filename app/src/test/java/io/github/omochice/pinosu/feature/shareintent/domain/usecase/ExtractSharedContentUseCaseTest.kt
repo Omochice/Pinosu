@@ -2,10 +2,10 @@ package io.github.omochice.pinosu.feature.shareintent.domain.usecase
 
 import android.content.Intent
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -20,7 +20,7 @@ class ExtractSharedContentUseCaseTest {
 
   private lateinit var useCase: ExtractSharedContentUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     useCase = ExtractSharedContentUseCaseImpl()
   }

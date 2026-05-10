@@ -8,12 +8,12 @@ import io.mockk.verify
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.security.GeneralSecurityException
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -31,7 +31,7 @@ class AuthDataSerializerTest {
   private lateinit var mockAead: Aead
   private lateinit var serializer: AuthDataSerializer
 
-  @Before
+  @BeforeTest
   fun setup() {
     mockAead = mockk()
     serializer = AuthDataSerializer(mockAead)

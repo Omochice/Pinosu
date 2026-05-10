@@ -9,12 +9,12 @@ import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests for LocalAuthDataSource save, get, and delete functionality */
@@ -26,7 +26,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
   private lateinit var testDataStore: DataStore<AuthData>
   private lateinit var testFile: File
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
     testFile = File(context.filesDir, "test_auth_data_${System.currentTimeMillis()}.pb")
@@ -36,7 +36,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource = LocalAuthDataSource(testDataStore)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     testFile.delete()
   }

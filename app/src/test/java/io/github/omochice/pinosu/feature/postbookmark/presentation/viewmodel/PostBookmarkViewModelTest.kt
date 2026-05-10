@@ -11,6 +11,9 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,13 +23,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -41,7 +41,7 @@ class PostBookmarkViewModelTest {
 
   private val testDispatcher = StandardTestDispatcher()
 
-  @Before
+  @BeforeTest
   fun setup() {
     Dispatchers.setMain(testDispatcher)
     postBookmarkUseCase = mockk(relaxed = true)
@@ -49,7 +49,7 @@ class PostBookmarkViewModelTest {
     viewModel = PostBookmarkViewModel(postBookmarkUseCase, nip55SignerClient)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     Dispatchers.resetMain()
   }

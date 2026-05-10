@@ -3,8 +3,8 @@ package io.github.omochice.pinosu.feature.comment.presentation.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [ProfileAvatar] */
 class ProfileAvatarTest {

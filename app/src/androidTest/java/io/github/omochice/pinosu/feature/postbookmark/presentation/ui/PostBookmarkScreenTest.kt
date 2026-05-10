@@ -7,9 +7,9 @@ import androidx.compose.ui.test.onNodeWithText
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel.PostBookmarkUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertFalse
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [PostBookmarkScreen] */
 class PostBookmarkScreenTest {

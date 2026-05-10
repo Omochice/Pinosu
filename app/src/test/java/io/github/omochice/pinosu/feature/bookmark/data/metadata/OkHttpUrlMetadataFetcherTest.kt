@@ -3,6 +3,8 @@ package io.github.omochice.pinosu.feature.bookmark.data.metadata
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import okhttp3.Call
@@ -15,8 +17,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -29,7 +29,7 @@ class OkHttpUrlMetadataFetcherTest {
   private lateinit var okHttpClient: OkHttpClient
   private lateinit var fetcher: OkHttpUrlMetadataFetcher
 
-  @Before
+  @BeforeTest
   fun setup() {
     okHttpClient = mockk()
     fetcher = OkHttpUrlMetadataFetcher(okHttpClient)

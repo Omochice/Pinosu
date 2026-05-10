@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.core.nip.nip01
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Test
 
 /** Test class for [Nip01ProfileParser] */
 class Nip01ProfileParserTest {

@@ -12,12 +12,12 @@ import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.model.error.StorageError
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -37,7 +37,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
   private lateinit var testFile: File
   private lateinit var tinkKeyManager: TinkKeyManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     AeadConfig.register()
     context = ApplicationProvider.getApplicationContext()
@@ -50,7 +50,7 @@ class LocalAuthDataSourceEncryptionAndErrorTest {
     dataSource = LocalAuthDataSource(testDataStore)
   }
 
-  @After
+  @AfterTest
   fun tearDown() {
     testFile.delete()
   }

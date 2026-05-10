@@ -6,10 +6,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -18,7 +18,7 @@ class ManifestConfigurationTest {
   private lateinit var context: Context
   private lateinit var packageManager: PackageManager
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
     packageManager = context.packageManager

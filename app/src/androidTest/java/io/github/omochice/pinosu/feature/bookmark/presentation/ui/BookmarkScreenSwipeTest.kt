@@ -9,9 +9,9 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for swipe gesture tab switching on bookmark screen */
 class BookmarkScreenSwipeTest {

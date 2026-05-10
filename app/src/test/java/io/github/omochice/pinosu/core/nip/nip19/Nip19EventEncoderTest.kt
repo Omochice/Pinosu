@@ -5,10 +5,10 @@ import com.vitorpamplona.quartz.nip19Bech32.entities.NAddress
 import com.vitorpamplona.quartz.nip19Bech32.entities.NEvent
 import io.github.omochice.pinosu.core.nip.nip22.Nip22
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Test
 
 class Nip19EventEncoderTest {
 

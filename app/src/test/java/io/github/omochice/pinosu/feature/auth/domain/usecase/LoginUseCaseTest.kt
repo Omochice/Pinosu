@@ -4,10 +4,10 @@ import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Unit tests for LoginUseCase
@@ -19,7 +19,7 @@ class LoginUseCaseTest {
   private lateinit var authRepository: AuthRepository
   private lateinit var loginUseCase: LoginUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     authRepository = mockk(relaxed = true)
     loginUseCase = Nip55LoginUseCase(authRepository)

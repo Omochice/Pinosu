@@ -7,10 +7,10 @@ import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.MainUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /**
  * Compose UI tests for MainScreen

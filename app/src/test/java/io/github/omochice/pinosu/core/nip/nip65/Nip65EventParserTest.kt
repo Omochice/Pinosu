@@ -1,16 +1,16 @@
 package io.github.omochice.pinosu.core.nip.nip65
 
 import io.github.omochice.pinosu.core.model.NostrEvent
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 class Nip65EventParserTest {
 
   private lateinit var parser: Nip65EventParser
 
-  @Before
+  @BeforeTest
   fun setup() {
     parser = Nip65EventParserImpl()
   }

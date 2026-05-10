@@ -15,11 +15,11 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.feature.comment.domain.model.Comment
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [BookmarkDetailScreen] */
 class BookmarkDetailScreenTest {

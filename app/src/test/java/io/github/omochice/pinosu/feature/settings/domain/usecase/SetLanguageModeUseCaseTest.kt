@@ -4,15 +4,15 @@ import io.github.omochice.pinosu.feature.settings.domain.model.LanguageMode
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class SetLanguageModeUseCaseTest {
 
   private lateinit var settingsRepository: SettingsRepository
   private lateinit var useCase: SetLanguageModeUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     settingsRepository = mockk(relaxed = true)
     useCase = SetLanguageModeUseCaseImpl(settingsRepository)

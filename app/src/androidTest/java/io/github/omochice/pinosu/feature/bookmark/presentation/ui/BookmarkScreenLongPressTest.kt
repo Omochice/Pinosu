@@ -11,11 +11,11 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for the long-press menu integration on [BookmarkScreen] */
 class BookmarkScreenLongPressTest {

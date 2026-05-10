@@ -4,9 +4,9 @@ import io.github.omochice.pinosu.feature.settings.domain.model.ThemeMode
 import io.github.omochice.pinosu.feature.settings.domain.repository.SettingsRepository
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
-import org.junit.Test
 
 class ObserveThemeModeUseCaseTest {
 

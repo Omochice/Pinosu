@@ -7,9 +7,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.omochice.pinosu.feature.auth.presentation.viewmodel.LoginViewModel
-import org.junit.Before
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
@@ -29,7 +29,7 @@ class NavigationTest {
 
   private lateinit var viewModel: LoginViewModel
 
-  @Before
+  @BeforeTest
   fun setup() {
     hiltRule.inject()
   }

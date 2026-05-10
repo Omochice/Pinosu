@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -29,7 +29,7 @@ class Nip55SignerClientTest {
 
   private lateinit var nip55SignerClient: Nip55SignerClient
 
-  @Before
+  @BeforeTest
   fun setup() {
     context = mockk(relaxed = true)
     packageManager = mockk(relaxed = true)

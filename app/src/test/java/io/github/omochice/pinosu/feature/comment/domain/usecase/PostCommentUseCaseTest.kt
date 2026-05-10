@@ -9,11 +9,11 @@ import io.github.omochice.pinosu.feature.comment.domain.repository.CommentReposi
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 
 /**
  * Test class for PostCommentUseCaseImpl
@@ -29,7 +29,7 @@ class PostCommentUseCaseTest {
   private lateinit var getLoginStateUseCase: GetLoginStateUseCase
   private lateinit var useCase: PostCommentUseCase
 
-  @Before
+  @BeforeTest
   fun setup() {
     commentRepository = mockk()
     getLoginStateUseCase = mockk()

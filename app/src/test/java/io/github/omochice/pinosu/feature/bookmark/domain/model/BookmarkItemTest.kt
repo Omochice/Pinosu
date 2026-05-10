@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.feature.bookmark.domain.model
 
+import kotlin.test.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Test
 
 /** Unit tests for [BookmarkItem] properties */
 class BookmarkItemTest {

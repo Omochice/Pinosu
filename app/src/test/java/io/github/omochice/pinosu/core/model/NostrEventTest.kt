@@ -1,8 +1,8 @@
 package io.github.omochice.pinosu.core.model
 
+import kotlin.test.Test
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
-import org.junit.Test
 
 /** Unit tests for [NostrEvent] serialization with sig field */
 class NostrEventTest {

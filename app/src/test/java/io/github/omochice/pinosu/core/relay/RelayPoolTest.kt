@@ -5,6 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 import java.util.concurrent.Executors
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -16,8 +18,6 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -28,7 +28,7 @@ class RelayPoolTest {
   private lateinit var relayPool: RelayPoolImpl
   private val executor = Executors.newSingleThreadScheduledExecutor()
 
-  @Before
+  @BeforeTest
   fun setup() {
     okHttpClient = mockk(relaxed = true)
     relayPool = RelayPoolImpl(okHttpClient)

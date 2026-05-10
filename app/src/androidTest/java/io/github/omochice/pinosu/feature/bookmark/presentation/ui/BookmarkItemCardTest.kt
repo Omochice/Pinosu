@@ -11,9 +11,9 @@ import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.Test
 import org.junit.Assert.assertSame
 import org.junit.Rule
-import org.junit.Test
 
 /** Compose UI tests for [BookmarkItemCard] */
 class BookmarkItemCardTest {
