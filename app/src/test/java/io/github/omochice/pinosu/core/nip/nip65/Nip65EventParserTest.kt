@@ -4,6 +4,7 @@ import io.github.omochice.pinosu.core.model.NostrEvent
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class Nip65EventParserTest {
@@ -67,15 +68,21 @@ class Nip65EventParserTest {
 
     assertEquals(3, result.size, "Should return three relays")
 
-    val relay1 = result.find { it.url == "wss://relay1.example.com" }!!
+    val relay1 =
+        assertNotNull(
+            result.find { it.url == "wss://relay1.example.com" }, "relay1 should be present")
     assertTrue(relay1.read, "relay1 should have read=true")
     assertTrue(relay1.write, "relay1 should have write=true")
 
-    val relay2 = result.find { it.url == "wss://relay2.example.com" }!!
+    val relay2 =
+        assertNotNull(
+            result.find { it.url == "wss://relay2.example.com" }, "relay2 should be present")
     assertTrue(relay2.read, "relay2 should have read=true")
     assertEquals(false, relay2.write, "relay2 should have write=false")
 
-    val relay3 = result.find { it.url == "wss://relay3.example.com" }!!
+    val relay3 =
+        assertNotNull(
+            result.find { it.url == "wss://relay3.example.com" }, "relay3 should be present")
     assertEquals(false, relay3.read, "relay3 should have read=false")
     assertTrue(relay3.write, "relay3 should have write=true")
   }
