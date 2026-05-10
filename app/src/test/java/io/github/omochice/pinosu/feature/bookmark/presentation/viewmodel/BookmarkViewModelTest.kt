@@ -13,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -115,8 +115,8 @@ class BookmarkViewModelTest {
 
         val state = viewModel.uiState.first()
         assertNotNull(
-            "selectedBookmarkForUrlDialog should be set for multiple URLs",
-            state.selectedBookmarkForUrlDialog)
+            state.selectedBookmarkForUrlDialog,
+            "selectedBookmarkForUrlDialog should be set for multiple URLs")
         assertEquals(
             "selectedBookmarkForUrlDialog should be the clicked bookmark",
             bookmarkWithMultipleUrls,
@@ -152,7 +152,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("urlOpenError should be set", state.urlOpenError)
+    assertNotNull(state.urlOpenError, "urlOpenError should be set")
     assertEquals("urlOpenError should contain the error message", errorMessage, state.urlOpenError)
   }
 
@@ -262,7 +262,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     var state = viewModel.uiState.first()
-    assertNotNull("Dialog should be shown", state.selectedBookmarkForUrlDialog)
+    assertNotNull(state.selectedBookmarkForUrlDialog, "Dialog should be shown")
 
     viewModel.dismissUrlDialog()
     advanceUntilIdle()
@@ -277,7 +277,7 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     var state = viewModel.uiState.first()
-    assertNotNull("Error should be shown", state.urlOpenError)
+    assertNotNull(state.urlOpenError, "Error should be shown")
 
     viewModel.dismissErrorDialog()
     advanceUntilIdle()
@@ -316,15 +316,15 @@ class BookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("URL dialog should be shown", state.selectedBookmarkForUrlDialog)
-    assertNotNull("Error dialog should be shown", state.urlOpenError)
+    assertNotNull(state.selectedBookmarkForUrlDialog, "URL dialog should be shown")
+    assertNotNull(state.urlOpenError, "Error dialog should be shown")
 
     viewModel.dismissUrlDialog()
     advanceUntilIdle()
 
     val stateAfterDismissUrl = viewModel.uiState.first()
     assertNull("URL dialog should be dismissed", stateAfterDismissUrl.selectedBookmarkForUrlDialog)
-    assertNotNull("Error dialog should still be shown", stateAfterDismissUrl.urlOpenError)
+    assertNotNull(stateAfterDismissUrl.urlOpenError, "Error dialog should still be shown")
   }
 
   @Test

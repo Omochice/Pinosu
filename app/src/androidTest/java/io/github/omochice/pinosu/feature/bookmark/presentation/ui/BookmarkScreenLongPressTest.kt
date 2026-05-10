@@ -11,8 +11,8 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.getTestString
+import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -85,7 +85,7 @@ class BookmarkScreenLongPressTest {
     composeTestRule.onNodeWithText("Test Bookmark").performTouchInput { longClick() }
     composeTestRule.onNodeWithText(getTestString(R.string.menu_copy_nostr_link)).performClick()
 
-    assertNotNull("Tapping Copy nostr link should invoke the callback", capturedNostrLink)
+    assertNotNull(capturedNostrLink, "Tapping Copy nostr link should invoke the callback")
     assertTrue(
         "Encoded value should be a nostr:naddr1 URI but was '$capturedNostrLink'",
         capturedNostrLink!!.startsWith("nostr:naddr1"))

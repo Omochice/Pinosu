@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlin.test.assertNotNull
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +29,7 @@ class ManifestConfigurationTest {
     val applicationInfo = packageManager.getApplicationInfo(context.packageName, 0)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
-    assertNotNull("Application name should not be null", appName)
+    assertNotNull(appName, "Application name should not be null")
     assertTrue("Application name should not be empty", appName.isNotEmpty())
   }
 
@@ -47,7 +48,7 @@ class ManifestConfigurationTest {
     val resolveInfo =
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
-    assertNotNull("Query for nostrsigner scheme should be possible", resolveInfo)
+    assertNotNull(resolveInfo, "Query for nostrsigner scheme should be possible")
   }
 
   @Test
@@ -60,10 +61,10 @@ class ManifestConfigurationTest {
 
     val resolveInfo = packageManager.queryIntentActivities(intent, 0).firstOrNull()
 
-    assertNotNull("MainActivity should be resolvable", resolveInfo)
+    assertNotNull(resolveInfo, "MainActivity should be resolvable")
 
     val activityInfo = resolveInfo?.activityInfo
-    assertNotNull("ActivityInfo should not be null", activityInfo)
+    assertNotNull(activityInfo, "ActivityInfo should not be null")
     assertTrue(
         "MainActivity should be exported for LAUNCHER intent", activityInfo?.exported == true)
   }

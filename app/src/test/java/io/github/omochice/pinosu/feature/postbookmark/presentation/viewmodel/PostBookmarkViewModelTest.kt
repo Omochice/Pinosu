@@ -11,6 +11,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -22,7 +23,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -162,7 +162,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertNotNull(state.errorMessage, "errorMessage should be set")
     assertNull("callback should receive null", receivedIntent)
   }
 
@@ -210,7 +210,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertNotNull(state.errorMessage, "errorMessage should be set")
     assertFalse("isSubmitting should be false", state.isSubmitting)
   }
 
@@ -261,7 +261,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertNotNull(state.errorMessage, "errorMessage should be set")
     assertFalse("isSubmitting should be false", state.isSubmitting)
     assertFalse("postSuccess should be false", state.postSuccess)
   }
@@ -296,7 +296,7 @@ class PostBookmarkViewModelTest {
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
-    assertNotNull("errorMessage should be set", state.errorMessage)
+    assertNotNull(state.errorMessage, "errorMessage should be set")
     assertFalse("isSubmitting should be false", state.isSubmitting)
     assertFalse("postSuccess should be false", state.postSuccess)
   }

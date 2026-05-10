@@ -9,6 +9,7 @@ import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -54,7 +55,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val savedUser = dataSource.getUser()
-    assertNotNull("Saved user should be retrievable", savedUser)
+    assertNotNull(savedUser, "Saved user should be retrievable")
   }
 
   @Test
@@ -76,7 +77,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
 
     val retrieved = dataSource.getUser()
 
-    assertNotNull("getUser should return saved user", retrieved)
+    assertNotNull(retrieved, "getUser should return saved user")
     assertEquals("Retrieved pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
@@ -94,7 +95,7 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     dataSource.saveUser(user, LoginMode.Nip55Signer)
 
     val retrieved = dataSource.getUser()
-    assertNotNull("User should be retrievable after save", retrieved)
+    assertNotNull(retrieved, "User should be retrievable after save")
     assertEquals("Pubkey should match", user.pubkey, retrieved?.pubkey)
   }
 
@@ -106,8 +107,8 @@ class LocalAuthDataSourceSaveGetDeleteTest {
     val firstRetrieval = dataSource.getUser()
     val secondRetrieval = dataSource.getUser()
 
-    assertNotNull("First retrieval should succeed", firstRetrieval)
-    assertNotNull("Second retrieval should succeed", secondRetrieval)
+    assertNotNull(firstRetrieval, "First retrieval should succeed")
+    assertNotNull(secondRetrieval, "Second retrieval should succeed")
     assertEquals("Data should be consistent", firstRetrieval?.pubkey, secondRetrieval?.pubkey)
   }
 

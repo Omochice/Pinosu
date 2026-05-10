@@ -1,9 +1,9 @@
 package io.github.omochice.pinosu.feature.auth.domain.model
 
 import io.github.omochice.pinosu.core.model.Pubkey
+import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -68,7 +68,7 @@ class UserTest {
     val validNpub = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
     val expectedHex = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
     val pubkey = Pubkey.parse(validNpub)
-    assertNotNull("Should parse valid npub", pubkey)
+    assertNotNull(pubkey, "Should parse valid npub")
     val user = User(pubkey!!)
 
     assertEquals(expectedHex, user.pubkey.hex)

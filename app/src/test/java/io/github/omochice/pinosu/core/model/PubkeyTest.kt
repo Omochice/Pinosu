@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.model
 
+import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,8 +21,8 @@ class PubkeyTest {
   fun `parse returns Pubkey for valid npub`() {
     val pubkey = Pubkey.parse(TEST_VALID_NPUB)
 
-    assertNotNull("Should parse valid npub", pubkey)
-    assertEquals("Should preserve npub value", TEST_VALID_NPUB, pubkey?.npub)
+    assertNotNull(pubkey, "Should parse valid npub")
+    assertEquals("Should preserve npub value", TEST_VALID_NPUB, pubkey.npub)
   }
 
   @Test
@@ -72,8 +72,8 @@ class PubkeyTest {
   fun `hex returns hex string for valid npub`() {
     val pubkey = Pubkey.parse(TEST_VALID_NPUB)
 
-    assertNotNull("Should parse valid npub", pubkey)
-    assertEquals("Should return correct hex", TEST_VALID_HEX, pubkey?.hex)
+    assertNotNull(pubkey, "Should parse valid npub")
+    assertEquals("Should return correct hex", TEST_VALID_HEX, pubkey.hex)
   }
 
   @Test
@@ -82,8 +82,8 @@ class PubkeyTest {
 
     val pubkey = Pubkey.parse(invalidChecksumNpub)
 
-    assertNotNull("Should parse npub format", pubkey)
-    assertNull("Should return null for invalid checksum", pubkey?.hex)
+    assertNotNull(pubkey, "Should parse npub format")
+    assertNull("Should return null for invalid checksum", pubkey.hex)
   }
 
   @Test
@@ -100,8 +100,8 @@ class PubkeyTest {
     val pubkey1 = Pubkey.parse(TEST_VALID_NPUB)
     val pubkey2 = Pubkey.parse("npub1" + "q".repeat(58))
 
-    assertNotNull("Should parse first npub", pubkey1)
-    assertNotNull("Should parse second npub", pubkey2)
+    assertNotNull(pubkey1, "Should parse first npub")
+    assertNotNull(pubkey2, "Should parse second npub")
     assertEquals(false, pubkey1 == pubkey2)
   }
 

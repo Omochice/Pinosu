@@ -14,6 +14,7 @@ import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepositor
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import java.io.File
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -95,7 +96,7 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val retrievedUser = localAuthDataSource.getUser()
-    assertNotNull("Retrieved user should not be null", retrievedUser)
+    assertNotNull(retrievedUser, "Retrieved user should not be null")
     assertEquals("Retrieved pubkey should match", testPubkey, retrievedUser?.pubkey)
   }
 
@@ -115,7 +116,7 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val userBeforeDelete = localAuthDataSource.getUser()
-    assertNotNull("User should exist before delete", userBeforeDelete)
+    assertNotNull(userBeforeDelete, "User should exist before delete")
 
     localAuthDataSource.clearLoginState()
     advanceUntilIdle()
@@ -144,7 +145,7 @@ class DataLayerIntegrationTest {
       localAuthDataSource.saveUser(user, LoginMode.Nip55Signer)
 
       val retrievedUser = localAuthDataSource.getUser()
-      assertNotNull("Retrieved user should not be null", retrievedUser)
+      assertNotNull(retrievedUser, "Retrieved user should not be null")
       assertEquals("Retrieved pubkey should match", user.pubkey, retrievedUser?.pubkey)
 
       localAuthDataSource.clearLoginState()
@@ -171,7 +172,7 @@ class DataLayerIntegrationTest {
     advanceUntilIdle()
 
     val userBeforeLogout = authRepository.getLoginState()
-    assertNotNull("User should exist before logout", userBeforeLogout)
+    assertNotNull(userBeforeLogout, "User should exist before logout")
     assertEquals("Pubkey should match", testPubkey, userBeforeLogout?.pubkey)
 
     authRepository.logout()
@@ -203,7 +204,7 @@ class DataLayerIntegrationTest {
     val newAuthRepository = Nip55AuthRepository(nip55SignerClient, newLocalAuthDataSource)
 
     val restoredUser = newAuthRepository.getLoginState()
-    assertNotNull("User should be restored after restart", restoredUser)
+    assertNotNull(restoredUser, "User should be restored after restart")
     assertEquals("Restored pubkey should match", testPubkey, restoredUser?.pubkey)
   }
 

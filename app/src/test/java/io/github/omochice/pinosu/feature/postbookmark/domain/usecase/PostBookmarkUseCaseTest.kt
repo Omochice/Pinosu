@@ -9,9 +9,9 @@ import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepo
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -53,7 +53,7 @@ class PostBookmarkUseCaseTest {
     val exception = result.exceptionOrNull()
     assertNotNull(exception)
     assertTrue(exception is IllegalStateException)
-    assertEquals("User not logged in", exception?.message)
+    assertEquals("User not logged in", exception.message)
   }
 
   @Test

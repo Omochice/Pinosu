@@ -16,10 +16,10 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -178,7 +178,7 @@ class Nip55AuthRepositoryTest {
 
     assertTrue("Should return success", result.isSuccess)
     val user = result.getOrNull()
-    assertNotNull("User should not be null", user)
+    assertNotNull(user, "User should not be null")
     assertEquals("Pubkey should match", pubkey, user?.pubkey?.npub)
     coVerify { localAuthDataSource.saveUser(any(), any()) }
   }

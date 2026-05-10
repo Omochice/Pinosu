@@ -12,11 +12,11 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -76,14 +76,14 @@ class RelayBookmarkRepositoryTest {
 
     assertTrue("Result should be success", result.isSuccess)
     val bookmarkList = result.getOrNull()
-    assertNotNull("BookmarkList should not be null", bookmarkList)
-    val items = bookmarkList!!.items
+    assertNotNull(bookmarkList, "BookmarkList should not be null")
+    val items = bookmarkList.items
     assertEquals("Should have 1 bookmark item", 1, items.size)
 
     val rawJson = items[0].rawJson
-    assertNotNull("rawJson should not be null", rawJson)
+    assertNotNull(rawJson, "rawJson should not be null")
 
-    val deserializedEvent = json.decodeFromString<NostrEvent>(rawJson!!)
+    val deserializedEvent = json.decodeFromString<NostrEvent>(rawJson)
     assertEquals("Deserialized event id should match", "event123", deserializedEvent.id)
     assertEquals("Deserialized event sig should match", "sig789", deserializedEvent.sig)
     assertEquals(

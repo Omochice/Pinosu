@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -77,7 +77,7 @@ class Nip55SignerClientTest {
   fun `createPublicKeyIntent should have correct scheme`() {
     val intent = nip55SignerClient.createPublicKeyIntent()
 
-    assertNotNull("Intent should have data URI", intent.data)
+    assertNotNull(intent.data, "Intent should have data URI")
     assertEquals(
         "URI scheme should be nostrsigner",
         Nip55SignerClient.NOSTRSIGNER_SCHEME,
@@ -135,7 +135,7 @@ class Nip55SignerClientTest {
 
     assertTrue("Should return success", result.isSuccess)
     val response = result.getOrNull()
-    assertNotNull("Response should not be null", response)
+    assertNotNull(response, "Response should not be null")
     assertEquals("Pubkey should match", pubkey, response?.pubkey)
     assertEquals(
         "PackageName should be NIP-55 signer package",

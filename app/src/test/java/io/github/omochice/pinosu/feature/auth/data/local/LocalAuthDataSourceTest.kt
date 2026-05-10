@@ -6,10 +6,10 @@ import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -56,7 +56,7 @@ class LocalAuthDataSourceTest {
     localAuthDataSource.saveRelayList(relays)
     val result = localAuthDataSource.getRelayList()
 
-    assertNotNull("Expected relay_list to be retrieved", result)
+    assertNotNull(result, "Expected relay_list to be retrieved")
     assertEquals(2, result?.size)
     assertEquals("wss://relay1.example.com", result?.get(0)?.url)
     assertEquals(true, result?.get(0)?.read)
