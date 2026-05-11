@@ -29,6 +29,7 @@ mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
 mockk-android = {group = "io.mockk", name = "mockk-android", version.ref = "mockk"}
 archunit = {group = "com.tngtech.archunit", name = "archunit-junit4", version.ref = "archunit"}
 robolectric = {group = "org.robolectric", name = "robolectric", version.ref = "robolectric"}
+kotlinx-coroutines-android = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines"}
 kotlinx-coroutines-test = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines"}
 kotlinx-serialization-json = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
 aboutlibraries-core = {group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries"}
