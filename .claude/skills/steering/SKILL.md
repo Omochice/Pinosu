@@ -35,13 +35,13 @@ Check `doc/steering/` status:
 ## Bootstrap Flow
 
 1. Analyze codebase (JIT):
-   - `glob_file_search` for source files
-   - `read_file` for README, package.json, etc.
-   - `grep` for patterns
+    - `Glob` for source files
+    - `Read` for README, package.json, etc.
+    - `Grep` for patterns
 2. Extract patterns (not lists):
-   - Product: Purpose, value, core capabilities
-   - Tech: Frameworks, decisions, conventions
-   - Structure: Organization, naming, imports
+    - Product: Purpose, value, core capabilities
+    - Tech: Frameworks, decisions, conventions
+    - Structure: Organization, naming, imports
 3. Generate steering files following the templates below
 4. Apply the steering principles below
 5. Present summary for review
@@ -55,9 +55,9 @@ Check `doc/steering/` status:
 1. Load all existing steering (`doc/steering/*.md`)
 2. Analyze codebase for changes (JIT)
 3. Detect drift:
-   - **Steering -> Code**: Missing elements -> Warning
-   - **Code -> Steering**: New patterns -> Update candidate
-   - **Custom files**: Check relevance
+    - **Steering -> Code**: Missing elements -> Warning
+    - **Code -> Steering**: New patterns -> Update candidate
+    - **Custom files**: Check relevance
 4. Propose updates (additive, preserve user content)
 5. Report: Updates, warnings, recommendations
 
@@ -93,16 +93,16 @@ Steering files are **project memory**, not exhaustive specifications.
 
 **Bad** (Specification-like):
 
-```markdown
+````markdown
 - /components/Button.tsx - Primary button with variants
 - /components/Input.tsx - Text input with validation
 - /components/Modal.tsx - Modal dialog
 ... (50+ files)
-```
+````
 
 **Good** (Project Memory):
 
-```markdown
+````markdown
 ## UI Components (`/components/ui/`)
 
 Reusable, design-system aligned primitives
@@ -110,7 +110,7 @@ Reusable, design-system aligned primitives
 - Named by function (Button, Input, Modal)
 - Export component + TypeScript interface
 - No business logic
-```
+````
 
 ### Quality Standards
 
@@ -141,7 +141,7 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 ### product.md
 
-```markdown
+````markdown
 # Product Overview
 
 [Brief description of what this product does and who it serves]
@@ -157,11 +157,11 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 ## Value Proposition
 
 [What makes this product unique or valuable]
-```
+````
 
 ### tech.md
 
-```markdown
+````markdown
 # Technology Stack
 
 ## Architecture
@@ -172,7 +172,7 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 - **Language**: [e.g., TypeScript, Python]
 - **Framework**: [e.g., React, Next.js, Django]
-- **Runtime**: [e.g., Node.js 20+]
+- **Runtime**: [e.g., Node.js (version specified in engines field)]
 
 ## Key Libraries
 
@@ -196,24 +196,22 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 ### Required Tools
 
-[Key tools and version requirements]
+[Key tools with references to config files for versions]
 
 ### Common Commands
 
-\```bash
-
+```bash
 ## Dev: [command]
 
 ## Build: [command]
 
 ## Test: [command]
-
-\```
+```
 
 ### Key Technical Decisions
 
 [Important architectural choices and rationale]
-```
+````
 
 ### structure.md
 
@@ -253,10 +251,10 @@ _Focus on patterns, not file trees. New files following patterns should not requ
 
 ## Tool guidance
 
-- `glob_file_search`: Find source/config files
-- `read_file`: Read steering, docs, configs
-- `grep`: Search patterns
-- `list_dir`: Analyze structure
+- `Glob`: Find source/config files
+- `Read`: Read steering, docs, configs
+- `Grep`: Search patterns
+- `LS`: Analyze structure
 
 **JIT Strategy**: Fetch when needed, not upfront.
 
@@ -266,10 +264,11 @@ Chat summary only (files updated directly).
 
 ### Bootstrap
 
-```text
+```markdown
 Steering Created
 
-## Generated:
+## Generated
+
 - product.md: [Brief description]
 - tech.md: [Key stack]
 - structure.md: [Organization]
@@ -279,17 +278,20 @@ Review and approve as Source of Truth.
 
 ### Sync
 
-```text
+```markdown
 Steering Updated
 
-## Changes:
+## Changes
+
 - tech.md: Updated architecture section
 - structure.md: Added API pattern
 
-## Code Drift:
+## Code Drift
+
 - Components not following import conventions
 
-## Recommendations:
+## Recommendations
+
 - Consider api-standards.md
 ```
 
