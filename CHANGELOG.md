@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.19.1](https://github.com/Omochice/Pinosu/compare/v0.19.0...v0.19.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.compose:compose-bom to v2026.05.01 ([#508](https://github.com/Omochice/Pinosu/issues/508)) ([d68a185](https://github.com/Omochice/Pinosu/commit/d68a185456b9aa89e166443c5f8ee1361cf56c5b))
+* **deps:** update dependency com.google.android.material:material to v1.14.0 ([#499](https://github.com/Omochice/Pinosu/issues/499)) ([8945af4](https://github.com/Omochice/Pinosu/commit/8945af4c08616a973b2c50a6383e872ff5839c45))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.09.1 ([#503](https://github.com/Omochice/Pinosu/issues/503)) ([4563cc8](https://github.com/Omochice/Pinosu/commit/4563cc8ffb2860e2c3bda2d0414c2d59e03fd7a0))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.11.0 ([#482](https://github.com/Omochice/Pinosu/issues/482)) ([e1ca87b](https://github.com/Omochice/Pinosu/commit/e1ca87b7838acfc8923162841fea16c2cbaabca4))
+
+
+### Reverts
+
+* "fix(deps): update dependency com.vitorpamplona.quartz:quartz to v1.09.1 ([#503](https://github.com/Omochice/Pinosu/issues/503))" ([#521](https://github.com/Omochice/Pinosu/issues/521)) ([637cf5c](https://github.com/Omochice/Pinosu/commit/637cf5c07668f107046016d65b5919f9fbc66d06))
+
+
+### Continuous Integration
+
+* publish releases to Zapstore ([#523](https://github.com/Omochice/Pinosu/issues/523)) ([46b9b5e](https://github.com/Omochice/Pinosu/commit/46b9b5efdecca70765a97b073fa6fd135a334963))
+
 ## [0.19.0](https://github.com/Omochice/Pinosu/compare/v0.18.0...v0.19.0) (2026-05-10)
 
 
