@@ -91,10 +91,12 @@ jobs:
       - name: Install zsp
         env:
           ZSP_VERSION: 0.4.10
+          ZSP_SHA256: a1f73e3f89935e53c0be2fb210fbe9a0da13f693a77627053a208332d8351394
         run: |
           mkdir -p "${RUNNER_TEMP}/zsp-bin"
           curl -fsSL -o "${RUNNER_TEMP}/zsp-bin/zsp" \
             "https://github.com/zapstore/zsp/releases/download/v${ZSP_VERSION}/zsp-${ZSP_VERSION}-linux-amd64"
+          echo "${ZSP_SHA256#sha256:}  ${RUNNER_TEMP}/zsp-bin/zsp" | sha256sum --check
           chmod +x "${RUNNER_TEMP}/zsp-bin/zsp"
           echo "${RUNNER_TEMP}/zsp-bin" >> "$GITHUB_PATH"
       - name: Publish to zapstore
