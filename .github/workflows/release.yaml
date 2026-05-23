@@ -78,8 +78,7 @@ jobs:
           TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
   publish-zapstore:
-    needs: [release-please, build-release]
-    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    needs: build-release
     timeout-minutes: 10
     runs-on: ubuntu-latest
     environment: release
