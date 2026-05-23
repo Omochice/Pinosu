@@ -80,9 +80,9 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Testing
 
-- **Unit Tests**: JUnit 4, MockK, Robolectric
+- **Unit Tests**: `kotlin.test` API (`@Test` annotation and assertions) running on the JUnit 4 platform via `kotlin-test-junit`; MockK for mocking, Robolectric for Android framework stubs. Prefer `kotlin.test` over `org.junit.Assert`.
 - **Coroutine Testing**: kotlinx-coroutines-test
-- **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test
+- **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test (`createComposeRule` v2 API)
 - **DI Testing**: Hilt Android Testing
 - **Architecture Tests**: ArchUnit (`archunit-junit4`) for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
 
