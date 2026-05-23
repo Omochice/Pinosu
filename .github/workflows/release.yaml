@@ -76,6 +76,20 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      - name: Publish to zapstore
+        env:
+          ZSP_VERSION: 0.4.10
+        run: |
+          mkdir -p "${RUNNER_TEMP}/zsp-bin"
+          curl -fsSL -o "${RUNNER_TEMP}/zsp-bin/zsp" \
+            "https://github.com/zapstore/zsp/releases/download/v${ZSP_VERSION}/zsp-${ZSP_VERSION}-linux-amd64"
+          chmod +x "${RUNNER_TEMP}/zsp-bin/zsp"
+          echo "${RUNNER_TEMP}/zsp-bin" >> "$GITHUB_PATH"
+      - run: |
+          zsp publish --quiet --skip-preview zapstore.yaml
+        env:
+          SIGN_WITH: ${{ secrets.SIGN_WITH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   increment-version-code:
     needs: release-please
