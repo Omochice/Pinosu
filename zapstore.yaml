@@ -1,0 +1,35 @@
+repository: https://github.com/Omochice/Pinosu
+summary: A decentralized web bookmark app for Android, powered by Nostr
+description: |
+  Pinosu is a decentralized web bookmark app for Android, powered by Nostr.
+  You keep full ownership of your data, with no central server.
+
+  Features:
+
+  - Save and organize web bookmarks
+  - Bookmarks stored as Nostr Kind 39701 (web bookmark) events
+  - Access from any Nostr-compatible client
+  - Sync across devices through Nostr relays
+
+  Requirements:
+
+  - A NIP-55 compatible signer app (e.g. Amber)
+metadata_sources:
+  - github
+pubkey: npub19qe9896nte5dwe54tqvupytwpla9yzzg45en2lneh37wullc63lqqavvh7
+license: zlib
+tags:
+  - nostr
+  - japan
+  - web_bookmark
+  - bookmark
+release_notes: CHANGELOG.md
+supported_nips:
+  - "01"
+  - "19"
+  - "22"
+  - "55"
+  - "65"
+  - "89"
+  - "B0"
+match: app-release.apk

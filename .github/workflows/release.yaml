@@ -77,6 +77,34 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
+  publish-zapstore:
+    needs: build-release
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install zsp
+        env:
+          ZSP_VERSION: 0.4.10
+          ZSP_SHA256: a1f73e3f89935e53c0be2fb210fbe9a0da13f693a77627053a208332d8351394
+        run: |
+          mkdir -p "${RUNNER_TEMP}/zsp-bin"
+          curl -fsSL -o "${RUNNER_TEMP}/zsp-bin/zsp" \
+            "https://github.com/zapstore/zsp/releases/download/v${ZSP_VERSION}/zsp-${ZSP_VERSION}-linux-amd64"
+          echo "${ZSP_SHA256#sha256:}  ${RUNNER_TEMP}/zsp-bin/zsp" | sha256sum --check
+          chmod +x "${RUNNER_TEMP}/zsp-bin/zsp"
+          echo "${RUNNER_TEMP}/zsp-bin" >> "$GITHUB_PATH"
+      - name: Publish to zapstore
+        run: zsp publish --quiet --skip-preview zapstore.yaml
+        env:
+          SIGN_WITH: ${{ secrets.SIGN_WITH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   increment-version-code:
     needs: release-please
     timeout-minutes: 5
