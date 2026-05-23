@@ -93,16 +93,16 @@ Steering files are **project memory**, not exhaustive specifications.
 
 **Bad** (Specification-like):
 
-```markdown
+````markdown
 - /components/Button.tsx - Primary button with variants
 - /components/Input.tsx - Text input with validation
 - /components/Modal.tsx - Modal dialog
 ... (50+ files)
-```
+````
 
 **Good** (Project Memory):
 
-```markdown
+````markdown
 ## UI Components (`/components/ui/`)
 
 Reusable, design-system aligned primitives
@@ -110,7 +110,7 @@ Reusable, design-system aligned primitives
 - Named by function (Button, Input, Modal)
 - Export component + TypeScript interface
 - No business logic
-```
+````
 
 ### Quality Standards
 
@@ -141,7 +141,7 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 ### product.md
 
-```markdown
+````markdown
 # Product Overview
 
 [Brief description of what this product does and who it serves]
@@ -157,11 +157,11 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 ## Value Proposition
 
 [What makes this product unique or valuable]
-```
+````
 
 ### tech.md
 
-```markdown
+````markdown
 # Technology Stack
 
 ## Architecture
@@ -201,7 +201,6 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 ### Common Commands
 
 ```bash
-
 ## Dev: [command]
 
 ## Build: [command]
@@ -209,13 +208,10 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 ## Test: [command]
 ```
 
-```
-
 ### Key Technical Decisions
 
 [Important architectural choices and rationale]
-
-```markdown
+````
 
 ### structure.md
 
