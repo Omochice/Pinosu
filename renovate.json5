@@ -11,10 +11,10 @@
         ".github/workflows/release.yaml",
       ],
       matchStrings: [
-        "jobs.*.steps[$exists(env.ZSP_VERSION)].{ 'currentValue': env.ZSP_VERSION }",
+        "jobs.*.steps[$exists(env.ZSP_VERSION)].{ 'currentValue': env.ZSP_VERSION, 'currentDigest': env.ZSP_SHA256 }",
       ],
       depNameTemplate: "zapstore/zsp",
-      datasourceTemplate: "github-releases",
+      datasourceTemplate: "github-release-attachments",
       extractVersionTemplate: "^v(?<version>.+)$",
     },
   ],
