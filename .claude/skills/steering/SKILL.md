@@ -35,9 +35,9 @@ Check `doc/steering/` status:
 ## Bootstrap Flow
 
 1. Analyze codebase (JIT):
-    - `glob_file_search` for source files
-    - `read_file` for README, package.json, etc.
-    - `grep` for patterns
+    - `Glob` for source files
+    - `Read` for README, package.json, etc.
+    - `Grep` for patterns
 2. Extract patterns (not lists):
     - Product: Purpose, value, core capabilities
     - Tech: Frameworks, decisions, conventions
@@ -251,10 +251,10 @@ _Focus on patterns, not file trees. New files following patterns should not requ
 
 ## Tool guidance
 
-- `glob_file_search`: Find source/config files
-- `read_file`: Read steering, docs, configs
-- `grep`: Search patterns
-- `list_dir`: Analyze structure
+- `Glob`: Find source/config files
+- `Read`: Read steering, docs, configs
+- `Grep`: Search patterns
+- `LS`: Analyze structure
 
 **JIT Strategy**: Fetch when needed, not upfront.
 
