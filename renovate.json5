@@ -3,4 +3,19 @@
   extends: [
     "github>Omochice/personal-renovate-config#v1.13.0",
   ],
+  customManagers: [
+    {
+      customType: "jsonata",
+      fileFormat: "yaml",
+      managerFilePatterns: [
+        ".github/workflows/release.yaml",
+      ],
+      matchStrings: [
+        "jobs.*.steps[$exists(env.ZSP_VERSION)].{ 'currentValue': env.ZSP_VERSION }",
+      ],
+      depNameTemplate: "zapstore/zsp",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^v(?<version>.+)$",
+    },
+  ],
 }
