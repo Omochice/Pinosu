@@ -35,13 +35,13 @@ Check `doc/steering/` status:
 ## Bootstrap Flow
 
 1. Analyze codebase (JIT):
-   - `glob_file_search` for source files
-   - `read_file` for README, package.json, etc.
-   - `grep` for patterns
+    - `glob_file_search` for source files
+    - `read_file` for README, package.json, etc.
+    - `grep` for patterns
 2. Extract patterns (not lists):
-   - Product: Purpose, value, core capabilities
-   - Tech: Frameworks, decisions, conventions
-   - Structure: Organization, naming, imports
+    - Product: Purpose, value, core capabilities
+    - Tech: Frameworks, decisions, conventions
+    - Structure: Organization, naming, imports
 3. Generate steering files following the templates below
 4. Apply the steering principles below
 5. Present summary for review
@@ -55,9 +55,9 @@ Check `doc/steering/` status:
 1. Load all existing steering (`doc/steering/*.md`)
 2. Analyze codebase for changes (JIT)
 3. Detect drift:
-   - **Steering -> Code**: Missing elements -> Warning
-   - **Code -> Steering**: New patterns -> Update candidate
-   - **Custom files**: Check relevance
+    - **Steering -> Code**: Missing elements -> Warning
+    - **Code -> Steering**: New patterns -> Update candidate
+    - **Custom files**: Check relevance
 4. Propose updates (additive, preserve user content)
 5. Report: Updates, warnings, recommendations
 
@@ -172,7 +172,7 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 - **Language**: [e.g., TypeScript, Python]
 - **Framework**: [e.g., React, Next.js, Django]
-- **Runtime**: [e.g., Node.js 20+]
+- **Runtime**: [e.g., Node.js (version specified in engines field)]
 
 ## Key Libraries
 
@@ -196,24 +196,26 @@ Never include: API keys, passwords, credentials, database URLs, internal IPs, se
 
 ### Required Tools
 
-[Key tools and version requirements]
+[Key tools with references to config files for versions]
 
 ### Common Commands
 
-\```bash
+```bash
 
 ## Dev: [command]
 
 ## Build: [command]
 
 ## Test: [command]
+```
 
-\```
+```
 
 ### Key Technical Decisions
 
 [Important architectural choices and rationale]
-```
+
+```markdown
 
 ### structure.md
 
@@ -266,10 +268,11 @@ Chat summary only (files updated directly).
 
 ### Bootstrap
 
-```text
+```markdown
 Steering Created
 
-## Generated:
+## Generated
+
 - product.md: [Brief description]
 - tech.md: [Key stack]
 - structure.md: [Organization]
@@ -279,17 +282,20 @@ Review and approve as Source of Truth.
 
 ### Sync
 
-```text
+```markdown
 Steering Updated
 
-## Changes:
+## Changes
+
 - tech.md: Updated architecture section
 - structure.md: Added API pattern
 
-## Code Drift:
+## Code Drift
+
 - Components not following import conventions
 
-## Recommendations:
+## Recommendations
+
 - Consider api-standards.md
 ```
 
