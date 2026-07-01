@@ -158,6 +158,13 @@ dependencies {
   androidTestImplementation(libs.mockk.android)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
+
+  constraints {
+    androidTestImplementation(libs.androidx.test.espresso.core) {
+      because(
+          "espresso-core <3.7.0 calls the removed InputManager.getInstance and crashes on API 37")
+    }
+  }
 }
 
 kover {
