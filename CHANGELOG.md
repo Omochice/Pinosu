@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.20.0](https://github.com/Omochice/Pinosu/compare/v0.19.1...v0.20.0) (2026-07-02)
+
+
+### Features
+
+* target Android 17 (API level 37) ([#592](https://github.com/Omochice/Pinosu/issues/592)) ([ea4bf77](https://github.com/Omochice/Pinosu/commit/ea4bf77e51f2b38ecd1d4c68808f182d837c6abf))
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v15 ([#572](https://github.com/Omochice/Pinosu/issues/572)) ([cda2b8a](https://github.com/Omochice/Pinosu/commit/cda2b8ae27092734de5e0bdf909d169ea5953fc1))
+* **deps:** update coil to v3.5.0 ([#552](https://github.com/Omochice/Pinosu/issues/552)) ([7f8bf10](https://github.com/Omochice/Pinosu/commit/7f8bf10598a1ab3fc725c25cede330eb5d6ada3e))
+* **deps:** update composebom to v2026.06.00 ([#565](https://github.com/Omochice/Pinosu/issues/565)) ([51a72b2](https://github.com/Omochice/Pinosu/commit/51a72b215902fd3d7eb04bb20a42643140d5c867))
+* **deps:** update corektx to v1.19.0 ([#539](https://github.com/Omochice/Pinosu/issues/539)) ([32ed61a](https://github.com/Omochice/Pinosu/commit/32ed61a26344c902ab7790bd812b4ad2bb8e2aa8))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.06.01 ([#594](https://github.com/Omochice/Pinosu/issues/594)) ([c01baee](https://github.com/Omochice/Pinosu/commit/c01baee98e046f22fdc391fd5a5928c86e2e8c9a))
+* **deps:** update dependency androidx.hilt:hilt-lifecycle-viewmodel-compose to v1.4.0 ([#595](https://github.com/Omochice/Pinosu/issues/595)) ([1a6c43e](https://github.com/Omochice/Pinosu/commit/1a6c43e85e8f8a01ded9a6afb2aa5d7915560025))
+* **deps:** update hilt to v2.60 ([#583](https://github.com/Omochice/Pinosu/issues/583)) ([79c8285](https://github.com/Omochice/Pinosu/commit/79c8285029c2875b4eadb9ee8d4c71dac07cee8c))
+* **deps:** update kotlin monorepo to v2.4.0 ([#540](https://github.com/Omochice/Pinosu/issues/540)) ([ea2dcb2](https://github.com/Omochice/Pinosu/commit/ea2dcb29c967908050e5ed39a8651d6354697ccb))
+* **deps:** update lifecycle to v2.11.0 ([#566](https://github.com/Omochice/Pinosu/issues/566)) ([61f0c0a](https://github.com/Omochice/Pinosu/commit/61f0c0a7bde3e3d4fcbaa7a81848842731fac945))
+* **deps:** update mockk to v1.14.11 ([#532](https://github.com/Omochice/Pinosu/issues/532)) ([126b204](https://github.com/Omochice/Pinosu/commit/126b204e1e99fd3e431ea1d2129c9892af1b18e3))
+* **deps:** update okhttp monorepo to v5.4.0 ([#549](https://github.com/Omochice/Pinosu/issues/549)) ([4c0bebe](https://github.com/Omochice/Pinosu/commit/4c0bebe30a5f92d582c10a9328ad5e2660d0df00))
+* **deps:** update quartz to v1.11.0 ([#522](https://github.com/Omochice/Pinosu/issues/522)) ([fbc3cd2](https://github.com/Omochice/Pinosu/commit/fbc3cd28d9490341a35f6270747115633d701891))
+* **deps:** update tink to v1.22.0 ([#568](https://github.com/Omochice/Pinosu/issues/568)) ([3f06222](https://github.com/Omochice/Pinosu/commit/3f062224e5bf5006e1340cefa0b5c1be5db52b35))
+
 ## [0.19.1](https://github.com/Omochice/Pinosu/compare/v0.19.0...v0.19.1) (2026-05-23)
 
 
