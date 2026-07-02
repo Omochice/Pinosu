@@ -30,7 +30,7 @@ okhttp = {group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp
 jsoup = {group = "org.jsoup", name = "jsoup", version.ref = "jsoup"}
 mockk = {group = "io.mockk", name = "mockk", version.ref = "mockk"}
 mockk-android = {group = "io.mockk", name = "mockk-android", version.ref = "mockk"}
-archunit = {group = "com.tngtech.archunit", name = "archunit-junit4", version.ref = "archunit"}
+konsist = {group = "com.lemonappdev", name = "konsist", version.ref = "konsist"}
 robolectric = {group = "org.robolectric", name = "robolectric", version.ref = "robolectric"}
 kotlinx-coroutines-android = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines"}
 kotlinx-coroutines-test = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines"}
@@ -85,4 +85,4 @@ aboutlibraries = "14.2.1"
 serializationJson = "1.11.0"
 tink = "1.22.0"
 coil = "3.5.0"
-archunit = "1.4.2"
+konsist = "0.17.3"

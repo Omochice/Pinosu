@@ -1,44 +1,40 @@
 package io.github.omochice.pinosu.architecture
 
-import com.tngtech.archunit.core.importer.ImportOption
-import com.tngtech.archunit.junit.AnalyzeClasses
-import com.tngtech.archunit.junit.ArchTest
-import com.tngtech.archunit.junit.ArchUnitRunner
-import com.tngtech.archunit.lang.ArchRule
-import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import org.junit.runner.RunWith
+import com.lemonappdev.konsist.api.Konsist
+import com.lemonappdev.konsist.api.architecture.KoArchitectureCreator.assertArchitecture
+import com.lemonappdev.konsist.api.architecture.Layer
+import kotlin.test.Test
 
-@RunWith(ArchUnitRunner::class)
-@AnalyzeClasses(
-    packages = ["io.github.omochice.pinosu"],
-    importOptions = [ImportOption.DoNotIncludeTests::class],
-)
 class DependencyDirectionTest {
 
-  @ArchTest
-  val `core must not depend on feature`: ArchRule =
-      noClasses()
-          .that()
-          .resideInAPackage("io.github.omochice.pinosu.core..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("io.github.omochice.pinosu.feature..")
+  @Test
+  fun `core must not depend on feature`() {
+    Konsist.scopeFromProduction().assertArchitecture {
+      val core = Layer("Core", "io.github.omochice.pinosu.core..")
+      val feature = Layer("Feature", "io.github.omochice.pinosu.feature..")
+      core.doesNotDependOn(feature)
+    }
+  }
 
-  @ArchTest
-  val `feature domain must not depend on data`: ArchRule =
-      noClasses()
-          .that()
-          .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("io.github.omochice.pinosu.feature.*.data..")
+  // Konsist Layer patterns allow ".." only at the start or end, so
+  // "feature.*.domain.." cannot be expressed directly. Segment-based patterns
+  // are equivalent here because domain/data/presentation packages exist only
+  // under feature.*.
+  @Test
+  fun `feature domain must not depend on data`() {
+    Konsist.scopeFromProduction().assertArchitecture {
+      val domain = Layer("Domain", "..domain..")
+      val data = Layer("Data", "..data..")
+      domain.doesNotDependOn(data)
+    }
+  }
 
-  @ArchTest
-  val `feature domain must not depend on presentation`: ArchRule =
-      noClasses()
-          .that()
-          .resideInAPackage("io.github.omochice.pinosu.feature.*.domain..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("io.github.omochice.pinosu.feature.*.presentation..")
+  @Test
+  fun `feature domain must not depend on presentation`() {
+    Konsist.scopeFromProduction().assertArchitecture {
+      val domain = Layer("Domain", "..domain..")
+      val presentation = Layer("Presentation", "..presentation..")
+      domain.doesNotDependOn(presentation)
+    }
+  }
 }

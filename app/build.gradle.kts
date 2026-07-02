@@ -145,7 +145,7 @@ dependencies {
   testImplementation(libs.mockk)
   testImplementation(libs.robolectric)
   testImplementation(libs.kotlinx.coroutines.test)
-  testImplementation(libs.archunit)
+  testImplementation(libs.konsist)
   androidTestImplementation(testFixtures(project(":app")))
   androidTestImplementation(libs.kotlin.test)
   androidTestImplementation(libs.kotlin.test.junit)
