@@ -132,11 +132,8 @@ dependencies {
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
-  // Workaround for Hilt + Kotlin 2.3.0 metadata compatibility
-  // https://github.com/google/dagger/issues/5001
-  ksp(libs.kotlin.metadata.jvm)
 
-  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
+  detektPlugins(libs.detekt.formatting)
 
   // Compose compiler plugin is applied module-wide; testFixtures needs the runtime on classpath
   testFixturesImplementation(platform(libs.androidx.compose.bom))
@@ -156,13 +153,18 @@ dependencies {
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.mockk.android)
-  androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
-  kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
+  androidTestImplementation(libs.hilt.android.testing)
+  kspAndroidTest(libs.hilt.compiler)
 
   constraints {
     androidTestImplementation(libs.androidx.test.espresso.core) {
       because(
           "espresso-core <3.7.0 calls the removed InputManager.getInstance and crashes on API 37")
+    }
+    ksp(libs.kotlin.metadata.jvm) {
+      because(
+          "hilt-compiler pulls an older kotlin-metadata-jvm that cannot read Kotlin 2.3+ metadata" +
+              " (https://github.com/google/dagger/issues/5001)")
     }
   }
 }

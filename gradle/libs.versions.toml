@@ -1,5 +1,6 @@
 [libraries]
 androidx-core-ktx = {group = "androidx.core", name = "core-ktx", version.ref = "coreKtx"}
+detekt-formatting = {group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt"}
 junit = {group = "junit", name = "junit", version.ref = "junit"}
 androidx-junit = {group = "androidx.test.ext", name = "junit", version.ref = "junitVersion"}
 androidx-test-runner = {group = "androidx.test", name = "runner", version.ref = "testRunner"}
@@ -23,6 +24,7 @@ androidx-lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "life
 androidx-activity-compose = {group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose"}
 quartz = {group = "com.vitorpamplona.quartz", name = "quartz", version.ref = "quartz"}
 hilt-android = {group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
+hilt-android-testing = {group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt"}
 hilt-compiler = {group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
 okhttp = {group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp"}
 jsoup = {group = "org.jsoup", name = "jsoup", version.ref = "jsoup"}
