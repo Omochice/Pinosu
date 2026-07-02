@@ -1,5 +1,132 @@
 # Changelog
 
+## [0.19.1](https://github.com/Omochice/Pinosu/compare/v0.20.0...v0.19.1) (2026-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* set minsdk=30 ([#129](https://github.com/Omochice/Pinosu/issues/129))
+
+### Features
+
+* add bookmark posting ([#95](https://github.com/Omochice/Pinosu/issues/95)) ([980a3e5](https://github.com/Omochice/Pinosu/commit/980a3e5c46c13d4ee2c8774644f65dd18006ca25))
+* add dark mode support with Material You ([#226](https://github.com/Omochice/Pinosu/issues/226)) ([d9008c0](https://github.com/Omochice/Pinosu/commit/d9008c0f2d42c14b85f1e6859fb2d6e6bc6a6339))
+* add gesture-based drawer menu dismissal ([#259](https://github.com/Omochice/Pinosu/issues/259)) ([ae31e40](https://github.com/Omochice/Pinosu/commit/ae31e40e7513480add0067d7fcaeb3462cbf6826))
+* add i18n support with English/Japanese/System language selector ([#316](https://github.com/Omochice/Pinosu/issues/316)) ([20212e9](https://github.com/Omochice/Pinosu/commit/20212e9073d8b2eaf4dc8ab7ef12865c3c01522a))
+* add infinite scroll pagination ([#306](https://github.com/Omochice/Pinosu/issues/306)) ([5cd0e03](https://github.com/Omochice/Pinosu/commit/5cd0e03de806a4a2f3c57a1617ed19597f03fe5f))
+* add long-press menu to copy content or raw JSON ([#469](https://github.com/Omochice/Pinosu/issues/469)) ([d3ffce3](https://github.com/Omochice/Pinosu/commit/d3ffce3e8dc637a3d5b74c37f63427565a3385c0))
+* add long-press to copy raw JSON on bookmark list ([#201](https://github.com/Omochice/Pinosu/issues/201)) ([c0c1f0a](https://github.com/Omochice/Pinosu/commit/c0c1f0a2084dbf87e4d373d5123c87e47a86c6b7))
+* add repository link to app info screen ([#309](https://github.com/Omochice/Pinosu/issues/309)) ([6ac3d93](https://github.com/Omochice/Pinosu/commit/6ac3d939bdd2dd6e730f9ff8b8da9c0476d7f25b))
+* add swipe gesture to switch between Local/Global bookmark tabs ([#222](https://github.com/Omochice/Pinosu/issues/222)) ([d848d84](https://github.com/Omochice/Pinosu/commit/d848d84aae5da6f1a67fad4a93a2c00d390a59dc))
+* add switch to toggle staggered grid layout ([#104](https://github.com/Omochice/Pinosu/issues/104)) ([8942ed8](https://github.com/Omochice/Pinosu/commit/8942ed852eb596a76c7a949ee304ff075d10835e))
+* add the application icon ([#224](https://github.com/Omochice/Pinosu/issues/224)) ([c6e6f04](https://github.com/Omochice/Pinosu/commit/c6e6f04fdab113b352f7972669b0e9e95c089a1c))
+* **auth:** add read-only public key login ([#246](https://github.com/Omochice/Pinosu/issues/246)) ([32885fb](https://github.com/Omochice/Pinosu/commit/32885fb5af8429eaa8504fb64323c5353369eec3))
+* display kind 0 profile avatars in bookmark detail ([#277](https://github.com/Omochice/Pinosu/issues/277)) ([5b9622f](https://github.com/Omochice/Pinosu/commit/5b9622f2fde8af91184d412ae0aa9e0db1dca27f))
+* display kind 1 events as quotes in bookmark detail ([#170](https://github.com/Omochice/Pinosu/issues/170)) ([7797625](https://github.com/Omochice/Pinosu/commit/77976259db3291433f80bb9aa6363023b073bd90))
+* display OGP image on bookmark cards and detail screen ([#215](https://github.com/Omochice/Pinosu/issues/215)) ([a3f7656](https://github.com/Omochice/Pinosu/commit/a3f76569d04ba4afe0322c5c8c8c3bd72cc1a28e))
+* edit own kind 39701 bookmark events ([#440](https://github.com/Omochice/Pinosu/issues/440)) ([2e0bd21](https://github.com/Omochice/Pinosu/commit/2e0bd213547b36aff45c3e007a86ee9ae89b77fc))
+* make bootstrap relays user-configurable with 3 defaults ([#330](https://github.com/Omochice/Pinosu/issues/330)) ([acc794d](https://github.com/Omochice/Pinosu/commit/acc794da948fc4e43869fbd63e056caf62ea4029))
+* receive shared url ([#155](https://github.com/Omochice/Pinosu/issues/155)) ([367ef50](https://github.com/Omochice/Pinosu/commit/367ef5059570fe39d7744dee14a43e0716d1649d))
+* show comments for kind 39701 event ([#168](https://github.com/Omochice/Pinosu/issues/168)) ([7378f94](https://github.com/Omochice/Pinosu/commit/7378f9410f5fd5025dd88120046f30efea37f64b))
+* support client tag ([#380](https://github.com/Omochice/Pinosu/issues/380)) ([82eeb4e](https://github.com/Omochice/Pinosu/commit/82eeb4ead94f703bfd90e4b892b9e4cc22646fa3))
+* target Android 17 (API level 37) ([#592](https://github.com/Omochice/Pinosu/issues/592)) ([ea4bf77](https://github.com/Omochice/Pinosu/commit/ea4bf77e51f2b38ecd1d4c68808f182d837c6abf))
+
+
+### Bug Fixes
+
+* avoid OOM when bookmark URLs point to non-HTML resources ([#468](https://github.com/Omochice/Pinosu/issues/468)) ([4696dcf](https://github.com/Omochice/Pinosu/commit/4696dcf3eb8110639e782f330d070feebf3bfd85))
+* **comment:** draw QuoteCard left bar above Surface background ([#177](https://github.com/Omochice/Pinosu/issues/177)) ([86a9c6e](https://github.com/Omochice/Pinosu/commit/86a9c6ecaac7dc9259b21c9b87966a625871b79c))
+* **deps:** update aboutlibraries to v14.0.0-b03 ([#350](https://github.com/Omochice/Pinosu/issues/350)) ([3e64939](https://github.com/Omochice/Pinosu/commit/3e64939e05d526d4f694e06b45267b2988cad4e1))
+* **deps:** update aboutlibraries to v14.0.1 ([#404](https://github.com/Omochice/Pinosu/issues/404)) ([79428bc](https://github.com/Omochice/Pinosu/commit/79428bc76f858d645cbe8b558da7c749f211bd3b))
+* **deps:** update aboutlibraries to v14.1.0 ([#458](https://github.com/Omochice/Pinosu/issues/458)) ([a455432](https://github.com/Omochice/Pinosu/commit/a455432a5af3f602994fe72a06df765fe2f3c829))
+* **deps:** update aboutlibraries to v14.2.0 ([#478](https://github.com/Omochice/Pinosu/issues/478)) ([cf86c1b](https://github.com/Omochice/Pinosu/commit/cf86c1bbe1ae91af8fdaf8aef7ebc119e5ca58b3))
+* **deps:** update aboutlibraries to v15 ([#572](https://github.com/Omochice/Pinosu/issues/572)) ([cda2b8a](https://github.com/Omochice/Pinosu/commit/cda2b8ae27092734de5e0bdf909d169ea5953fc1))
+* **deps:** update coil to v3.4.0 ([#266](https://github.com/Omochice/Pinosu/issues/266)) ([a1f4458](https://github.com/Omochice/Pinosu/commit/a1f445875abe591840a582a916ac3306101fe968))
+* **deps:** update coil to v3.5.0 ([#552](https://github.com/Omochice/Pinosu/issues/552)) ([7f8bf10](https://github.com/Omochice/Pinosu/commit/7f8bf10598a1ab3fc725c25cede330eb5d6ada3e))
+* **deps:** update composebom to v2026.06.00 ([#565](https://github.com/Omochice/Pinosu/issues/565)) ([51a72b2](https://github.com/Omochice/Pinosu/commit/51a72b215902fd3d7eb04bb20a42643140d5c867))
+* **deps:** update corektx to v1.19.0 ([#539](https://github.com/Omochice/Pinosu/issues/539)) ([32ed61a](https://github.com/Omochice/Pinosu/commit/32ed61a26344c902ab7790bd812b4ad2bb8e2aa8))
+* **deps:** update dependency androidx.activity:activity-compose to v1.12.3 ([#154](https://github.com/Omochice/Pinosu/issues/154)) ([6635c4a](https://github.com/Omochice/Pinosu/commit/6635c4aaa5e8952864fcba472080aba6762baa65))
+* **deps:** update dependency androidx.activity:activity-compose to v1.12.4 ([#211](https://github.com/Omochice/Pinosu/issues/211)) ([4d189d9](https://github.com/Omochice/Pinosu/commit/4d189d9bc32d69e4fedb4fd94b2cd8775236f781))
+* **deps:** update dependency androidx.activity:activity-compose to v1.13.0 ([#321](https://github.com/Omochice/Pinosu/issues/321)) ([e5268d3](https://github.com/Omochice/Pinosu/commit/e5268d379cc7af1f0057aa81611c0ae7221f2861))
+* **deps:** update dependency androidx.compose:compose-bom to v2026 ([#84](https://github.com/Omochice/Pinosu/issues/84)) ([dd396f2](https://github.com/Omochice/Pinosu/commit/dd396f27c7b249fd97ba357daaa3291948881abb))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.01.01 ([#144](https://github.com/Omochice/Pinosu/issues/144)) ([c25158b](https://github.com/Omochice/Pinosu/commit/c25158b2153f48fd555dd07bba8f1c5982524e26))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.02.00 ([#212](https://github.com/Omochice/Pinosu/issues/212)) ([b062ba2](https://github.com/Omochice/Pinosu/commit/b062ba2d6f838b1f6d62a9a969197867c3bad0b6))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.02.01 ([#278](https://github.com/Omochice/Pinosu/issues/278)) ([7e808b4](https://github.com/Omochice/Pinosu/commit/7e808b48f1e614846690902f331ac662fe9f7128))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.03.00 ([#322](https://github.com/Omochice/Pinosu/issues/322)) ([560aea1](https://github.com/Omochice/Pinosu/commit/560aea1dae8836cecb85b9c540d3b856a9e139b9))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.03.01 ([#372](https://github.com/Omochice/Pinosu/issues/372)) ([014f05b](https://github.com/Omochice/Pinosu/commit/014f05b879ebdebe3199fa992295715ef19148a4))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.04.01 ([#429](https://github.com/Omochice/Pinosu/issues/429)) ([b9000a5](https://github.com/Omochice/Pinosu/commit/b9000a58d217c84c090966ef8d08312bcb6b6932))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.05.00 ([#475](https://github.com/Omochice/Pinosu/issues/475)) ([80d21ff](https://github.com/Omochice/Pinosu/commit/80d21ff45bc3347864c2b1025021e7efde19c30e))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.05.01 ([#508](https://github.com/Omochice/Pinosu/issues/508)) ([d68a185](https://github.com/Omochice/Pinosu/commit/d68a185456b9aa89e166443c5f8ee1361cf56c5b))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.06.01 ([#594](https://github.com/Omochice/Pinosu/issues/594)) ([c01baee](https://github.com/Omochice/Pinosu/commit/c01baee98e046f22fdc391fd5a5928c86e2e8c9a))
+* **deps:** update dependency androidx.core:core-ktx to v1.18.0 ([#323](https://github.com/Omochice/Pinosu/issues/323)) ([e98f483](https://github.com/Omochice/Pinosu/commit/e98f483d4427a96f4316f5f4092adf20fb0c5a23))
+* **deps:** update dependency androidx.datastore:datastore to v1.2.1 ([#320](https://github.com/Omochice/Pinosu/issues/320)) ([fe1c007](https://github.com/Omochice/Pinosu/commit/fe1c0074cf0722861917bbd7b6599e98d24581e8))
+* **deps:** update dependency androidx.hilt:hilt-lifecycle-viewmodel-compose to v1.4.0 ([#595](https://github.com/Omochice/Pinosu/issues/595)) ([1a6c43e](https://github.com/Omochice/Pinosu/commit/1a6c43e85e8f8a01ded9a6afb2aa5d7915560025))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.9.7 ([#145](https://github.com/Omochice/Pinosu/issues/145)) ([1ba5e44](https://github.com/Omochice/Pinosu/commit/1ba5e443d23e59218751fe3b6b1afee72abfe020))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.9.8 ([#428](https://github.com/Omochice/Pinosu/issues/428)) ([7713c97](https://github.com/Omochice/Pinosu/commit/7713c97deb44a875ffbd48cd79289a7d7692d09a))
+* **deps:** update dependency com.google.android.material:material to v1.14.0 ([#499](https://github.com/Omochice/Pinosu/issues/499)) ([8945af4](https://github.com/Omochice/Pinosu/commit/8945af4c08616a973b2c50a6383e872ff5839c45))
+* **deps:** update dependency com.google.crypto.tink:tink-android to v1.21.0 ([#367](https://github.com/Omochice/Pinosu/issues/367)) ([1854304](https://github.com/Omochice/Pinosu/commit/18543040f4b183472f6065b417baefa8aea941d6))
+* **deps:** update dependency com.tngtech.archunit:archunit-junit4 to v1.4.2 ([#414](https://github.com/Omochice/Pinosu/issues/414)) ([68f0bee](https://github.com/Omochice/Pinosu/commit/68f0beee4b7e5e8d254020d4fef77e9cd81759b8))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.1 ([#365](https://github.com/Omochice/Pinosu/issues/365)) ([b5898ca](https://github.com/Omochice/Pinosu/commit/b5898ca724542af5284e6f38a914e85d169d7d3b))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.2 ([#368](https://github.com/Omochice/Pinosu/issues/368)) ([19c61f8](https://github.com/Omochice/Pinosu/commit/19c61f895ffbcd26b018e220711ac1184308780b))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.06.3 ([#369](https://github.com/Omochice/Pinosu/issues/369)) ([1c43b7d](https://github.com/Omochice/Pinosu/commit/1c43b7d8da80a48a7b2adcb135e8a34f34df7547))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.08.0 ([#381](https://github.com/Omochice/Pinosu/issues/381)) ([2ece806](https://github.com/Omochice/Pinosu/commit/2ece806ed67f9ac6b7b29a4d96380ceb8fdf7a53))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.09.1 ([#503](https://github.com/Omochice/Pinosu/issues/503)) ([4563cc8](https://github.com/Omochice/Pinosu/commit/4563cc8ffb2860e2c3bda2d0414c2d59e03fd7a0))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-coroutines-test to v1.11.0 ([#482](https://github.com/Omochice/Pinosu/issues/482)) ([e1ca87b](https://github.com/Omochice/Pinosu/commit/e1ca87b7838acfc8923162841fea16c2cbaabca4))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.10.0 ([#108](https://github.com/Omochice/Pinosu/issues/108)) ([c2c23ab](https://github.com/Omochice/Pinosu/commit/c2c23abc5bb4a3a9a8a9a92a09dc5f48529398e9))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.11.0 ([#408](https://github.com/Omochice/Pinosu/issues/408)) ([4cf15a7](https://github.com/Omochice/Pinosu/commit/4cf15a7c7a8a436c378322ad82da240d4d69c0f0))
+* **deps:** update dependency org.jsoup:jsoup to v1.22.2 ([#419](https://github.com/Omochice/Pinosu/issues/419)) ([853c27f](https://github.com/Omochice/Pinosu/commit/853c27f22a675cafe3fa483af960b784ad517a78))
+* **deps:** update dependency org.robolectric:robolectric to v4.16.1 ([#105](https://github.com/Omochice/Pinosu/issues/105)) ([afc178c](https://github.com/Omochice/Pinosu/commit/afc178c161338f4869749366f22a3453d8f6ae38))
+* **deps:** update hilt to v2.58 ([#90](https://github.com/Omochice/Pinosu/issues/90)) ([fc278fe](https://github.com/Omochice/Pinosu/commit/fc278feee8379637854e0566348d175063c24e9d))
+* **deps:** update hilt to v2.59 ([#106](https://github.com/Omochice/Pinosu/issues/106)) ([54028a7](https://github.com/Omochice/Pinosu/commit/54028a74d68d2d83b5c73c7ee3a5708b9a4cb597))
+* **deps:** update hilt to v2.59.1 ([#172](https://github.com/Omochice/Pinosu/issues/172)) ([6d599e9](https://github.com/Omochice/Pinosu/commit/6d599e9b6eab0a8c57613baadec66260c97eac39))
+* **deps:** update hilt to v2.59.2 ([#253](https://github.com/Omochice/Pinosu/issues/253)) ([fbe2c3f](https://github.com/Omochice/Pinosu/commit/fbe2c3fa63c60a76b29518efa824388321491e75))
+* **deps:** update hilt to v2.60 ([#583](https://github.com/Omochice/Pinosu/issues/583)) ([79c8285](https://github.com/Omochice/Pinosu/commit/79c8285029c2875b4eadb9ee8d4c71dac07cee8c))
+* **deps:** update kotlin monorepo to v2.3.10 ([#182](https://github.com/Omochice/Pinosu/issues/182)) ([c15ade9](https://github.com/Omochice/Pinosu/commit/c15ade955426dbeedbf989aa6e18e306dad14a8a))
+* **deps:** update kotlin monorepo to v2.3.20 ([#344](https://github.com/Omochice/Pinosu/issues/344)) ([6030096](https://github.com/Omochice/Pinosu/commit/6030096d0af34d3710c019bd8c808553fadaff9f))
+* **deps:** update kotlin monorepo to v2.3.21 ([#434](https://github.com/Omochice/Pinosu/issues/434)) ([bcc1b55](https://github.com/Omochice/Pinosu/commit/bcc1b55b6efa746895594615db52ca1557c88fce))
+* **deps:** update kotlin monorepo to v2.4.0 ([#540](https://github.com/Omochice/Pinosu/issues/540)) ([ea2dcb2](https://github.com/Omochice/Pinosu/commit/ea2dcb29c967908050e5ed39a8651d6354697ccb))
+* **deps:** update lifecycle to v2.11.0 ([#566](https://github.com/Omochice/Pinosu/issues/566)) ([61f0c0a](https://github.com/Omochice/Pinosu/commit/61f0c0a7bde3e3d4fcbaa7a81848842731fac945))
+* **deps:** update mockk to v1.14.11 ([#532](https://github.com/Omochice/Pinosu/issues/532)) ([126b204](https://github.com/Omochice/Pinosu/commit/126b204e1e99fd3e431ea1d2129c9892af1b18e3))
+* **deps:** update mockk to v1.14.9 ([#140](https://github.com/Omochice/Pinosu/issues/140)) ([44a1e5b](https://github.com/Omochice/Pinosu/commit/44a1e5b49136307fd221acf1e3e78a370317a71d))
+* **deps:** update okhttp monorepo to v5.4.0 ([#549](https://github.com/Omochice/Pinosu/issues/549)) ([4c0bebe](https://github.com/Omochice/Pinosu/commit/4c0bebe30a5f92d582c10a9328ad5e2660d0df00))
+* **deps:** update quartz to v1.11.0 ([#522](https://github.com/Omochice/Pinosu/issues/522)) ([fbc3cd2](https://github.com/Omochice/Pinosu/commit/fbc3cd28d9490341a35f6270747115633d701891))
+* **deps:** update tink to v1.22.0 ([#568](https://github.com/Omochice/Pinosu/issues/568)) ([3f06222](https://github.com/Omochice/Pinosu/commit/3f062224e5bf5006e1340cefa0b5c1be5db52b35))
+* fetch relay list on read-only login too ([#339](https://github.com/Omochice/Pinosu/issues/339)) ([590b113](https://github.com/Omochice/Pinosu/commit/590b1130a2ce2b04bcd866039c37c601e27e65c1))
+* remove #E tag filter from comment query ([#447](https://github.com/Omochice/Pinosu/issues/447)) ([16e1cba](https://github.com/Omochice/Pinosu/commit/16e1cbaa3b509c84111ada2095d5b72dd0f48639))
+* remove author comment special styling ([#308](https://github.com/Omochice/Pinosu/issues/308)) ([8a5ef7f](https://github.com/Omochice/Pinosu/commit/8a5ef7fb148649170c7d4867d15501c02023f71e))
+* remove windowLightStatusBar override that broke dark mode status bar ([#230](https://github.com/Omochice/Pinosu/issues/230)) ([028df50](https://github.com/Omochice/Pinosu/commit/028df5033d0a8203b6b454b605a4e97796aeee34))
+* use AboutLibraries Android plugin for automatic resource generation ([#83](https://github.com/Omochice/Pinosu/issues/83)) ([2c7dad1](https://github.com/Omochice/Pinosu/commit/2c7dad116814490d26a7f56fd962e6fb41c6ce92))
+* use relay server config from nip-65 specification ([#93](https://github.com/Omochice/Pinosu/issues/93)) ([3029704](https://github.com/Omochice/Pinosu/commit/3029704effc45adf38e53cd420e66a8e6bff508e))
+
+
+### Reverts
+
+* "fix(deps): update dependency com.vitorpamplona.quartz:quartz to v1.09.1 ([#503](https://github.com/Omochice/Pinosu/issues/503))" ([#521](https://github.com/Omochice/Pinosu/issues/521)) ([637cf5c](https://github.com/Omochice/Pinosu/commit/637cf5c07668f107046016d65b5919f9fbc66d06))
+
+
+### Code Refactoring
+
+* use LoginUiState sealed interface for type-safe error handling ([#133](https://github.com/Omochice/Pinosu/issues/133)) ([9ec2fbb](https://github.com/Omochice/Pinosu/commit/9ec2fbb11d10dad0d80a7ad7977820f7bb976d2d))
+
+
+### Tests
+
+* migrate to kotlin.test ([#488](https://github.com/Omochice/Pinosu/issues/488)) ([4ba429a](https://github.com/Omochice/Pinosu/commit/4ba429af71359aedcc90c34f2ae274a0f015f705))
+
+
+### Build System
+
+* set minsdk=30 ([#129](https://github.com/Omochice/Pinosu/issues/129)) ([98a5e49](https://github.com/Omochice/Pinosu/commit/98a5e49247a01b976b7d4f584d05db39e8e4d6f5))
+
+
+### Continuous Integration
+
+* add release workflow ([#115](https://github.com/Omochice/Pinosu/issues/115)) ([7bb3eb4](https://github.com/Omochice/Pinosu/commit/7bb3eb486f38e508b04b84736a358b209c99a18b))
+* add versionCode increment check for PRs ([#137](https://github.com/Omochice/Pinosu/issues/137)) ([fc75591](https://github.com/Omochice/Pinosu/commit/fc755913e25f5a5b2955971edf45950f33fc4335))
+* publish release draft on first ([#118](https://github.com/Omochice/Pinosu/issues/118)) ([aa5b2d9](https://github.com/Omochice/Pinosu/commit/aa5b2d9326f3316921116bc3ec3279b585f6cd18))
+* publish releases to Zapstore ([#523](https://github.com/Omochice/Pinosu/issues/523)) ([46b9b5e](https://github.com/Omochice/Pinosu/commit/46b9b5efdecca70765a97b073fa6fd135a334963))
+* s/pr_created/prs_created/ ([#117](https://github.com/Omochice/Pinosu/issues/117)) ([d10f98a](https://github.com/Omochice/Pinosu/commit/d10f98aafb4e17f9bc2f5221b9b0ad8bd8970b22))
+
 ## [0.20.0](https://github.com/Omochice/Pinosu/compare/v0.19.1...v0.20.0) (2026-07-02)
 
 
