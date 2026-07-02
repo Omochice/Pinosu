@@ -132,9 +132,6 @@ dependencies {
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
-  // Workaround for Hilt + Kotlin 2.3.0 metadata compatibility
-  // https://github.com/google/dagger/issues/5001
-  ksp(libs.kotlin.metadata.jvm)
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
 
@@ -163,6 +160,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.core) {
       because(
           "espresso-core <3.7.0 calls the removed InputManager.getInstance and crashes on API 37")
+    }
+    ksp(libs.kotlin.metadata.jvm) {
+      because(
+          "hilt-compiler pulls an older kotlin-metadata-jvm that cannot read Kotlin 2.3+ metadata" +
+              " (https://github.com/google/dagger/issues/5001)")
     }
   }
 }
