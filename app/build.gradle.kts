@@ -133,7 +133,7 @@ dependencies {
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
 
-  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detekt.get()}")
+  detektPlugins(libs.detekt.formatting)
 
   // Compose compiler plugin is applied module-wide; testFixtures needs the runtime on classpath
   testFixturesImplementation(platform(libs.androidx.compose.bom))
@@ -153,8 +153,8 @@ dependencies {
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.kotlinx.coroutines.test)
   androidTestImplementation(libs.mockk.android)
-  androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
-  kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
+  androidTestImplementation(libs.hilt.android.testing)
+  kspAndroidTest(libs.hilt.compiler)
 
   constraints {
     androidTestImplementation(libs.androidx.test.espresso.core) {
