@@ -34,12 +34,12 @@ plugins {
 
 android {
   namespace = "io.github.omochice.pinosu"
-  compileSdk = 36
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "io.github.omochice.pinosu"
     minSdk = 30
-    targetSdk = 36
+    targetSdk = 37
     versionCode = (versionJson["versionCode"] as? Number)?.toInt() ?: 1
     versionName = (versionJson["versionName"] as? String) ?: "0.1.0"
 
@@ -158,6 +158,13 @@ dependencies {
   androidTestImplementation(libs.mockk.android)
   androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hilt.get()}")
   kspAndroidTest("com.google.dagger:hilt-compiler:${libs.versions.hilt.get()}")
+
+  constraints {
+    androidTestImplementation(libs.androidx.test.espresso.core) {
+      because(
+          "espresso-core <3.7.0 calls the removed InputManager.getInstance and crashes on API 37")
+    }
+  }
 }
 
 kover {
