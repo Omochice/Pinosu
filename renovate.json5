@@ -1,7 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    "github>Omochice/personal-renovate-config#v1.15.0",
+    "github>Omochice/personal-renovate-config#v1.16.0",
   ],
   customManagers: [
     {
