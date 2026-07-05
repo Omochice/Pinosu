@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.auth.data.local
 
+import androidx.datastore.core.CorruptionException
 import com.google.crypto.tink.Aead
 import io.github.omochice.pinosu.feature.auth.domain.model.LoginMode
 import io.mockk.every
@@ -12,6 +13,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.runner.RunWith
@@ -62,18 +64,31 @@ class AuthDataSerializerTest {
   }
 
   @Test
-  fun `readFrom when decrypt throws exception returns default value`() = runTest {
+  fun `readFrom when decrypt fails throws CorruptionException instead of default`() = runTest {
     val encryptedBytes = "corrupted_data".toByteArray()
     val associatedData = "pinosu_auth_data".toByteArray()
 
     every { mockAead.decrypt(encryptedBytes, associatedData) } throws
         GeneralSecurityException("Decryption failed")
 
-    val input = ByteArrayInputStream(encryptedBytes)
-    val result = serializer.readFrom(input)
-
-    assertEquals(AuthData.DEFAULT, result)
+    assertFailsWith<CorruptionException> {
+      serializer.readFrom(ByteArrayInputStream(encryptedBytes))
+    }
   }
+
+  @Test
+  fun `readFrom when deserialization fails throws CorruptionException instead of default`() =
+      runTest {
+        val encryptedBytes = "encrypted_data".toByteArray()
+        val associatedData = "pinosu_auth_data".toByteArray()
+
+        every { mockAead.decrypt(encryptedBytes, associatedData) } returns
+            "not-valid-json".toByteArray()
+
+        assertFailsWith<CorruptionException> {
+          serializer.readFrom(ByteArrayInputStream(encryptedBytes))
+        }
+      }
 
   @Test
   fun `writeTo encrypts data and writes to output stream`() = runTest {
