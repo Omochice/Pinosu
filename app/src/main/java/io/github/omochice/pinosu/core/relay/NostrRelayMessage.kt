@@ -10,7 +10,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -131,7 +131,9 @@ internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
     val eventId =
         array[1].jsonPrimitive.contentOrNull
             ?: throw SerializationException("Event ID must be a string")
-    val accepted = array[2].jsonPrimitive.boolean
+    val accepted =
+        array[2].jsonPrimitive.booleanOrNull
+            ?: throw SerializationException("OK accepted flag must be a boolean")
     val message = if (array.size > 3) array[3].jsonPrimitive.contentOrNull ?: "" else ""
     return NostrRelayMessage.Ok(eventId, accepted, message)
   }
