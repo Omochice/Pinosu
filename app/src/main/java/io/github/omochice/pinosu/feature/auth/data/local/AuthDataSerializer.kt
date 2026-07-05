@@ -25,11 +25,9 @@ class AuthDataSerializer(private val aead: Aead) : Serializer<AuthData> {
       return defaultValue
     }
 
-    // Non-empty data that fails to decrypt or deserialize is genuinely corrupt or currently
-    // unreadable (e.g. a rotated Tink keyset or a temporarily inaccessible keystore key). Returning
-    // defaultValue here would be indistinguishable from a fresh install and would silently discard
-    // the still-encrypted data on disk, so surface it as a CorruptionException instead. The file is
-    // left untouched so the data can still be recovered once the key becomes readable again.
+    // Returning defaultValue here would look like a fresh install and silently discard the
+    // still-encrypted data, so surface corruption instead. The file is left intact for recovery
+    // once the key becomes readable again.
     return try {
       val decryptedBytes = aead.decrypt(encryptedBytes, ASSOCIATED_DATA)
       Json.decodeFromString<AuthData>(decryptedBytes.decodeToString())
