@@ -218,6 +218,46 @@ class ExtractSharedContentUseCaseTest {
   }
 
   @Test
+  fun `URL wrapped in parentheses and trailing comma keeps only the URL`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "Great read (https://example.com/article), recommended")
+        }
+
+    val result = useCase(intent)
+    assertEquals(
+        SharedContent(url = "https://example.com/article", comment = "Great read (), recommended"),
+        result)
+  }
+
+  @Test
+  fun `URL followed by sentence punctuation drops the trailing period`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "See https://example.com/path.")
+        }
+
+    val result = useCase(intent)
+    assertEquals(SharedContent(url = "https://example.com/path", comment = "See ."), result)
+  }
+
+  @Test
+  fun `URL containing balanced parentheses is preserved`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "https://en.wikipedia.org/wiki/Nostr_(protocol)")
+        }
+
+    val result = useCase(intent)
+    assertEquals(
+        SharedContent(url = "https://en.wikipedia.org/wiki/Nostr_(protocol)", comment = null),
+        result)
+  }
+
+  @Test
   fun `URL with query params in text extracts full URL`() {
     val intent =
         Intent(Intent.ACTION_SEND).apply {
