@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
 
 import android.content.Intent
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,19 +23,29 @@ import kotlinx.coroutines.launch
  *
  * @param postBookmarkUseCase UseCase for creating and publishing bookmark events
  * @param nip55SignerClient Client for NIP-55 signer interaction
+ * @param savedStateHandle Handle used to persist the pending unsigned event across process death
  */
 @HiltViewModel
 class PostBookmarkViewModel
 @Inject
 constructor(
     private val postBookmarkUseCase: PostBookmarkUseCase,
-    private val nip55SignerClient: Nip55SignerClient
+    private val nip55SignerClient: Nip55SignerClient,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(PostBookmarkUiState())
   val uiState: StateFlow<PostBookmarkUiState> = _uiState.asStateFlow()
 
-  private var pendingUnsignedEvent: UnsignedNostrEvent? = null
+  /**
+   * JSON of the unsigned event awaiting a signature, persisted in [SavedStateHandle] so it survives
+   * process death while the external NIP-55 signer is in the foreground.
+   */
+  private var pendingUnsignedEventJson: String?
+    get() = savedStateHandle[KEY_PENDING_UNSIGNED_EVENT]
+    set(value) {
+      savedStateHandle[KEY_PENDING_UNSIGNED_EVENT] = value
+    }
 
   /**
    * Update URL field
@@ -130,8 +141,8 @@ constructor(
               categories = categories,
               comment = state.comment)
           .onSuccess { unsignedEvent ->
-            pendingUnsignedEvent = unsignedEvent
             val eventJson = unsignedEvent.toJson()
+            pendingUnsignedEventJson = eventJson
             val intent = nip55SignerClient.createSignEventIntent(eventJson)
             onReady(intent)
           }
@@ -168,6 +179,7 @@ constructor(
   }
 
   private suspend fun performPublishSignedEvent(response: SignedEventResponse) {
+    val pendingUnsignedEvent = pendingUnsignedEventJson?.let { UnsignedNostrEvent.fromJson(it) }
     val signedEventJson =
         UnsignedNostrEvent.buildSignedEventJson(response.signedEventJson, pendingUnsignedEvent)
             ?: run {
@@ -183,6 +195,10 @@ constructor(
             it.copy(isSubmitting = false, errorMessage = error.message ?: "ブックマークの投稿に失敗しました")
           }
         }
+  }
+
+  private companion object {
+    const val KEY_PENDING_UNSIGNED_EVENT = "pending_unsigned_event_json"
   }
 }
 

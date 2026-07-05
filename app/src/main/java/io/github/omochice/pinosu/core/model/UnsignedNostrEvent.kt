@@ -1,6 +1,8 @@
 package io.github.omochice.pinosu.core.model
 
 import com.vitorpamplona.quartz.nip01Core.crypto.EventHasher
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
@@ -90,5 +92,31 @@ data class UnsignedNostrEvent(
       }
       return unsignedEvent?.toSignedJson(signerResponse)
     }
+
+    /**
+     * Reconstruct an unsigned event from the JSON produced by [toJson]
+     *
+     * Used to restore the pending event across process death (persisted in SavedStateHandle) while
+     * an external NIP-55 signer is in the foreground.
+     *
+     * @param json JSON string previously produced by [toJson]
+     * @return The parsed event, or null if the JSON is malformed
+     */
+    fun fromJson(json: String): UnsignedNostrEvent? =
+        try {
+          val dto = Json.decodeFromString<UnsignedEventDto>(json)
+          UnsignedNostrEvent(dto.pubkey, dto.createdAt, dto.kind, dto.tags, dto.content)
+        } catch (_: IllegalArgumentException) {
+          null
+        }
   }
 }
+
+@Serializable
+private data class UnsignedEventDto(
+    val pubkey: String,
+    @SerialName("created_at") val createdAt: Long,
+    val kind: Int,
+    val tags: List<List<String>>,
+    val content: String,
+)
