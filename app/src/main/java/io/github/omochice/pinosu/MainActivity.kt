@@ -348,15 +348,15 @@ fun PinosuApp(
 
                 BookmarkScreen(
                     uiState = bookmarkUiState,
-                    onRefresh = { bookmarkViewModel.loadBookmarks() },
-                    onLoad = { bookmarkViewModel.loadBookmarks() },
+                    onRefresh = { mode -> bookmarkViewModel.loadTab(mode, forceReload = true) },
+                    onLoad = { mode -> bookmarkViewModel.loadTab(mode) },
                     onOpenDrawer = { scope.launch { drawerState.open() } },
                     onTabSelected = { tab -> bookmarkViewModel.selectTab(tab) },
                     onAddBookmark = { navController.navigate(PostBookmark()) },
                     onBookmarkDetailNavigate = { bookmark ->
                       navigateToBookmarkDetail(navController, bookmark)
                     },
-                    onLoadMore = { bookmarkViewModel.loadMore() },
+                    onLoadMore = { mode -> bookmarkViewModel.loadMore(mode) },
                     isReadOnly = mainUiState.isReadOnly)
               }
 

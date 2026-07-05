@@ -9,6 +9,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkTabState
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
@@ -47,10 +48,7 @@ class BookmarkScreenLongPressTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = listOf(sampleBookmark),
-                  userHexPubkey =
-                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+                  local = BookmarkTabState(items = listOf(sampleBookmark), isLoaded = true)),
           onRefresh = {},
           onLoad = {},
           onLongPressBookmark = { rawJson -> capturedRawJson = rawJson })
@@ -73,10 +71,7 @@ class BookmarkScreenLongPressTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = listOf(sampleBookmark),
-                  userHexPubkey =
-                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+                  local = BookmarkTabState(items = listOf(sampleBookmark), isLoaded = true)),
           onRefresh = {},
           onLoad = {},
           onCopyNostrLink = { encoded -> capturedNostrLink = encoded })
@@ -101,10 +96,7 @@ class BookmarkScreenLongPressTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = listOf(bookmarkWithoutDTag),
-                  userHexPubkey =
-                      "64381a1ad1ca81ccb4d264d48904387fc13251bb98d440e0ab4addb6997d7924"),
+                  local = BookmarkTabState(items = listOf(bookmarkWithoutDTag), isLoaded = true)),
           onRefresh = {},
           onLoad = {})
     }

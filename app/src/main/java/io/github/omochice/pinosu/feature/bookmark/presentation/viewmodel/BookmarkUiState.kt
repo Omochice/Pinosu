@@ -4,28 +4,50 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMo
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 
 /**
+ * Loading and data state for a single bookmark tab (Local or Global)
+ *
+ * Each tab owns an independent query and pagination cursor so that the author-constrained Local
+ * query and the unconstrained Global query never share state.
+ *
+ * @property items Bookmark items fetched for this tab
+ * @property isLoading Whether the first page is currently being loaded
+ * @property isLoadingMore Whether an additional (older) page is currently being fetched
+ * @property hasMoreItems Whether the relay may still have older items to fetch
+ * @property isLoaded Whether the first page has completed at least once, used to distinguish a
+ *   never-loaded tab from a loaded-but-empty tab for lazy loading
+ * @property error Error message if loading failed
+ */
+data class BookmarkTabState(
+    val items: List<BookmarkItem> = emptyList(),
+    val isLoading: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val hasMoreItems: Boolean = true,
+    val isLoaded: Boolean = false,
+    val error: String? = null,
+)
+
+/**
  * UI state for bookmark list screen
  *
- * @property isLoading Whether bookmark data is currently being loaded
- * @property allBookmarks Complete list of all bookmark items from relay (shared data pool)
- * @property error Error message if loading failed
+ * @property local State for the author-constrained Local tab
+ * @property global State for the unconstrained Global tab
  * @property selectedBookmarkForUrlDialog Bookmark item for which URL selection dialog is shown
  * @property urlOpenError Error message when URL opening fails
  * @property selectedTab Currently selected filter tab (Local or Global)
- * @property userHexPubkey Hex-encoded pubkey of logged-in user for local filtering
  * @property displayMode Current display mode for bookmark list (List or Grid)
- * @property isLoadingMore Whether additional older bookmarks are being fetched
- * @property hasMoreItems Whether more bookmarks may be available from relays
  */
 data class BookmarkUiState(
-    val isLoading: Boolean = false,
-    val allBookmarks: List<BookmarkItem> = emptyList(),
-    val error: String? = null,
+    val local: BookmarkTabState = BookmarkTabState(),
+    val global: BookmarkTabState = BookmarkTabState(),
     val selectedBookmarkForUrlDialog: BookmarkItem? = null,
     val urlOpenError: String? = null,
     val selectedTab: BookmarkFilterMode = BookmarkFilterMode.Local,
-    val userHexPubkey: String? = null,
     val displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
-    val isLoadingMore: Boolean = false,
-    val hasMoreItems: Boolean = true,
-)
+) {
+  /** Returns the [BookmarkTabState] backing the given [mode]. */
+  fun tab(mode: BookmarkFilterMode): BookmarkTabState =
+      when (mode) {
+        BookmarkFilterMode.Local -> local
+        BookmarkFilterMode.Global -> global
+      }
+}
