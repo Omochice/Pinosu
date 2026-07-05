@@ -56,6 +56,18 @@ class Nip19EventResolverTest {
   }
 
   @Test
+  fun `extractEventIds extracts nevent immediately followed by non-bech32 text`() {
+    // "boom" begins with 'b', which is not a bech32 character, so the match must stop at the end of
+    // the nevent. Previously [a-z0-9] absorbed "boom", corrupting the value and dropping the event.
+    val content = "${validNevent}boom"
+
+    val ids = resolver.extractEventIds(content)
+
+    assertEquals(1, ids.size)
+    assertEquals(validNeventHex, ids[0])
+  }
+
+  @Test
   fun `extractEventIds ignores malformed nostr URIs`() {
     val content = "nostr:invalid123 and nostr:npub1abc"
 
