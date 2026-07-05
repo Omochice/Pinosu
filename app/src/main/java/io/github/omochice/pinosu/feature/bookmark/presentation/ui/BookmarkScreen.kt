@@ -251,11 +251,18 @@ private fun BookmarkContent(
               }
             }
           }
-          tab.items.isEmpty() -> {
+          tab.items.isEmpty() && tab.isLoaded -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
               Text(
                   text = stringResource(R.string.message_no_bookmarks),
                   style = MaterialTheme.typography.bodyLarge)
+            }
+          }
+          tab.items.isEmpty() -> {
+            // Never-loaded tab (the pager is still settling before onLoad fires): show a spinner
+            // rather than briefly flashing the "no bookmarks" message.
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
             }
           }
           else -> {
@@ -378,7 +385,10 @@ private fun BookmarkScreenLoadingPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenEmptyPreview() {
-  BookmarkScreen(uiState = BookmarkUiState(local = BookmarkTabState()), onRefresh = {}, onLoad = {})
+  BookmarkScreen(
+      uiState = BookmarkUiState(local = BookmarkTabState(isLoaded = true)),
+      onRefresh = {},
+      onLoad = {})
 }
 
 @Preview(showBackground = true)

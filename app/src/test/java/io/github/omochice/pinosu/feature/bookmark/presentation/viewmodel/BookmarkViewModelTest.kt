@@ -300,6 +300,25 @@ class BookmarkViewModelTest {
   }
 
   @Test
+  fun `loadTab ignores a forceReload while a load is already in flight`() = runTest {
+    val testUser = User(Pubkey.parse(testNpub)!!)
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any()) } coAnswers
+        {
+          kotlinx.coroutines.delay(1000)
+          Result.success(BookmarkList("test", emptyList(), 0L))
+        }
+
+    viewModel.loadTab(BookmarkFilterMode.Local)
+    testScheduler.runCurrent()
+
+    viewModel.loadTab(BookmarkFilterMode.Local, forceReload = true)
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { getBookmarkListUseCase(any(), any()) }
+  }
+
+  @Test
   fun `loadMore appends new items to the local tab`() = runTest {
     val testUser = User(Pubkey.parse(testNpub)!!)
     val initialBookmarks = (1..10).map { i -> bookmark("id$i", 1_700_000_000L - i * 100) }

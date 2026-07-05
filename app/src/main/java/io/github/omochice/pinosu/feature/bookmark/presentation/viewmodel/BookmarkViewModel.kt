@@ -63,7 +63,8 @@ constructor(
    */
   fun loadTab(mode: BookmarkFilterMode, forceReload: Boolean = false) {
     val tab = _uiState.value.tab(mode)
-    if (!forceReload && (tab.isLoading || tab.items.isNotEmpty())) return
+    if (tab.isLoading) return
+    if (!forceReload && tab.items.isNotEmpty()) return
     viewModelScope.launch { performLoad(mode) }
   }
 
@@ -74,7 +75,11 @@ constructor(
         resolveAuthorQuery(mode, getLoginStateUseCase)
             ?: run {
               _uiState.updateTab(mode) {
-                it.copy(isLoading = false, items = emptyList(), error = "Not logged in")
+                it.copy(
+                    isLoading = false,
+                    isLoaded = true,
+                    items = emptyList(),
+                    error = "Not logged in")
               }
               return
             }
@@ -86,6 +91,7 @@ constructor(
                 it.copy(
                     isLoading = false,
                     isLoadingMore = false,
+                    isLoaded = true,
                     items = bookmarkList?.items ?: emptyList(),
                     hasMoreItems = bookmarkList?.hasMore ?: false,
                     error = null)
@@ -96,6 +102,7 @@ constructor(
                 it.copy(
                     isLoading = false,
                     isLoadingMore = false,
+                    isLoaded = true,
                     error = e.message ?: "Failed to load bookmarks")
               }
             })
