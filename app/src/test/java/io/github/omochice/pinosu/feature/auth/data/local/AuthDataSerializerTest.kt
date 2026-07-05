@@ -91,6 +91,21 @@ class AuthDataSerializerTest {
       }
 
   @Test
+  fun `readFrom with trailing data after valid JSON throws CorruptionException`() = runTest {
+    val authData = AuthData(userPubkey = "abc123", createdAt = 1000L, lastAccessed = 2000L)
+    val validJson = Json.encodeToString(authData)
+    val encryptedBytes = "encrypted_data".toByteArray()
+    val associatedData = "pinosu_auth_data".toByteArray()
+
+    every { mockAead.decrypt(encryptedBytes, associatedData) } returns
+        "$validJson{\"trailing\":true}".toByteArray()
+
+    assertFailsWith<CorruptionException> {
+      serializer.readFrom(ByteArrayInputStream(encryptedBytes))
+    }
+  }
+
+  @Test
   fun `writeTo encrypts data and writes to output stream`() = runTest {
     val authData = AuthData(userPubkey = "test_pubkey", createdAt = 5000L, lastAccessed = 6000L)
     val jsonBytes = Json.encodeToString(authData).encodeToByteArray()
