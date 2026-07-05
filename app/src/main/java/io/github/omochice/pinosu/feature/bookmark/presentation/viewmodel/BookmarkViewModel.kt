@@ -189,10 +189,13 @@ constructor(
               _uiState.updateTab(mode) { current ->
                 val existingIds = current.items.mapNotNull { it.eventId }.toSet()
                 val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+                // Stop when a page adds no new items. With the inclusive `until = oldest` cursor a
+                // saturated boundary second can return a full page of already-seen events, leaving
+                // the cursor unchanged; continuing would refetch that same page without advancing.
                 current.copy(
                     isLoadingMore = false,
                     items = current.items + uniqueNewItems,
-                    hasMoreItems = bookmarkList?.hasMore ?: false)
+                    hasMoreItems = uniqueNewItems.isNotEmpty() && bookmarkList?.hasMore == true)
               }
             },
             onFailure = { _uiState.updateTab(mode) { it.copy(isLoadingMore = false) } })

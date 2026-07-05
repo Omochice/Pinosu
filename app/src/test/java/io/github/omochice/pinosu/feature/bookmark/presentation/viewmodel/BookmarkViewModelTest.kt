@@ -469,33 +469,31 @@ class BookmarkViewModelTest {
   }
 
   @Test
-  fun `loadMore keeps hasMoreItems when a page is all duplicates but relay reports more`() =
-      runTest {
-        val testUser = User(Pubkey.parse(testNpub)!!)
-        val initialBookmarks = (1..10).map { i -> bookmark("id$i", 1_700_000_000L) }
+  fun `loadMore stops pagination when a page adds no new items`() = runTest {
+    val testUser = User(Pubkey.parse(testNpub)!!)
+    val initialBookmarks = (1..10).map { i -> bookmark("id$i", 1_700_000_000L) }
 
-        coEvery { getLoginStateUseCase() } returns testUser
-        coEvery { getBookmarkListUseCase(any(), any()) } coAnswers
-            {
-              // Both pages return the same boundary events (shared oldest timestamp, inclusive
-              // until). hasMore stays true, so pagination must not be stopped just because the page
-              // added no new unique items.
-              Result.success(BookmarkList("test", initialBookmarks, 0L, hasMore = true))
-            }
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any()) } coAnswers
+        {
+          // Every page returns the same boundary events (shared oldest timestamp, inclusive until),
+          // so the cursor never advances. Pagination must stop instead of refetching the same page.
+          Result.success(BookmarkList("test", initialBookmarks, 0L, hasMore = true))
+        }
 
-        viewModel.loadTab(BookmarkFilterMode.Local)
-        advanceUntilIdle()
+    viewModel.loadTab(BookmarkFilterMode.Local)
+    advanceUntilIdle()
 
-        viewModel.loadMore(BookmarkFilterMode.Local)
-        advanceUntilIdle()
+    viewModel.loadMore(BookmarkFilterMode.Local)
+    advanceUntilIdle()
 
-        val state = viewModel.uiState.first()
-        assertEquals(10, state.local.items.size, "duplicates should not be appended")
-        assertTrue(
-            state.local.hasMoreItems,
-            "hasMoreItems should follow the relay hint, not the unique-item count",
-        )
-      }
+    val state = viewModel.uiState.first()
+    assertEquals(10, state.local.items.size, "duplicates should not be appended")
+    assertFalse(
+        state.local.hasMoreItems,
+        "hasMoreItems should be false once a page adds no new items so it cannot get stuck",
+    )
+  }
 
   @Test
   fun `loadMore stops pagination when logged out mid-session`() = runTest {
