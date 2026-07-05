@@ -34,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +51,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.domain.model.dTag
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkTabState
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -64,8 +64,8 @@ private val sharedEncoder = Nip19EventEncoder()
  * Supports both list and grid display modes based on user preference.
  *
  * @param uiState Bookmark screen UI state
- * @param onRefresh Callback when pull-to-refresh is triggered
- * @param onLoad Callback to load bookmarks on initial display
+ * @param onRefresh Callback when pull-to-refresh is triggered, carrying the tab to refresh
+ * @param onLoad Callback to lazily load a tab when it becomes visible, carrying the tab to load
  * @param onOpenDrawer Callback when hamburger menu is clicked to open drawer
  * @param onTabSelected Callback when a filter tab is selected
  * @param onAddBookmark Callback when FAB is clicked to add a bookmark
@@ -73,26 +73,25 @@ private val sharedEncoder = Nip19EventEncoder()
  * @param onLongPressBookmark Callback notified with rawJson when "Copy raw JSON" is selected
  * @param onCopyNostrLink Callback notified with the encoded nostr:naddr1 URI when "Copy nostr link"
  *   is selected
- * @param onLoadMore Callback when user scrolls near the end of the list to load older bookmarks
+ * @param onLoadMore Callback when user scrolls near the end of the list, carrying the tab to
+ *   paginate
  * @param isReadOnly Whether to hide write-only UI (FAB) for read-only login
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
     uiState: BookmarkUiState,
-    onRefresh: () -> Unit,
-    onLoad: () -> Unit,
+    onRefresh: (BookmarkFilterMode) -> Unit,
+    onLoad: (BookmarkFilterMode) -> Unit,
     onOpenDrawer: () -> Unit = {},
     onTabSelected: (BookmarkFilterMode) -> Unit = {},
     onAddBookmark: () -> Unit = {},
     onBookmarkDetailNavigate: (BookmarkItem) -> Unit = {},
     onLongPressBookmark: (String) -> Unit = {},
     onCopyNostrLink: (String) -> Unit = {},
-    onLoadMore: () -> Unit = {},
+    onLoadMore: (BookmarkFilterMode) -> Unit = {},
     isReadOnly: Boolean = false,
 ) {
-  LaunchedEffect(Unit) { onLoad() }
-
   val clipboardManager = LocalClipboardManager.current
   val hapticFeedback = LocalHapticFeedback.current
 
@@ -144,6 +143,7 @@ fun BookmarkScreen(
         BookmarkPager(
             uiState = uiState,
             onTabSelected = onTabSelected,
+            onLoad = onLoad,
             callbacks = callbacks,
             modifier = Modifier.padding(paddingValues).fillMaxSize())
       }
@@ -153,6 +153,7 @@ fun BookmarkScreen(
 private fun BookmarkPager(
     uiState: BookmarkUiState,
     onTabSelected: (BookmarkFilterMode) -> Unit,
+    onLoad: (BookmarkFilterMode) -> Unit,
     callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
@@ -170,26 +171,22 @@ private fun BookmarkPager(
 
   LaunchedEffect(pagerState) {
     snapshotFlow { pagerState.settledPage }
-        .collect { page -> onTabSelected(BookmarkFilterMode.entries[page]) }
+        .collect { page ->
+          val mode = BookmarkFilterMode.entries[page]
+          onTabSelected(mode)
+          onLoad(mode)
+        }
   }
 
   HorizontalPager(
       state = pagerState,
       modifier = modifier,
   ) { page ->
-    val filteredBookmarks =
-        remember(page, uiState.allBookmarks, uiState.userHexPubkey) {
-          when (BookmarkFilterMode.entries[page]) {
-            BookmarkFilterMode.Local ->
-                uiState.userHexPubkey?.let { hexPubkey ->
-                  uiState.allBookmarks.filter { it.event?.author == hexPubkey }
-                } ?: emptyList()
-            BookmarkFilterMode.Global -> uiState.allBookmarks
-          }
-        }
+    val mode = BookmarkFilterMode.entries[page]
     BookmarkContent(
-        uiState = uiState,
-        bookmarks = filteredBookmarks,
+        mode = mode,
+        tab = uiState.tab(mode),
+        displayMode = uiState.displayMode,
         callbacks = callbacks,
         modifier = Modifier.fillMaxSize())
   }
@@ -228,47 +225,59 @@ private fun BookmarkTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BookmarkContent(
-    uiState: BookmarkUiState,
-    bookmarks: List<BookmarkItem>,
+    mode: BookmarkFilterMode,
+    tab: BookmarkTabState,
+    displayMode: BookmarkDisplayMode,
     callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
   PullToRefreshBox(
-      isRefreshing = uiState.isLoading, onRefresh = callbacks.onRefresh, modifier = modifier) {
+      isRefreshing = tab.isLoading,
+      onRefresh = { callbacks.onRefresh(mode) },
+      modifier = modifier) {
         when {
-          uiState.isLoading && bookmarks.isEmpty() -> {
+          tab.isLoading && tab.items.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
               CircularProgressIndicator()
             }
           }
-          uiState.error != null && bookmarks.isEmpty() -> {
+          tab.error != null && tab.items.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = uiState.error,
+                    text = tab.error,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.error)
               }
             }
           }
-          bookmarks.isEmpty() -> {
+          tab.items.isEmpty() && tab.isLoaded -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
               Text(
                   text = stringResource(R.string.message_no_bookmarks),
                   style = MaterialTheme.typography.bodyLarge)
             }
           }
+          tab.items.isEmpty() -> {
+            // Never-loaded tab (the pager is still settling before onLoad fires): show a spinner
+            // rather than briefly flashing the "no bookmarks" message.
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
+            }
+          }
           else -> {
-            when (uiState.displayMode) {
+            when (displayMode) {
               BookmarkDisplayMode.List ->
                   BookmarkListView(
-                      bookmarks = bookmarks,
-                      isLoadingMore = uiState.isLoadingMore,
+                      mode = mode,
+                      bookmarks = tab.items,
+                      isLoadingMore = tab.isLoadingMore,
                       callbacks = callbacks)
               BookmarkDisplayMode.Grid ->
                   BookmarkGridView(
-                      bookmarks = bookmarks,
-                      isLoadingMore = uiState.isLoadingMore,
+                      mode = mode,
+                      bookmarks = tab.items,
+                      isLoadingMore = tab.isLoadingMore,
                       callbacks = callbacks)
             }
           }
@@ -278,6 +287,7 @@ private fun BookmarkContent(
 
 @Composable
 private fun BookmarkListView(
+    mode: BookmarkFilterMode,
     bookmarks: List<BookmarkItem>,
     isLoadingMore: Boolean,
     callbacks: BookmarkListCallbacks,
@@ -291,7 +301,7 @@ private fun BookmarkListView(
           } ?: false
         }
         .distinctUntilChanged()
-        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore(mode) }
   }
 
   LazyColumn(
@@ -320,6 +330,7 @@ private fun BookmarkListView(
 
 @Composable
 private fun BookmarkGridView(
+    mode: BookmarkFilterMode,
     bookmarks: List<BookmarkItem>,
     isLoadingMore: Boolean,
     callbacks: BookmarkListCallbacks,
@@ -333,7 +344,7 @@ private fun BookmarkGridView(
           } ?: false
         }
         .distinctUntilChanged()
-        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore() }
+        .collect { nearEnd -> if (nearEnd) callbacks.onLoadMore(mode) }
   }
 
   LazyVerticalStaggeredGrid(
@@ -365,13 +376,19 @@ private fun BookmarkGridView(
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenLoadingPreview() {
-  BookmarkScreen(uiState = BookmarkUiState(isLoading = true), onRefresh = {}, onLoad = {})
+  BookmarkScreen(
+      uiState = BookmarkUiState(local = BookmarkTabState(isLoading = true)),
+      onRefresh = {},
+      onLoad = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenEmptyPreview() {
-  BookmarkScreen(uiState = BookmarkUiState(isLoading = false), onRefresh = {}, onLoad = {})
+  BookmarkScreen(
+      uiState = BookmarkUiState(local = BookmarkTabState(isLoaded = true)),
+      onRefresh = {},
+      onLoad = {})
 }
 
 @Preview(showBackground = true)
@@ -409,8 +426,7 @@ private fun BookmarkScreenWithDataPreview() {
   BookmarkScreen(
       uiState =
           BookmarkUiState(
-              isLoading = false,
-              allBookmarks = sampleBookmarks,
+              global = BookmarkTabState(items = sampleBookmarks),
               selectedTab = BookmarkFilterMode.Global),
       onRefresh = {},
       onLoad = {})

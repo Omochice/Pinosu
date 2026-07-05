@@ -47,43 +47,48 @@ constructor(
 ) : BookmarkRepository {
 
   /**
-   * Retrieve bookmark list for the specified public key
+   * Retrieve a bookmark list, optionally constrained to a single author
    *
-   * @param pubkey Nostr public key (Bech32-encoded format, starts with npub1)
-   * @param until Unix timestamp upper bound for pagination (exclusive), null for latest
+   * @param authorPubkey Nostr public key (Bech32-encoded format, starts with npub1) to constrain
+   *   the query to a single author (Local tab), or null to query all authors (Global tab)
+   * @param until Unix timestamp upper bound for pagination (inclusive per NIP-01), null for latest
    * @return Success(BookmarkList) if found, Success(null) if no bookmarks, Failure on error
    */
-  override suspend fun getBookmarkList(pubkey: String, until: Long?): Result<BookmarkList?> {
+  override suspend fun getBookmarkList(authorPubkey: String?, until: Long?): Result<BookmarkList?> {
     return try {
-      val hexPubkey =
-          Pubkey.parse(pubkey)?.hex
-              ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
+      val hexPubkey = authorPubkey?.let { Pubkey.parse(it)?.hex }
+      if (authorPubkey != null && hexPubkey == null) {
+        return Result.failure(IllegalArgumentException("Invalid npub format"))
+      }
+      val authorsClause = hexPubkey?.let { ""","authors":["$it"]""" } ?: ""
 
       val relays = relayListProvider.getRelays()
       val untilClause = until?.let { ""","until":$it""" } ?: ""
-      val filter = """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":$PAGE_SIZE$untilClause}"""
+      val filter =
+          """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":$PAGE_SIZE$authorsClause$untilClause}"""
       val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
-        return Result.success(null)
+        Result.success(null)
+      } else {
+        val mostRecentEvent = events.maxBy { it.createdAt }
+
+        val allItems = coroutineScope {
+          events.map { event -> async { buildBookmarkItem(event) } }.awaitAll().filterNotNull()
+        }
+
+        val itemsWithEvents = allItems.sortedByDescending { it.event?.createdAt ?: 0L }
+        val encryptedContent =
+            if (mostRecentEvent.content.isNotEmpty()) mostRecentEvent.content else null
+
+        Result.success(
+            BookmarkList(
+                pubkey = mostRecentEvent.pubkey,
+                items = itemsWithEvents,
+                createdAt = mostRecentEvent.createdAt,
+                encryptedContent = encryptedContent,
+                hasMore = events.size >= PAGE_SIZE))
       }
-
-      val mostRecentEvent = events.maxBy { it.createdAt }
-
-      val allItems = coroutineScope {
-        events.map { event -> async { buildBookmarkItem(event) } }.awaitAll().filterNotNull()
-      }
-
-      val itemsWithEvents = allItems.sortedByDescending { it.event?.createdAt ?: 0L }
-      val encryptedContent =
-          if (mostRecentEvent.content.isNotEmpty()) mostRecentEvent.content else null
-
-      Result.success(
-          BookmarkList(
-              pubkey = mostRecentEvent.pubkey,
-              items = itemsWithEvents,
-              createdAt = mostRecentEvent.createdAt,
-              encryptedContent = encryptedContent))
     } catch (e: IOException) {
       Log.e(TAG, "Error getting bookmark list", e)
       Result.failure(e)

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.swipeRight
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
+import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkTabState
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -56,10 +57,9 @@ class BookmarkScreenSwipeTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = listOf(localBookmark, globalBookmark),
-                  selectedTab = BookmarkFilterMode.Local,
-                  userHexPubkey = "my-pubkey"),
+                  local = BookmarkTabState(items = listOf(localBookmark)),
+                  global = BookmarkTabState(items = listOf(globalBookmark)),
+                  selectedTab = BookmarkFilterMode.Local),
           onRefresh = {},
           onLoad = {},
           onTabSelected = { tab -> selectedTab = tab })
@@ -82,10 +82,9 @@ class BookmarkScreenSwipeTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  isLoading = false,
-                  allBookmarks = listOf(localBookmark, globalBookmark),
-                  selectedTab = BookmarkFilterMode.Global,
-                  userHexPubkey = "my-pubkey"),
+                  local = BookmarkTabState(items = listOf(localBookmark)),
+                  global = BookmarkTabState(items = listOf(globalBookmark)),
+                  selectedTab = BookmarkFilterMode.Global),
           onRefresh = {},
           onLoad = {},
           onTabSelected = { tab -> selectedTab = tab })

@@ -21,11 +21,7 @@ class BookmarkScreenReadOnlyTest {
   @Test
   fun `FAB should be visible when not in read-only mode`() {
     composeTestRule.setContent {
-      BookmarkScreen(
-          uiState = BookmarkUiState(isLoading = false),
-          onRefresh = {},
-          onLoad = {},
-          isReadOnly = false)
+      BookmarkScreen(uiState = BookmarkUiState(), onRefresh = {}, onLoad = {}, isReadOnly = false)
     }
 
     composeTestRule
@@ -36,11 +32,7 @@ class BookmarkScreenReadOnlyTest {
   @Test
   fun `FAB should be hidden when in read-only mode`() {
     composeTestRule.setContent {
-      BookmarkScreen(
-          uiState = BookmarkUiState(isLoading = false),
-          onRefresh = {},
-          onLoad = {},
-          isReadOnly = true)
+      BookmarkScreen(uiState = BookmarkUiState(), onRefresh = {}, onLoad = {}, isReadOnly = true)
     }
 
     composeTestRule
