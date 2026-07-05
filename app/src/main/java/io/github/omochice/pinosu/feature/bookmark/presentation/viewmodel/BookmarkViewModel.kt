@@ -189,10 +189,12 @@ constructor(
               _uiState.updateTab(mode) { current ->
                 val existingIds = current.items.mapNotNull { it.eventId }.toSet()
                 val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+                // Without this, a timestamp saturated with a full page of events would make the
+                // inclusive `until = oldest` cursor refetch that same all-duplicate page forever.
                 current.copy(
                     isLoadingMore = false,
                     items = current.items + uniqueNewItems,
-                    hasMoreItems = bookmarkList?.hasMore ?: false)
+                    hasMoreItems = uniqueNewItems.isNotEmpty() && bookmarkList?.hasMore == true)
               }
             },
             onFailure = { _uiState.updateTab(mode) { it.copy(isLoadingMore = false) } })
