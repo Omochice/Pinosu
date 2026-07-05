@@ -13,8 +13,6 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
  * @property isLoading Whether the first page is currently being loaded
  * @property isLoadingMore Whether an additional (older) page is currently being fetched
  * @property hasMoreItems Whether the relay may still have older items to fetch
- * @property isLoaded Whether the first page has completed at least once, used to distinguish a
- *   never-loaded tab from a loaded-but-empty tab for lazy loading
  * @property error Error message if loading failed
  */
 data class BookmarkTabState(
@@ -22,7 +20,6 @@ data class BookmarkTabState(
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val hasMoreItems: Boolean = true,
-    val isLoaded: Boolean = false,
     val error: String? = null,
 )
 

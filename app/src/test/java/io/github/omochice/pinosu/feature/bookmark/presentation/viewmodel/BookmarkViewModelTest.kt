@@ -270,7 +270,22 @@ class BookmarkViewModelTest {
   }
 
   @Test
-  fun `loadTab is idempotent and does not refetch an already loaded tab`() = runTest {
+  fun `loadTab does not refetch a tab that already holds items`() = runTest {
+    val testUser = User(Pubkey.parse(testNpub)!!)
+    coEvery { getLoginStateUseCase() } returns testUser
+    coEvery { getBookmarkListUseCase(any(), any()) } returns
+        Result.success(BookmarkList("test", listOf(bookmark("id1", 1_700_000_000L)), 0L))
+
+    viewModel.loadTab(BookmarkFilterMode.Local)
+    advanceUntilIdle()
+    viewModel.loadTab(BookmarkFilterMode.Local)
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { getBookmarkListUseCase(any(), any()) }
+  }
+
+  @Test
+  fun `loadTab reloads an empty tab so a transient failure can recover`() = runTest {
     val testUser = User(Pubkey.parse(testNpub)!!)
     coEvery { getLoginStateUseCase() } returns testUser
     coEvery { getBookmarkListUseCase(any(), any()) } returns
@@ -281,7 +296,7 @@ class BookmarkViewModelTest {
     viewModel.loadTab(BookmarkFilterMode.Local)
     advanceUntilIdle()
 
-    coVerify(exactly = 1) { getBookmarkListUseCase(any(), any()) }
+    coVerify(exactly = 2) { getBookmarkListUseCase(any(), any()) }
   }
 
   @Test
@@ -432,6 +447,59 @@ class BookmarkViewModelTest {
 
     val state = viewModel.uiState.first()
     assertFalse(state.local.hasMoreItems, "hasMoreItems should be false when relay has no more")
+  }
+
+  @Test
+  fun `loadMore keeps hasMoreItems when a page is all duplicates but relay reports more`() =
+      runTest {
+        val testUser = User(Pubkey.parse(testNpub)!!)
+        val initialBookmarks = (1..10).map { i -> bookmark("id$i", 1_700_000_000L) }
+
+        coEvery { getLoginStateUseCase() } returns testUser
+        coEvery { getBookmarkListUseCase(any(), any()) } coAnswers
+            {
+              // Both pages return the same boundary events (shared oldest timestamp, inclusive
+              // until). hasMore stays true, so pagination must not be stopped just because the page
+              // added no new unique items.
+              Result.success(BookmarkList("test", initialBookmarks, 0L, hasMore = true))
+            }
+
+        viewModel.loadTab(BookmarkFilterMode.Local)
+        advanceUntilIdle()
+
+        viewModel.loadMore(BookmarkFilterMode.Local)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.first()
+        assertEquals(10, state.local.items.size, "duplicates should not be appended")
+        assertTrue(
+            state.local.hasMoreItems,
+            "hasMoreItems should follow the relay hint, not the unique-item count",
+        )
+      }
+
+  @Test
+  fun `loadMore stops pagination when logged out mid-session`() = runTest {
+    val testUser = User(Pubkey.parse(testNpub)!!)
+    val initialBookmarks = (1..10).map { i -> bookmark("id$i", 1_700_000_000L - i * 100) }
+
+    coEvery { getBookmarkListUseCase(any(), any()) } returns
+        Result.success(BookmarkList("test", initialBookmarks, 0L, hasMore = true))
+    coEvery { getLoginStateUseCase() } returns testUser
+
+    viewModel.loadTab(BookmarkFilterMode.Local)
+    advanceUntilIdle()
+
+    coEvery { getLoginStateUseCase() } returns null
+    viewModel.loadMore(BookmarkFilterMode.Local)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.local.isLoadingMore, "isLoadingMore should be reset")
+    assertFalse(
+        state.local.hasMoreItems,
+        "hasMoreItems should be cleared so no-op pagination coroutines stop relaunching",
+    )
   }
 
   @Test

@@ -52,63 +52,53 @@ constructor(
   /**
    * Load the first page for [mode]
    *
-   * By default this is a lazy, idempotent load: it does nothing when the tab is already loading or
-   * has completed a load, so it is safe to call every time the tab becomes visible. Pass
-   * [forceReload] to bypass that guard for an explicit pull-to-refresh.
+   * By default this is a lazy load: a tab that already holds items is not refetched, so it is safe
+   * to call every time the tab becomes visible. An empty tab is (re)loaded on every visit so a
+   * transient failure — including a relay timeout that the pool reports as an empty success —
+   * recovers on the next visit instead of sticking on an empty feed. Pass [forceReload] to reload
+   * unconditionally for an explicit pull-to-refresh.
    *
    * @param mode The tab to load (Local queries the current user, Global queries all authors)
-   * @param forceReload When true, reload even if the tab has already been loaded
+   * @param forceReload When true, reload even if the tab already holds items
    */
   fun loadTab(mode: BookmarkFilterMode, forceReload: Boolean = false) {
     val tab = _uiState.value.tab(mode)
-    if (!forceReload && (tab.isLoading || tab.isLoaded)) return
+    if (!forceReload && (tab.isLoading || tab.items.isNotEmpty())) return
     viewModelScope.launch { performLoad(mode) }
   }
 
   private suspend fun performLoad(mode: BookmarkFilterMode) {
     _uiState.updateTab(mode) { it.copy(isLoading = true, error = null) }
 
-    val authorPubkey =
-        when (mode) {
-          BookmarkFilterMode.Global -> null
-          BookmarkFilterMode.Local ->
-              (getLoginStateUseCase()
-                      ?: run {
-                        _uiState.updateTab(mode) {
-                          it.copy(
-                              isLoading = false,
-                              isLoaded = true,
-                              items = emptyList(),
-                              error = "Not logged in")
-                        }
-                        return
-                      })
-                  .pubkey
-                  .npub
-        }
+    val author =
+        resolveAuthorQuery(mode, getLoginStateUseCase)
+            ?: run {
+              _uiState.updateTab(mode) {
+                it.copy(isLoading = false, items = emptyList(), error = "Not logged in")
+              }
+              return
+            }
 
-    val result = getBookmarkListUseCase(authorPubkey, until = null)
-    result.fold(
-        onSuccess = { bookmarkList ->
-          _uiState.updateTab(mode) {
-            it.copy(
-                isLoading = false,
-                isLoadingMore = false,
-                isLoaded = true,
-                items = bookmarkList?.items ?: emptyList(),
-                hasMoreItems = bookmarkList?.hasMore ?: false,
-                error = null)
-          }
-        },
-        onFailure = { e ->
-          _uiState.updateTab(mode) {
-            it.copy(
-                isLoading = false,
-                isLoadingMore = false,
-                isLoaded = true,
-                error = e.message ?: "Failed to load bookmarks")
-          }
-        })
+    getBookmarkListUseCase(author.npub, until = null)
+        .fold(
+            onSuccess = { bookmarkList ->
+              _uiState.updateTab(mode) {
+                it.copy(
+                    isLoading = false,
+                    isLoadingMore = false,
+                    items = bookmarkList?.items ?: emptyList(),
+                    hasMoreItems = bookmarkList?.hasMore ?: false,
+                    error = null)
+              }
+            },
+            onFailure = { e ->
+              _uiState.updateTab(mode) {
+                it.copy(
+                    isLoading = false,
+                    isLoadingMore = false,
+                    error = e.message ?: "Failed to load bookmarks")
+              }
+            })
   }
 
   /**
@@ -160,8 +150,9 @@ constructor(
    * Load older bookmarks for infinite scroll pagination on [mode]
    *
    * Uses the oldest fetched bookmark's createdAt as the `until` cursor (inclusive per NIP-01) to
-   * fetch the next page. Appends new items to the tab and deduplicates by eventId. Stops paginating
-   * when a page yields no new items so that duplicate boundary events cannot cause a runaway load.
+   * fetch the next page. Appends new items to the tab and deduplicates by eventId. The
+   * relay-reported [io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList.hasMore]
+   * hint drives whether more pages are requested.
    *
    * @param mode The tab to paginate
    */
@@ -177,35 +168,46 @@ constructor(
   private suspend fun performLoadMore(mode: BookmarkFilterMode, oldestCreatedAt: Long) {
     _uiState.updateTab(mode) { it.copy(isLoadingMore = true) }
 
-    val authorPubkey =
-        when (mode) {
-          BookmarkFilterMode.Global -> null
-          BookmarkFilterMode.Local ->
-              (getLoginStateUseCase()
-                      ?: run {
-                        _uiState.updateTab(mode) { it.copy(isLoadingMore = false) }
-                        return
-                      })
-                  .pubkey
-                  .npub
-        }
+    val author =
+        resolveAuthorQuery(mode, getLoginStateUseCase)
+            ?: run {
+              _uiState.updateTab(mode) { it.copy(isLoadingMore = false, hasMoreItems = false) }
+              return
+            }
 
-    val result = getBookmarkListUseCase(authorPubkey, until = oldestCreatedAt)
-    result.fold(
-        onSuccess = { bookmarkList ->
-          val newItems = bookmarkList?.items ?: emptyList()
-          _uiState.updateTab(mode) { current ->
-            val existingIds = current.items.mapNotNull { it.eventId }.toSet()
-            val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
-            current.copy(
-                isLoadingMore = false,
-                items = current.items + uniqueNewItems,
-                hasMoreItems = uniqueNewItems.isNotEmpty() && bookmarkList?.hasMore ?: false)
-          }
-        },
-        onFailure = { _uiState.updateTab(mode) { it.copy(isLoadingMore = false) } })
+    getBookmarkListUseCase(author.npub, until = oldestCreatedAt)
+        .fold(
+            onSuccess = { bookmarkList ->
+              val newItems = bookmarkList?.items ?: emptyList()
+              _uiState.updateTab(mode) { current ->
+                val existingIds = current.items.mapNotNull { it.eventId }.toSet()
+                val uniqueNewItems = newItems.filter { it.eventId !in existingIds }
+                current.copy(
+                    isLoadingMore = false,
+                    items = current.items + uniqueNewItems,
+                    hasMoreItems = bookmarkList?.hasMore ?: false)
+              }
+            },
+            onFailure = { _uiState.updateTab(mode) { it.copy(isLoadingMore = false) } })
   }
 }
+
+/** The npub used to constrain a tab's relay query; null means all authors (the Global tab). */
+private data class AuthorQuery(val npub: String?)
+
+/**
+ * Resolves the [AuthorQuery] for [mode]: Global spans all authors, Local is constrained to the
+ * logged-in user. Returns null only when a Local load is attempted while logged out, which the
+ * caller surfaces as a "Not logged in" state.
+ */
+private suspend fun resolveAuthorQuery(
+    mode: BookmarkFilterMode,
+    getLoginState: GetLoginStateUseCase,
+): AuthorQuery? =
+    when (mode) {
+      BookmarkFilterMode.Global -> AuthorQuery(npub = null)
+      BookmarkFilterMode.Local -> getLoginState()?.let { AuthorQuery(npub = it.pubkey.npub) }
+    }
 
 /**
  * Applies [transform] to the [BookmarkTabState] identified by [mode], leaving the other tab

@@ -46,9 +46,7 @@ class BookmarkScreenLongPressTest {
 
     composeTestRule.setContent {
       BookmarkScreen(
-          uiState =
-              BookmarkUiState(
-                  local = BookmarkTabState(items = listOf(sampleBookmark), isLoaded = true)),
+          uiState = BookmarkUiState(local = BookmarkTabState(items = listOf(sampleBookmark))),
           onRefresh = {},
           onLoad = {},
           onLongPressBookmark = { rawJson -> capturedRawJson = rawJson })
@@ -69,9 +67,7 @@ class BookmarkScreenLongPressTest {
 
     composeTestRule.setContent {
       BookmarkScreen(
-          uiState =
-              BookmarkUiState(
-                  local = BookmarkTabState(items = listOf(sampleBookmark), isLoaded = true)),
+          uiState = BookmarkUiState(local = BookmarkTabState(items = listOf(sampleBookmark))),
           onRefresh = {},
           onLoad = {},
           onCopyNostrLink = { encoded -> capturedNostrLink = encoded })
@@ -94,9 +90,7 @@ class BookmarkScreenLongPressTest {
 
     composeTestRule.setContent {
       BookmarkScreen(
-          uiState =
-              BookmarkUiState(
-                  local = BookmarkTabState(items = listOf(bookmarkWithoutDTag), isLoaded = true)),
+          uiState = BookmarkUiState(local = BookmarkTabState(items = listOf(bookmarkWithoutDTag))),
           onRefresh = {},
           onLoad = {})
     }

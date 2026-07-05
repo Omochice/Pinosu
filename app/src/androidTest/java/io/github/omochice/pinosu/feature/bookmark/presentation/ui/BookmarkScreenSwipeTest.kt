@@ -57,8 +57,8 @@ class BookmarkScreenSwipeTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  local = BookmarkTabState(items = listOf(localBookmark), isLoaded = true),
-                  global = BookmarkTabState(items = listOf(globalBookmark), isLoaded = true),
+                  local = BookmarkTabState(items = listOf(localBookmark)),
+                  global = BookmarkTabState(items = listOf(globalBookmark)),
                   selectedTab = BookmarkFilterMode.Local),
           onRefresh = {},
           onLoad = {},
@@ -82,8 +82,8 @@ class BookmarkScreenSwipeTest {
       BookmarkScreen(
           uiState =
               BookmarkUiState(
-                  local = BookmarkTabState(items = listOf(localBookmark), isLoaded = true),
-                  global = BookmarkTabState(items = listOf(globalBookmark), isLoaded = true),
+                  local = BookmarkTabState(items = listOf(localBookmark)),
+                  global = BookmarkTabState(items = listOf(globalBookmark)),
                   selectedTab = BookmarkFilterMode.Global),
           onRefresh = {},
           onLoad = {},

@@ -378,10 +378,7 @@ private fun BookmarkScreenLoadingPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun BookmarkScreenEmptyPreview() {
-  BookmarkScreen(
-      uiState = BookmarkUiState(local = BookmarkTabState(isLoaded = true)),
-      onRefresh = {},
-      onLoad = {})
+  BookmarkScreen(uiState = BookmarkUiState(local = BookmarkTabState()), onRefresh = {}, onLoad = {})
 }
 
 @Preview(showBackground = true)
@@ -419,7 +416,7 @@ private fun BookmarkScreenWithDataPreview() {
   BookmarkScreen(
       uiState =
           BookmarkUiState(
-              global = BookmarkTabState(items = sampleBookmarks, isLoaded = true),
+              global = BookmarkTabState(items = sampleBookmarks),
               selectedTab = BookmarkFilterMode.Global),
       onRefresh = {},
       onLoad = {})
