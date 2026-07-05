@@ -1,9 +1,12 @@
 package io.github.omochice.pinosu.feature.auth.data.local
 
+import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.crypto.tink.Aead
 import java.io.InputStream
 import java.io.OutputStream
+import java.security.GeneralSecurityException
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 /**
@@ -22,11 +25,16 @@ class AuthDataSerializer(private val aead: Aead) : Serializer<AuthData> {
       return defaultValue
     }
 
+    // Returning defaultValue here would look like a fresh install and silently discard the
+    // still-encrypted data, so surface corruption instead. The file is left intact for recovery
+    // once the key becomes readable again.
     return try {
       val decryptedBytes = aead.decrypt(encryptedBytes, ASSOCIATED_DATA)
       Json.decodeFromString<AuthData>(decryptedBytes.decodeToString())
-    } catch (_: Exception) {
-      defaultValue
+    } catch (e: GeneralSecurityException) {
+      throw CorruptionException("Failed to decrypt stored auth data", e)
+    } catch (e: SerializationException) {
+      throw CorruptionException("Failed to deserialize stored auth data", e)
     }
   }
 
