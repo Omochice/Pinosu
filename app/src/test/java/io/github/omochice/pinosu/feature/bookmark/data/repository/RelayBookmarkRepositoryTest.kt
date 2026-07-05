@@ -15,6 +15,7 @@ import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -218,6 +219,80 @@ class RelayBookmarkRepositoryTest {
 
     coVerify { relayPool.subscribeWithTimeout(any(), match { !it.contains("\"until\"") }, any()) }
   }
+
+  @Test
+  fun `getBookmarkList includes authors constraint when authorPubkey is provided`() = runTest {
+    coEvery { relayListProvider.getRelays() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
+
+    repository.getBookmarkList(TEST_VALID_NPUB)
+
+    coVerify { relayPool.subscribeWithTimeout(any(), match { it.contains("\"authors\"") }, any()) }
+  }
+
+  @Test
+  fun `getBookmarkList omits authors constraint when authorPubkey is null`() = runTest {
+    coEvery { relayListProvider.getRelays() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns emptyList()
+
+    repository.getBookmarkList(authorPubkey = null)
+
+    coVerify { relayPool.subscribeWithTimeout(any(), match { !it.contains("\"authors\"") }, any()) }
+  }
+
+  @Test
+  fun `getBookmarkList reports hasMore true when a full page of events is returned`() = runTest {
+    val events =
+        (1..RelayBookmarkRepository.PAGE_SIZE).map { i ->
+          NostrEvent(
+              id = "event$i",
+              pubkey = "pubkey$i",
+              createdAt = 1_700_000_000L - i,
+              kind = NipB0.KIND_BOOKMARK_LIST,
+              tags = listOf(listOf("r", "not-a-valid-url")),
+              content = "",
+              sig = "sig$i")
+        }
+
+    coEvery { relayListProvider.getRelays() } returns
+        listOf(RelayConfig(url = "wss://relay.example.com"))
+    coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns events
+
+    val bookmarkList = repository.getBookmarkList(TEST_VALID_NPUB).getOrNull()
+
+    assertNotNull(bookmarkList, "BookmarkList should not be null")
+    assertEquals(0, bookmarkList.items.size, "Events without a usable URL are not displayable")
+    assertTrue(
+        bookmarkList.hasMore,
+        "hasMore should be true based on the raw event count, not the displayable item count")
+  }
+
+  @Test
+  fun `getBookmarkList reports hasMore false when fewer than a page of events is returned`() =
+      runTest {
+        val event =
+            NostrEvent(
+                id = "eventFew",
+                pubkey = "pubkeyFew",
+                createdAt = 1_700_000_000L,
+                kind = NipB0.KIND_BOOKMARK_LIST,
+                tags = listOf(listOf("d", "example.com/few"), listOf("title", "Few")),
+                content = "",
+                sig = "sigFew")
+
+        coEvery { relayListProvider.getRelays() } returns
+            listOf(RelayConfig(url = "wss://relay.example.com"))
+        coEvery { relayPool.subscribeWithTimeout(any(), any(), any()) } returns listOf(event)
+        coEvery { urlMetadataFetcher.fetchMetadata(any()) } returns
+            Result.success(UrlMetadata(title = "Few Title", imageUrl = null))
+
+        val bookmarkList = repository.getBookmarkList(TEST_VALID_NPUB).getOrNull()
+
+        assertNotNull(bookmarkList, "BookmarkList should not be null")
+        assertFalse(bookmarkList.hasMore, "hasMore should be false for a partial page")
+      }
 
   @Test
   fun `createBookmarkEvent includes client tag when clientTagEnabled is true`() {

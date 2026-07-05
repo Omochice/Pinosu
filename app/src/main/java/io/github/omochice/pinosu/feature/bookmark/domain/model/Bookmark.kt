@@ -62,10 +62,14 @@ fun BookmarkedEvent.dTag(): String? =
  * @property items List of bookmarked events
  * @property createdAt Unix timestamp
  * @property encryptedContent Encrypted content (NIP-04) if present
+ * @property hasMore Whether the relay returned a full page, hinting more items may be fetched.
+ *   Based on the raw event count rather than the displayable item count so that events without a
+ *   usable URL do not prematurely stop pagination.
  */
 data class BookmarkList(
     val pubkey: String,
     val items: List<BookmarkItem>,
     val createdAt: Long,
     val encryptedContent: String? = null,
+    val hasMore: Boolean = false,
 )
