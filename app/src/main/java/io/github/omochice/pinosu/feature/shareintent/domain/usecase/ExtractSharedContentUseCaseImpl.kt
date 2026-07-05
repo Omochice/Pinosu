@@ -31,7 +31,7 @@ class ExtractSharedContentUseCaseImpl @Inject constructor() : ExtractSharedConte
     return if (urlMatch != null) {
       val urlRange = trimmedUrlRange(text, urlMatch.range)
       val url = text.substring(urlRange)
-      val remaining = text.removeRange(urlRange).trim().replace(Regex("\\s{2,}"), " ")
+      val remaining = text.removeRange(urlRange).trim().replace(MULTIPLE_SPACES_PATTERN, " ")
       SharedContent(url = url, comment = remaining.ifBlank { null })
     } else {
       SharedContent(comment = text)
@@ -40,5 +40,6 @@ class ExtractSharedContentUseCaseImpl @Inject constructor() : ExtractSharedConte
 
   companion object {
     private val URL_PATTERN = """https?://\S+""".toRegex(RegexOption.IGNORE_CASE)
+    private val MULTIPLE_SPACES_PATTERN = Regex("\\s{2,}")
   }
 }
