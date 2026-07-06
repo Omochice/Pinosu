@@ -30,9 +30,8 @@ class NostrRelayMessageTest {
 
   @Test
   fun `OK message with non-boolean accepted flag throws SerializationException`() {
-    // A value whose content is neither "true" nor "false" (here the string "yes") is what
-    // previously
-    // leaked an IllegalStateException from JsonPrimitive.boolean past the caller's guards.
+    // "yes" is a non-boolean string; JsonPrimitive.boolean used to leak an IllegalStateException
+    // on such values, slipping past the caller's guards.
     assertFailsWith<SerializationException> {
       json.decodeFromString<NostrRelayMessage>("""["OK","event-id","yes","stored"]""")
     }
