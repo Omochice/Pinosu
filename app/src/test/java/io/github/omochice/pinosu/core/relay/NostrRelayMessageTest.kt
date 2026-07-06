@@ -37,4 +37,26 @@ class NostrRelayMessageTest {
       json.decodeFromString<NostrRelayMessage>("""["OK","event-id","yes","stored"]""")
     }
   }
+
+  @Test
+  fun `OK message with non-primitive accepted flag throws SerializationException`() {
+    assertFailsWith<SerializationException> {
+      json.decodeFromString<NostrRelayMessage>("""["OK","event-id",{},"stored"]""")
+    }
+  }
+
+  @Test
+  fun `OK message with non-primitive event id throws SerializationException`() {
+    assertFailsWith<SerializationException> {
+      json.decodeFromString<NostrRelayMessage>("""["OK",{},true,"stored"]""")
+    }
+  }
+
+  @Test
+  fun `OK message with non-primitive message field is treated as empty`() {
+    val message = json.decodeFromString<NostrRelayMessage>("""["OK","event-id",true,{}]""")
+
+    val ok = message as NostrRelayMessage.Ok
+    assertEquals("", ok.message)
+  }
 }

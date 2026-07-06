@@ -10,6 +10,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
@@ -128,13 +129,16 @@ internal object NostrRelayMessageSerializer : KSerializer<NostrRelayMessage> {
     if (array.size < 3) {
       throw SerializationException("OK message requires at least 3 elements")
     }
+    // Each field is read via `as? JsonPrimitive` rather than `jsonPrimitive`: a structured element
+    // (object/array) makes `jsonPrimitive` throw IllegalStateException, which RelayPool.onMessage
+    // does not guard, so a malformed OK would tear down the socket instead of being reported.
     val eventId =
-        array[1].jsonPrimitive.contentOrNull
+        (array[1] as? JsonPrimitive)?.contentOrNull
             ?: throw SerializationException("Event ID must be a string")
     val accepted =
-        array[2].jsonPrimitive.booleanOrNull
+        (array[2] as? JsonPrimitive)?.booleanOrNull
             ?: throw SerializationException("OK accepted flag must be a boolean")
-    val message = if (array.size > 3) array[3].jsonPrimitive.contentOrNull ?: "" else ""
+    val message = if (array.size > 3) (array[3] as? JsonPrimitive)?.contentOrNull ?: "" else ""
     return NostrRelayMessage.Ok(eventId, accepted, message)
   }
 
