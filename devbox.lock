@@ -49,51 +49,41 @@
         }
       }
     },
-    "biome@2.5.0": {
-      "last_modified": "2026-07-08T21:13:06Z",
-      "resolved": "github:NixOS/nixpkgs/389ed85304b281ca7f306cf8a1eb4378651ca44e#biome",
+    "biome@2.5.4": {
+      "last_modified": "2026-07-17T09:58:13Z",
+      "resolved": "github:NixOS/nixpkgs/a47c123a609287a012dfc44d281de2dd4ed13394#biome",
       "source": "devbox-search",
-      "version": "2.5.0",
+      "version": "2.5.4",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/3nbjng73wrqjb8ydhr9f8cp9kimhahga-biome-2.5.0",
+              "path": "/nix/store/zl5f14r43fp6rpvrbyz22yhg6aqjmpj5-biome-2.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/3nbjng73wrqjb8ydhr9f8cp9kimhahga-biome-2.5.0"
+          "store_path": "/nix/store/zl5f14r43fp6rpvrbyz22yhg6aqjmpj5-biome-2.5.4"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wciivgg4mpsyvr1zavg9qc5nbk5p9sqj-biome-2.5.0",
+              "path": "/nix/store/454panxz7vyv2ax2dl0hhxi0vlhl26pd-biome-2.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wciivgg4mpsyvr1zavg9qc5nbk5p9sqj-biome-2.5.0"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/zhw4yhfg4mdqp2z2j70dlk5i1y7zxbsn-biome-2.5.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/zhw4yhfg4mdqp2z2j70dlk5i1y7zxbsn-biome-2.5.0"
+          "store_path": "/nix/store/454panxz7vyv2ax2dl0hhxi0vlhl26pd-biome-2.5.4"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ib0drfw9yw6hk377qldaibm91iyr2zik-biome-2.5.0",
+              "path": "/nix/store/0yfj4b463hdwb2rwnisdi1jicrsj70bd-biome-2.5.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ib0drfw9yw6hk377qldaibm91iyr2zik-biome-2.5.0"
+          "store_path": "/nix/store/0yfj4b463hdwb2rwnisdi1jicrsj70bd-biome-2.5.4"
         }
       }
     },
