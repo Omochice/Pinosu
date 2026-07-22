@@ -30,6 +30,8 @@ class Nip19EventResolver @Inject constructor() {
   }
 
   companion object {
-    private val NEVENT_PATTERN = Regex("""nostr:nevent1[a-z0-9]+""")
+    // The bech32 alphabet, not [a-z0-9]: the wider class would let the greedy match swallow
+    // directly adjacent words, corrupting the nevent so it fails to decode.
+    private val NEVENT_PATTERN = Regex("""nostr:nevent1[ac-hj-np-z02-9]+""")
   }
 }
