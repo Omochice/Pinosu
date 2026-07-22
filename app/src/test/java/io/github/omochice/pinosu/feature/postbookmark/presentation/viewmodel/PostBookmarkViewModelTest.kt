@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.postbookmark.presentation.viewmodel
 
 import android.content.Intent
+import androidx.lifecycle.SavedStateHandle
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
@@ -37,6 +38,7 @@ class PostBookmarkViewModelTest {
 
   private lateinit var postBookmarkUseCase: PostBookmarkUseCase
   private lateinit var nip55SignerClient: Nip55SignerClient
+  private lateinit var savedStateHandle: SavedStateHandle
   private lateinit var viewModel: PostBookmarkViewModel
 
   private val testDispatcher = StandardTestDispatcher()
@@ -46,7 +48,8 @@ class PostBookmarkViewModelTest {
     Dispatchers.setMain(testDispatcher)
     postBookmarkUseCase = mockk(relaxed = true)
     nip55SignerClient = mockk(relaxed = true)
-    viewModel = PostBookmarkViewModel(postBookmarkUseCase, nip55SignerClient)
+    savedStateHandle = SavedStateHandle()
+    viewModel = PostBookmarkViewModel(postBookmarkUseCase, nip55SignerClient, savedStateHandle)
   }
 
   @AfterTest
@@ -248,6 +251,45 @@ class PostBookmarkViewModelTest {
     val state = viewModel.uiState.first()
     assertTrue(state.postSuccess, "postSuccess should be true")
     assertFalse(state.isSubmitting, "isSubmitting should be false")
+  }
+
+  @Test
+  fun `pending event survives process death and publishes signature-only response`() = runTest {
+    val realEvent =
+        UnsignedNostrEvent(
+            pubkey = "abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
+            createdAt = 1_234_567_890,
+            kind = 39701,
+            tags = listOf(listOf("d", "example.com")),
+            content = "comment")
+    val signatureOnlyResponse = "a".repeat(128)
+    val mockIntent = mockk<Intent>()
+
+    coEvery { postBookmarkUseCase.createUnsignedEvent(any(), any(), any(), any()) } returns
+        Result.success(realEvent)
+    every { nip55SignerClient.createSignEventIntent(any()) } returns mockIntent
+    every { nip55SignerClient.handleSignEventResponse(any(), any()) } returns
+        Result.success(SignedEventResponse(signatureOnlyResponse))
+    coEvery { postBookmarkUseCase.publishSignedEvent(any()) } returns
+        Result.success(PublishResult("event123", listOf("wss://relay.example.com"), emptyList()))
+
+    viewModel.updateUrl("example.com")
+    advanceUntilIdle()
+    viewModel.prepareSignEventIntent {}
+    advanceUntilIdle()
+
+    // Recreating the ViewModel from the same SavedStateHandle simulates process death while the
+    // signer is foregrounded.
+    val revivedViewModel =
+        PostBookmarkViewModel(postBookmarkUseCase, nip55SignerClient, savedStateHandle)
+
+    revivedViewModel.processSignedEvent(-1, mockIntent)
+    advanceUntilIdle()
+
+    val state = revivedViewModel.uiState.first()
+    assertTrue(state.postSuccess, "revived ViewModel should rebuild and publish the signed event")
+    assertNull(state.errorMessage, "no build failure should be reported after process death")
+    coVerify { postBookmarkUseCase.publishSignedEvent(any()) }
   }
 
   @Test
