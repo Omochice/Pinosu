@@ -30,10 +30,8 @@ class Nip19EventResolver @Inject constructor() {
   }
 
   companion object {
-    // The data part uses the bech32 character set (which excludes 1, b, i and o) rather than
-    // [a-z0-9]. Those four characters can never appear in a valid nevent, so the match ends at
-    // directly adjacent words instead of swallowing them, which would corrupt the encoded value
-    // and make an otherwise valid quoted event fail to decode.
+    // The bech32 alphabet, not [a-z0-9]: the wider class would let the greedy match swallow
+    // directly adjacent words, corrupting the nevent so it fails to decode.
     private val NEVENT_PATTERN = Regex("""nostr:nevent1[ac-hj-np-z02-9]+""")
   }
 }
