@@ -23,13 +23,13 @@ import kotlinx.serialization.json.Json
 @Serializable
 private data class RootScopeCommentFilter(
     val kinds: List<Int>,
-    @SerialName("#A") val rootAddress: List<String>,
+    @SerialName("#" + Nip22.Tag.ADDRESS_ROOT) val rootAddress: List<String>,
 )
 
 @Serializable
 private data class ParentScopeCommentFilter(
     val kinds: List<Int>,
-    @SerialName("#a") val parentAddress: List<String>,
+    @SerialName("#" + Nip22.Tag.ADDRESS) val parentAddress: List<String>,
 )
 
 @Serializable
