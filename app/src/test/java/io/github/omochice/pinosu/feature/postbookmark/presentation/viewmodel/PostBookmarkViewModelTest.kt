@@ -278,9 +278,8 @@ class PostBookmarkViewModelTest {
     viewModel.prepareSignEventIntent {}
     advanceUntilIdle()
 
-    // Simulate process death while the signer is foregrounded: the original ViewModel is destroyed
-    // and recreated from the same SavedStateHandle. The pending event must be restored so a
-    // signature-only response can still be assembled into a full signed event.
+    // Recreating the ViewModel from the same SavedStateHandle simulates process death while the
+    // signer is foregrounded.
     val revivedViewModel =
         PostBookmarkViewModel(postBookmarkUseCase, nip55SignerClient, savedStateHandle)
 

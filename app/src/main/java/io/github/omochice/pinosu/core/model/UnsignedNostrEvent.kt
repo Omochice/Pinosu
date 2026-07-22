@@ -96,9 +96,6 @@ data class UnsignedNostrEvent(
     /**
      * Reconstruct an unsigned event from the JSON produced by [toJson]
      *
-     * Used to restore the pending event across process death (persisted in SavedStateHandle) while
-     * an external NIP-55 signer is in the foreground.
-     *
      * @param json JSON string previously produced by [toJson]
      * @return The parsed event, or null if the JSON is malformed
      */
