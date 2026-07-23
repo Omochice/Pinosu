@@ -92,7 +92,7 @@ class RelayCommentRepositoryTest {
   }
 
   @Test
-  fun `getCommentsForBookmark constructs correct NIP-22 A-tag filter`() = runTest {
+  fun `getCommentsForBookmark queries both root and parent address scopes`() = runTest {
     val filterSlot = slot<String>()
     coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns
         emptyList()
@@ -101,7 +101,14 @@ class RelayCommentRepositoryTest {
 
     val filter = filterSlot.captured
     assertTrue(filter.contains("\"kinds\":[1111]"))
-    assertTrue(filter.contains(""""#A":["39701:abc123:example.com/article"]"""))
+    assertTrue(
+        filter.contains(""""#A":["39701:abc123:example.com/article"]"""),
+        "should query the uppercase root scope",
+    )
+    assertTrue(
+        filter.contains(""""#a":["39701:abc123:example.com/article"]"""),
+        "should also query the lowercase parent scope so #a-only references are not missed",
+    )
   }
 
   @Test

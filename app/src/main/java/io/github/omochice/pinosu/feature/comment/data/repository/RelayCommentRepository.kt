@@ -21,9 +21,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-private data class CommentFilter(
+private data class RootScopeCommentFilter(
     val kinds: List<Int>,
-    @SerialName("#A") val aTag: List<String>,
+    @SerialName("#" + Nip22.Tag.ADDRESS_ROOT) val rootAddress: List<String>,
+)
+
+@Serializable
+private data class ParentScopeCommentFilter(
+    val kinds: List<Int>,
+    @SerialName("#" + Nip22.Tag.ADDRESS) val parentAddress: List<String>,
 )
 
 @Serializable
@@ -53,12 +59,14 @@ constructor(
     return try {
       val relays = relayListProvider.getRelays()
       val addressTagValue = NipB0.createAddress(rootPubkey, identifier)
+      // Match the bookmark address in either the uppercase root scope (#A) or the lowercase parent
+      // scope (#a). A single relay filter ANDs distinct tag keys, so the two scopes are supplied as
+      // separate filters in one REQ (logical OR); RelayPool deduplicates the merged events by id.
+      val kinds = listOf(Nip22.KIND_COMMENT)
       val filter =
-          Json.encodeToString(
-              CommentFilter(
-                  kinds = listOf(Nip22.KIND_COMMENT),
-                  aTag = listOf(addressTagValue),
-              ))
+          Json.encodeToString(RootScopeCommentFilter(kinds, listOf(addressTagValue))) +
+              "," +
+              Json.encodeToString(ParentScopeCommentFilter(kinds, listOf(addressTagValue)))
 
       val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
 
