@@ -60,6 +60,7 @@ class RelayPoolTest {
    */
   private inner class MockWebSocketState(private val events: List<NostrEvent>) {
     val ws: WebSocket = mockk(relaxed = true)
+    val sentMessages = java.util.concurrent.CopyOnWriteArrayList<String>()
     private val closed = java.util.concurrent.atomic.AtomicBoolean(false)
 
     @Volatile private var wsListener: WebSocketListener? = null
@@ -68,6 +69,7 @@ class RelayPoolTest {
       every { ws.send(any<String>()) } answers
           {
             val message = firstArg<String>()
+            sentMessages.add(message)
             val currentListener = wsListener
 
             if (currentListener != null && message.startsWith("[\"REQ\"")) {
@@ -170,7 +172,7 @@ class RelayPoolTest {
 
     val filter = """{"kinds":[39701],"limit":10}"""
 
-    val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
+    val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertEquals(2, result.size, "Should have 2 events")
     assertTrue(result.any { it.id == "event1" }, "Should contain event1")
@@ -211,7 +213,7 @@ class RelayPoolTest {
 
     val filter = """{"kinds":[39701],"limit":10}"""
 
-    val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
+    val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertEquals(1, result.size, "Should have only 1 event after deduplication")
     assertEquals("same-event-id", result.first().id, "Event ID should be same-event-id")
@@ -232,7 +234,7 @@ class RelayPoolTest {
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     val filter = """{"kinds":[39701],"limit":10}"""
 
-    val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
+    val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertEquals(1, result.size, "Should have 1 event")
     assertEquals("single-event", result.first().id, "Event ID should be single-event")
@@ -253,16 +255,50 @@ class RelayPoolTest {
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     val filter = """{"kinds":[39701],"limit":10}"""
 
-    val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
+    val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertTrue(result.isEmpty(), "Should return empty list when all relays fail")
   }
 
   @Test
   fun `subscribeWithTimeout with empty relay list should return empty list`() = runBlocking {
-    val result = relayPool.subscribeWithTimeout(emptyList(), """{"kinds":[39701]}""", 5000L)
+    val result = relayPool.subscribeWithTimeout(emptyList(), listOf("""{"kinds":[39701]}"""), 5000L)
 
     assertTrue(result.isEmpty(), "Should return empty list for empty relay list")
+  }
+
+  @Test
+  fun `subscribeWithTimeout with empty filter list should return empty list`() = runBlocking {
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
+
+    val result = relayPool.subscribeWithTimeout(relays, emptyList(), 5000L)
+
+    assertTrue(result.isEmpty(), "Should return empty list for empty filter list")
+  }
+
+  @Test
+  fun `subscribeWithTimeout should send each filter as its own REQ element`() = runBlocking {
+    val state = MockWebSocketState(emptyList())
+
+    every { okHttpClient.newWebSocket(any(), any()) } answers
+        {
+          val listener = secondArg<WebSocketListener>()
+          state.setListener(listener)
+          state.triggerOpen()
+          state.ws
+        }
+
+    val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
+    val rootFilter = """{"kinds":[1111],"#A":["addr"]}"""
+    val parentFilter = """{"kinds":[1111],"#a":["addr"]}"""
+
+    relayPool.subscribeWithTimeout(relays, listOf(rootFilter, parentFilter), 5000L)
+
+    val reqMessage = state.sentMessages.first { it.startsWith("""["REQ"""") }
+    val reqArray = Json.parseToJsonElement(reqMessage).jsonArray
+    assertEquals(4, reqArray.size, "REQ should contain the subscription ID and both filters")
+    assertEquals(Json.parseToJsonElement(rootFilter), reqArray[2])
+    assertEquals(Json.parseToJsonElement(parentFilter), reqArray[3])
   }
 
   @Test
@@ -298,7 +334,7 @@ class RelayPoolTest {
 
     val filter = """{"kinds":[39701],"limit":10}"""
 
-    val result = relayPool.subscribeWithTimeout(relays, filter, 5000L)
+    val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertEquals(1, result.size, "Should have 1 event from working relay")
     assertEquals("working-event", result.first().id, "Event should be from working relay")

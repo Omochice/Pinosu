@@ -40,13 +40,13 @@ interface RelayPool {
    * returns the merged result.
    *
    * @param relays List of relay configurations to query
-   * @param filter Nostr filter as JSON string
+   * @param filters Nostr filters as JSON strings; a relay ORs multiple filters within one REQ
    * @param timeoutMs Timeout in milliseconds for each relay
    * @return List of deduplicated events from all relays
    */
   suspend fun subscribeWithTimeout(
       relays: List<RelayConfig>,
-      filter: String,
+      filters: List<String>,
       timeoutMs: Long
   ): List<NostrEvent>
 
@@ -81,10 +81,10 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
   override suspend fun subscribeWithTimeout(
       relays: List<RelayConfig>,
-      filter: String,
+      filters: List<String>,
       timeoutMs: Long
   ): List<NostrEvent> {
-    if (relays.isEmpty()) {
+    if (relays.isEmpty() || filters.isEmpty()) {
       return emptyList()
     }
 
@@ -93,7 +93,7 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
           relays.map { relay ->
             async {
               try {
-                withTimeoutOrNull(timeoutMs) { subscribeToRelay(relay.url, filter).toList() }
+                withTimeoutOrNull(timeoutMs) { subscribeToRelay(relay.url, filters).toList() }
                     ?: emptyList()
               } catch (e: IOException) {
                 Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
@@ -243,48 +243,49 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
    * Subscribe to events from a single relay
    *
    * @param relayUrl WebSocket URL of the relay
-   * @param filter Nostr filter as JSON string
+   * @param filters Nostr filters as JSON strings, sent as separate elements of the REQ message
    * @return Flow of events from the relay
    */
-  private fun subscribeToRelay(relayUrl: String, filter: String): Flow<NostrEvent> = callbackFlow {
-    val subscriptionId = UUID.randomUUID().toString()
-    val request = Request.Builder().url(relayUrl).build()
+  private fun subscribeToRelay(relayUrl: String, filters: List<String>): Flow<NostrEvent> =
+      callbackFlow {
+        val subscriptionId = UUID.randomUUID().toString()
+        val request = Request.Builder().url(relayUrl).build()
 
-    val listener =
-        object : WebSocketListener() {
-          override fun onOpen(webSocket: WebSocket, response: Response) {
-            val reqMessage = """["REQ","$subscriptionId",$filter]"""
-            webSocket.send(reqMessage)
-          }
-
-          override fun onMessage(webSocket: WebSocket, text: String) {
-            try {
-              when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
-                is NostrRelayMessage.Event -> trySend(message.event)
-                is NostrRelayMessage.Eose -> webSocket.close(1000, "EOSE received")
-                is NostrRelayMessage.Closed -> close()
-                else -> {}
+        val listener =
+            object : WebSocketListener() {
+              override fun onOpen(webSocket: WebSocket, response: Response) {
+                val reqMessage = """["REQ","$subscriptionId",${filters.joinToString(",")}]"""
+                webSocket.send(reqMessage)
               }
-            } catch (e: IllegalArgumentException) {
-              Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
-              close(e)
+
+              override fun onMessage(webSocket: WebSocket, text: String) {
+                try {
+                  when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
+                    is NostrRelayMessage.Event -> trySend(message.event)
+                    is NostrRelayMessage.Eose -> webSocket.close(1000, "EOSE received")
+                    is NostrRelayMessage.Closed -> close()
+                    else -> {}
+                  }
+                } catch (e: IllegalArgumentException) {
+                  Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
+                  close(e)
+                }
+              }
+
+              override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}")
+                close(t)
+              }
+
+              override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                close()
+              }
             }
-          }
 
-          override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}")
-            close(t)
-          }
+        val webSocket = okHttpClient.newWebSocket(request, listener)
 
-          override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            close()
-          }
-        }
-
-    val webSocket = okHttpClient.newWebSocket(request, listener)
-
-    awaitClose { webSocket.close(1000, "Flow cancelled") }
-  }
+        awaitClose { webSocket.close(1000, "Flow cancelled") }
+      }
 
   companion object {
     private const val TAG = "RelayPool"

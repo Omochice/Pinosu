@@ -193,7 +193,7 @@ class RelayBookmarkRepositoryTest {
 
     coVerify {
       relayPool.subscribeWithTimeout(
-          any(), match { it.contains("\"until\":$untilTimestamp") }, any())
+          any(), match { it.single().contains("\"until\":$untilTimestamp") }, any())
     }
   }
 
@@ -217,7 +217,9 @@ class RelayBookmarkRepositoryTest {
 
     repository.getBookmarkList(TEST_VALID_NPUB)
 
-    coVerify { relayPool.subscribeWithTimeout(any(), match { !it.contains("\"until\"") }, any()) }
+    coVerify {
+      relayPool.subscribeWithTimeout(any(), match { !it.single().contains("\"until\"") }, any())
+    }
   }
 
   @Test
@@ -228,7 +230,9 @@ class RelayBookmarkRepositoryTest {
 
     repository.getBookmarkList(TEST_VALID_NPUB)
 
-    coVerify { relayPool.subscribeWithTimeout(any(), match { it.contains("\"authors\"") }, any()) }
+    coVerify {
+      relayPool.subscribeWithTimeout(any(), match { it.single().contains("\"authors\"") }, any())
+    }
   }
 
   @Test
@@ -239,7 +243,9 @@ class RelayBookmarkRepositoryTest {
 
     repository.getBookmarkList(authorPubkey = null)
 
-    coVerify { relayPool.subscribeWithTimeout(any(), match { !it.contains("\"authors\"") }, any()) }
+    coVerify {
+      relayPool.subscribeWithTimeout(any(), match { !it.single().contains("\"authors\"") }, any())
+    }
   }
 
   @Test

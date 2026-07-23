@@ -66,7 +66,8 @@ constructor(
       val untilClause = until?.let { ""","until":$it""" } ?: ""
       val filter =
           """{"kinds":[${NipB0.KIND_BOOKMARK_LIST}],"limit":$PAGE_SIZE$authorsClause$untilClause}"""
-      val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
+      val events =
+          relayPool.subscribeWithTimeout(relays, listOf(filter), RelayPool.PER_RELAY_TIMEOUT_MS)
 
       if (events.isEmpty()) {
         Result.success(null)
