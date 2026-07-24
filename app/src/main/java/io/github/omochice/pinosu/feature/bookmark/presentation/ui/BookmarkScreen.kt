@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabIndicatorScope
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -41,9 +44,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
@@ -53,6 +59,8 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.dTag
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkTabState
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 private val sharedEncoder = Nip19EventEncoder()
@@ -124,10 +132,16 @@ fun BookmarkScreen(
           onLoadMore = onLoadMore,
       )
 
+  val pagerState =
+      rememberPagerState(
+          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
+          pageCount = { BookmarkFilterMode.entries.size })
+
   Scaffold(
       topBar = {
         BookmarkTopBar(
             selectedTab = uiState.selectedTab,
+            pagerState = pagerState,
             onOpenDrawer = onOpenDrawer,
             onTabSelected = onTabSelected)
       },
@@ -142,6 +156,7 @@ fun BookmarkScreen(
       }) { paddingValues ->
         BookmarkPager(
             uiState = uiState,
+            pagerState = pagerState,
             onTabSelected = onTabSelected,
             onLoad = onLoad,
             callbacks = callbacks,
@@ -152,16 +167,12 @@ fun BookmarkScreen(
 @Composable
 private fun BookmarkPager(
     uiState: BookmarkUiState,
+    pagerState: PagerState,
     onTabSelected: (BookmarkFilterMode) -> Unit,
     onLoad: (BookmarkFilterMode) -> Unit,
     callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
-  val pagerState =
-      rememberPagerState(
-          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
-          pageCount = { BookmarkFilterMode.entries.size })
-
   LaunchedEffect(uiState.selectedTab) {
     val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
     if (pagerState.currentPage != targetPage) {
@@ -196,6 +207,7 @@ private fun BookmarkPager(
 @Composable
 private fun BookmarkTopBar(
     selectedTab: BookmarkFilterMode,
+    pagerState: PagerState,
     onOpenDrawer: () -> Unit,
     onTabSelected: (BookmarkFilterMode) -> Unit,
 ) {
@@ -209,17 +221,55 @@ private fun BookmarkTopBar(
                 contentDescription = stringResource(R.string.cd_open_menu))
           }
         })
-    PrimaryTabRow(selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1) {
-      Tab(
-          selected = selectedTab == BookmarkFilterMode.Local,
-          onClick = { onTabSelected(BookmarkFilterMode.Local) },
-          text = { Text(stringResource(R.string.tab_local)) })
-      Tab(
-          selected = selectedTab == BookmarkFilterMode.Global,
-          onClick = { onTabSelected(BookmarkFilterMode.Global) },
-          text = { Text(stringResource(R.string.tab_global)) })
-    }
+    val selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex, indicator = { PagerSyncedTabIndicator(pagerState) }) {
+          Tab(
+              selected = selectedTab == BookmarkFilterMode.Local,
+              onClick = { onTabSelected(BookmarkFilterMode.Local) },
+              text = { Text(stringResource(R.string.tab_local)) })
+          Tab(
+              selected = selectedTab == BookmarkFilterMode.Global,
+              onClick = { onTabSelected(BookmarkFilterMode.Global) },
+              text = { Text(stringResource(R.string.tab_global)) })
+        }
   }
+}
+
+// The default tabIndicatorOffset animates only after the pager settles; deriving the position
+// from the pager's scroll offset keeps the indicator under the finger during a swipe.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TabIndicatorScope.PagerSyncedTabIndicator(pagerState: PagerState) {
+  TabRowDefaults.PrimaryIndicator(
+      modifier =
+          Modifier.tabIndicatorLayout { measurable, constraints, tabPositions ->
+                // The default tabIndicatorOffset guards against an empty position list, so mirror
+                // it here rather than let coerceIn throw on an empty index range.
+                if (tabPositions.isEmpty()) {
+                  layout(0, 0) {}
+                } else {
+                  val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
+                  val fromTab =
+                      tabPositions[floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                  val toTab =
+                      tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                  val fraction = progress - floor(progress)
+                  val indicatorWidth = lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
+                  val indicatorCenter =
+                      lerp(fromTab.left + fromTab.width / 2, toTab.left + toTab.width / 2, fraction)
+                  val widthPx = indicatorWidth.roundToPx()
+                  val placeable =
+                      measurable.measure(constraints.copy(minWidth = widthPx, maxWidth = widthPx))
+                  // The tab row bottom-aligns the indicator using the reported height, so the
+                  // layout must not stretch to the full row height.
+                  layout(constraints.maxWidth, placeable.height) {
+                    placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                  }
+                }
+              }
+              .testTag("tabIndicator"),
+      width = Dp.Unspecified)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
