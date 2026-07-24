@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -41,8 +43,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
@@ -124,6 +128,11 @@ fun BookmarkScreen(
           onLoadMore = onLoadMore,
       )
 
+  val pagerState =
+      rememberPagerState(
+          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
+          pageCount = { BookmarkFilterMode.entries.size })
+
   Scaffold(
       topBar = {
         BookmarkTopBar(
@@ -142,6 +151,7 @@ fun BookmarkScreen(
       }) { paddingValues ->
         BookmarkPager(
             uiState = uiState,
+            pagerState = pagerState,
             onTabSelected = onTabSelected,
             onLoad = onLoad,
             callbacks = callbacks,
@@ -152,16 +162,12 @@ fun BookmarkScreen(
 @Composable
 private fun BookmarkPager(
     uiState: BookmarkUiState,
+    pagerState: PagerState,
     onTabSelected: (BookmarkFilterMode) -> Unit,
     onLoad: (BookmarkFilterMode) -> Unit,
     callbacks: BookmarkListCallbacks,
     modifier: Modifier = Modifier,
 ) {
-  val pagerState =
-      rememberPagerState(
-          initialPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab),
-          pageCount = { BookmarkFilterMode.entries.size })
-
   LaunchedEffect(uiState.selectedTab) {
     val targetPage = BookmarkFilterMode.entries.indexOf(uiState.selectedTab)
     if (pagerState.currentPage != targetPage) {
@@ -209,16 +215,25 @@ private fun BookmarkTopBar(
                 contentDescription = stringResource(R.string.cd_open_menu))
           }
         })
-    PrimaryTabRow(selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1) {
-      Tab(
-          selected = selectedTab == BookmarkFilterMode.Local,
-          onClick = { onTabSelected(BookmarkFilterMode.Local) },
-          text = { Text(stringResource(R.string.tab_local)) })
-      Tab(
-          selected = selectedTab == BookmarkFilterMode.Global,
-          onClick = { onTabSelected(BookmarkFilterMode.Global) },
-          text = { Text(stringResource(R.string.tab_global)) })
-    }
+    val selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
+        indicator = {
+          TabRowDefaults.PrimaryIndicator(
+              modifier =
+                  Modifier.testTag("tabIndicator")
+                      .tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
+              width = Dp.Unspecified)
+        }) {
+          Tab(
+              selected = selectedTab == BookmarkFilterMode.Local,
+              onClick = { onTabSelected(BookmarkFilterMode.Local) },
+              text = { Text(stringResource(R.string.tab_local)) })
+          Tab(
+              selected = selectedTab == BookmarkFilterMode.Global,
+              onClick = { onTabSelected(BookmarkFilterMode.Global) },
+              text = { Text(stringResource(R.string.tab_global)) })
+        }
   }
 }
 
