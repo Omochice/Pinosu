@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.nip.nip19.Nip19EventEncoder
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
@@ -57,6 +58,8 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.dTag
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkFilterMode
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkTabState
 import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.BookmarkUiState
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 private val sharedEncoder = Nip19EventEncoder()
@@ -137,6 +140,7 @@ fun BookmarkScreen(
       topBar = {
         BookmarkTopBar(
             selectedTab = uiState.selectedTab,
+            pagerState = pagerState,
             onOpenDrawer = onOpenDrawer,
             onTabSelected = onTabSelected)
       },
@@ -202,6 +206,7 @@ private fun BookmarkPager(
 @Composable
 private fun BookmarkTopBar(
     selectedTab: BookmarkFilterMode,
+    pagerState: PagerState,
     onOpenDrawer: () -> Unit,
     onTabSelected: (BookmarkFilterMode) -> Unit,
 ) {
@@ -219,10 +224,37 @@ private fun BookmarkTopBar(
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
         indicator = {
+          // The default tabIndicatorOffset animates only after the pager settles; deriving the
+          // position from the pager's scroll offset keeps the indicator under the finger during
+          // a swipe.
           TabRowDefaults.PrimaryIndicator(
               modifier =
-                  Modifier.testTag("tabIndicator")
-                      .tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
+                  Modifier.tabIndicatorLayout { measurable, constraints, tabPositions ->
+                        val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
+                        val fromTab =
+                            tabPositions[
+                                floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                        val toTab =
+                            tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                        val fraction = progress - floor(progress)
+                        val indicatorWidth =
+                            lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
+                        val indicatorCenter =
+                            lerp(
+                                fromTab.left + fromTab.width / 2,
+                                toTab.left + toTab.width / 2,
+                                fraction)
+                        val widthPx = indicatorWidth.roundToPx()
+                        val placeable =
+                            measurable.measure(
+                                constraints.copy(minWidth = widthPx, maxWidth = widthPx))
+                        // The tab row bottom-aligns the indicator using the reported height, so the
+                        // layout must not stretch to the full row height.
+                        layout(constraints.maxWidth, placeable.height) {
+                          placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                        }
+                      }
+                      .testTag("tabIndicator"),
               width = Dp.Unspecified)
         }) {
           Tab(
