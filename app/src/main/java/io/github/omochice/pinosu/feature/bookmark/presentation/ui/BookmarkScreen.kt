@@ -244,21 +244,28 @@ private fun TabIndicatorScope.PagerSyncedTabIndicator(pagerState: PagerState) {
   TabRowDefaults.PrimaryIndicator(
       modifier =
           Modifier.tabIndicatorLayout { measurable, constraints, tabPositions ->
-                val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
-                val fromTab =
-                    tabPositions[floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
-                val toTab = tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
-                val fraction = progress - floor(progress)
-                val indicatorWidth = lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
-                val indicatorCenter =
-                    lerp(fromTab.left + fromTab.width / 2, toTab.left + toTab.width / 2, fraction)
-                val widthPx = indicatorWidth.roundToPx()
-                val placeable =
-                    measurable.measure(constraints.copy(minWidth = widthPx, maxWidth = widthPx))
-                // The tab row bottom-aligns the indicator using the reported height, so the layout
-                // must not stretch to the full row height.
-                layout(constraints.maxWidth, placeable.height) {
-                  placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                // The default tabIndicatorOffset guards against an empty position list, so mirror
+                // it here rather than let coerceIn throw on an empty index range.
+                if (tabPositions.isEmpty()) {
+                  layout(0, 0) {}
+                } else {
+                  val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
+                  val fromTab =
+                      tabPositions[floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                  val toTab =
+                      tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                  val fraction = progress - floor(progress)
+                  val indicatorWidth = lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
+                  val indicatorCenter =
+                      lerp(fromTab.left + fromTab.width / 2, toTab.left + toTab.width / 2, fraction)
+                  val widthPx = indicatorWidth.roundToPx()
+                  val placeable =
+                      measurable.measure(constraints.copy(minWidth = widthPx, maxWidth = widthPx))
+                  // The tab row bottom-aligns the indicator using the reported height, so the
+                  // layout must not stretch to the full row height.
+                  layout(constraints.maxWidth, placeable.height) {
+                    placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                  }
                 }
               }
               .testTag("tabIndicator"),
