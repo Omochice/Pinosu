@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabIndicatorScope
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -222,41 +223,7 @@ private fun BookmarkTopBar(
         })
     val selectedTabIndex = if (selectedTab == BookmarkFilterMode.Local) 0 else 1
     PrimaryTabRow(
-        selectedTabIndex = selectedTabIndex,
-        indicator = {
-          // The default tabIndicatorOffset animates only after the pager settles; deriving the
-          // position from the pager's scroll offset keeps the indicator under the finger during
-          // a swipe.
-          TabRowDefaults.PrimaryIndicator(
-              modifier =
-                  Modifier.tabIndicatorLayout { measurable, constraints, tabPositions ->
-                        val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
-                        val fromTab =
-                            tabPositions[
-                                floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
-                        val toTab =
-                            tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
-                        val fraction = progress - floor(progress)
-                        val indicatorWidth =
-                            lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
-                        val indicatorCenter =
-                            lerp(
-                                fromTab.left + fromTab.width / 2,
-                                toTab.left + toTab.width / 2,
-                                fraction)
-                        val widthPx = indicatorWidth.roundToPx()
-                        val placeable =
-                            measurable.measure(
-                                constraints.copy(minWidth = widthPx, maxWidth = widthPx))
-                        // The tab row bottom-aligns the indicator using the reported height, so the
-                        // layout must not stretch to the full row height.
-                        layout(constraints.maxWidth, placeable.height) {
-                          placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
-                        }
-                      }
-                      .testTag("tabIndicator"),
-              width = Dp.Unspecified)
-        }) {
+        selectedTabIndex = selectedTabIndex, indicator = { PagerSyncedTabIndicator(pagerState) }) {
           Tab(
               selected = selectedTab == BookmarkFilterMode.Local,
               onClick = { onTabSelected(BookmarkFilterMode.Local) },
@@ -267,6 +234,35 @@ private fun BookmarkTopBar(
               text = { Text(stringResource(R.string.tab_global)) })
         }
   }
+}
+
+// The default tabIndicatorOffset animates only after the pager settles; deriving the position
+// from the pager's scroll offset keeps the indicator under the finger during a swipe.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TabIndicatorScope.PagerSyncedTabIndicator(pagerState: PagerState) {
+  TabRowDefaults.PrimaryIndicator(
+      modifier =
+          Modifier.tabIndicatorLayout { measurable, constraints, tabPositions ->
+                val progress = pagerState.currentPage + pagerState.currentPageOffsetFraction
+                val fromTab =
+                    tabPositions[floor(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                val toTab = tabPositions[ceil(progress).toInt().coerceIn(0, tabPositions.lastIndex)]
+                val fraction = progress - floor(progress)
+                val indicatorWidth = lerp(fromTab.contentWidth, toTab.contentWidth, fraction)
+                val indicatorCenter =
+                    lerp(fromTab.left + fromTab.width / 2, toTab.left + toTab.width / 2, fraction)
+                val widthPx = indicatorWidth.roundToPx()
+                val placeable =
+                    measurable.measure(constraints.copy(minWidth = widthPx, maxWidth = widthPx))
+                // The tab row bottom-aligns the indicator using the reported height, so the layout
+                // must not stretch to the full row height.
+                layout(constraints.maxWidth, placeable.height) {
+                  placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                }
+              }
+              .testTag("tabIndicator"),
+      width = Dp.Unspecified)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
