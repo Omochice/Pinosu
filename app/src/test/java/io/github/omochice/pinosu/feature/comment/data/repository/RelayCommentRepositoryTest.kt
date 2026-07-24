@@ -93,20 +93,21 @@ class RelayCommentRepositoryTest {
 
   @Test
   fun `getCommentsForBookmark queries both root and parent address scopes`() = runTest {
-    val filterSlot = slot<String>()
-    coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns
+    val filtersSlot = slot<List<String>>()
+    coEvery { relayPool.subscribeWithTimeout(any(), capture(filtersSlot), any()) } returns
         emptyList()
 
     repository.getCommentsForBookmark(rootPubkey = "abc123", identifier = "example.com/article")
 
-    val filter = filterSlot.captured
-    assertTrue(filter.contains("\"kinds\":[1111]"))
+    val filters = filtersSlot.captured
+    assertEquals(2, filters.size, "each scope should be its own filter")
+    assertTrue(filters.all { it.contains("\"kinds\":[1111]") })
     assertTrue(
-        filter.contains(""""#A":["39701:abc123:example.com/article"]"""),
+        filters.any { it.contains(""""#A":["39701:abc123:example.com/article"]""") },
         "should query the uppercase root scope",
     )
     assertTrue(
-        filter.contains(""""#a":["39701:abc123:example.com/article"]"""),
+        filters.any { it.contains(""""#a":["39701:abc123:example.com/article"]""") },
         "should also query the lowercase parent scope so #a-only references are not missed",
     )
   }
@@ -169,8 +170,8 @@ class RelayCommentRepositoryTest {
             content = "Hello world",
             sig = "dummy-sig")
 
-    val filterSlot = slot<String>()
-    coEvery { relayPool.subscribeWithTimeout(any(), capture(filterSlot), any()) } returns
+    val filtersSlot = slot<List<String>>()
+    coEvery { relayPool.subscribeWithTimeout(any(), capture(filtersSlot), any()) } returns
         listOf(event)
 
     val result = repository.getEventsByIds(listOf("abc123"))
@@ -182,7 +183,7 @@ class RelayCommentRepositoryTest {
     assertEquals("Hello world", events[0].content)
     assertEquals(1, events[0].kind)
 
-    val filter = filterSlot.captured
+    val filter = filtersSlot.captured.single()
     assertTrue(filter.contains(""""ids":["abc123"]"""))
   }
 

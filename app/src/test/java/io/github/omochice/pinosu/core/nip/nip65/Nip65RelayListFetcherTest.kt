@@ -67,7 +67,10 @@ class Nip65RelayListFetcherTest {
     coVerify {
       relayPool.subscribeWithTimeout(
           any(),
-          match { it.contains("\"kinds\":[10002]") && it.contains("\"authors\":[\"$hexPubkey\"]") },
+          match {
+            it.single().contains("\"kinds\":[10002]") &&
+                it.single().contains("\"authors\":[\"$hexPubkey\"]")
+          },
           any())
     }
   }

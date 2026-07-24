@@ -102,7 +102,7 @@ constructor(
   private suspend fun queryRelay(relay: RelayConfig, filter: String): List<RelayConfig>? {
     val events =
         try {
-          relayPool.subscribeWithTimeout(listOf(relay), filter, RELAY_TIMEOUT_MS)
+          relayPool.subscribeWithTimeout(listOf(relay), listOf(filter), RELAY_TIMEOUT_MS)
         } catch (_: IOException) {
           return null
         }

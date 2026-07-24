@@ -70,7 +70,8 @@ constructor(
         Json.encodeToString(
             ProfileFilter(
                 kinds = listOf(Nip01ProfileParserImpl.KIND_USER_METADATA), authors = uncached))
-    val events = relayPool.subscribeWithTimeout(relays, filter, RelayPool.PER_RELAY_TIMEOUT_MS)
+    val events =
+        relayPool.subscribeWithTimeout(relays, listOf(filter), RelayPool.PER_RELAY_TIMEOUT_MS)
 
     val profilesByPubkey =
         events

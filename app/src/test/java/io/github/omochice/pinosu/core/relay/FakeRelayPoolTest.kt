@@ -24,7 +24,7 @@ class FakeRelayPoolTest {
     val result =
         fakeRelayPool.subscribeWithTimeout(
             relays = listOf(RelayConfig("wss://relay.example.com")),
-            filter = """{"kinds":[1]}""",
+            filters = listOf("""{"kinds":[1]}"""),
             timeoutMs = 1000)
 
     assertEquals(listOf(event), result)
@@ -34,15 +34,15 @@ class FakeRelayPoolTest {
   fun subscribeWithTimeout_recordsCallArguments() = runTest {
     val relays =
         listOf(RelayConfig("wss://relay1.example.com"), RelayConfig("wss://relay2.example.com"))
-    val filter = """{"kinds":[1],"limit":10}"""
+    val filters = listOf("""{"kinds":[1],"limit":10}""")
     val timeoutMs = 5000L
 
-    fakeRelayPool.subscribeWithTimeout(relays, filter, timeoutMs)
+    fakeRelayPool.subscribeWithTimeout(relays, filters, timeoutMs)
 
     assertEquals(1, fakeRelayPool.subscribeCallArgs.size)
     val call = fakeRelayPool.subscribeCallArgs.first()
     assertEquals(relays, call.relays)
-    assertEquals(filter, call.filter)
+    assertEquals(filters, call.filters)
     assertEquals(timeoutMs, call.timeoutMs)
   }
 
@@ -105,7 +105,7 @@ class FakeRelayPoolTest {
                 eventId = "test",
                 successfulRelays = listOf("wss://relay.example.com"),
                 failedRelays = emptyList()))
-    fakeRelayPool.subscribeWithTimeout(emptyList(), "{}", 1000)
+    fakeRelayPool.subscribeWithTimeout(emptyList(), listOf("{}"), 1000)
     fakeRelayPool.publishEvent(emptyList(), "{}", 1000)
 
     fakeRelayPool.reset()

@@ -135,7 +135,10 @@ class Nip01ProfileFetcherTest {
     coVerify {
       relayPool.subscribeWithTimeout(
           any(),
-          match { it.contains(""""kinds":[0]""") && it.contains(""""authors":["aabb","ccdd"]""") },
+          match {
+            it.single().contains(""""kinds":[0]""") &&
+                it.single().contains(""""authors":["aabb","ccdd"]""")
+          },
           any())
     }
   }

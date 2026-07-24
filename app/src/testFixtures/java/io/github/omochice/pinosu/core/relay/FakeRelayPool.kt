@@ -23,7 +23,11 @@ class FakeRelayPool : RelayPool {
   /** Recorded calls to publishEvent */
   val publishCallArgs = mutableListOf<PublishCall>()
 
-  data class SubscribeCall(val relays: List<RelayConfig>, val filter: String, val timeoutMs: Long)
+  data class SubscribeCall(
+      val relays: List<RelayConfig>,
+      val filters: List<String>,
+      val timeoutMs: Long
+  )
 
   data class PublishCall(
       val relays: List<RelayConfig>,
@@ -33,10 +37,10 @@ class FakeRelayPool : RelayPool {
 
   override suspend fun subscribeWithTimeout(
       relays: List<RelayConfig>,
-      filter: String,
+      filters: List<String>,
       timeoutMs: Long
   ): List<NostrEvent> {
-    subscribeCallArgs.add(SubscribeCall(relays, filter, timeoutMs))
+    subscribeCallArgs.add(SubscribeCall(relays, filters, timeoutMs))
     return eventsToReturn
   }
 
