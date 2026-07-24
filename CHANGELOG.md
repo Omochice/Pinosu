@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.20.1](https://github.com/Omochice/Pinosu/compare/v0.20.0...v0.20.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* **bookmark:** give Local and Global tabs independent per-tab queries ([#609](https://github.com/Omochice/Pinosu/issues/609)) ([0876a9e](https://github.com/Omochice/Pinosu/commit/0876a9e40baceb24f24e560698cfff2e6516f1e9))
+* **deps:** update aboutlibraries to v15.0.4 ([#643](https://github.com/Omochice/Pinosu/issues/643)) ([8405be0](https://github.com/Omochice/Pinosu/commit/8405be06cf51886ba9c5dc1ba294eb834e9b4970))
+* **deps:** update dependency com.google.crypto.tink:tink-android to v1.23.0 ([#627](https://github.com/Omochice/Pinosu/issues/627)) ([3ef6180](https://github.com/Omochice/Pinosu/commit/3ef61808d0d6ae7a56060e8c297d45431f225673))
+* **deps:** update hilt to v2.60.1 ([#619](https://github.com/Omochice/Pinosu/issues/619)) ([f4b59bf](https://github.com/Omochice/Pinosu/commit/f4b59bf5fe18e8b809b6014b92b108782588d436))
+* **deps:** update kotlin monorepo to v2.4.10 ([#636](https://github.com/Omochice/Pinosu/issues/636)) ([6b02bf5](https://github.com/Omochice/Pinosu/commit/6b02bf551d3f1c77761d5ef0133599b24911ff27))
+* fetch comments referencing the bookmark via #A or #a ([#615](https://github.com/Omochice/Pinosu/issues/615)) ([d46c4f0](https://github.com/Omochice/Pinosu/commit/d46c4f03914e50d9d3d03e40a9bee1e958a264ce))
+* match nevent references using the bech32 character set ([#614](https://github.com/Omochice/Pinosu/issues/614)) ([4e2d419](https://github.com/Omochice/Pinosu/commit/4e2d4193b7468a281637408989079687df9bd362))
+* persist pending unsigned event across process death ([#613](https://github.com/Omochice/Pinosu/issues/613)) ([c1c6614](https://github.com/Omochice/Pinosu/commit/c1c6614e04fe3b044f65b1a6069eb7be2b4d7530))
+* report malformed OK accepted flag as a serialization error ([#612](https://github.com/Omochice/Pinosu/issues/612)) ([3a91305](https://github.com/Omochice/Pinosu/commit/3a91305b75c4ba4ba1c048af98644d4f1808f755))
+* stop pagination when a page adds no new items ([#616](https://github.com/Omochice/Pinosu/issues/616)) ([2e9d3c8](https://github.com/Omochice/Pinosu/commit/2e9d3c8fe21f32a1f00a4a2587df23603da09e88))
+* surface corrupt auth data instead of silently resetting it ([#610](https://github.com/Omochice/Pinosu/issues/610)) ([d621f4a](https://github.com/Omochice/Pinosu/commit/d621f4ae7e103b0072e457d50a826101f7a80630))
+* trim trailing punctuation from extracted shared URL ([#611](https://github.com/Omochice/Pinosu/issues/611)) ([27a127d](https://github.com/Omochice/Pinosu/commit/27a127d8a4260775271215ff5882fcc1062b2712))
+
 ## [0.20.0](https://github.com/Omochice/Pinosu/compare/v0.19.1...v0.20.0) (2026-07-02)
 
 
