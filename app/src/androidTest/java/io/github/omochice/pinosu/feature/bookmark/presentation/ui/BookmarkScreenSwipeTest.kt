@@ -1,9 +1,14 @@
 package io.github.omochice.pinosu.feature.bookmark.presentation.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
@@ -133,5 +138,34 @@ class BookmarkScreenSwipeTest {
         draggedLeft > restingLeft,
         "Tab indicator should move toward the Global tab while the swipe is in progress " +
             "(resting left: $restingLeft, dragged left: $draggedLeft)")
+  }
+
+  @Test
+  fun indicatorRestsUnderGlobalTabAfterCompletedSwipe() {
+    composeTestRule.setContent {
+      var selectedTab by remember { mutableStateOf(BookmarkFilterMode.Local) }
+      BookmarkScreen(
+          uiState =
+              BookmarkUiState(
+                  local = BookmarkTabState(items = listOf(localBookmark)),
+                  global = BookmarkTabState(items = listOf(globalBookmark)),
+                  selectedTab = selectedTab),
+          onRefresh = {},
+          onLoad = {},
+          onTabSelected = { tab -> selectedTab = tab })
+    }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    val indicatorBounds =
+        composeTestRule.onNodeWithTag("tabIndicator", useUnmergedTree = true).getBoundsInRoot()
+    val globalTabBounds = composeTestRule.onNodeWithText("Global").getBoundsInRoot()
+    val indicatorCenter = (indicatorBounds.left + indicatorBounds.right) / 2
+
+    assertTrue(
+        indicatorCenter > globalTabBounds.left && indicatorCenter < globalTabBounds.right,
+        "Tab indicator should rest under the Global tab after a completed swipe " +
+            "(indicator center: $indicatorCenter, Global tab: $globalTabBounds)")
   }
 }
