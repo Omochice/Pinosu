@@ -20,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -108,6 +109,21 @@ class Nip55LoginIntegrationTest {
 
     assertEquals(TEST_VALID_NPUB, fromHex, "hex response should resolve to the matching npub")
     assertEquals(fromNpub, fromHex, "both encodings should log in the same account")
+  }
+
+  @Test
+  fun `an unreadable signer response does not blame the network`() = runTest {
+    val response = Intent().putExtra("result", "not-a-pubkey")
+
+    viewModel.processNip55Response(Activity.RESULT_OK, response)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.value
+    assertTrue(state is LoginUiState.Error, "state should be an error but was $state")
+    assertFalse(
+        state.message.contains("network", ignoreCase = true) ||
+            state.message.contains("connection", ignoreCase = true),
+        "message should not blame the network but was \"${state.message}\"")
   }
 
   companion object {
