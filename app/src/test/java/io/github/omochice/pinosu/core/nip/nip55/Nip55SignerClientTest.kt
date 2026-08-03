@@ -198,7 +198,7 @@ class Nip55SignerClientTest {
   @Test
   fun `handleNip55Response with invalid pubkey length should return InvalidResponse`() {
     val intent = android.content.Intent()
-    intent.putExtra("result", "a".repeat(64))
+    intent.putExtra("result", "a".repeat(63))
 
     val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
 

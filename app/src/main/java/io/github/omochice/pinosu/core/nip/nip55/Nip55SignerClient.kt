@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.net.toUri
+import com.vitorpamplona.quartz.nip19Bech32.entities.NPub
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.omochice.pinosu.core.model.Pubkey
 import javax.inject.Inject
@@ -66,13 +67,32 @@ constructor(@param:ApplicationContext private val context: Context) {
       return Result.failure(Nip55Error.InvalidResponse("Result is null or empty"))
     }
 
-    if (!Pubkey.isValidFormat(pubkey)) {
+    val npub = normalizeToNpub(pubkey)
+    if (npub == null) {
       return Result.failure(
-          Nip55Error.InvalidResponse("Invalid pubkey format: must be Bech32-encoded (npub1...)"))
+          Nip55Error.InvalidResponse(
+              "Invalid pubkey format: must be Bech32-encoded (npub1...) or 64-character hex"))
     }
 
-    return Result.success(Nip55Response(pubkey, NIP55_SIGNER_PACKAGE_NAME))
+    return Result.success(Nip55Response(npub, NIP55_SIGNER_PACKAGE_NAME))
   }
+
+  /**
+   * Normalize a pubkey returned by a NIP-55 signer to Bech32 form
+   *
+   * NIP-55 states that all pubkeys in the protocol are hex, and Amber 6.3.0 returns hex from
+   * get_public_key, but older builds returned npub to package callers. Both encodings are accepted
+   * so the app works across signer versions.
+   *
+   * @param pubkey Pubkey string as received from the signer
+   * @return npub form of the pubkey, or null if it is neither an npub nor a 64-character hex string
+   */
+  private fun normalizeToNpub(pubkey: String): String? =
+      when {
+        Pubkey.isValidFormat(pubkey) -> pubkey
+        HEX_PUBKEY_PATTERN.matches(pubkey) -> NPub.create(pubkey.lowercase())
+        else -> null
+      }
 
   /**
    * Mask sensitive pubkey for logging
@@ -160,6 +180,7 @@ constructor(@param:ApplicationContext private val context: Context) {
 
   companion object {
     private const val TAG = "Nip55SignerClient"
+    private val HEX_PUBKEY_PATTERN = Regex("[0-9a-fA-F]{64}")
     const val NIP55_SIGNER_PACKAGE_NAME = "com.greenart7c3.nostrsigner"
     const val NOSTRSIGNER_SCHEME = "nostrsigner"
     const val TYPE_GET_PUBLIC_KEY = "get_public_key"
