@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.20.1](https://github.com/Omochice/Pinosu/compare/v0.20.0...v0.20.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* **bookmark:** give Local and Global tabs independent per-tab queries ([#609](https://github.com/Omochice/Pinosu/issues/609)) ([0876a9e](https://github.com/Omochice/Pinosu/commit/0876a9e40baceb24f24e560698cfff2e6516f1e9))
+* **deps:** update aboutlibraries to v15.0.4 ([#643](https://github.com/Omochice/Pinosu/issues/643)) ([8405be0](https://github.com/Omochice/Pinosu/commit/8405be06cf51886ba9c5dc1ba294eb834e9b4970))
+* **deps:** update dependency com.google.crypto.tink:tink-android to v1.23.0 ([#627](https://github.com/Omochice/Pinosu/issues/627)) ([3ef6180](https://github.com/Omochice/Pinosu/commit/3ef61808d0d6ae7a56060e8c297d45431f225673))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.13.0 ([#671](https://github.com/Omochice/Pinosu/issues/671)) ([b40af20](https://github.com/Omochice/Pinosu/commit/b40af200b7455c4654e3a24cad713910484fcfcd))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.13.1 ([#672](https://github.com/Omochice/Pinosu/issues/672)) ([d34e375](https://github.com/Omochice/Pinosu/commit/d34e3754ada1894810abcfc487841c133bfa66a9))
+* **deps:** update dependency org.jsoup:jsoup to v1.23.1 ([#673](https://github.com/Omochice/Pinosu/issues/673)) ([0539182](https://github.com/Omochice/Pinosu/commit/05391828ad7561953ad0676ba73825162f0e557c))
+* **deps:** update hilt to v2.60.1 ([#619](https://github.com/Omochice/Pinosu/issues/619)) ([f4b59bf](https://github.com/Omochice/Pinosu/commit/f4b59bf5fe18e8b809b6014b92b108782588d436))
+* **deps:** update kotlin monorepo to v2.4.10 ([#636](https://github.com/Omochice/Pinosu/issues/636)) ([6b02bf5](https://github.com/Omochice/Pinosu/commit/6b02bf551d3f1c77761d5ef0133599b24911ff27))
+* fetch comments referencing the bookmark via #A or #a ([#615](https://github.com/Omochice/Pinosu/issues/615)) ([d46c4f0](https://github.com/Omochice/Pinosu/commit/d46c4f03914e50d9d3d03e40a9bee1e958a264ce))
+* match nevent references using the bech32 character set ([#614](https://github.com/Omochice/Pinosu/issues/614)) ([4e2d419](https://github.com/Omochice/Pinosu/commit/4e2d4193b7468a281637408989079687df9bd362))
+* persist pending unsigned event across process death ([#613](https://github.com/Omochice/Pinosu/issues/613)) ([c1c6614](https://github.com/Omochice/Pinosu/commit/c1c6614e04fe3b044f65b1a6069eb7be2b4d7530))
+* report malformed OK accepted flag as a serialization error ([#612](https://github.com/Omochice/Pinosu/issues/612)) ([3a91305](https://github.com/Omochice/Pinosu/commit/3a91305b75c4ba4ba1c048af98644d4f1808f755))
+* restore login with signer apps that return hex pubkeys ([#682](https://github.com/Omochice/Pinosu/issues/682)) ([e6325bd](https://github.com/Omochice/Pinosu/commit/e6325bdfe560fd158c0cd7e69fddf5854fa9a2a0))
+* stop pagination when a page adds no new items ([#616](https://github.com/Omochice/Pinosu/issues/616)) ([2e9d3c8](https://github.com/Omochice/Pinosu/commit/2e9d3c8fe21f32a1f00a4a2587df23603da09e88))
+* surface corrupt auth data instead of silently resetting it ([#610](https://github.com/Omochice/Pinosu/issues/610)) ([d621f4a](https://github.com/Omochice/Pinosu/commit/d621f4ae7e103b0072e457d50a826101f7a80630))
+* sync bookmark tab indicator with swipe gesture ([#664](https://github.com/Omochice/Pinosu/issues/664)) ([7b23462](https://github.com/Omochice/Pinosu/commit/7b23462ce92c2c19e5cea78d69cc5264495d98df))
+* trim trailing punctuation from extracted shared URL ([#611](https://github.com/Omochice/Pinosu/issues/611)) ([27a127d](https://github.com/Omochice/Pinosu/commit/27a127d8a4260775271215ff5882fcc1062b2712))
+
 ## [0.20.0](https://github.com/Omochice/Pinosu/compare/v0.19.1...v0.20.0) (2026-07-02)
 
 
