@@ -27,6 +27,16 @@ sealed class LoginError : Exception() {
   data object InvalidPubkey : LoginError()
 
   /**
+   * NIP-55 signer returned a response the app could not read
+   *
+   * Distinct from [NetworkError] because no network call is involved: the signer replied, but its
+   * payload was missing or in an unexpected encoding.
+   *
+   * @property message Error message
+   */
+  data class InvalidSignerResponse(override val message: String) : LoginError()
+
+  /**
    * Unknown error occurred
    *
    * @property throwable The exception that occurred

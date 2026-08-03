@@ -86,7 +86,8 @@ constructor(
       val nip55Response = nip55Result.getOrNull()!!
       val pubkey =
           Pubkey.parse(nip55Response.pubkey)
-              ?: return Result.failure(LoginError.NetworkError("Invalid pubkey format from signer"))
+              ?: return Result.failure(
+                  LoginError.InvalidSignerResponse("Invalid pubkey format from signer"))
       val user = User(pubkey)
 
       try {
@@ -102,7 +103,7 @@ constructor(
             is Nip55Error.NotInstalled -> LoginError.Nip55SignerNotInstalled
             is Nip55Error.UserRejected -> LoginError.UserRejected
             is Nip55Error.Timeout -> LoginError.Timeout
-            is Nip55Error.InvalidResponse -> LoginError.NetworkError(nip55Error.message)
+            is Nip55Error.InvalidResponse -> LoginError.InvalidSignerResponse(nip55Error.message)
             is Nip55Error.IntentResolutionError -> LoginError.NetworkError(nip55Error.message)
             null -> LoginError.UnknownError(Exception("Unknown NIP-55 signer error"))
           }
