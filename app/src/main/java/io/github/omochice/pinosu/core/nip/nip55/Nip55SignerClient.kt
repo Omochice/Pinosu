@@ -199,7 +199,8 @@ data class SignedEventResponse(val signedEventJson: String)
 /**
  * Response from NIP-55 signer
  *
- * @property pubkey User's public key (64-character hex string)
+ * @property pubkey User's public key, always Bech32-encoded (npub1...) regardless of the encoding
+ *   the signer replied with
  * @property packageName NIP-55 signer app package name
  */
 data class Nip55Response(val pubkey: String, val packageName: String)
