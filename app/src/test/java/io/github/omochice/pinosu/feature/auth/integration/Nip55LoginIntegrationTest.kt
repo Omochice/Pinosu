@@ -19,6 +19,7 @@ import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -95,11 +96,26 @@ class Nip55LoginIntegrationTest {
     assertTrue(state is LoginUiState.Success, "state should be Success but was $state")
   }
 
+  @Test
+  fun `hex and npub responses log in the same account`() = runTest {
+    viewModel.processNip55Response(Activity.RESULT_OK, Intent().putExtra("result", TEST_VALID_HEX))
+    advanceUntilIdle()
+    val fromHex = viewModel.mainUiState.value.userPubkey
+
+    viewModel.processNip55Response(Activity.RESULT_OK, Intent().putExtra("result", TEST_VALID_NPUB))
+    advanceUntilIdle()
+    val fromNpub = viewModel.mainUiState.value.userPubkey
+
+    assertEquals(TEST_VALID_NPUB, fromHex, "hex response should resolve to the matching npub")
+    assertEquals(fromNpub, fromHex, "both encodings should log in the same account")
+  }
+
   companion object {
     /**
-     * Well-known Nostr public key (fiatjaf) in hex form, which is what Amber 6.3.0 returns from
-     * get_public_key.
+     * Well-known Nostr public key (fiatjaf) in the two encodings a NIP-55 signer may return. Amber
+     * 6.3.0 returns the hex form from get_public_key.
      */
     const val TEST_VALID_HEX = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+    const val TEST_VALID_NPUB = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
   }
 }
