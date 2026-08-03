@@ -144,6 +144,20 @@ class Nip55SignerClientTest {
   }
 
   @Test
+  fun `handleNip55Response with hex result should return the matching npub`() {
+    val hexPubkey = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+    val expectedNpub = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+    val intent = android.content.Intent()
+    intent.putExtra("result", hexPubkey)
+
+    val result = nip55SignerClient.handleNip55Response(android.app.Activity.RESULT_OK, intent)
+
+    assertTrue(result.isSuccess, "Should return success")
+    assertEquals(
+        expectedNpub, result.getOrNull()?.pubkey, "Hex pubkey should be normalized to npub")
+  }
+
+  @Test
   fun `handleNip55Response when user rejected should return error`() {
     val intent = android.content.Intent()
     intent.putExtra("rejected", true)
