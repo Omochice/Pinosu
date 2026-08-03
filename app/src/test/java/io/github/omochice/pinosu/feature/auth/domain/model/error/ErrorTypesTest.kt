@@ -67,6 +67,7 @@ class ErrorTypesTest {
             LoginError.Timeout,
             LoginError.NetworkError("test"),
             LoginError.InvalidPubkey,
+            LoginError.InvalidSignerResponse("test"),
             LoginError.UnknownError(RuntimeException()))
 
     errors.forEach { error ->
@@ -77,6 +78,7 @@ class ErrorTypesTest {
             is LoginError.Timeout -> "timeout"
             is LoginError.NetworkError -> "network_error"
             is LoginError.InvalidPubkey -> "invalid_pubkey"
+            is LoginError.InvalidSignerResponse -> "invalid_signer_response"
             is LoginError.UnknownError -> "unknown_error"
           }
 

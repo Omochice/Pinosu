@@ -150,6 +150,9 @@ constructor(
               is LoginError.NetworkError ->
                   LoginUiState.Error.Retryable(
                       "A network error occurred. Please check your connection.")
+              is LoginError.InvalidSignerResponse ->
+                  LoginUiState.Error.Retryable(
+                      "Could not read the response from the signer app. Please try again.")
               is LoginError.UnknownError -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
               else -> LoginUiState.Error.NonRetryable(ERROR_GENERIC)
             }
