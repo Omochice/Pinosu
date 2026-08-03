@@ -84,7 +84,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Coroutine Testing**: kotlinx-coroutines-test
 - **Instrumentation Tests**: AndroidX Test (JUnit, Espresso), Compose UI Test (`createComposeRule` v2 API)
 - **DI Testing**: Hilt Android Testing
-- **Architecture Tests**: ArchUnit (`archunit-junit4`) for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
+- **Architecture Tests**: Konsist for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
 
 ## Technical Conventions
 
@@ -132,9 +132,9 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 
 ### Development Tooling
 
-- **Code Formatting**: ktfmt (Kotlin), biome (JSON/YAML), tombi (TOML), treefmt (orchestration)
-- **Linting**: detekt (Kotlin static analysis), actionlint (GitHub Actions)
+- **Code Formatting**: ktfmt (Kotlin), biome (JSON), rumdl (Markdown), tombi/toml-sort (TOML), yamlfmt (YAML), treefmt (orchestration)
+- **Linting**: detekt (Kotlin static analysis), actionlint/ghalint/zizmor (GitHub Actions correctness and security)
 - **Spell Check**: typos for typo detection
-- **Scripts**: Managed via devbox shell scripts (fmt, check, test, version-up)
+- **Scripts**: Managed via devbox shell scripts (`fmt`, `check`, `test`, `test:connectedAndroidTest`, `version-up`)
 
 ---
