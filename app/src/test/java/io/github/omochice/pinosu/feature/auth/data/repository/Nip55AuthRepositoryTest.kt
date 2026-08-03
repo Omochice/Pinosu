@@ -226,7 +226,7 @@ class Nip55AuthRepositoryTest {
   }
 
   @Test
-  fun `processNip55Response on InvalidResponse should return NetworkError`() = runTest {
+  fun `processNip55Response on InvalidResponse should return InvalidSignerResponse`() = runTest {
     val intent = Intent()
     every { nip55SignerClient.handleNip55Response(any(), any()) } returns
         Result.failure(
@@ -236,7 +236,9 @@ class Nip55AuthRepositoryTest {
 
     assertTrue(result.isFailure, "Should return failure")
     val exception = result.exceptionOrNull()
-    assertTrue(exception is LoginError.NetworkError, "Exception should be LoginError.NetworkError")
+    assertTrue(
+        exception is LoginError.InvalidSignerResponse,
+        "Exception should be LoginError.InvalidSignerResponse but was $exception")
   }
 
   @Test
