@@ -20,7 +20,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -112,18 +111,17 @@ class Nip55LoginIntegrationTest {
   }
 
   @Test
-  fun `an unreadable signer response does not blame the network`() = runTest {
+  fun `an unreadable signer response offers a retry and names the signer`() = runTest {
     val response = Intent().putExtra("result", "not-a-pubkey")
 
     viewModel.processNip55Response(Activity.RESULT_OK, response)
     advanceUntilIdle()
 
-    val state = viewModel.uiState.value
-    assertTrue(state is LoginUiState.Error, "state should be an error but was $state")
-    assertFalse(
-        state.message.contains("network", ignoreCase = true) ||
-            state.message.contains("connection", ignoreCase = true),
-        "message should not blame the network but was \"${state.message}\"")
+    assertEquals(
+        LoginUiState.Error.Retryable(
+            "Could not read the response from the signer app. Please try again."),
+        viewModel.uiState.value,
+        "the signer response error should stay retryable and point at the signer, not the network")
   }
 
   companion object {
