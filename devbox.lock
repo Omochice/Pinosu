@@ -283,51 +283,41 @@
         }
       }
     },
-    "mado@0.3.0": {
-      "last_modified": "2026-06-27T07:37:20Z",
-      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d#mado",
+    "mado@0.3.1": {
+      "last_modified": "2026-08-01T16:34:20Z",
+      "resolved": "github:NixOS/nixpkgs/a5cbcfe954791221bfffe2307f7d1a1bf61a871e#mado",
       "source": "devbox-search",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/6c3g0vxzx4ng7zvfxrzmdh6y4qaskcm0-mado-0.3.0",
+              "path": "/nix/store/9alb53gb2jajqm9smbqbpfqpv6ggjyvr-mado-0.3.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/6c3g0vxzx4ng7zvfxrzmdh6y4qaskcm0-mado-0.3.0"
+          "store_path": "/nix/store/9alb53gb2jajqm9smbqbpfqpv6ggjyvr-mado-0.3.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ff4c750x90kyx7yvkfv15ki5s1ifxrv9-mado-0.3.0",
+              "path": "/nix/store/dyf3dsy0qgqsqs1jlwbisk5125jyy0n6-mado-0.3.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ff4c750x90kyx7yvkfv15ki5s1ifxrv9-mado-0.3.0"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/vdmdzy63xz9jdj5dcm6c9qjwv6h00il5-mado-0.3.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/vdmdzy63xz9jdj5dcm6c9qjwv6h00il5-mado-0.3.0"
+          "store_path": "/nix/store/dyf3dsy0qgqsqs1jlwbisk5125jyy0n6-mado-0.3.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xywxch61254r8169yiwvpj06vsg9jmki-mado-0.3.0",
+              "path": "/nix/store/v6nlj6fgpcmvkc3dqmpy6g9xq6mi55mz-mado-0.3.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/xywxch61254r8169yiwvpj06vsg9jmki-mado-0.3.0"
+          "store_path": "/nix/store/v6nlj6fgpcmvkc3dqmpy6g9xq6mi55mz-mado-0.3.1"
         }
       }
     },
