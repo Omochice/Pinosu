@@ -29,7 +29,8 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 ### Android
 
 - **Min SDK**: 30
-- **Target SDK**: 36
+- **Target SDK**: 37
+- **Compile SDK**: 37
 - **Kotlin**
 - **Compose BOM**
 - **Gradle Plugin**
