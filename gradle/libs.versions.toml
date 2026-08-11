@@ -34,7 +34,6 @@ robolectric = {group = "org.robolectric", name = "robolectric", version.ref = "r
 kotlinx-coroutines-android = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines"}
 kotlinx-coroutines-test = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines"}
 kotlinx-serialization-json = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
-aboutlibraries-core = {group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries"}
 aboutlibraries-compose-m3 = {group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutlibraries"}
 androidx-datastore = {group = "androidx.datastore", name = "datastore", version.ref = "datastore"}
 tink-android = {group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink"}
