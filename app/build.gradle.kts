@@ -126,7 +126,6 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.coil.network.okhttp)
 
-  implementation(libs.aboutlibraries.core)
   implementation(libs.aboutlibraries.compose.m3)
 
   implementation(libs.hilt.android)
