@@ -49,41 +49,41 @@
         }
       }
     },
-    "biome@2.5.5": {
-      "last_modified": "2026-08-01T16:34:20Z",
-      "resolved": "github:NixOS/nixpkgs/a5cbcfe954791221bfffe2307f7d1a1bf61a871e#biome",
+    "biome@2.5.6": {
+      "last_modified": "2026-08-05T07:53:23Z",
+      "resolved": "github:NixOS/nixpkgs/3a971fa2e67dcb0f2f2cfed2d37e7956567d73d1#biome",
       "source": "devbox-search",
-      "version": "2.5.5",
+      "version": "2.5.6",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/mrlwj43kpnr5yc3v7yphvqsbngll91ga-biome-2.5.5",
+              "path": "/nix/store/v7z492b8pf48pyf9lri9fa0wjbvvfxbh-biome-2.5.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/mrlwj43kpnr5yc3v7yphvqsbngll91ga-biome-2.5.5"
+          "store_path": "/nix/store/v7z492b8pf48pyf9lri9fa0wjbvvfxbh-biome-2.5.6"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/76dkp46iaay4iwp4hgfqg5lv3x212xb6-biome-2.5.5",
+              "path": "/nix/store/ql2sljgih3mm9dapgg19mgcg5wwqgvyq-biome-2.5.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/76dkp46iaay4iwp4hgfqg5lv3x212xb6-biome-2.5.5"
+          "store_path": "/nix/store/ql2sljgih3mm9dapgg19mgcg5wwqgvyq-biome-2.5.6"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gizcpcbx450fb3acdjpgj7b4dfg9n35b-biome-2.5.5",
+              "path": "/nix/store/31p0i592hjg4wbkb7hv0ig9vqahr1k68-biome-2.5.6",
               "default": true
             }
           ],
-          "store_path": "/nix/store/gizcpcbx450fb3acdjpgj7b4dfg9n35b-biome-2.5.5"
+          "store_path": "/nix/store/31p0i592hjg4wbkb7hv0ig9vqahr1k68-biome-2.5.6"
         }
       }
     },
