@@ -668,51 +668,41 @@
         }
       }
     },
-    "typos@1.48.0": {
-      "last_modified": "2026-08-01T16:34:20Z",
-      "resolved": "github:NixOS/nixpkgs/a5cbcfe954791221bfffe2307f7d1a1bf61a871e#typos",
+    "typos@1.49.0": {
+      "last_modified": "2026-08-05T07:53:23Z",
+      "resolved": "github:NixOS/nixpkgs/3a971fa2e67dcb0f2f2cfed2d37e7956567d73d1#typos",
       "source": "devbox-search",
-      "version": "1.48.0",
+      "version": "1.49.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/p7gsi1xbnc5rkz12i61h88qxlykw7xf8-typos-1.48.0",
+              "path": "/nix/store/fyrfxh05c5lgynvrhbsxyb4bzygcdlr4-typos-1.49.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/p7gsi1xbnc5rkz12i61h88qxlykw7xf8-typos-1.48.0"
+          "store_path": "/nix/store/fyrfxh05c5lgynvrhbsxyb4bzygcdlr4-typos-1.49.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/27bgspwdrphxhc3b7lz7rnd8y1liba7x-typos-1.48.0",
+              "path": "/nix/store/j9qc9kr5amw07xnhn5kgxy6ggs04v2x0-typos-1.49.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/27bgspwdrphxhc3b7lz7rnd8y1liba7x-typos-1.48.0"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/r5qxpgpyylagm01w0jg7h45fnml397li-typos-1.48.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/r5qxpgpyylagm01w0jg7h45fnml397li-typos-1.48.0"
+          "store_path": "/nix/store/j9qc9kr5amw07xnhn5kgxy6ggs04v2x0-typos-1.49.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/0s1w69zc78msr2fy1dp8n8xr2k7b1j2v-typos-1.48.0",
+              "path": "/nix/store/ybsn2n49ialysj39860sgznczz89b7fd-typos-1.49.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/0s1w69zc78msr2fy1dp8n8xr2k7b1j2v-typos-1.48.0"
+          "store_path": "/nix/store/ybsn2n49ialysj39860sgznczz89b7fd-typos-1.49.0"
         }
       }
     },
