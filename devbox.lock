@@ -369,51 +369,41 @@
         }
       }
     },
-    "renovate@43.214.1": {
-      "last_modified": "2026-08-01T16:34:20Z",
-      "resolved": "github:NixOS/nixpkgs/a5cbcfe954791221bfffe2307f7d1a1bf61a871e#renovate",
+    "renovate@44.24.3": {
+      "last_modified": "2026-08-14T06:48:10Z",
+      "resolved": "github:NixOS/nixpkgs/f2b17eb1b90f6a359082035b4538d4c63017aec3#renovate",
       "source": "devbox-search",
-      "version": "43.214.1",
+      "version": "44.24.3",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/m9g1w7ikkv91znkm90yly601ia02zxvf-renovate-43.214.1",
+              "path": "/nix/store/vk7chz9c70a60rdbjgk11fbg2231fi8i-renovate-44.24.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/m9g1w7ikkv91znkm90yly601ia02zxvf-renovate-43.214.1"
+          "store_path": "/nix/store/vk7chz9c70a60rdbjgk11fbg2231fi8i-renovate-44.24.3"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/c3zqv1pgrcf0bkvy12p9628xvbbfimj9-renovate-43.214.1",
+              "path": "/nix/store/11y4rm485bcwafwp8zc9s2al847s13nf-renovate-44.24.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/c3zqv1pgrcf0bkvy12p9628xvbbfimj9-renovate-43.214.1"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/zp2szwdchncqviv4rjhs20amyb8hmi2d-renovate-43.214.1",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/zp2szwdchncqviv4rjhs20amyb8hmi2d-renovate-43.214.1"
+          "store_path": "/nix/store/11y4rm485bcwafwp8zc9s2al847s13nf-renovate-44.24.3"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/zadfkl0n590g1p81pzvmx2jrj2lmk2bz-renovate-43.214.1",
+              "path": "/nix/store/gv6q26lbz07kxxnp28dk9q7pnwgj9g6f-renovate-44.24.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/zadfkl0n590g1p81pzvmx2jrj2lmk2bz-renovate-43.214.1"
+          "store_path": "/nix/store/gv6q26lbz07kxxnp28dk9q7pnwgj9g6f-renovate-44.24.3"
         }
       }
     },
