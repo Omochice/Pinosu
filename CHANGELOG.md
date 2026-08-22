@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.20.2](https://github.com/Omochice/Pinosu/compare/v0.20.1...v0.20.2) (2026-08-22)
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v15.1.1 ([#733](https://github.com/Omochice/Pinosu/issues/733)) ([8f336c0](https://github.com/Omochice/Pinosu/commit/8f336c0c09132600f3dd39c169213087bb48f461))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.08.00 ([#712](https://github.com/Omochice/Pinosu/issues/712)) ([da59725](https://github.com/Omochice/Pinosu/commit/da597258f052a6a9abc45810a0be2c2694a57efa))
+* **deps:** update dependency com.mikepenz:aboutlibraries-compose-m3 to v15.1.0 ([#729](https://github.com/Omochice/Pinosu/issues/729)) ([177f13d](https://github.com/Omochice/Pinosu/commit/177f13dbb9a3e3178ad36deaf4b478560d850b33))
+* **deps:** update dependency com.squareup.okhttp3:okhttp to v5.5.0 ([#718](https://github.com/Omochice/Pinosu/issues/718)) ([1f6b45e](https://github.com/Omochice/Pinosu/commit/1f6b45ed8b08acc899b782ad0a5c01dfd7828f36))
+
 ## [0.20.1](https://github.com/Omochice/Pinosu/compare/v0.20.0...v0.20.1) (2026-08-03)
 
 
