@@ -369,41 +369,41 @@
         }
       }
     },
-    "renovate@44.24.3": {
-      "last_modified": "2026-08-14T06:48:10Z",
-      "resolved": "github:NixOS/nixpkgs/f2b17eb1b90f6a359082035b4538d4c63017aec3#renovate",
+    "renovate@44.37.1": {
+      "last_modified": "2026-08-25T04:16:28Z",
+      "resolved": "github:NixOS/nixpkgs/ac6b2166e7a9375683b8e98f860f273222337b16#renovate",
       "source": "devbox-search",
-      "version": "44.24.3",
+      "version": "44.37.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/vk7chz9c70a60rdbjgk11fbg2231fi8i-renovate-44.24.3",
+              "path": "/nix/store/wlmcdc16gkl1m59s0fcgvwkwhb0mgp06-renovate-44.37.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/vk7chz9c70a60rdbjgk11fbg2231fi8i-renovate-44.24.3"
+          "store_path": "/nix/store/wlmcdc16gkl1m59s0fcgvwkwhb0mgp06-renovate-44.37.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/11y4rm485bcwafwp8zc9s2al847s13nf-renovate-44.24.3",
+              "path": "/nix/store/b5vj1azdwdsv299904wfg1srdj6h561w-renovate-44.37.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/11y4rm485bcwafwp8zc9s2al847s13nf-renovate-44.24.3"
+          "store_path": "/nix/store/b5vj1azdwdsv299904wfg1srdj6h561w-renovate-44.37.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gv6q26lbz07kxxnp28dk9q7pnwgj9g6f-renovate-44.24.3",
+              "path": "/nix/store/h1dhrbd1rmmlxf0n7imlpcmpyl48bn5x-renovate-44.37.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/gv6q26lbz07kxxnp28dk9q7pnwgj9g6f-renovate-44.24.3"
+          "store_path": "/nix/store/h1dhrbd1rmmlxf0n7imlpcmpyl48bn5x-renovate-44.37.1"
         }
       }
     },
