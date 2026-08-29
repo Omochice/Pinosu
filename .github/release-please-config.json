@@ -5,6 +5,7 @@
       "release-type": "simple",
       "changelog-path": "CHANGELOG.md",
       "draft": true,
+      "force-tag-creation": true,
       "include-component-in-tag": false,
       "extra-files": [
         {
