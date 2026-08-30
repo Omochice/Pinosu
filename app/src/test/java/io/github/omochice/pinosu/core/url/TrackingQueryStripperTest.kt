@@ -104,6 +104,12 @@ class TrackingQueryStripperTest {
   }
 
   @Test
+  fun `keeps trailing empty segment as-is`() {
+    assertEquals(
+        "https://example.com/?a=1&", stripTrackingQueryParameters("https://example.com/?a=1&"))
+  }
+
+  @Test
   fun `keeps key-only flag segment`() {
     assertEquals(
         "https://example.com/?flag", stripTrackingQueryParameters("https://example.com/?flag"))
