@@ -258,6 +258,19 @@ class ExtractSharedContentUseCaseTest {
   }
 
   @Test
+  fun `URL with tracking params in text extracts stripped URL and untouched comment`() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "text/plain"
+          putExtra(Intent.EXTRA_TEXT, "check this https://example.com/a?utm_source=x&v=1 nice")
+        }
+
+    val result = useCase(intent)
+    assertEquals(
+        SharedContent(url = "https://example.com/a?v=1", comment = "check this nice"), result)
+  }
+
+  @Test
   fun `URL with query params in text extracts full URL`() {
     val intent =
         Intent(Intent.ACTION_SEND).apply {

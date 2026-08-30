@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.shareintent.domain.usecase
 
 import android.content.ClipDescription
 import android.content.Intent
+import io.github.omochice.pinosu.core.url.stripTrackingQueryParameters
 import io.github.omochice.pinosu.feature.shareintent.domain.model.SharedContent
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,7 +31,7 @@ class ExtractSharedContentUseCaseImpl @Inject constructor() : ExtractSharedConte
     val urlMatch = URL_PATTERN.find(text)
     return if (urlMatch != null) {
       val urlRange = trimmedUrlRange(text, urlMatch.range)
-      val url = text.substring(urlRange)
+      val url = stripTrackingQueryParameters(text.substring(urlRange))
       val remaining = text.removeRange(urlRange).trim().replace(MULTIPLE_SPACES_PATTERN, " ")
       SharedContent(url = url, comment = remaining.ifBlank { null })
     } else {
