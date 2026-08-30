@@ -1,0 +1,5 @@
+# Olytics tracking parameters, not typos of only_*
+
+[default.extend-identifiers]
+oly_anon_id = "oly_anon_id"
+oly_enc_id = "oly_enc_id"
