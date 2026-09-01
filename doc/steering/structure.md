@@ -131,7 +131,7 @@ feature/{name}/
 **Subpackages**:
 
 - `crypto/` - Encryption utilities (TinkKeyManager)
-- `di/` - Core Hilt modules (NetworkModule, RelayPoolModule)
+- `di/` - Core Hilt modules (NetworkModule, RelayPoolModule) — distinct from the root `di/` package below
 - `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey, UserProfile)
 - `navigation/` - App navigation (NavHost, animations)
 - `nip/` - Nostr protocol implementations
