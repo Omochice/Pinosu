@@ -333,6 +333,22 @@ class RelayBookmarkRepositoryTest {
     assertTrue(clientTags.isEmpty(), "Should not have client tag")
   }
 
+  @Test
+  fun `createBookmarkEvent strips tracking params from both d and r tags`() {
+    val event =
+        repository.createBookmarkEvent(
+            hexPubkey = "abc123",
+            url = "https://example.com/a?utm_source=news&v=abc",
+            title = "Test",
+            categories = emptyList(),
+            comment = "")
+
+    val dTag = event.tags.first { it.isNotEmpty() && it[0] == "d" }
+    val rTag = event.tags.first { it.isNotEmpty() && it[0] == "r" }
+    assertEquals("example.com/a?v=abc", dTag[1])
+    assertEquals("https://example.com/a?v=abc", rTag[1])
+  }
+
   companion object {
     /**
      * Valid test npub (fiatjaf's pubkey) that passes Bech32 checksum validation in Pubkey.parse()

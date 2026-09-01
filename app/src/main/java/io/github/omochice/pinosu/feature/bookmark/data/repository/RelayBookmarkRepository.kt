@@ -10,6 +10,7 @@ import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
+import io.github.omochice.pinosu.core.url.stripTrackingQueryParameters
 import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
@@ -118,7 +119,7 @@ constructor(
   ): UnsignedNostrEvent {
     val tags = mutableListOf<List<String>>()
 
-    val rawUrl = url.trim()
+    val rawUrl = stripTrackingQueryParameters(url.trim())
     val normalizedUrl =
         when {
           rawUrl.startsWith(SCHEME_HTTPS, ignoreCase = true) ->
