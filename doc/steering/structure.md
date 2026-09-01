@@ -5,6 +5,7 @@
 **Package-by-Feature Architecture** with Clean Architecture principles within each feature.
 Features are self-contained vertical slices containing domain, data, and presentation layers.
 Shared infrastructure lives in `core/` package.
+Entry points (`MainActivity.kt`, `PinosuApplication.kt`) live at the package root (`io.github.omochice.pinosu/`).
 
 ## Architecture Diagram
 
@@ -172,54 +173,13 @@ feature/{name}/
 - **Interfaces**: PascalCase without "I" prefix (e.g., `LoginUseCase`, `AuthRepository`)
 - **Hilt Modules**: Feature-scoped (e.g., `AuthModule`, `BookmarkModule`)
 
-## Package Organization
-
-```kotlin
-io.github.omochice.pinosu/
-├── MainActivity.kt          // Entry point
-├── PinosuApplication.kt     // Hilt application
-├── core/                    // Shared infrastructure
-│   ├── crypto/              // TinkKeyManager
-│   ├── di/                  // NetworkModule, RelayPoolModule
-│   ├── model/               // NostrEvent, UnsignedNostrEvent, Pubkey
-│   ├── navigation/          // NavHost, animations
-│   ├── nip/                 // NIP protocol implementations
-│   │   ├── nip01/           // User metadata fetcher (kind 0)
-│   │   ├── nip19/           // Bech32 entity resolver
-│   │   ├── nip22/           // NIP-22 constants (kind 1111)
-│   │   ├── nip55/           // Signer client
-│   │   ├── nip65/           // Relay list fetcher
-│   │   ├── nip89/           // Client tag identification
-│   │   └── nipb0/           // NIP-B0 constants (kind 39701)
-│   ├── relay/               // RelayPool, PublishResult
-│   ├── timestamp/           // Timestamp formatting (java.time)
-│   └── ui/                  // UiText abstraction
-├── feature/                 // Feature modules (vertical slices)
-│   ├── auth/                // Authentication feature
-│   ├── bookmark/            // Bookmark list feature
-│   ├── postbookmark/        // Post bookmark feature
-│   ├── comment/             // Bookmark detail with comments (kind 1111/1)
-│   ├── settings/            // Settings feature
-│   ├── shareintent/         // Share intent handling
-│   ├── main/                // Main screen
-│   ├── appinfo/             // App info screen
-│   └── license/             // License screen
-├── di/                      // Cross-feature Hilt modules
-└── ui/                      // Shared UI components
-    ├── theme/               // Material 3 theme
-    ├── component/           // Reusable dialogs
-    └── drawer/              // Navigation drawer
-```
-
 ## Code Organization Principles
 
-- **Feature Cohesion**: Each feature is a self-contained vertical slice
 - **Dependency Rule**: Domain layer has no dependencies on data or presentation
 - **Dependency Inversion**: Repository interfaces live in `domain/repository/`, implementations in `data/repository/`
 - **Interface Segregation**: Use cases and repositories defined as interfaces
 - **Single Responsibility**: Each class/file has one clear purpose
 - **Core for Sharing**: Only infrastructure shared across features lives in `core/`
-- **Feature DI Modules**: Each feature has its own Hilt module (e.g., `AuthModule`)
 - **State Management**: Immutable data classes with StateFlow for reactive UI updates
 
 ---
