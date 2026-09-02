@@ -6,7 +6,7 @@
 
 This project uses **devbox** for managing development dependencies including Java.
 
-**IMPORTANT:** Always use `devbox run ./gradlew` to execute Gradle commands:
+**IMPORTANT:** Always use `devbox run ./gradlew` to execute Gradle commands, because Java may not be available in the system PATH:
 
 ```bash
 # Build
@@ -22,18 +22,13 @@ devbox run ./gradlew :app:connectedDebugAndroidTest
 devbox run ./gradlew :app:lintDebug
 ```
 
-Do NOT use `./gradlew` directly, as Java may not be available in the system PATH.
-
 ## Technology Stack
 
 ### Android
 
 - **Min SDK**: 30
 - **Target SDK**: 37
-- **Kotlin**
-- **Compose BOM**
-- **Gradle Plugin**
-- **Hilt** (requires metadata compatibility workaround for recent Kotlin versions)
+- **Hilt** (metadata compatibility workaround for recent Kotlin versions; see the `kotlin-metadata-jvm` note in `app/build.gradle.kts`)
 
 ### Architecture
 
@@ -60,14 +55,12 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **NIP-89**: Client tag identification; opt-in setting to include `["client", "Pinosu"]` tag in published events
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
-- **Event Types**: Kind 0 (NIP-01 user metadata), Kind 39701 (NIP-B0 bookmark lists), Kind 10002 (relay list metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
 - **Auth Modes**: `LoginMode` sealed interface (`Nip55Signer` for full access, `ReadOnly` for browse-only via npub entry)
 
 ### Serialization
 
 - **kotlinx-serialization-json**: Type-safe JSON handling
 - **Custom Serializers**: `KSerializer<T>` for Nostr protocol array-based messages
-- **Lazy Initialization**: Use `by lazy { }` for Json instances interacting with EncryptedSharedPreferences
 
 ### Network & HTTP
 
@@ -102,7 +95,7 @@ Do NOT use `./gradlew` directly, as Java may not be available in the system PATH
 - **Flow for Streaming**: WebSocket events exposed as Kotlin Flow for reactive handling
 - **Timeout Handling**: Use `withTimeoutOrNull` for network operations (typically 10s)
 - **Error Propagation**: Wrap operations in Result<T> for explicit error handling
-- **Coroutine Contexts**: IO operations use `Dispatchers.IO`, safe time API (java.time) instead of Date
+- **Coroutine Contexts**: IO operations use `Dispatchers.IO`
 - **Resource Cleanup**: Flow cleanup with `awaitClose {}` for WebSocket connections
 
 ### UI State Pattern

@@ -23,11 +23,10 @@ Pinosu is a decentralized memo/note-taking app for Android that uses Nostr Kind 
 
 ## Value Proposition
 
-Provides a Google Keep-like experience with Nostr's decentralization benefits: own your data, choose your relays, access notes from any compatible client, and never lose access due to vendor lock-in or account suspension.
+Nostr's decentralization means users own their data and never lose access due to vendor lock-in or account suspension.
 
 ## Technical Foundation
 
-- **Nostr Protocol**: Kind 0 (NIP-01 user profiles), Kind 39701 (NIP-B0 bookmarks), Kind 10002 (relay metadata), Kind 1111 (NIP-22 comments), Kind 1 (text notes)
 - **NIP-01 Integration**: User profile metadata (kind 0) for enriching comment author display (name, avatar)
 - **NIP-19 Integration**: Bech32-encoded entity resolution (nevent references)
 - **NIP-B0 Integration**: Formal specification for Kind 39701 bookmark list storage and sync
