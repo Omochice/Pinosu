@@ -51,7 +51,7 @@ devbox run ./gradlew :app:lintDebug
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references; constants in `core/nip/nip22/Nip22`
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
-- **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
+- **NIP-65**: Relay list fetching from kind 10002 events. Bootstrap relays come from `BootstrapRelayProvider`: user-configured relays from Settings take priority, falling back to `Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS` (e.g. wss://directory.yabu.me/)
 - **NIP-89**: Client tag identification; opt-in setting to include `["client", "Pinosu"]` tag in published events
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections
@@ -69,6 +69,7 @@ devbox run ./gradlew :app:lintDebug
 - **HTML Parsing**: Jsoup for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
 - **Image Loading**: Coil with OkHttp integration (coil-compose, coil-network-okhttp)
+- **URL Normalization**: Known tracking query parameters (e.g. `utm_*`, `fbclid`, `gclid`) stripped before a bookmark is posted, so its Nostr `d` tag identity stays stable across referral sources (`core/url/TrackingQueryStripper`; rationale in `doc/adr/strip-tracking-query-params.md`)
 
 ### Testing
 
@@ -86,7 +87,7 @@ devbox run ./gradlew :app:lintDebug
 - **Singleton Pattern**: Network clients (OkHttpClient, RelayPool) are @Singleton scoped
 - **Constructor Injection**: Prefer @Inject constructor over field injection
 - **Interface Binding**: Repositories and use cases defined as interfaces, bound in Hilt modules
-- **Feature-Scoped Modules**: Each feature has its own Hilt module (e.g., `AuthModule`, `BookmarkModule`, `SettingsModule`)
+- **Feature-Scoped Modules**: Each feature has one or more Hilt modules under its own `di/` package, split by concern when a feature spans multiple areas (e.g., `BookmarkModule`; `auth/` has `AuthModule` + `DataStoreModule`; `settings/` has `AppearanceModule` + `NostrModule`)
 - **Core Modules**: Cross-feature infrastructure in `core/di/` (NetworkModule, RelayPoolModule)
 - **Root Modules**: Cross-feature bindings in `di/` (RepositoryModule for NIP-65)
 

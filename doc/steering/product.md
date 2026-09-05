@@ -13,6 +13,9 @@ Pinosu is a decentralized memo/note-taking app for Android that uses Nostr Kind 
 - **Offline-First**: Local encrypted storage with background sync when online
 - **Comments & Engagement**: View and post comments on bookmarks using NIP-22 kind 1111 comments and kind 1 text notes
 - **Share Intent Integration**: Receive URLs and text from other Android apps for quick bookmark creation
+- **Customizable Appearance & Language**: Light/Dark/System theme mode and English/Japanese/System language mode, independent of device locale
+- **Configurable Relays**: User-defined bootstrap relay list (falls back to app defaults) alongside NIP-65 personalized relay discovery
+- **Stable Bookmark Identity**: Tracking query parameters (e.g. `fbclid`, `gclid`, `utm_*`) stripped from URLs before posting, so the same page bookmarked via different referral links produces one identifiable event instead of duplicates
 
 ## Target Use Cases
 
