@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.21.0](https://github.com/Omochice/Pinosu/compare/v0.20.1...v0.21.0) (2026-09-12)
+
+
+### Features
+
+* strip tracking query parameters from bookmarked URLs ([#761](https://github.com/Omochice/Pinosu/issues/761)) ([d0b9814](https://github.com/Omochice/Pinosu/commit/d0b981480be4ca2ebf7d8bda95b6633a2e60c93b))
+
+
+### Bug Fixes
+
+* **deps:** update aboutlibraries to v15.1.1 ([#733](https://github.com/Omochice/Pinosu/issues/733)) ([8f336c0](https://github.com/Omochice/Pinosu/commit/8f336c0c09132600f3dd39c169213087bb48f461))
+* **deps:** update aboutlibraries to v15.2.0 ([#753](https://github.com/Omochice/Pinosu/issues/753)) ([f3e439e](https://github.com/Omochice/Pinosu/commit/f3e439ebb3bdd7cad3dd47eeab8865ee9b02b2db))
+* **deps:** update coil to v3.6.0 ([#748](https://github.com/Omochice/Pinosu/issues/748)) ([16fa966](https://github.com/Omochice/Pinosu/commit/16fa96655c9b51383b071c8d49db17d0267b5373))
+* **deps:** update coil to v3.6.1 ([#763](https://github.com/Omochice/Pinosu/issues/763)) ([3ae6ae3](https://github.com/Omochice/Pinosu/commit/3ae6ae36765f253ee46d3195e03e83fa35e01401))
+* **deps:** update coil to v3.6.2 ([#771](https://github.com/Omochice/Pinosu/issues/771)) ([f8559e0](https://github.com/Omochice/Pinosu/commit/f8559e089b98e39ebdf743e0a10ddcbe4b0cedd6))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.08.00 ([#712](https://github.com/Omochice/Pinosu/issues/712)) ([da59725](https://github.com/Omochice/Pinosu/commit/da597258f052a6a9abc45810a0be2c2694a57efa))
+* **deps:** update dependency androidx.compose:compose-bom to v2026.09.00 ([#784](https://github.com/Omochice/Pinosu/issues/784)) ([166f93f](https://github.com/Omochice/Pinosu/commit/166f93f8aec16bd1304aea7c9bafcf84a2a2e0e7))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.10.0 ([#749](https://github.com/Omochice/Pinosu/issues/749)) ([238392c](https://github.com/Omochice/Pinosu/commit/238392c5cb48c9a710cf1055a443a43bccfe48de))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.10.1 ([#783](https://github.com/Omochice/Pinosu/issues/783)) ([d0065ae](https://github.com/Omochice/Pinosu/commit/d0065ae564773b6caf0bd393ad51de8dde1d9f8e))
+* **deps:** update dependency com.mikepenz:aboutlibraries-compose-m3 to v15.1.0 ([#729](https://github.com/Omochice/Pinosu/issues/729)) ([177f13d](https://github.com/Omochice/Pinosu/commit/177f13dbb9a3e3178ad36deaf4b478560d850b33))
+* **deps:** update dependency com.squareup.okhttp3:okhttp to v5.5.0 ([#718](https://github.com/Omochice/Pinosu/issues/718)) ([1f6b45e](https://github.com/Omochice/Pinosu/commit/1f6b45ed8b08acc899b782ad0a5c01dfd7828f36))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.14.0 ([#736](https://github.com/Omochice/Pinosu/issues/736)) ([dd12ea9](https://github.com/Omochice/Pinosu/commit/dd12ea9092a571b96c5faf1d42a1d051bdc2fdb4))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.15.1 ([#789](https://github.com/Omochice/Pinosu/issues/789)) ([12a9f47](https://github.com/Omochice/Pinosu/commit/12a9f471b1006a8e1701f04aa56d822bad6e6f76))
+* **deps:** update dependency org.jsoup:jsoup to v1.23.2 ([#743](https://github.com/Omochice/Pinosu/issues/743)) ([261a6a2](https://github.com/Omochice/Pinosu/commit/261a6a2b6b76f591f71cc5c5e6a4089854a43a68))
+* **deps:** update dependency org.robolectric:robolectric to v4.17 ([#786](https://github.com/Omochice/Pinosu/issues/786)) ([02f61ed](https://github.com/Omochice/Pinosu/commit/02f61ed5bd7d4159801a780f39a8fe6485ac54d0))
+* **deps:** update kotlin monorepo to v2.4.20 ([#777](https://github.com/Omochice/Pinosu/issues/777)) ([5d6ec95](https://github.com/Omochice/Pinosu/commit/5d6ec95f8ab25a97d666859493dfc96b84ec4b47))
+
 ## [0.20.1](https://github.com/Omochice/Pinosu/compare/v0.20.0...v0.20.1) (2026-08-03)
 
 
