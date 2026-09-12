@@ -146,6 +146,7 @@ feature/{name}/
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
+- `url/` - URL cleanup utilities (e.g., `TrackingQueryStripper` for removing tracking query parameters)
 
 ### Shared UI (`ui/`)
 
