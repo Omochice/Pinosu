@@ -146,6 +146,7 @@ feature/{name}/
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
+- `url/` - URL utility functions (e.g. `TrackingQueryStripper` for stripping known tracking query parameters)
 
 ### Shared UI (`ui/`)
 
@@ -164,6 +165,15 @@ feature/{name}/
 **Purpose**: Cross-feature Hilt bindings
 
 **Example**: `RepositoryModule.kt` - NIP-65 parser/fetcher bindings
+
+## Architecture Decision Records
+
+**Location**: `doc/adr/`
+**Purpose**: Record significant, hard-to-reverse architectural decisions (e.g., package-by-feature structure, encrypted storage choice, NIP-55 signer integration) with the context and trade-offs behind them, so future readers understand _why_ rather than just _what_.
+
+**Format**: One kebab-case-named Markdown file per decision, with `Date`, `Status`, `Context`, `Decision`, and `Consequences` (positive and negative) sections.
+
+**When to add one**: When making a decision that would be costly to reverse or non-obvious to a future contributor — not for routine implementation details already covered by code and tests.
 
 ## Naming Conventions
 
