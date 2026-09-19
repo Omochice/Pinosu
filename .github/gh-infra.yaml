@@ -27,7 +27,7 @@ spec:
   security:
     vulnerability_alerts: true
     automated_security_fixes: false
-    private_vulnerability_reporting: false
+    private_vulnerability_reporting: true
   rulesets:
     - name: default
       target: branch
