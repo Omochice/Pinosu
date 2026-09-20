@@ -294,6 +294,27 @@ jobs:
             echo "Error: versionCode must be incremented (expected >= $((BASE_VERSION_CODE + 1)), got $PR_VERSION_CODE)"
             exit 1
           fi
+  check-fixup:
+    timeout-minutes: 5
+    name: Check fixup commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check no fixup commits remain
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          SUBJECTS=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/commits" \
+            --jq '.[].commit.message | split("\n")[0]')
+
+          if grep -E '^(fixup|squash|amend)! ' <<<"$SUBJECTS"; then
+            echo "Error: the commits above must be squashed before merging"
+            exit 1
+          fi
   coverage-report:
     timeout-minutes: 5
     name: Report Coverage
@@ -335,6 +356,7 @@ jobs:
       - check-actions
       - check-android
       - check-devbox
+      - check-fixup
       - check-format
       - check-renovate
       - check-version-code
