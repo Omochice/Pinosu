@@ -57,7 +57,7 @@ aboutlibraries-android = {id = "com.mikepenz.aboutlibraries.plugin.android", ver
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.20"
-coreKtx = "1.19.0"
+coreKtx = "1.19.1"
 datastore = "1.2.1"
 detekt = "1.23.8"
 junit = "4.13.2"
