@@ -18,8 +18,17 @@ devbox run ./gradlew :app:test
 # Android Instrumentation Test
 devbox run ./gradlew :app:connectedDebugAndroidTest
 
-# Lint
-devbox run ./gradlew :app:lintDebug
+# Lint + Static Analysis (matches devbox's `check` script)
+devbox run ./gradlew :app:lint :app:detekt
+
+# Unit Test Coverage Report (Kover)
+devbox run ./gradlew testDebugUnitTest koverXmlReportDebug
+
+# Instrumentation Test Coverage Report (Jacoco)
+devbox run ./gradlew :app:connectedDebugAndroidTest :app:jacocoInstrumentationTestReport
+
+# Signed Release Build
+devbox run ./gradlew :app:assembleRelease
 ```
 
 ## Technology Stack
@@ -78,6 +87,7 @@ devbox run ./gradlew :app:lintDebug
 - **DI Testing**: Hilt Android Testing
 - **Test Fixtures**: Gradle `testFixtures` source set (`app/src/testFixtures/`) shares test helpers between `test` and `androidTest` via `testFixtures(project(":app"))`
 - **Architecture Tests**: Konsist for enforcing Clean Architecture dependency rules (e.g., `core` must not depend on `feature`, domain must not depend on data/presentation); tests live in `architecture/` test package
+- **Manifest/Config Tests**: Dedicated `manifest/` instrumentation test package verifies app manifest configuration (launcher icon/name, NIP-55 `nostrsigner:` scheme queryability, MainActivity export and `ACTION_SEND text/plain` share-intent handling)
 
 ## Technical Conventions
 
@@ -128,7 +138,14 @@ devbox run ./gradlew :app:lintDebug
 - **Code Formatting**: ktfmt (Kotlin), biome (JSON), rumdl (Markdown), tombi/toml-sort (TOML), yamlfmt (YAML), formatjson5 (JSON5), treefmt (orchestration)
 - **Linting**: detekt (Kotlin static analysis), actionlint/ghalint/zizmor (GitHub Actions correctness and security), mado (Markdown linting)
 - **Spell Check**: typos for typo detection
-- **Dependency Updates**: renovate
+- **Dependency Updates**: renovate (with `renovate-config-validator --strict` for config validation)
+- **Supply-Chain Security**: OpenSSF Scorecard (`scorecard.yaml`) for supply-chain risk scanning
+- **Release Automation**: release-please for changelog/version PR automation; `check-version-code` CI job enforces incrementing `version.json`'s versionCode on every PR
+- **Coverage Reporting**: octocov for PR coverage comments (in addition to Kover/Jacoco report generation)
 - **Scripts**: Managed via devbox shell scripts (`fmt`, `check`, `test`, `test:connectedAndroidTest`, `version-up`)
+
+### Distribution
+
+- **Zapstore**: Releases are published to [zapstore.dev](https://zapstore.dev), a decentralized Nostr-based app store, via the `zsp` CLI and `zapstore.yaml` config (`release.yaml`'s `publish-zapstore` job) — consistent with the project's decentralization-first philosophy
 
 ---
