@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.21.1](https://github.com/Omochice/Pinosu/compare/v0.21.0...v0.21.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **deps:** update coil to v3.6.3 ([#801](https://github.com/Omochice/Pinosu/issues/801)) ([92b3c53](https://github.com/Omochice/Pinosu/commit/92b3c5312eef8c09252bd6b1d5cef0e549c6b243))
+* **deps:** update dependency androidx.core:core-ktx to v1.19.1 ([#813](https://github.com/Omochice/Pinosu/issues/813)) ([c83c748](https://github.com/Omochice/Pinosu/commit/c83c7487a59d3ee126633841d86f2c7bb77c0433))
+* **deps:** update dependency androidx.navigation:navigation-compose to v2.10.2 ([#814](https://github.com/Omochice/Pinosu/issues/814)) ([e201eeb](https://github.com/Omochice/Pinosu/commit/e201eebe85324e729f297feb1661bf0f2e12e859))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.15.2 ([#791](https://github.com/Omochice/Pinosu/issues/791)) ([993b281](https://github.com/Omochice/Pinosu/commit/993b281000acff34fce5fe1542d8cc82ea02ed4d))
+* **deps:** update dependency com.vitorpamplona.quartz:quartz to v1.16.0 ([#805](https://github.com/Omochice/Pinosu/issues/805)) ([dcaeecc](https://github.com/Omochice/Pinosu/commit/dcaeecc46f090d725cb6061525c37d0c243d6df8))
+
 ## [0.21.0](https://github.com/Omochice/Pinosu/compare/v0.20.1...v0.21.0) (2026-09-12)
 
 
