@@ -51,7 +51,7 @@ devbox run ./gradlew :app:lintDebug
 - **NIP-19**: Bech32 entity parsing for nevent references (via Quartz Nip19Parser)
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references; constants in `core/nip/nip22/Nip22`
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
-- **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
+- **NIP-65**: Relay list fetching from kind 10002 events; bootstrap relays are user-configurable in settings (`BootstrapRelayProvider`), with built-in defaults as fallback; fetched lists cached via `CachedRelayListProvider`
 - **NIP-89**: Client tag identification; opt-in setting to include `["client", "Pinosu"]` tag in published events
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections

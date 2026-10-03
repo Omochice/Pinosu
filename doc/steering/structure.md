@@ -99,7 +99,7 @@ graph TB
 - `bookmark/` - Bookmark listing and display
 - `postbookmark/` - Creating and posting new bookmarks
 - `comment/` - Bookmark detail screen with kind 1111/1 comments viewing and posting
-- `settings/` - User preferences and display mode
+- `settings/` - User preferences (display mode, theme, language, client tag, bootstrap relays)
 - `shareintent/` - Android share intent handling (receive shared URLs/text from other apps)
 - `main/` - Main screen container
 - `appinfo/` - Application information
@@ -143,9 +143,10 @@ feature/{name}/
     - `nip65/` - NIP-65 relay list fetcher
     - `nip89/` - NIP-89 client tag identification (constants + repository interface)
     - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
-- `relay/` - WebSocket relay client (RelayPool, PublishResult)
+- `relay/` - WebSocket relay client (RelayPool, PublishResult) and relay provider abstractions (`BootstrapRelayProvider`, `RelayListProvider`, `RelayConfig`) implemented by features
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
+- `url/` - URL utilities (e.g., `TrackingQueryStripper` removes tracking query parameters)
 
 ### Shared UI (`ui/`)
 
