@@ -143,9 +143,10 @@ feature/{name}/
     - `nip65/` - NIP-65 relay list fetcher
     - `nip89/` - NIP-89 client tag identification (constants + repository interface)
     - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
-- `relay/` - WebSocket relay client (RelayPool, PublishResult)
+- `relay/` - WebSocket relay client (RelayPool, PublishResult) and bootstrap relay abstraction (BootstrapRelayProvider, implemented by `settings/data`)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
+- `url/` - URL utilities (e.g., tracking query parameter stripping)
 
 ### Shared UI (`ui/`)
 
