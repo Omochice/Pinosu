@@ -369,41 +369,41 @@
         }
       }
     },
-    "renovate@44.37.1": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#renovate",
+    "renovate@44.126.1": {
+      "last_modified": "2026-10-08T19:21:32Z",
+      "resolved": "github:NixOS/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30#renovate",
       "source": "devbox-search",
-      "version": "44.37.1",
+      "version": "44.126.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gqfmfrh2clzjgc705ync1c6jvrscgjm0-renovate-44.37.1",
+              "path": "/nix/store/ppbydbmscqhdmldxn120bv7idd39rc0v-renovate-44.126.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/gqfmfrh2clzjgc705ync1c6jvrscgjm0-renovate-44.37.1"
+          "store_path": "/nix/store/ppbydbmscqhdmldxn120bv7idd39rc0v-renovate-44.126.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/57vqclzm3n1nw0xbkb4hh75kmwsyjxq2-renovate-44.37.1",
+              "path": "/nix/store/x87q00v1mi5sjb52cp7f3an8z9dwj8ch-renovate-44.126.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/57vqclzm3n1nw0xbkb4hh75kmwsyjxq2-renovate-44.37.1"
+          "store_path": "/nix/store/x87q00v1mi5sjb52cp7f3an8z9dwj8ch-renovate-44.126.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/skn83csyq5hx4dad6dvwmsm8vdn04msn-renovate-44.37.1",
+              "path": "/nix/store/jwspdzkvn1hzza588h6pgf83i2pf1cmb-renovate-44.126.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/skn83csyq5hx4dad6dvwmsm8vdn04msn-renovate-44.37.1"
+          "store_path": "/nix/store/jwspdzkvn1hzza588h6pgf83i2pf1cmb-renovate-44.126.1"
         }
       }
     },
