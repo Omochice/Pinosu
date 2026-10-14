@@ -498,41 +498,41 @@
         }
       }
     },
-    "tombi@1.4.1": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#tombi",
+    "tombi@1.7.1": {
+      "last_modified": "2026-10-08T19:21:32Z",
+      "resolved": "github:NixOS/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30#tombi",
       "source": "devbox-search",
-      "version": "1.4.1",
+      "version": "1.7.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/i0561hm6k96r9dzksy8ygcr9xh0zj1ym-tombi-1.4.1",
+              "path": "/nix/store/vkgvjvfzv3n2w8ipqvn22bckmbxfp0vg-tombi-1.7.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/i0561hm6k96r9dzksy8ygcr9xh0zj1ym-tombi-1.4.1"
+          "store_path": "/nix/store/vkgvjvfzv3n2w8ipqvn22bckmbxfp0vg-tombi-1.7.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/89fd00ad8zfvyaj0xm7v19l0ybnf82bl-tombi-1.4.1",
+              "path": "/nix/store/0pwza5ksladj4xhry2nq2h78gxr1y8kn-tombi-1.7.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/89fd00ad8zfvyaj0xm7v19l0ybnf82bl-tombi-1.4.1"
+          "store_path": "/nix/store/0pwza5ksladj4xhry2nq2h78gxr1y8kn-tombi-1.7.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/w7iipliniy6l10ccpym57ql85vrdqqld-tombi-1.4.1",
+              "path": "/nix/store/ajj2ywcmxdm5pfsidnv0sbwkvrrq7p28-tombi-1.7.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/w7iipliniy6l10ccpym57ql85vrdqqld-tombi-1.4.1"
+          "store_path": "/nix/store/ajj2ywcmxdm5pfsidnv0sbwkvrrq7p28-tombi-1.7.1"
         }
       }
     },
