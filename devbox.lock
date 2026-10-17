@@ -724,41 +724,41 @@
         }
       }
     },
-    "zizmor@1.29.0": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#zizmor",
+    "zizmor@1.30.1": {
+      "last_modified": "2026-10-14T08:20:44Z",
+      "resolved": "github:NixOS/nixpkgs/319e4cebef10cbb636c6ea392137b52ad105336a#zizmor",
       "source": "devbox-search",
-      "version": "1.29.0",
+      "version": "1.30.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/7dq6g7dlghlhpzmxcl7mbq3qjlm98z3j-zizmor-1.29.0",
+              "path": "/nix/store/ivq64d3j7af04z1ld4wi3dv4fpq6pms7-zizmor-1.30.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/7dq6g7dlghlhpzmxcl7mbq3qjlm98z3j-zizmor-1.29.0"
+          "store_path": "/nix/store/ivq64d3j7af04z1ld4wi3dv4fpq6pms7-zizmor-1.30.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/bf77rmwrxs7k7s1xv6krd76aaapv9dd1-zizmor-1.29.0",
+              "path": "/nix/store/hlvdln8cx917zx6rw4454a1zc26igcyl-zizmor-1.30.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/bf77rmwrxs7k7s1xv6krd76aaapv9dd1-zizmor-1.29.0"
+          "store_path": "/nix/store/hlvdln8cx917zx6rw4454a1zc26igcyl-zizmor-1.30.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/i1jj5vipykcqw9a31kxqnljgrlg2z7mj-zizmor-1.29.0",
+              "path": "/nix/store/fwca988idiziil105pa3q9zvpg31cshk-zizmor-1.30.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/i1jj5vipykcqw9a31kxqnljgrlg2z7mj-zizmor-1.29.0"
+          "store_path": "/nix/store/fwca988idiziil105pa3q9zvpg31cshk-zizmor-1.30.1"
         }
       }
     }
