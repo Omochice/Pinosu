@@ -283,41 +283,41 @@
         }
       }
     },
-    "mado@0.3.1": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#mado",
+    "mado@0.3.2": {
+      "last_modified": "2026-10-16T02:15:57Z",
+      "resolved": "github:NixOS/nixpkgs/f20cd90e28fe0403873f473b29e42662cd86e8c4#mado",
       "source": "devbox-search",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/56haqyj8yixyzmjrcgzcj4b1lr8mj9vy-mado-0.3.1",
+              "path": "/nix/store/6xivzd40vsn4jhilcssjzx3rc4pap6l2-mado-0.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/56haqyj8yixyzmjrcgzcj4b1lr8mj9vy-mado-0.3.1"
+          "store_path": "/nix/store/6xivzd40vsn4jhilcssjzx3rc4pap6l2-mado-0.3.2"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/iihk4l7ig9jdqfgnqyf5ga2c1qrfclgb-mado-0.3.1",
+              "path": "/nix/store/h9c8mmsm4i8m0ygs2a154a2ac1qx0mbc-mado-0.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/iihk4l7ig9jdqfgnqyf5ga2c1qrfclgb-mado-0.3.1"
+          "store_path": "/nix/store/h9c8mmsm4i8m0ygs2a154a2ac1qx0mbc-mado-0.3.2"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/sh862jac43a34r85mycj5g6ljxm989fg-mado-0.3.1",
+              "path": "/nix/store/8l1ws9g1f902nfkj73a6s34dx6f0p2zp-mado-0.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/sh862jac43a34r85mycj5g6ljxm989fg-mado-0.3.1"
+          "store_path": "/nix/store/8l1ws9g1f902nfkj73a6s34dx6f0p2zp-mado-0.3.2"
         }
       }
     },
