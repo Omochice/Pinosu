@@ -7,7 +7,7 @@
     "treefmt@2.6.0",
     "renovate@44.151.2",
     "yamlfmt@0.21.0",
-    "typos@1.50.3",
+    "typos@1.51.1",
     "toml-sort@0.24.4",
     "formatjson5@0.2.6",
     "rumdl@0.2.60",
