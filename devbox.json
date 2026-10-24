@@ -3,7 +3,7 @@
   "packages": [
     "ktfmt@0.51",
     "tombi@1.8.4",
-    "mado@0.3.1",
+    "mado@0.3.2",
     "treefmt@2.6.0",
     "renovate@44.151.2",
     "yamlfmt@0.21.0",
