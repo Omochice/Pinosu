@@ -105,7 +105,7 @@ graph TB
 - `appinfo/` - Application information
 - `license/` - Open source license display
 
-**Internal Structure Pattern** (per feature):
+**Internal Structure Pattern** (per feature; layers are optional; thin features such as `appinfo`, `license`, `main`, `shareintent`, and `postbookmark` include only the layers they need):
 
 ```kotlin
 feature/{name}/
@@ -145,6 +145,7 @@ feature/{name}/
     - `nipb0/` - NIP-B0 protocol constants (Kind 39701 bookmark lists)
 - `relay/` - WebSocket relay client (RelayPool, PublishResult)
 - `timestamp/` - Timestamp formatting utilities (java.time based)
+- `url/` - URL utilities (tracking query parameter stripping, applied to shared and stored bookmark URLs)
 - `ui/` - Core UI abstractions (UiText for context-free text handling)
 
 ### Shared UI (`ui/`)
