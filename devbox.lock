@@ -187,51 +187,41 @@
       "last_modified": "2026-08-29T00:50:12Z",
       "resolved": "github:NixOS/nixpkgs/e8be7818e19ada32105a8af937a6a473b38167ca?lastModified=1787964612&narHash=sha256-0N9nghg3nwzX6b6qc77EzjR9cu%2FZ%2BUR66FlfsCqiURs%3D"
     },
-    "gojq@0.12.19": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#gojq",
+    "gojq@0.12.20": {
+      "last_modified": "2026-11-04T21:12:09Z",
+      "resolved": "github:NixOS/nixpkgs/6dadaf4375be35033e1c84395adbd53ff5fded96#gojq",
       "source": "devbox-search",
-      "version": "0.12.19",
+      "version": "0.12.20",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/nfd1ib57hr0jzcdamkkgzk97na177psr-gojq-0.12.19",
+              "path": "/nix/store/1n4pcvfnky9vrkwly2w672zb5wrxwnyp-gojq-0.12.20",
               "default": true
             }
           ],
-          "store_path": "/nix/store/nfd1ib57hr0jzcdamkkgzk97na177psr-gojq-0.12.19"
+          "store_path": "/nix/store/1n4pcvfnky9vrkwly2w672zb5wrxwnyp-gojq-0.12.20"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/j9kc02whhcp1ig8b5av0091zpbx9qv4j-gojq-0.12.19",
+              "path": "/nix/store/lrcswwf0crrp07z1n8j43cg2bggxxd40-gojq-0.12.20",
               "default": true
             }
           ],
-          "store_path": "/nix/store/j9kc02whhcp1ig8b5av0091zpbx9qv4j-gojq-0.12.19"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/vcwj338qdkq53yncxk07snw8dfg0x8kp-gojq-0.12.19",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/vcwj338qdkq53yncxk07snw8dfg0x8kp-gojq-0.12.19"
+          "store_path": "/nix/store/lrcswwf0crrp07z1n8j43cg2bggxxd40-gojq-0.12.20"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xfjrzf0jsxk47zv4dwayhjysypmm1lij-gojq-0.12.19",
+              "path": "/nix/store/xsj7hp2xz89lhi4sfhi7v0wxjwmvxj4x-gojq-0.12.20",
               "default": true
             }
           ],
-          "store_path": "/nix/store/xfjrzf0jsxk47zv4dwayhjysypmm1lij-gojq-0.12.19"
+          "store_path": "/nix/store/xsj7hp2xz89lhi4sfhi7v0wxjwmvxj4x-gojq-0.12.20"
         }
       }
     },
