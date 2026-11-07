@@ -1,10 +1,10 @@
-walk = "git"
 excludes = ["CHANGELOG.md", "doc/design.pen", "detekt-baseline.xml"]
+walk = "git"
 
 [formatter.biome]
 command = "biome"
-options = ["format", "--write"]
 includes = ["*.json"]
+options = ["format", "--write"]
 
 [formatter.formatjson5]
 command = "formatjson5"
@@ -17,8 +17,8 @@ includes = ["*.kt", "*.kts"]
 
 [formatter.rumdl]
 command = "rumdl"
-options = ["fmt"]
 includes = ["*.md"]
+options = ["fmt"]
 
 [formatter.tombi]
 command = "tombi"
@@ -32,8 +32,8 @@ options = ["--in-place", "--sort-table-keys", "--sort-inline-tables"]
 
 [formatter.typos]
 command = "typos"
-options = ["--write-changes", "--force-exclude"]
 includes = ["*"]
+options = ["--write-changes", "--force-exclude"]
 
 [formatter.yamlfmt]
 command = "yamlfmt"
