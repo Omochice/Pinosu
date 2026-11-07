@@ -369,41 +369,41 @@
         }
       }
     },
-    "renovate@44.181.0": {
-      "last_modified": "2026-10-27T21:33:45Z",
-      "resolved": "github:NixOS/nixpkgs/f05535a0efcb2134c478d1e88434fadf486d42b5#renovate",
+    "renovate@44.216.0": {
+      "last_modified": "2026-11-06T15:06:19Z",
+      "resolved": "github:NixOS/nixpkgs/4fe25e12eb9f4c744966dd3de5a05246cf098601#renovate",
       "source": "devbox-search",
-      "version": "44.181.0",
+      "version": "44.216.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xnwg76w9l227k3qkhn1nhsb5qcvk55x3-renovate-44.181.0",
+              "path": "/nix/store/ajy1ks06j0yx5sj6l3av363byy96aric-renovate-44.216.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/xnwg76w9l227k3qkhn1nhsb5qcvk55x3-renovate-44.181.0"
+          "store_path": "/nix/store/ajy1ks06j0yx5sj6l3av363byy96aric-renovate-44.216.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gd1fd2wngbyw47iszdzvkj16n8b3r6af-renovate-44.181.0",
+              "path": "/nix/store/vk593j2xvs0h4niss141r9qmfs58k8ig-renovate-44.216.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/gd1fd2wngbyw47iszdzvkj16n8b3r6af-renovate-44.181.0"
+          "store_path": "/nix/store/vk593j2xvs0h4niss141r9qmfs58k8ig-renovate-44.216.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/pwnx7jvqyvqy4kdyv97nbwwadw09qgiw-renovate-44.181.0",
+              "path": "/nix/store/9ydaxvdy25qfw5qb24sjbmbcypsmscpj-renovate-44.216.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/pwnx7jvqyvqy4kdyv97nbwwadw09qgiw-renovate-44.181.0"
+          "store_path": "/nix/store/9ydaxvdy25qfw5qb24sjbmbcypsmscpj-renovate-44.216.0"
         }
       }
     },
