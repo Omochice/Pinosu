@@ -14,7 +14,7 @@
     "biome@2.6.4",
     "temurin-bin@21.0.12",
     "actionlint@1.7.12",
-    "zizmor@1.31.1",
+    "zizmor@1.32.0",
     "ghalint@1.5.6",
     "stdenv.cc.cc.lib",
     "gojq@0.12.19",
