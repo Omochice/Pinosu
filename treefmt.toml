@@ -28,7 +28,7 @@ options = ["format"]
 [formatter.toml-sort]
 command = "toml-sort"
 includes = ["*.toml"]
-options = ["--in-place"]
+options = ["--in-place", "--sort-table-keys", "--sort-inline-tables"]
 
 [formatter.typos]
 command = "typos"
