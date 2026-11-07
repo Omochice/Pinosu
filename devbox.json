@@ -17,7 +17,7 @@
     "zizmor@1.32.0",
     "ghalint@1.5.6",
     "stdenv.cc.cc.lib",
-    "gojq@0.12.19",
+    "gojq@0.12.20",
     "moreutils@0.70"
   ],
   "shell": {
