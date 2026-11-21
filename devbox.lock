@@ -135,51 +135,41 @@
         }
       }
     },
-    "ghalint@1.5.6": {
-      "last_modified": "2026-08-27T07:16:00Z",
-      "resolved": "github:NixOS/nixpkgs/c27cdad491a991b11ed731760aa2ef8db0cb0410#ghalint",
+    "ghalint@1.6.0": {
+      "last_modified": "2026-11-20T15:12:34Z",
+      "resolved": "github:NixOS/nixpkgs/9996594bd38077de6a018ec17453ba3d99182787#ghalint",
       "source": "devbox-search",
-      "version": "1.5.6",
+      "version": "1.6.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ykvyahav9685r2kk1djj29h0ibnnkzw6-ghalint-1.5.6",
+              "path": "/nix/store/vnkmm5yy46af5j73b7c85g4p3fi9niw5-ghalint-1.6.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ykvyahav9685r2kk1djj29h0ibnnkzw6-ghalint-1.5.6"
+          "store_path": "/nix/store/vnkmm5yy46af5j73b7c85g4p3fi9niw5-ghalint-1.6.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1ag8zzr5r9594nia3dg4vrvzigkx8yps-ghalint-1.5.6",
+              "path": "/nix/store/2rvvzrw6a6q0m7dcwrgmrky8pmsr3nbx-ghalint-1.6.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/1ag8zzr5r9594nia3dg4vrvzigkx8yps-ghalint-1.5.6"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/9ylfvqyln1lzn9kp7gvhqb10zin0cdsm-ghalint-1.5.6",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/9ylfvqyln1lzn9kp7gvhqb10zin0cdsm-ghalint-1.5.6"
+          "store_path": "/nix/store/2rvvzrw6a6q0m7dcwrgmrky8pmsr3nbx-ghalint-1.6.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/pqi874a1d03lf83fdfi74zzawlhx1mzc-ghalint-1.5.6",
+              "path": "/nix/store/ci2ilg0qxkbxm0cvris6087cfnxhg6n0-ghalint-1.6.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/pqi874a1d03lf83fdfi74zzawlhx1mzc-ghalint-1.5.6"
+          "store_path": "/nix/store/ci2ilg0qxkbxm0cvris6087cfnxhg6n0-ghalint-1.6.0"
         }
       }
     },
