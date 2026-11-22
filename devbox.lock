@@ -478,41 +478,41 @@
         }
       }
     },
-    "tombi@1.10.0": {
-      "last_modified": "2026-11-11T14:42:58Z",
-      "resolved": "github:NixOS/nixpkgs/9397dcb09c9598a33509fbc0cce699bd4e6c84d5#tombi",
+    "tombi@1.11.3": {
+      "last_modified": "2026-11-20T15:12:34Z",
+      "resolved": "github:NixOS/nixpkgs/9996594bd38077de6a018ec17453ba3d99182787#tombi",
       "source": "devbox-search",
-      "version": "1.10.0",
+      "version": "1.11.3",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/6djif6xkz0v9764favkdxdkn97q6r9xa-tombi-1.10.0",
+              "path": "/nix/store/9b033afnf0mwg7gb6hc6qj90lqxr6g77-tombi-1.11.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/6djif6xkz0v9764favkdxdkn97q6r9xa-tombi-1.10.0"
+          "store_path": "/nix/store/9b033afnf0mwg7gb6hc6qj90lqxr6g77-tombi-1.11.3"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/5z99vz8xir2ba8z4kj3dj9ci601ab1x0-tombi-1.10.0",
+              "path": "/nix/store/hs5lhrz5syqgqi9n1haimkikr56z5ham-tombi-1.11.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/5z99vz8xir2ba8z4kj3dj9ci601ab1x0-tombi-1.10.0"
+          "store_path": "/nix/store/hs5lhrz5syqgqi9n1haimkikr56z5ham-tombi-1.11.3"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/i97dy0a64wcyrh7f8n5yrva5ha4nrhhg-tombi-1.10.0",
+              "path": "/nix/store/xxnhpibwhagy58mc8l2llv2jh87rkm1r-tombi-1.11.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/i97dy0a64wcyrh7f8n5yrva5ha4nrhhg-tombi-1.10.0"
+          "store_path": "/nix/store/xxnhpibwhagy58mc8l2llv2jh87rkm1r-tombi-1.11.3"
         }
       }
     },
