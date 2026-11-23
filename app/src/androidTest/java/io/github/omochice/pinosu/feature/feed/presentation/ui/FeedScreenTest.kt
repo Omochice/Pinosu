@@ -1,15 +1,28 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
@@ -18,6 +31,7 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
 import io.github.omochice.pinosu.getTestString
 import java.io.IOException
 import java.time.Instant
+import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -37,6 +51,49 @@ class FeedScreenTest {
           link = "https://blog.example/hello",
           publishedAt = Instant.parse("2026-01-02T03:04:05Z"),
           summary = "A short summary")
+
+  private val newsItem =
+      item.copy(
+          id = "n",
+          feedUrl = "https://news.example/feed",
+          title = "Election results",
+          link = "https://news.example/election",
+          feedCategory = "News")
+
+  private val techItem =
+      item.copy(
+          id = "t",
+          feedUrl = "https://tech.example/feed",
+          title = "Kotlin release",
+          link = "https://tech.example/kotlin",
+          feedCategory = "Tech")
+
+  private val artItem =
+      item.copy(
+          id = "a",
+          feedUrl = "https://art.example/feed",
+          title = "Gallery opening",
+          link = "https://art.example/gallery",
+          feedCategory = "Art")
+
+  private val categorized
+    get() =
+        loaded(newsItem, techItem, artItem, item).copy(categories = listOf("News", "Tech", "Art"))
+
+  /** Feed screen whose selected tab follows the screen's own selections, as the ViewModel does */
+  @Composable
+  private fun CategorizedFeedScreen(
+      initialCategory: String? = null,
+      onRefresh: () -> Unit = {},
+      onLoadArticleImage: suspend (String) -> Unit = {},
+  ) {
+    var selectedCategory by remember { mutableStateOf(initialCategory) }
+    FeedScreen(
+        uiState = categorized.copy(selectedCategory = selectedCategory),
+        onRefresh = onRefresh,
+        onSelectCategory = { selectedCategory = it },
+        onLoadArticleImage = onLoadArticleImage)
+  }
 
   private fun loaded(vararg items: FeedItem, failedFeeds: List<FeedFetchFailure> = emptyList()) =
       FeedUiState(content = FeedUiState.Content.Loaded(items.toList(), failedFeeds))
@@ -369,16 +426,156 @@ class FeedScreenTest {
   }
 
   @Test
-  fun `the items given for the selected category are the ones shown`() {
-    val techItem = item.copy(id = "2", title = "Kotlin news", feedCategory = "Tech")
+  fun `the page of the selected category shows only its items`() {
     composeTestRule.setContent {
-      FeedScreen(
-          uiState = loaded(techItem).copy(categories = listOf("Tech"), selectedCategory = "Tech"),
-          onRefresh = {})
+      FeedScreen(uiState = categorized.copy(selectedCategory = "Tech"), onRefresh = {})
     }
 
-    composeTestRule.onNodeWithText("Kotlin news").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Kotlin release").assertIsDisplayed()
     composeTestRule.onNodeWithText("Hello feeds").assertDoesNotExist()
+    composeTestRule.onNodeWithText("Election results").assertDoesNotExist()
+  }
+
+  @Test
+  fun `swiping left moves to the next tab and shows its items`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("News").assertIsSelected()
+    composeTestRule.onNodeWithText("Election results").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Hello feeds").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Kotlin release").assertIsNotDisplayed()
+  }
+
+  @Test
+  fun `swiping right returns to the previous tab`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+    composeTestRule.onRoot().performTouchInput { swipeRight() }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).assertIsSelected()
+    composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
+  }
+
+  @Test
+  fun `tapping a tab moves the pager to its category`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    composeTestRule.onNodeWithText("Tech").performClick()
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Tech").assertIsSelected()
+    composeTestRule.onNodeWithText("Kotlin release").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Hello feeds").assertIsNotDisplayed()
+  }
+
+  @Test
+  fun `the indicator rests under the tab swiped to`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    val indicator =
+        composeTestRule.onNodeWithTag("tabIndicator", useUnmergedTree = true).getBoundsInRoot()
+    val newsTab = composeTestRule.onNodeWithText("News").getBoundsInRoot()
+    val indicatorCenter = (indicator.left + indicator.right) / 2
+    assertTrue(
+        indicatorCenter > newsTab.left && indicatorCenter < newsTab.right,
+        "indicator center  should be under the News tab ")
+  }
+
+  @Test
+  fun `the indicator is centered under the selected tab`() {
+    composeTestRule.setContent { CategorizedFeedScreen(initialCategory = "Tech") }
+    composeTestRule.waitForIdle()
+
+    val indicator =
+        composeTestRule.onNodeWithTag("tabIndicator", useUnmergedTree = true).getBoundsInRoot()
+    val techTab = composeTestRule.onNodeWithText("Tech").getBoundsInRoot()
+    val indicatorCenter = (indicator.left + indicator.right) / 2
+    val tabCenter = (techTab.left + techTab.right) / 2
+    assertTrue(
+        abs((indicatorCenter - tabCenter).value) < 1f,
+        "indicator center $indicatorCenter should match the Tech tab center $tabCenter")
+  }
+
+  @Test
+  fun `pulling down on a category page refreshes the timeline`() {
+    var refreshed = false
+    composeTestRule.setContent {
+      CategorizedFeedScreen(initialCategory = "Tech", onRefresh = { refreshed = true })
+    }
+
+    composeTestRule.onRoot().performTouchInput {
+      swipeDown(startY = height * PULL_START_FRACTION, endY = bottom)
+    }
+    composeTestRule.waitForIdle()
+
+    assertTrue(refreshed, "pulling down should refresh")
+  }
+
+  @Test
+  fun `only cards on the shown page ask for their article image`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      CategorizedFeedScreen(initialCategory = "News", onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+
+    assertEquals(listOf(newsItem.link), requested)
+  }
+
+  @Test
+  fun `the page beyond the one swiped to does not ask for article images`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      CategorizedFeedScreen(initialCategory = "News", onLoadArticleImage = { requested.add(it) })
+    }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Tech").assertIsSelected()
+    assertTrue(techItem.link in requested, "the card swiped to should ask")
+    assertTrue(artItem.link !in requested, "the card on the next page should not ask yet")
+  }
+
+  @Test
+  fun `the pager shows All when the selected category disappears`() {
+    val selected = mutableListOf<String?>()
+    var uiState by mutableStateOf(categorized.copy(selectedCategory = "Art"))
+    composeTestRule.setContent {
+      FeedScreen(uiState = uiState, onRefresh = {}, onSelectCategory = { selected.add(it) })
+    }
+    composeTestRule.onNodeWithText("Gallery opening").assertIsDisplayed()
+
+    uiState = loaded(newsItem, techItem, item).copy(categories = listOf("News", "Tech"))
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).assertIsSelected()
+    composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
+    assertTrue(selected.isEmpty(), "no category should be selected by the pager")
+  }
+
+  @Test
+  fun `swiping without categories keeps the single list`() {
+    val selected = mutableListOf<String?>()
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(item), onRefresh = {}, onSelectCategory = { selected.add(it) })
+    }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("tabIndicator", useUnmergedTree = true).assertDoesNotExist()
+    assertTrue(selected.isEmpty(), "no category should be selected")
   }
 
   @Test
@@ -407,5 +604,6 @@ class FeedScreenTest {
 
   companion object {
     private const val NO_IMAGE = "NO IMAGE"
+    private const val PULL_START_FRACTION = 0.3f
   }
 }

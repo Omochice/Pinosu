@@ -303,8 +303,23 @@ class FeedViewModelTest {
     assertEquals("Tech", viewModel.uiState.value.selectedCategory)
     assertEquals(
         FeedUiState.Content.Loaded(listOf(TECH_ITEM), listOf(TECH_FAILURE)),
-        viewModel.uiState.value.content)
+        viewModel.uiState.value.contentIn("Tech"))
     coVerify(exactly = 1) { loadFeedTimeline() }
+  }
+
+  @Test
+  fun `selecting a category keeps the whole timeline for the pages of the other tabs`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    viewModel.selectCategory("Tech")
+
+    val state = viewModel.uiState.value
+    assertEquals(
+        FeedUiState.Content.Loaded(CATEGORIZED.items, CATEGORIZED.failedFeeds), state.content)
+    assertEquals(
+        FeedUiState.Content.Loaded(listOf(NEWS_ITEM), emptyList()), state.contentIn("News"))
   }
 
   @Test
@@ -313,10 +328,10 @@ class FeedViewModelTest {
     val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
     advanceUntilIdle()
 
+    val state = viewModel.uiState.value
     val shownPerTab =
-        (listOf(null) + viewModel.uiState.value.categories).associateWith { category ->
-          viewModel.selectCategory(category)
-          (viewModel.uiState.value.content as FeedUiState.Content.Loaded).items
+        (listOf(null) + state.categories).associateWith { category ->
+          (state.contentIn(category) as FeedUiState.Content.Loaded).items
         }
 
     assertEquals(
@@ -336,10 +351,9 @@ class FeedViewModelTest {
         val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
         advanceUntilIdle()
 
-        viewModel.selectCategory("Quiet")
-
         assertEquals(
-            FeedUiState.Content.Loaded(emptyList(), emptyList()), viewModel.uiState.value.content)
+            FeedUiState.Content.Loaded(emptyList(), emptyList()),
+            viewModel.uiState.value.contentIn("Quiet"))
       }
 
   @Test
@@ -358,7 +372,7 @@ class FeedViewModelTest {
     assertEquals("News", viewModel.uiState.value.selectedCategory)
     assertEquals(
         FeedUiState.Content.Loaded(listOf(newer, NEWS_ITEM), emptyList()),
-        viewModel.uiState.value.content)
+        viewModel.uiState.value.contentIn("News"))
   }
 
   @Test

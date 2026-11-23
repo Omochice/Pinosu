@@ -6,11 +6,13 @@ import androidx.compose.material3.TabIndicatorScope
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.lerp
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /**
  * Indicator of a tab row whose tabs are the pages of [pagerState], following the pager while the
@@ -47,7 +49,10 @@ fun TabIndicatorScope.PagerSyncedTabIndicator(pagerState: PagerState) {
                   // The tab row bottom-aligns the indicator using the reported height, so the
                   // layout must not stretch to the full row height.
                   layout(constraints.maxWidth, placeable.height) {
-                    placeable.place(indicatorCenter.roundToPx() - widthPx / 2, 0)
+                    // Where the row puts the indicator differs between fixed and scrollable rows
+                    // and is not part of their contract, so read it instead of assuming it.
+                    val slotLeft = coordinates?.positionInParent()?.x?.roundToInt() ?: 0
+                    placeable.place(indicatorCenter.roundToPx() - widthPx / 2 - slotLeft, 0)
                   }
                 }
               }

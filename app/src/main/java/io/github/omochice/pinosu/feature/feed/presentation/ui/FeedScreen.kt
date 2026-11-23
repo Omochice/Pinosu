@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -48,8 +49,8 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
  * @param isReadOnly Whether to hide the bookmark action and the subscription entry points for
  *   read-only login
  * @param onOpenItem Callback with the item whose card is tapped
- * @param onSelectCategory Callback with the category whose tab is tapped, or null for the tab that
- *   shows every feed
+ * @param onSelectCategory Callback with the category whose tab is tapped or whose page is swiped
+ *   to, or null for the tab that shows every feed
  * @param articleImages Image of each article link looked up so far, null for an article without
  *   one; shown for items whose feed gives them no image
  * @param onLoadArticleImage Called with the link of a shown item whose feed gives it no image;
@@ -82,14 +83,29 @@ fun FeedScreen(
               },
           onLoadArticleImage = onLoadArticleImage)
 
+  val showContent: @Composable (FeedUiState.Content, FeedItemCallbacks) -> Unit =
+      { content, pageCallbacks ->
+        FeedContent(
+            content = content,
+            articleImages = articleImages,
+            callbacks = pageCallbacks,
+            onRetry = onRefresh,
+            onAddFeed = manageSubscriptions)
+      }
+
+  val pagerState =
+      rememberFeedCategoryPagerState(
+          categories = uiState.categories, selectedCategory = uiState.selectedCategory)
+
   Scaffold(
       topBar = {
         Column {
           FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
-          if (uiState.categories.isNotEmpty()) {
+          pagerState?.let {
             FeedCategoryTabRow(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
+                pagerState = it,
                 onSelect = onSelectCategory)
           }
         }
@@ -98,12 +114,19 @@ fun FeedScreen(
             isRefreshing = uiState.isRefreshing,
             onRefresh = onRefresh,
             modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-              FeedContent(
-                  content = uiState.content,
-                  articleImages = articleImages,
-                  callbacks = callbacks,
-                  onRetry = onRefresh,
-                  onAddFeed = manageSubscriptions)
+              if (pagerState == null) {
+                showContent(uiState.content, callbacks)
+              } else {
+                FeedCategoryPager(
+                    pagerState = pagerState,
+                    categories = uiState.categories,
+                    selectedCategory = uiState.selectedCategory,
+                    onSelect = onSelectCategory) { category, isShown ->
+                      showContent(
+                          remember(uiState.content, category) { uiState.contentIn(category) },
+                          callbacks.forPage(isShown))
+                    }
+              }
             }
       }
 }

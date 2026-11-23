@@ -22,8 +22,9 @@ internal fun FeedListItem(
     callbacks: FeedItemCallbacks,
 ) {
   val articleLink = item.link.takeIf { item.imageUrl == null }
-  if (articleLink != null) {
-    LaunchedEffect(articleLink) { callbacks.onLoadArticleImage(articleLink) }
+  val loadArticleImage = callbacks.onLoadArticleImage
+  if (articleLink != null && loadArticleImage != null) {
+    LaunchedEffect(articleLink) { loadArticleImage(articleLink) }
   }
   FeedItemCard(
       item = item,
