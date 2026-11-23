@@ -276,9 +276,7 @@ fun PinosuApp(
       gesturesEnabled = true,
       drawerContent = {
         AppDrawer(
-            onNavigateToLicense = { navController.navigate(License) },
-            onNavigateToAppInfo = { navController.navigate(AppInfo) },
-            onNavigateToSettings = { navController.navigate(Settings) },
+            onNavigate = { route -> navController.navigate(route) },
             onLogout = { viewModel.onLogoutButtonClicked() },
             onCloseDrawer = { scope.launch { drawerState.close() } })
       }) {
