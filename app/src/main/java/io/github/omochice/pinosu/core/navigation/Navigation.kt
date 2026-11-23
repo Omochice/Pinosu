@@ -13,6 +13,9 @@ sealed interface Route
 /** Bookmark list screen route */
 @Serializable object Bookmark : Route
 
+/** Feed timeline screen route */
+@Serializable object Feed : Route
+
 /** License screen route */
 @Serializable object License : Route
 

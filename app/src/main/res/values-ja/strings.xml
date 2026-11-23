@@ -36,6 +36,8 @@
 
     <string name="title_licenses">オープンソースライセンス</string>
 
+    <string name="menu_bookmarks">ブックマーク</string>
+    <string name="menu_feeds">フィード</string>
     <string name="menu_licenses">ライセンス</string>
     <string name="menu_app_info">アプリ情報</string>
     <string name="menu_logout">ログアウト</string>
@@ -100,4 +102,13 @@
     <string name="menu_copy_content">内容をコピー</string>
     <string name="menu_copy_raw_json">Raw JSONをコピー</string>
     <string name="menu_copy_nostr_link">Nostrリンクをコピー</string>
+
+    <string name="title_feeds">フィード</string>
+    <string name="message_no_feeds">フィードはまだありません</string>
+    <string name="message_feeds_partially_failed">一部のフィードを読み込めませんでした</string>
+    <string name="error_feed_no_user_relays">アカウントにリレーが設定されていないため、フィードの一覧を読み込めませんでした。</string>
+    <string name="error_feed_access_denied">リレーがフィードの一覧の送信を拒否しました。</string>
+    <string name="error_feed_unreachable">どのリレーにも接続できず、フィードの一覧を読み込めませんでした。</string>
+    <string name="error_feed_load_failed">フィードの読み込みに失敗しました</string>
+    <string name="cd_bookmark_feed_item">この記事をブックマーク</string>
 </resources>

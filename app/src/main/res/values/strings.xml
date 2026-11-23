@@ -38,6 +38,8 @@
 
     <string name="title_licenses">Open Source Licenses</string>
 
+    <string name="menu_bookmarks">Bookmarks</string>
+    <string name="menu_feeds">Feeds</string>
     <string name="menu_licenses">Licenses</string>
     <string name="menu_app_info">App Info</string>
     <string name="menu_logout">Log out</string>
@@ -104,5 +106,14 @@
     <string name="menu_copy_content">Copy content</string>
     <string name="menu_copy_raw_json">Copy raw JSON</string>
     <string name="menu_copy_nostr_link">Copy nostr link</string>
+
+    <string name="title_feeds">Feeds</string>
+    <string name="message_no_feeds">No feeds yet</string>
+    <string name="message_feeds_partially_failed">Some feeds could not be loaded</string>
+    <string name="error_feed_no_user_relays">Your feed list could not be loaded because your account has no relays of its own.</string>
+    <string name="error_feed_access_denied">Your relays refused to send your feed list.</string>
+    <string name="error_feed_unreachable">Could not reach any of your relays to load your feed list.</string>
+    <string name="error_feed_load_failed">Failed to load feeds</string>
+    <string name="cd_bookmark_feed_item">Bookmark this article</string>
 
 </resources>

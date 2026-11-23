@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.RssFeed
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.navigation.AppInfo
+import io.github.omochice.pinosu.core.navigation.Bookmark
+import io.github.omochice.pinosu.core.navigation.Feed
 import io.github.omochice.pinosu.core.navigation.License
 import io.github.omochice.pinosu.core.navigation.Route
 import io.github.omochice.pinosu.core.navigation.Settings
@@ -36,6 +40,12 @@ private data class DrawerDestination(
     val route: Route,
 )
 
+private val screenDestinations =
+    listOf(
+        DrawerDestination(Icons.Default.Bookmarks, R.string.menu_bookmarks, Bookmark),
+        DrawerDestination(Icons.Default.RssFeed, R.string.menu_feeds, Feed),
+    )
+
 private val appDestinations =
     listOf(
         DrawerDestination(Icons.AutoMirrored.Filled.List, R.string.menu_licenses, License),
@@ -47,6 +57,8 @@ private val appDestinations =
  * Application drawer menu
  *
  * Displays navigation drawer with menu items for:
+ * - Bookmarks
+ * - Feeds
  * - License information
  * - App information
  * - Settings
@@ -77,6 +89,10 @@ fun AppDrawer(
           modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 
       Spacer(modifier = Modifier.height(8.dp))
+
+      HorizontalDivider()
+
+      DrawerDestinationItems(destinations = screenDestinations, onNavigate = navigate)
 
       HorizontalDivider()
 
