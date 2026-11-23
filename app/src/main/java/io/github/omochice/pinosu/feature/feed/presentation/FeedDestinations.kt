@@ -29,6 +29,7 @@ import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedItemReaderScre
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedScreen
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedSubscriptionsCallbacks
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedSubscriptionsScreen
+import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.ArticleImageViewModel
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedItemReaderViewModel
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsViewModel
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedViewModel
@@ -98,6 +99,8 @@ private fun FeedTimelineDestination(
 ) {
   val feedViewModel: FeedViewModel = hiltViewModel()
   val feedUiState by feedViewModel.uiState.collectAsStateWithLifecycle()
+  val articleImageViewModel: ArticleImageViewModel = hiltViewModel()
+  val articleImages by articleImageViewModel.images.collectAsStateWithLifecycle()
   val hasSubscriptionsChanged by
       backStackEntry.savedStateHandle
           .getStateFlow(KEY_SUBSCRIPTIONS_CHANGED, false)
@@ -132,7 +135,9 @@ private fun FeedTimelineDestination(
           launchSingleTop = true
         }
       },
-      onSelectCategory = feedViewModel::selectCategory)
+      onSelectCategory = feedViewModel::selectCategory,
+      articleImages = articleImages,
+      onLoadArticleImage = articleImageViewModel::load)
 }
 
 @Composable

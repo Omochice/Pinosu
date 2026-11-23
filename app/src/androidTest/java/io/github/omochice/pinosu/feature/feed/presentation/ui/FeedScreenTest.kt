@@ -42,12 +42,112 @@ class FeedScreenTest {
       FeedUiState(content = FeedUiState.Content.Loaded(items.toList(), failedFeeds))
 
   @Test
-  fun `shows the title together with the feed title and summary`() {
+  fun `shows the title together with the feed title but not the summary`() {
     composeTestRule.setContent { FeedScreen(uiState = loaded(item), onRefresh = {}) }
 
     composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
     composeTestRule.onNodeWithText("Example Blog", substring = true).assertIsDisplayed()
-    composeTestRule.onNodeWithText("A short summary").assertIsDisplayed()
+    composeTestRule.onNodeWithText("A short summary").assertDoesNotExist()
+  }
+
+  @Test
+  fun `card shows the image the feed gives the item`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item.copy(imageUrl = "https://blog.example/hello.png")), onRefresh = {})
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
+        .assertIsDisplayed()
+    composeTestRule.onNodeWithText(NO_IMAGE, useUnmergedTree = true).assertDoesNotExist()
+  }
+
+  @Test
+  fun `card without any image shows the placeholder instead of an image`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item),
+          onRefresh = {},
+          articleImages = mapOf("https://blog.example/hello" to null))
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
+        .assertDoesNotExist()
+    composeTestRule.onNodeWithText(NO_IMAGE, useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun `card shows the article image once it is known`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item),
+          onRefresh = {},
+          articleImages = mapOf("https://blog.example/hello" to "https://blog.example/og.png"))
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
+        .assertIsDisplayed()
+  }
+
+  @Test
+  fun `shown card without a feed image asks for the article image of its link`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(item), onRefresh = {}, onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+
+    assertEquals(listOf("https://blog.example/hello"), requested)
+  }
+
+  @Test
+  fun `card with a feed image does not ask for the article image`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item.copy(imageUrl = "https://blog.example/hello.png")),
+          onRefresh = {},
+          onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+
+    assertTrue(requested.isEmpty(), "no article image should be asked for")
+  }
+
+  @Test
+  fun `card without a link does not ask for an article image`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item.copy(link = null)),
+          onRefresh = {},
+          onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+
+    assertTrue(requested.isEmpty(), "no article image should be asked for")
+  }
+
+  @Test
+  fun `only cards that are shown ask for their article image`() {
+    val requested = mutableListOf<String>()
+    val many =
+        (1..50).map { index ->
+          item.copy(id = "$index", title = "Item $index", link = "https://blog.example/$index")
+        }
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(*many.toTypedArray()),
+          onRefresh = {},
+          onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+
+    assertTrue(requested.isNotEmpty(), "the cards on screen should ask")
+    assertTrue("https://blog.example/50" !in requested, "a card far below should not ask yet")
   }
 
   @Test
@@ -303,5 +403,9 @@ class FeedScreenTest {
         .performClick()
 
     assertTrue(opened, "drawer should open")
+  }
+
+  companion object {
+    private const val NO_IMAGE = "NO IMAGE"
   }
 }

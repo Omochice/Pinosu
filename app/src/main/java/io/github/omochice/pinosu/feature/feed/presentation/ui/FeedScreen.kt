@@ -50,6 +50,10 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
  * @param onOpenItem Callback with the item whose card is tapped
  * @param onSelectCategory Callback with the category whose tab is tapped, or null for the tab that
  *   shows every feed
+ * @param articleImages Image of each article link looked up so far, null for an article without
+ *   one; shown for items whose feed gives them no image
+ * @param onLoadArticleImage Called with the link of a shown item whose feed gives it no image;
+ *   cancelled when the item leaves the screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +66,8 @@ fun FeedScreen(
     isReadOnly: Boolean = false,
     onOpenItem: (FeedItem) -> Unit = {},
     onSelectCategory: (String?) -> Unit = {},
+    articleImages: Map<String, String?> = emptyMap(),
+    onLoadArticleImage: suspend (link: String) -> Unit = {},
 ) {
   val manageSubscriptions = if (isReadOnly) null else onManageSubscriptions
 
@@ -73,7 +79,8 @@ fun FeedScreen(
                 null
               } else {
                 { item -> item.link?.let { link -> onBookmarkItem(link, item.title) } }
-              })
+              },
+          onLoadArticleImage = onLoadArticleImage)
 
   Scaffold(
       topBar = {
@@ -93,6 +100,7 @@ fun FeedScreen(
             modifier = Modifier.padding(paddingValues).fillMaxSize()) {
               FeedContent(
                   content = uiState.content,
+                  articleImages = articleImages,
                   callbacks = callbacks,
                   onRetry = onRefresh,
                   onAddFeed = manageSubscriptions)
@@ -103,6 +111,7 @@ fun FeedScreen(
 @Composable
 private fun FeedContent(
     content: FeedUiState.Content,
+    articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
     onRetry: () -> Unit,
     onAddFeed: (() -> Unit)?,
@@ -116,7 +125,11 @@ private fun FeedContent(
     is FeedUiState.Content.Error ->
         ScrollableCenteredBox { FeedError(reason = content.reason, onRetry = onRetry) }
     is FeedUiState.Content.Loaded ->
-        FeedList(items = content.items, failedFeeds = content.failedFeeds, callbacks = callbacks)
+        FeedList(
+            items = content.items,
+            failedFeeds = content.failedFeeds,
+            articleImages = articleImages,
+            callbacks = callbacks)
   }
 }
 
@@ -187,6 +200,7 @@ private fun FeedError(reason: FeedLoadError, onRetry: () -> Unit) {
 private fun FeedList(
     items: List<FeedItem>,
     failedFeeds: List<FeedFetchFailure>,
+    articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
 ) {
   LazyColumn(
@@ -197,10 +211,7 @@ private fun FeedList(
           item(key = "failedFeeds") { FailedFeedsNotice(failedFeeds = failedFeeds) }
         }
         items(items, key = ::feedItemKey) { item ->
-          FeedItemCard(
-              item = item,
-              onOpen = callbacks.onOpen,
-              onBookmark = callbacks.onBookmark?.takeIf { item.link != null })
+          FeedListItem(item = item, articleImages = articleImages, callbacks = callbacks)
         }
       }
 }
