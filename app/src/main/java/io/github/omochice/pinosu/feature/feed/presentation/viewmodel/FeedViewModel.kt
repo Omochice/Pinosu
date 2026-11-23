@@ -40,6 +40,18 @@ class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTi
     load()
   }
 
+  /**
+   * Reload the timeline because the subscription list changed
+   *
+   * Unlike [refresh], a load already running is restarted, because it may have read the list from
+   * before the change.
+   */
+  fun reloadAfterSubscriptionChange() {
+    loadJob?.cancel()
+    _uiState.update { it.copy(isRefreshing = it.content != FeedUiState.Content.Loading) }
+    load()
+  }
+
   private fun load() {
     loadJob =
         viewModelScope.launch {

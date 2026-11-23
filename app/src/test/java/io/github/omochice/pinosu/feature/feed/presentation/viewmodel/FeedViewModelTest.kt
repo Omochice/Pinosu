@@ -111,6 +111,29 @@ class FeedViewModelTest {
   }
 
   @Test
+  fun `reloading after the subscriptions changed restarts a load that is still running`() =
+      runTest {
+        val stale = CompletableDeferred<Result<FeedTimeline>>()
+        coEvery { loadFeedTimeline() } coAnswers { stale.await() }
+        val viewModel = FeedViewModel(loadFeedTimeline)
+        runCurrent()
+        coEvery { loadFeedTimeline() } returns
+            Result.success(FeedTimeline(listOf(OTHER_ITEM), emptyList()))
+
+        viewModel.reloadAfterSubscriptionChange()
+        advanceUntilIdle()
+        stale.complete(Result.success(FeedTimeline(listOf(ITEM), emptyList())))
+        advanceUntilIdle()
+
+        coVerify(exactly = 2) { loadFeedTimeline() }
+        assertEquals(
+            FeedUiState.Content.Loaded(listOf(OTHER_ITEM), emptyList()),
+            viewModel.uiState.value.content,
+            "the load started before the change must not overwrite the new timeline")
+        assertFalse(viewModel.uiState.value.isRefreshing)
+      }
+
+  @Test
   fun `a timeline without items or failures is empty`() = runTest {
     coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(emptyList(), emptyList()))
 

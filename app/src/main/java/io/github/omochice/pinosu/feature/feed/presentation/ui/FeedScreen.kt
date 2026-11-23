@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.RssFeed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,7 +50,9 @@ import kotlinx.coroutines.launch
  * @param onOpenDrawer Callback when hamburger menu is clicked to open drawer
  * @param onBookmarkItem Callback with the link and title of the item whose bookmark action is
  *   tapped
- * @param isReadOnly Whether to hide the bookmark action for read-only login
+ * @param onManageSubscriptions Callback when the user asks to change the subscribed feeds
+ * @param isReadOnly Whether to hide the bookmark action and the subscription entry points for
+ *   read-only login
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,8 +61,10 @@ fun FeedScreen(
     onRefresh: () -> Unit,
     onOpenDrawer: () -> Unit = {},
     onBookmarkItem: (link: String, title: String) -> Unit = { _, _ -> },
+    onManageSubscriptions: () -> Unit = {},
     isReadOnly: Boolean = false,
 ) {
+  val manageSubscriptions = if (isReadOnly) null else onManageSubscriptions
   val uriHandler = LocalUriHandler.current
   val snackbarHostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
@@ -85,22 +90,18 @@ fun FeedScreen(
 
   Scaffold(
       topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_feeds)) },
-            navigationIcon = {
-              IconButton(onClick = onOpenDrawer) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.cd_open_menu))
-              }
-            })
+        FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
       },
       snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = onRefresh,
             modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-              FeedContent(content = uiState.content, callbacks = callbacks, onRetry = onRefresh)
+              FeedContent(
+                  content = uiState.content,
+                  callbacks = callbacks,
+                  onRetry = onRefresh,
+                  onAddFeed = manageSubscriptions)
             }
       }
 }
@@ -110,22 +111,54 @@ private fun FeedContent(
     content: FeedUiState.Content,
     callbacks: FeedItemCallbacks,
     onRetry: () -> Unit,
+    onAddFeed: (() -> Unit)?,
 ) {
   when (content) {
     FeedUiState.Content.Loading ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           CircularProgressIndicator()
         }
-    FeedUiState.Content.Empty ->
-        ScrollableCenteredBox {
-          Text(
-              text = stringResource(R.string.message_no_feeds),
-              style = MaterialTheme.typography.bodyLarge)
-        }
+    FeedUiState.Content.Empty -> ScrollableCenteredBox { FeedEmpty(onAddFeed = onAddFeed) }
     is FeedUiState.Content.Error ->
         ScrollableCenteredBox { FeedError(reason = content.reason, onRetry = onRetry) }
     is FeedUiState.Content.Loaded ->
         FeedList(items = content.items, failedFeeds = content.failedFeeds, callbacks = callbacks)
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FeedTopBar(onOpenDrawer: () -> Unit, onManageSubscriptions: (() -> Unit)?) {
+  TopAppBar(
+      title = { Text(stringResource(R.string.title_feeds)) },
+      navigationIcon = {
+        IconButton(onClick = onOpenDrawer) {
+          Icon(
+              imageVector = Icons.Default.Menu,
+              contentDescription = stringResource(R.string.cd_open_menu))
+        }
+      },
+      actions = {
+        onManageSubscriptions?.let { manage ->
+          IconButton(onClick = manage) {
+            Icon(
+                imageVector = Icons.Outlined.RssFeed,
+                contentDescription = stringResource(R.string.cd_manage_feed_subscriptions))
+          }
+        }
+      })
+}
+
+@Composable
+private fun FeedEmpty(onAddFeed: (() -> Unit)?) {
+  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Text(
+        text = stringResource(R.string.message_no_feeds),
+        style = MaterialTheme.typography.bodyLarge)
+    onAddFeed?.let { add ->
+      Spacer(modifier = Modifier.height(16.dp))
+      Button(onClick = add) { Text(stringResource(R.string.button_add_first_feed)) }
+    }
   }
 }
 

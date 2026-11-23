@@ -12,6 +12,8 @@ import io.github.omochice.pinosu.feature.feed.data.repository.RelayFeedSubscript
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
+import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedSubscriptionsUseCase
+import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedSubscriptionsUseCaseImpl
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCaseImpl
 import io.github.omochice.pinosu.feature.feed.domain.usecase.PrepareFeedSubscriptionChangeUseCase
@@ -39,6 +41,10 @@ object FeedModule {
 
   @Provides
   fun provideLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase =
+      impl
+
+  @Provides
+  fun provideLoadListUseCase(impl: LoadFeedSubscriptionsUseCaseImpl): LoadFeedSubscriptionsUseCase =
       impl
 
   @Provides

@@ -148,6 +148,66 @@ class FeedScreenTest {
   }
 
   @Test
+  fun `top bar action opens the subscribed feeds`() {
+    var opened = false
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item),
+          onRefresh = {},
+          onManageSubscriptions = { opened = true },
+          isReadOnly = false)
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_manage_feed_subscriptions))
+        .performClick()
+
+    assertTrue(opened, "the subscribed feeds should open")
+  }
+
+  @Test
+  fun `top bar action is hidden in read-only mode`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(item), onRefresh = {}, isReadOnly = true)
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_manage_feed_subscriptions))
+        .assertDoesNotExist()
+  }
+
+  @Test
+  fun `empty state offers to add a feed`() {
+    var opened = false
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = FeedUiState(content = FeedUiState.Content.Empty),
+          onRefresh = {},
+          onManageSubscriptions = { opened = true },
+          isReadOnly = false)
+    }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.button_add_first_feed)).performClick()
+
+    assertTrue(opened, "the subscribed feeds should open")
+  }
+
+  @Test
+  fun `empty state does not offer to add a feed in read-only mode`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = FeedUiState(content = FeedUiState.Content.Empty),
+          onRefresh = {},
+          isReadOnly = true)
+    }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.message_no_feeds)).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithText(getTestString(R.string.button_add_first_feed))
+        .assertDoesNotExist()
+  }
+
+  @Test
   fun `drawer button opens the drawer`() {
     var opened = false
     composeTestRule.setContent {
