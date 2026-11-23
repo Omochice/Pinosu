@@ -118,6 +118,21 @@ class ArticleImageViewModelTest {
     assertEquals(mapOf(LINK to IMAGE), viewModel.images.value)
   }
 
+  @Test
+  fun `a load waiting on a fetch that is cancelled fetches the link itself`() = runTest {
+    val first = launch { viewModel.load(LINK) }
+    val second = launch { viewModel.load(LINK) }
+    runCurrent()
+    first.cancel()
+    runCurrent()
+    repository.complete(LINK, IMAGE)
+    runCurrent()
+
+    assertTrue(second.isCompleted, "the waiting load should finish")
+    assertEquals(listOf(LINK, LINK), repository.requested)
+    assertEquals(mapOf(LINK to IMAGE), viewModel.images.value)
+  }
+
   companion object {
     private const val LINK = "https://example.com/article"
     private const val IMAGE = "https://example.com/og.png"

@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 
 /**
@@ -29,27 +31,32 @@ class ArticleImageViewModel @Inject constructor(private val repository: ArticleI
   /** Image of each article link looked up so far, null for an article without one */
   val images: StateFlow<Map<String, String?>> = _images.asStateFlow()
 
-  private val inFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
+  private val locks = ConcurrentHashMap<String, Mutex>()
 
   private val permits = Semaphore(MAX_CONCURRENT_FETCHES)
 
   /**
-   * Look up the image of an article unless it is already known or being looked up
+   * Look up the image of an article unless it is already known
    *
    * This runs in the caller's coroutine rather than in a ViewModel scope, so that a card scrolled
    * away before its turn cancels its lookup instead of delaying the cards still on screen. A
    * cancelled lookup is not remembered and runs again on the next call.
    *
+   * A call for a link already being looked up waits for that lookup rather than returning at once,
+   * because the same item can be shown on two pager pages and the lookup of the page swiped away is
+   * cancelled, which would otherwise leave the card on the remaining page without its image.
+   *
    * @param link Absolute URL of the article page
    */
   suspend fun load(link: String) {
-    if (link in _images.value || !inFlight.add(link)) return
-    try {
-      val image = permits.withPermit { repository.findImage(link) }
-      _images.update { it + (link to image) }
-    } finally {
-      inFlight.remove(link)
-    }
+    if (link in _images.value) return
+    locks
+        .computeIfAbsent(link) { Mutex() }
+        .withLock {
+          if (link in _images.value) return
+          val image = permits.withPermit { repository.findImage(link) }
+          _images.update { it + (link to image) }
+        }
   }
 
   companion object {
