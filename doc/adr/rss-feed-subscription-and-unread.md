@@ -69,6 +69,7 @@ We will publish the subscription list as a NIP-78 event and keep unread state on
 ### 1. Subscription list as a public NIP-78 event
 
 The list is a kind 30078 event whose `d` tag names Pinosu and its purpose, with one `url` tag per feed in plaintext.
+A feed can be filed under at most one category, written as an optional third element of its `url` tag, such as `["url", "https://example.com/feed.xml", "Tech"]`.
 Only Pinosu is expected to read it.
 
 #### Rationale
@@ -76,6 +77,9 @@ Only Pinosu is expected to read it.
 Avoiding a kind collision decided the choice.
 NIP-78 lets an app claim a namespace through its `d` tag instead of a kind number, while every other fitting kind is either unregistered or already means something else.
 Being readable by other feed readers does not matter, because sharing subscriptions with them is not a goal.
+
+One category per feed, like folders in Feedly, was chosen over several, because a feed under several categories would repeat its items across category tabs.
+Keeping the category inside the feed's own tag, instead of in separate category tags, keeps each feed described by exactly one tag, so a list without categories is still a valid list and a feed cannot be left pointing at a category that no tag defines.
 
 ### 2. Unread state on the device
 
