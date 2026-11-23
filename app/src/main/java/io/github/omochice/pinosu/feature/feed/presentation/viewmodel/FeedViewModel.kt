@@ -3,9 +3,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
-import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -58,17 +56,6 @@ class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTi
             timeline.items.distinctBy { it.feedUrl to it.id }, timeline.failedFeeds)
       }
 
-  private fun toError(error: Throwable): FeedUiState.Content {
-    val reason =
-        if (error is FeedSubscriptionListUnavailableException) {
-          when (error.reason) {
-            FeedSubscriptionLoadResult.Reason.NO_USER_RELAYS -> FeedLoadError.NoUserRelays
-            FeedSubscriptionLoadResult.Reason.ACCESS_DENIED -> FeedLoadError.AccessDenied
-            FeedSubscriptionLoadResult.Reason.UNREACHABLE -> FeedLoadError.Unreachable
-          }
-        } else {
-          FeedLoadError.Unknown
-        }
-    return FeedUiState.Content.Error(reason)
-  }
+  private fun toError(error: Throwable): FeedUiState.Content =
+      FeedUiState.Content.Error(feedLoadErrorOf(error))
 }

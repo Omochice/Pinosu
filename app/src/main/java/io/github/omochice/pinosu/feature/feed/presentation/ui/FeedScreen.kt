@@ -1,6 +1,5 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -156,15 +155,6 @@ private fun FeedError(reason: FeedLoadError, onRetry: () -> Unit) {
     Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
   }
 }
-
-@StringRes
-private fun FeedLoadError.messageRes(): Int =
-    when (this) {
-      FeedLoadError.NoUserRelays -> R.string.error_feed_no_user_relays
-      FeedLoadError.AccessDenied -> R.string.error_feed_access_denied
-      FeedLoadError.Unreachable -> R.string.error_feed_unreachable
-      FeedLoadError.Unknown -> R.string.error_feed_load_failed
-    }
 
 @Composable
 private fun FeedList(

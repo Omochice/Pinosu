@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.presentation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -39,23 +40,36 @@ fun NavGraphBuilder.feedDestinations(
       exitTransition = { defaultExitTransition },
       popEnterTransition = { defaultPopEnterTransition },
       popExitTransition = { defaultPopExitTransition }) {
-        val feedViewModel: FeedViewModel = hiltViewModel()
-        val feedUiState by feedViewModel.uiState.collectAsStateWithLifecycle()
-        val loggedIn = isLoggedIn()
-
-        LaunchedEffect(loggedIn) {
-          if (!loggedIn) {
-            navController.navigate(Login) { popUpTo<Feed> { inclusive = true } }
-          }
-        }
-
-        FeedScreen(
-            uiState = feedUiState,
-            onRefresh = feedViewModel::refresh,
-            onOpenDrawer = onOpenDrawer,
-            onBookmarkItem = { link, title ->
-              navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
-            },
-            isReadOnly = isReadOnly())
+        FeedTimelineDestination(
+            navController = navController,
+            isLoggedIn = isLoggedIn(),
+            isReadOnly = isReadOnly(),
+            onOpenDrawer = onOpenDrawer)
       }
+}
+
+@Composable
+private fun FeedTimelineDestination(
+    navController: NavController,
+    isLoggedIn: Boolean,
+    isReadOnly: Boolean,
+    onOpenDrawer: () -> Unit,
+) {
+  val feedViewModel: FeedViewModel = hiltViewModel()
+  val feedUiState by feedViewModel.uiState.collectAsStateWithLifecycle()
+
+  LaunchedEffect(isLoggedIn) {
+    if (!isLoggedIn) {
+      navController.navigate(Login) { popUpTo<Feed> { inclusive = true } }
+    }
+  }
+
+  FeedScreen(
+      uiState = feedUiState,
+      onRefresh = feedViewModel::refresh,
+      onOpenDrawer = onOpenDrawer,
+      onBookmarkItem = { link, title ->
+        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
+      },
+      isReadOnly = isReadOnly)
 }
