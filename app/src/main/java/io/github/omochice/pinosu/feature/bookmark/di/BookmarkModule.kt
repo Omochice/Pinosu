@@ -4,8 +4,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.omochice.pinosu.feature.bookmark.data.metadata.OkHttpUrlMetadataFetcher
-import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.data.repository.RelayBookmarkRepository
 import io.github.omochice.pinosu.feature.bookmark.domain.repository.BookmarkRepository
 import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkListUseCase
@@ -21,8 +19,6 @@ import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkList
 object BookmarkModule {
 
   @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
-
-  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
 
   @Provides
   fun provideGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase = impl

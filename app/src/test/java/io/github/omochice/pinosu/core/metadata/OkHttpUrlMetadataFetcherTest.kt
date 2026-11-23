@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.bookmark.data.metadata
+package io.github.omochice.pinosu.core.metadata
 
 import io.mockk.every
 import io.mockk.mockk

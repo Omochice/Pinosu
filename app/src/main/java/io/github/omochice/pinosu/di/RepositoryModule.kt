@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.core.metadata.OkHttpUrlMetadataFetcher
+import io.github.omochice.pinosu.core.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.core.nip.nip01.Nip01ProfileFetcher
 import io.github.omochice.pinosu.core.nip.nip01.Nip01ProfileFetcherImpl
 import io.github.omochice.pinosu.core.nip.nip01.Nip01ProfileParser
@@ -21,7 +23,7 @@ import io.github.omochice.pinosu.feature.settings.data.SettingsBootstrapRelayPro
  * Hilt module for NIP protocol dependency injection
  *
  * Provides NIP-01 profile metadata, NIP-65 relay list parser and fetcher implementations, relay
- * list provider, and bootstrap relay provider.
+ * list provider, bootstrap relay provider, and the URL metadata fetcher.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,4 +44,6 @@ object RepositoryModule {
   @Provides
   fun provideBootstrapRelayProvider(impl: SettingsBootstrapRelayProvider): BootstrapRelayProvider =
       impl
+
+  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
 }
