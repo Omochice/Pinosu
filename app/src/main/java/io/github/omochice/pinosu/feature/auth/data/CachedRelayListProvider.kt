@@ -10,8 +10,8 @@ import javax.inject.Singleton
 /**
  * [RelayListProvider] implementation backed by cached relay list in [LocalAuthDataSource]
  *
- * Falls back to [Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS] when no cached relays are
- * available.
+ * [getRelays] falls back to [Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS] when no cached
+ * relays are available.
  */
 @Singleton
 class CachedRelayListProvider
@@ -19,11 +19,11 @@ class CachedRelayListProvider
 constructor(private val localAuthDataSource: LocalAuthDataSource) : RelayListProvider {
 
   override suspend fun getRelays(): List<RelayConfig> {
-    val relays = localAuthDataSource.getRelayList()
-    return if (relays.isNullOrEmpty()) {
+    return getUserRelays().ifEmpty {
       Nip65RelayListFetcherImpl.DEFAULT_BOOTSTRAP_RELAY_URLS.map { RelayConfig(url = it) }
-    } else {
-      relays
     }
   }
+
+  override suspend fun getUserRelays(): List<RelayConfig> =
+      localAuthDataSource.getRelayList().orEmpty()
 }

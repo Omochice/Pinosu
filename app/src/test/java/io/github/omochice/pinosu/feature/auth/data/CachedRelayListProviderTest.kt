@@ -56,4 +56,37 @@ class CachedRelayListProviderTest {
 
     assertEquals(expectedDefaults, result)
   }
+
+  @Test
+  fun `getUserRelays returns cached relays as is when present`() = runTest {
+    val cachedRelays =
+        listOf(
+            RelayConfig(url = "wss://relay1.example.com"),
+            RelayConfig(url = "wss://relay2.example.com", read = false),
+        )
+    coEvery { localAuthDataSource.getRelayList() } returns cachedRelays
+
+    val result = provider.getUserRelays()
+
+    assertEquals(cachedRelays, result)
+  }
+
+  @Test
+  fun `getUserRelays returns empty list when cached relays are null`() = runTest {
+    coEvery { localAuthDataSource.getRelayList() } returns null
+
+    val result = provider.getUserRelays()
+
+    assertEquals(emptyList(), result)
+  }
+
+  @Test
+  fun `getUserRelays returns empty list instead of bootstrap relays when cached relays are empty`() =
+      runTest {
+        coEvery { localAuthDataSource.getRelayList() } returns emptyList()
+
+        val result = provider.getUserRelays()
+
+        assertEquals(emptyList(), result)
+      }
 }
