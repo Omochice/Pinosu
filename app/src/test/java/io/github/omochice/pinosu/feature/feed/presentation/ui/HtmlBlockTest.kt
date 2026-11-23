@@ -11,9 +11,9 @@ class HtmlBlockTest {
 
     assertEquals(
         listOf(
-            HtmlBlock("<p>Intro</p>", isHeading = false),
-            HtmlBlock("<h2>Section</h2>", isHeading = true),
-            HtmlBlock("<p>Body</p>", isHeading = false)),
+            TextBlock("<p>Intro</p>", isHeading = false),
+            TextBlock("<h2>Section</h2>", isHeading = true),
+            TextBlock("<p>Body</p>", isHeading = false)),
         blocks)
   }
 
@@ -21,7 +21,7 @@ class HtmlBlockTest {
   fun `every heading level is a heading block`() {
     val blocks = splitHtmlBlocks((1..6).joinToString("") { "<h$it>Level $it</h$it>" })
 
-    assertEquals(List(6) { true }, blocks.map { it.isHeading })
+    assertEquals(List(6) { true }, blocks.map { (it as TextBlock).isHeading })
   }
 
   @Test
@@ -38,7 +38,7 @@ class HtmlBlockTest {
             "<blockquote>Quote</blockquote>",
             "<pre>code  here</pre>",
             "<ol><li>C</li></ol>"),
-        blocks.map { it.html })
+        blocks.map { (it as TextBlock).html })
   }
 
   @Test
@@ -46,7 +46,9 @@ class HtmlBlockTest {
     val blocks =
         splitHtmlBlocks("<h3>See <a href=\"https://blog.example/a\">this</a></h3><p>Text</p>")
 
-    assertEquals("<h3>See <a href=\"https://blog.example/a\">this</a></h3>", blocks.first().html)
+    assertEquals(
+        "<h3>See <a href=\"https://blog.example/a\">this</a></h3>",
+        (blocks.first() as TextBlock).html)
   }
 
   @Test
@@ -57,9 +59,9 @@ class HtmlBlockTest {
 
     assertEquals(
         listOf(
-            HtmlBlock("Lead <a href=\"https://blog.example/a\">link</a> text<br>more", false),
-            HtmlBlock("<h2>Next</h2>", true),
-            HtmlBlock("tail", false)),
+            TextBlock("Lead <a href=\"https://blog.example/a\">link</a> text<br>more", false),
+            TextBlock("<h2>Next</h2>", true),
+            TextBlock("tail", false)),
         blocks)
   }
 
@@ -68,20 +70,20 @@ class HtmlBlockTest {
     val blocks = splitHtmlBlocks("<div><h1>Title</h1><div><p>Nested</p></div></div>")
 
     assertEquals(
-        listOf(HtmlBlock("<h1>Title</h1>", true), HtmlBlock("<p>Nested</p>", false)), blocks)
+        listOf(TextBlock("<h1>Title</h1>", true), TextBlock("<p>Nested</p>", false)), blocks)
   }
 
   @Test
   fun `a div holding only inline content is a single block`() {
     val blocks = splitHtmlBlocks("<div>Just <b>text</b></div>")
 
-    assertEquals(listOf(HtmlBlock("<div>Just <b>text</b></div>", false)), blocks)
+    assertEquals(listOf(TextBlock("<div>Just <b>text</b></div>", false)), blocks)
   }
 
   @Test
   fun `blocks without text are dropped`() {
     val blocks = splitHtmlBlocks("<p> </p>\n  <h2></h2><p>Kept</p><br>  ")
 
-    assertEquals(listOf(HtmlBlock("<p>Kept</p>", false)), blocks)
+    assertEquals(listOf(TextBlock("<p>Kept</p>", false)), blocks)
   }
 }

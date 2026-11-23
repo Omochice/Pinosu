@@ -10,21 +10,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 private val GapBeforeHeading = 16.dp
 private val GapBetweenBlocks = 8.dp
-
-private data class RenderedBlock(val text: AnnotatedString, val isHeading: Boolean)
 
 /**
  * Text rendered from HTML as spaced blocks, with tappable links
@@ -53,24 +50,20 @@ fun HtmlText(
         val linkListener = LinkInteractionListener { link ->
           (link as? LinkAnnotation.Url)?.let { currentOnOpenLink(it.url) }
         }
-        splitHtmlBlocks(html).map { block ->
-          val text =
-              AnnotatedString.fromHtml(
-                  htmlString = block.html,
-                  linkStyles = linkStyles,
-                  linkInteractionListener = linkListener)
-          // fromHtml ends a block element with a line break, which would add a blank line on
-          // top of the gap between blocks.
-          RenderedBlock(text.subSequence(0, text.text.trimEnd().length), block.isHeading)
-        }
+        renderHtmlBlocks(html, linkStyles, linkListener)
       }
   Column(modifier = modifier) {
     blocks.forEachIndexed { index, block ->
       if (index > 0) {
-        Spacer(
-            modifier = Modifier.height(if (block.isHeading) GapBeforeHeading else GapBetweenBlocks))
+        Spacer(modifier = Modifier.height(gapAbove(block)))
       }
-      Text(text = block.text, style = if (block.isHeading) headingStyle else style)
+      when (block) {
+        is RenderedText ->
+            Text(text = block.text, style = if (block.isHeading) headingStyle else style)
+      }
     }
   }
 }
+
+private fun gapAbove(block: RenderedBlock): Dp =
+    if (block is RenderedText && block.isHeading) GapBeforeHeading else GapBetweenBlocks
