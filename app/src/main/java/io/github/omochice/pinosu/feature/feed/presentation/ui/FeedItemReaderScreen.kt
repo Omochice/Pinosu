@@ -29,13 +29,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
 import kotlinx.coroutines.launch
+
+// Phrase breaking is applied by the platform from API 33 only.
+// Compose skips the line break config below it, so older devices keep the default word breaking
+// instead of failing, which is why no version check is needed here.
+private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
+private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.WordBreak.Phrase)
 
 /**
  * Composable function for the screen reading one feed item in the app
@@ -130,7 +138,7 @@ private fun FeedItemArticle(item: FeedItem, onOpenLink: (String) -> Unit, modifi
   Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
     Text(
         text = item.title.ifEmpty { item.link.orEmpty() },
-        style = MaterialTheme.typography.headlineSmall)
+        style = MaterialTheme.typography.headlineSmall.copy(lineBreak = PhraseHeadingBreak))
     Spacer(modifier = Modifier.height(8.dp))
     Text(
         text = feedItemByline(item),
@@ -144,10 +152,16 @@ private fun FeedItemArticle(item: FeedItem, onOpenLink: (String) -> Unit, modifi
 @Composable
 private fun FeedItemBody(item: FeedItem, onOpenLink: (String) -> Unit) {
   val html = item.contentHtml
+  val bodyStyle = MaterialTheme.typography.bodyLarge.copy(lineBreak = PhraseParagraphBreak)
   when {
-    html != null -> HtmlText(html = html, onOpenLink = onOpenLink)
-    item.summary.isNotBlank() ->
-        Text(text = item.summary, style = MaterialTheme.typography.bodyLarge)
+    html != null ->
+        HtmlText(
+            html = html,
+            onOpenLink = onOpenLink,
+            style = bodyStyle,
+            headingStyle =
+                bodyStyle.copy(lineHeight = TextUnit.Unspecified, lineBreak = PhraseHeadingBreak))
+    item.summary.isNotBlank() -> Text(text = item.summary, style = bodyStyle)
     else ->
         Text(
             text = stringResource(R.string.message_feed_item_no_content),
@@ -185,7 +199,7 @@ private fun FeedItemReaderScreenPreview() {
               publishedAt = Instant.parse("2026-01-02T03:04:05Z"),
               summary = "A short summary of the article.",
               contentHtml =
-                  "<p>The whole article, with <b>bold</b> text and a " +
+                  "<h2>Introduction</h2><p>The whole article, with <b>bold</b> text and a " +
                       "<a href=\"https://blog.example/\">link</a>.</p><ul><li>One</li><li>Two</li></ul>"),
       onNavigateUp = {})
 }

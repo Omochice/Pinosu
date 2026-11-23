@@ -3,11 +3,17 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.getTestString
@@ -94,6 +100,47 @@ class FeedItemReaderScreenTest {
     composeTestRule.onNodeWithText("Linked article", substring = true).performClick()
 
     assertEquals(listOf("https://blog.example/linked"), openedUris)
+  }
+
+  @Test
+  fun `a heading is laid out apart from the paragraphs around it`() {
+    setReader(
+        item.copy(
+            contentHtml = "<p>Intro paragraph</p><h2>Section heading</h2><p>After paragraph</p>"))
+
+    val intro = composeTestRule.onNodeWithText("Intro paragraph").getUnclippedBoundsInRoot()
+    val heading =
+        composeTestRule
+            .onNodeWithText("Section heading")
+            .assertTextEquals("Section heading")
+            .getUnclippedBoundsInRoot()
+    val after = composeTestRule.onNodeWithText("After paragraph").getUnclippedBoundsInRoot()
+
+    val gapBelowHeading = after.top - heading.bottom
+    assertTrue(gapBelowHeading >= 8.dp, "gap below the heading was $gapBelowHeading")
+    assertTrue(
+        heading.top - intro.bottom > gapBelowHeading,
+        "a heading should be further from the text above it than from the text below it")
+  }
+
+  @Test
+  fun `title and body break lines at phrases`() {
+    setReader(item.copy(contentHtml = "<h2>Section heading</h2><p>First paragraph</p>"))
+
+    listOf("Hello feeds", "Section heading", "First paragraph").forEach { text ->
+      assertEquals(LineBreak.WordBreak.Phrase, wordBreakOf(text), text)
+    }
+  }
+
+  private fun wordBreakOf(text: String): LineBreak.WordBreak {
+    val layouts = mutableListOf<TextLayoutResult>()
+    composeTestRule
+        .onNodeWithText(text)
+        .fetchSemanticsNode()
+        .config[SemanticsActions.GetTextLayoutResult]
+        .action
+        ?.invoke(layouts)
+    return layouts.single().layoutInput.style.lineBreak.wordBreak
   }
 
   @Test
