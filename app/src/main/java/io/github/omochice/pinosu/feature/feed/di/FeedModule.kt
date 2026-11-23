@@ -14,6 +14,10 @@ import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCaseImpl
+import io.github.omochice.pinosu.feature.feed.domain.usecase.PrepareFeedSubscriptionChangeUseCase
+import io.github.omochice.pinosu.feature.feed.domain.usecase.PrepareFeedSubscriptionChangeUseCaseImpl
+import io.github.omochice.pinosu.feature.feed.domain.usecase.PublishFeedSubscriptionListUseCase
+import io.github.omochice.pinosu.feature.feed.domain.usecase.PublishFeedSubscriptionListUseCaseImpl
 
 /** Hilt module for the feed feature */
 @Module
@@ -36,4 +40,14 @@ object FeedModule {
   @Provides
   fun provideLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase =
       impl
+
+  @Provides
+  fun providePrepareChangeUseCase(
+      impl: PrepareFeedSubscriptionChangeUseCaseImpl
+  ): PrepareFeedSubscriptionChangeUseCase = impl
+
+  @Provides
+  fun providePublishListUseCase(
+      impl: PublishFeedSubscriptionListUseCaseImpl
+  ): PublishFeedSubscriptionListUseCase = impl
 }
