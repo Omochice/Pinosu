@@ -139,7 +139,43 @@ class JsoupFeedParserTest {
                 .trimIndent())
 
     assertEquals(2, feed.items.size)
-    assertEquals("mailto:someone@example.com", feed.items[0].link)
+    assertNull(feed.items[0].link)
+  }
+
+  @Test
+  fun `links with schemes other than http and https are dropped so a feed cannot launch other apps`() {
+    val feed =
+        parseFeed(
+            """
+            <rss version="2.0"><channel>
+              <title>Hostile</title>
+              <link>intent://scan/#Intent;scheme=zxing;end</link>
+              <item><title>Signer</title><link>nostrsigner:{"kind":1}</link></item>
+              <item><title>Script</title><link>javascript:alert(1)</link></item>
+              <item><title>Plain</title><link>http://example.com/a</link></item>
+            </channel></rss>
+            """
+                .trimIndent())
+
+    assertNull(feed.siteUrl)
+    assertEquals(listOf(null, null, "http://example.com/a"), feed.items.map { it.link })
+  }
+
+  @Test
+  fun `atom links with schemes other than http and https are dropped`() {
+    val feed =
+        parseFeed(
+            """
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <title>Hostile</title>
+              <link rel="alternate" href="intent://x#Intent;end"/>
+              <entry><id>urn:1</id><title>A</title><link rel="alternate" href="nostrsigner:abc"/></entry>
+            </feed>
+            """
+                .trimIndent())
+
+    assertNull(feed.siteUrl)
+    assertNull(feed.items.single().link)
   }
 
   @Test
