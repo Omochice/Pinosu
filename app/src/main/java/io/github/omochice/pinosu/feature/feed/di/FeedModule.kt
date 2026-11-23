@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
+import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.repository.RelayFeedSubscriptionRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 
@@ -16,4 +18,6 @@ object FeedModule {
   fun provideSubscriptionRepository(
       impl: RelayFeedSubscriptionRepository
   ): FeedSubscriptionRepository = impl
+
+  @Provides fun provideFeedParser(impl: JsoupFeedParser): FeedParser = impl
 }
