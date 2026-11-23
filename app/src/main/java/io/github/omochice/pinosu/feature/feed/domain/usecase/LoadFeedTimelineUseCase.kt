@@ -9,7 +9,8 @@ interface LoadFeedTimelineUseCase {
    * Load the subscription list and fetch every subscribed feed
    *
    * A feed that cannot be fetched is reported in [FeedTimeline.failedFeeds] instead of failing the
-   * whole timeline.
+   * whole timeline. Each item and failure carries the category its feed is in on the subscription
+   * list, whatever URL the fetched feed document names.
    *
    * @return The timeline, empty when the user has no list yet, or a failure with
    *   [io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException]

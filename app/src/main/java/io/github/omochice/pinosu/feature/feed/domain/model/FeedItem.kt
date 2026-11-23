@@ -16,6 +16,7 @@ import java.time.Instant
  * @property contentHtml Fullest body the item carries, as HTML that is safe to render: only text
  *   formatting remains and every link is an absolute HTTP(S) URL; null when the item has no body
  *   text
+ * @property feedCategory Category the user filed the feed under, or null when the feed is in none
  */
 data class FeedItem(
     val id: String,
@@ -26,4 +27,5 @@ data class FeedItem(
     val publishedAt: Instant?,
     val summary: String,
     val contentHtml: String? = null,
+    val feedCategory: String? = null,
 )

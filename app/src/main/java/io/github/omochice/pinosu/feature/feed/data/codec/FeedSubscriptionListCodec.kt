@@ -14,7 +14,8 @@ class FeedSubscriptionListCodec @Inject constructor() {
   /**
    * Build the list event for the given feeds
    *
-   * Feeds with a blank URL are dropped, and of feeds sharing a URL only the first is kept.
+   * Feeds with a blank URL are dropped, and of feeds sharing a URL only the first is kept. A blank
+   * category is stored as none.
    *
    * @param hexPubkey Author's public key (hex-encoded)
    * @param feeds Feeds in the order to store them
@@ -33,7 +34,7 @@ class FeedSubscriptionListCodec @Inject constructor() {
   ): UnsignedNostrEvent {
     val tags = buildList {
       add(listOf(Nip78.Tag.IDENTIFIER, IDENTIFIER))
-      normalize(feeds).forEach { add(listOf(URL_TAG, it.url)) }
+      normalize(feeds).forEach { add(urlTag(it)) }
       if (includeClientTag) add(Nip89.clientTag())
     }
     val createdAt = previousCreatedAt?.let { maxOf(now, it + 1) } ?: now
@@ -47,6 +48,9 @@ class FeedSubscriptionListCodec @Inject constructor() {
 
   /**
    * Read the list from an event
+   *
+   * A feed stored without a category, as every feed was before categories existed, or with a blank
+   * one is read as having none.
    *
    * @param event Event received from a relay
    * @param hexPubkey Public key (hex-encoded) of the user whose list is expected
@@ -63,18 +67,26 @@ class FeedSubscriptionListCodec @Inject constructor() {
     val feeds =
         event.tags
             .filter { it.firstOrNull() == URL_TAG }
-            .mapNotNull { tag -> tag.getOrNull(1)?.let { FeedSubscription(it) } }
+            .mapNotNull { tag -> tag.getOrNull(1)?.let { FeedSubscription(it, tag.getOrNull(2)) } }
     return FeedSubscriptionList(feeds = normalize(feeds), createdAt = event.createdAt)
   }
 
   private fun normalize(feeds: List<FeedSubscription>): List<FeedSubscription> =
-      feeds.filter { it.url.isNotBlank() }.distinctBy { it.url }
+      feeds
+          .filter { it.url.isNotBlank() }
+          .distinctBy { it.url }
+          .map { it.copy(category = FeedSubscription.normalizeCategory(it.category)) }
+
+  private fun urlTag(feed: FeedSubscription): List<String> =
+      listOfNotNull(URL_TAG, feed.url, feed.category)
 
   companion object {
     /** `d` tag value that names Pinosu's subscription list among NIP-78 events */
     const val IDENTIFIER = "pinosu/rss-subscriptions"
 
-    /** Tag key holding one subscribed feed URL */
+    /**
+     * Tag key holding one subscribed feed URL, followed by the name of its category when it has one
+     */
     const val URL_TAG = "url"
   }
 }

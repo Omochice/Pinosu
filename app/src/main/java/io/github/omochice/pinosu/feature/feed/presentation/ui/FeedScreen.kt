@@ -48,6 +48,8 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
  * @param isReadOnly Whether to hide the bookmark action and the subscription entry points for
  *   read-only login
  * @param onOpenItem Callback with the item whose card is tapped
+ * @param onSelectCategory Callback with the category whose tab is tapped, or null for the tab that
+ *   shows every feed
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +61,7 @@ fun FeedScreen(
     onManageSubscriptions: () -> Unit = {},
     isReadOnly: Boolean = false,
     onOpenItem: (FeedItem) -> Unit = {},
+    onSelectCategory: (String?) -> Unit = {},
 ) {
   val manageSubscriptions = if (isReadOnly) null else onManageSubscriptions
 
@@ -74,7 +77,15 @@ fun FeedScreen(
 
   Scaffold(
       topBar = {
-        FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
+        Column {
+          FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
+          if (uiState.categories.isNotEmpty()) {
+            FeedCategoryTabRow(
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                onSelect = onSelectCategory)
+          }
+        }
       }) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,

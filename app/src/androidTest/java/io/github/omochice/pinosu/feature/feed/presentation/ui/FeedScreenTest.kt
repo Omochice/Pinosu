@@ -4,6 +4,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -221,6 +223,69 @@ class FeedScreenTest {
     composeTestRule
         .onNodeWithText(getTestString(R.string.button_add_first_feed))
         .assertDoesNotExist()
+  }
+
+  @Test
+  fun `category tabs follow the All tab`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(item).copy(categories = listOf("News", "Tech")), onRefresh = {})
+    }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).assertIsSelected()
+    composeTestRule.onNodeWithText("News").assertIsDisplayed().assertIsNotSelected()
+    composeTestRule.onNodeWithText("Tech").assertIsDisplayed().assertIsNotSelected()
+  }
+
+  @Test
+  fun `selecting a category tab passes its name`() {
+    val selected = mutableListOf<String?>()
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item).copy(categories = listOf("News", "Tech")),
+          onRefresh = {},
+          onSelectCategory = { selected.add(it) })
+    }
+
+    composeTestRule.onNodeWithText("Tech").performClick()
+
+    assertEquals(listOf<String?>("Tech"), selected)
+  }
+
+  @Test
+  fun `selecting the All tab passes no category`() {
+    val selected = mutableListOf<String?>()
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState =
+              loaded(item).copy(categories = listOf("News", "Tech"), selectedCategory = "Tech"),
+          onRefresh = {},
+          onSelectCategory = { selected.add(it) })
+    }
+
+    composeTestRule.onNodeWithText("Tech").assertIsSelected()
+    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).performClick()
+
+    assertEquals(listOf<String?>(null), selected)
+  }
+
+  @Test
+  fun `the items given for the selected category are the ones shown`() {
+    val techItem = item.copy(id = "2", title = "Kotlin news", feedCategory = "Tech")
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(techItem).copy(categories = listOf("Tech"), selectedCategory = "Tech"),
+          onRefresh = {})
+    }
+
+    composeTestRule.onNodeWithText("Kotlin news").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Hello feeds").assertDoesNotExist()
+  }
+
+  @Test
+  fun `no tabs are shown when no feed has a category`() {
+    composeTestRule.setContent { FeedScreen(uiState = loaded(item), onRefresh = {}) }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).assertDoesNotExist()
   }
 
   @Test

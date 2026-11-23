@@ -41,12 +41,28 @@ constructor(
       writerPubkey()
           .fold(
               onSuccess = { hexPubkey ->
-                rewrite(hexPubkey, FeedSubscriptionChange.NotSubscribed(feedUrl)) { feeds ->
+                rewrite(hexPubkey, { FeedSubscriptionChange.NotSubscribed(feedUrl) }) { feeds ->
                   feeds.filterNot { it.url == feedUrl }
                 }
               },
               onFailure = { Result.failure(it) },
           )
+
+  override suspend fun setCategory(
+      feedUrl: String,
+      category: String?
+  ): Result<FeedSubscriptionChange> {
+    val name = FeedSubscription.normalizeCategory(category)
+    return writerPubkey()
+        .fold(
+            onSuccess = { hexPubkey ->
+              rewrite(hexPubkey, { feeds -> categoryUnchangedOrMissing(feeds, feedUrl) }) { feeds ->
+                feeds.map { if (it.url == feedUrl) it.copy(category = name) else it }
+              }
+            },
+            onFailure = { Result.failure(it) },
+        )
+  }
 
   private suspend fun writerPubkey(): Result<String> {
     val user =
@@ -74,13 +90,13 @@ constructor(
           )
 
   private suspend fun addFeed(hexPubkey: String, feedUrl: String): Result<FeedSubscriptionChange> =
-      rewrite(hexPubkey, FeedSubscriptionChange.AlreadySubscribed(feedUrl)) { feeds ->
+      rewrite(hexPubkey, { FeedSubscriptionChange.AlreadySubscribed(feedUrl) }) { feeds ->
         (feeds + FeedSubscription(feedUrl)).distinctBy { it.url }
       }
 
   private suspend fun rewrite(
       hexPubkey: String,
-      unchanged: FeedSubscriptionChange,
+      unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
       edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): Result<FeedSubscriptionChange> =
       when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
@@ -92,16 +108,26 @@ constructor(
             Result.failure(FeedSubscriptionListUnavailableException(loaded.reason))
       }
 
+  private fun categoryUnchangedOrMissing(
+      feeds: List<FeedSubscription>,
+      feedUrl: String,
+  ): FeedSubscriptionChange =
+      if (feeds.any { it.url == feedUrl }) {
+        FeedSubscriptionChange.CategoryUnchanged(feedUrl)
+      } else {
+        FeedSubscriptionChange.NotSubscribed(feedUrl)
+      }
+
   private fun prepare(
       hexPubkey: String,
       previous: FeedSubscriptionList?,
       edit: (List<FeedSubscription>) -> List<FeedSubscription>,
-      unchanged: FeedSubscriptionChange,
+      unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
   ): FeedSubscriptionChange {
     val current = previous?.feeds.orEmpty()
     val feeds = edit(current)
     return if (feeds == current) {
-      unchanged
+      unchanged(current)
     } else {
       FeedSubscriptionChange.ReadyToSign(
           event = subscriptionRepository.createSubscriptionListEvent(hexPubkey, feeds, previous),

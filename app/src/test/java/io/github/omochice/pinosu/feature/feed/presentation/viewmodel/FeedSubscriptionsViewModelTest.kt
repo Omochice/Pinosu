@@ -502,6 +502,108 @@ class FeedSubscriptionsViewModelTest {
     assertSame(signIntent, requests.single())
   }
 
+  @Test
+  fun `setting a category is signed then published and the list is reloaded`() = runTest {
+    coEvery { prepareChange.setCategory(FEED_A, "Tech") } returns readyToSign()
+    givenSignerReturns(SIGNATURE)
+    val viewModel = createViewModel()
+    val requests = collectSignRequests(viewModel)
+    advanceUntilIdle()
+
+    viewModel.setCategory(FEED_A, "Tech")
+    advanceUntilIdle()
+
+    assertEquals(listOf(signIntent), requests)
+    assertTrue(viewModel.uiState.value.isWorking, "the screen stays busy while the signer is open")
+
+    val categorized = listOf(FeedSubscription(FEED_A, "Tech"))
+    coEvery { loadSubscriptions() } returns Result.success(categorized)
+    viewModel.processSignedEvent(Activity.RESULT_OK, Intent())
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { publishList(event.toSignedJson(SIGNATURE)) }
+    val state = viewModel.uiState.value
+    assertEquals(FeedSubscriptionsUiState.Content.Loaded(categorized), state.content)
+    assertFalse(state.isWorking)
+    assertTrue(state.hasPublished, "the timeline has to learn that the categories changed")
+  }
+
+  @Test
+  fun `clearing a category passes no category to the change`() = runTest {
+    coEvery { prepareChange.setCategory(FEED_A, null) } returns readyToSign()
+    val viewModel = createViewModel()
+    val requests = collectSignRequests(viewModel)
+    advanceUntilIdle()
+
+    viewModel.setCategory(FEED_A, null)
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { prepareChange.setCategory(FEED_A, null) }
+    assertEquals(listOf(signIntent), requests)
+  }
+
+  @Test
+  fun `an unchanged category signs nothing and says nothing`() = runTest {
+    coEvery { prepareChange.setCategory(FEED_A, "Tech") } returns
+        Result.success(FeedSubscriptionChange.CategoryUnchanged(FEED_A))
+    val viewModel = createViewModel()
+    val requests = collectSignRequests(viewModel)
+    advanceUntilIdle()
+
+    viewModel.setCategory(FEED_A, "Tech")
+    advanceUntilIdle()
+
+    assertTrue(requests.isEmpty())
+    assertFalse(viewModel.uiState.value.isWorking)
+    assertNull(viewModel.uiState.value.message)
+    assertNull(viewModel.uiState.value.dialog)
+  }
+
+  @Test
+  fun `setting the category of a feed that is already gone reloads the list`() = runTest {
+    coEvery { prepareChange.setCategory(FEED_A, "Tech") } returns
+        Result.success(FeedSubscriptionChange.NotSubscribed(FEED_A))
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+    coEvery { loadSubscriptions() } returns Result.success(emptyList())
+
+    viewModel.setCategory(FEED_A, "Tech")
+    advanceUntilIdle()
+
+    assertEquals(
+        FeedSubscriptionsUiState.Content.Loaded(emptyList()), viewModel.uiState.value.content)
+    assertFalse(viewModel.uiState.value.isWorking)
+  }
+
+  @Test
+  fun `a category change that cannot load the list is explained`() = runTest {
+    coEvery { prepareChange.setCategory(FEED_A, "Tech") } returns
+        Result.failure(
+            FeedSubscriptionListUnavailableException(FeedSubscriptionLoadResult.Reason.UNREACHABLE))
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+
+    viewModel.setCategory(FEED_A, "Tech")
+    advanceUntilIdle()
+
+    assertEquals(FeedSubscriptionsMessage.Unreachable, viewModel.uiState.value.message)
+    assertFalse(viewModel.uiState.value.isWorking)
+  }
+
+  @Test
+  fun `a category change is ignored while another change is in progress`() = runTest {
+    coEvery { prepareChange.add(any()) } returns readyToSign()
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+
+    viewModel.add(INPUT)
+    advanceUntilIdle()
+    viewModel.setCategory(FEED_A, "Tech")
+    advanceUntilIdle()
+
+    coVerify(exactly = 0) { prepareChange.setCategory(any(), any()) }
+  }
+
   private companion object {
     const val HEX_PUBKEY = "fffbfffffffffffffffffffffffffffffffffffffffffffffffffffffffff3ff"
     const val INPUT = "blog.example"

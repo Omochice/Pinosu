@@ -53,10 +53,16 @@ constructor(
     }
     val failures =
         feeds.zip(results).mapNotNull { (feed, result) ->
-          result.exceptionOrNull()?.let { FeedFetchFailure(feed.url, it) }
+          result.exceptionOrNull()?.let { FeedFetchFailure(feed.url, it, feed.category) }
         }
-    val items = mergeNewestFirst(results.mapNotNull { it.getOrNull()?.items })
-    return FeedTimeline(items = items, failedFeeds = failures)
+    val itemsPerFeed =
+        feeds.zip(results).mapNotNull { (feed, result) ->
+          result.getOrNull()?.items?.map { it.copy(feedCategory = feed.category) }
+        }
+    return FeedTimeline(
+        items = mergeNewestFirst(itemsPerFeed),
+        failedFeeds = failures,
+        categories = feeds.mapNotNull { it.category }.distinct())
   }
 
   companion object {

@@ -148,6 +148,118 @@ class FeedSubscriptionListCodecTest {
     assertNull(codec.decode(listEvent(tags = listOf(listOf("url", FEED_A))), AUTHOR))
   }
 
+  @Test
+  fun `encode adds the category as a third element only to categorized feeds`() {
+    val event = encodeFeeds(listOf(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B)))
+
+    assertEquals(
+        listOf(
+            listOf("d", "pinosu/rss-subscriptions"),
+            listOf("url", FEED_A, "Tech"),
+            listOf("url", FEED_B),
+        ),
+        event.tags)
+  }
+
+  @Test
+  fun `encode trims the category and leaves a blank one out`() {
+    val event =
+        encodeFeeds(listOf(FeedSubscription(FEED_A, "  Tech "), FeedSubscription(FEED_B, "   ")))
+
+    assertEquals(
+        listOf(listOf("url", FEED_A, "Tech"), listOf("url", FEED_B)),
+        event.tags.filter { it.first() == "url" })
+  }
+
+  @Test
+  fun `encode keeps the category of the first occurrence of a duplicate url`() {
+    val event =
+        encodeFeeds(listOf(FeedSubscription(FEED_A, "First"), FeedSubscription(FEED_A, "Second")))
+
+    assertEquals(listOf(listOf("url", FEED_A, "First")), event.tags.filter { it.first() == "url" })
+  }
+
+  @Test
+  fun `decode reads a list written before categories as uncategorized feeds`() {
+    val event =
+        listEvent(
+            tags =
+                listOf(
+                    listOf("d", "pinosu/rss-subscriptions"),
+                    listOf("url", FEED_A),
+                    listOf("url", FEED_B),
+                ))
+
+    assertEquals(
+        listOf(FeedSubscription(FEED_A, null), FeedSubscription(FEED_B, null)),
+        codec.decode(event, AUTHOR)?.feeds)
+  }
+
+  @Test
+  fun `decode reads the third element of a url tag as the category`() {
+    val event =
+        listEvent(
+            tags =
+                listOf(
+                    listOf("d", "pinosu/rss-subscriptions"),
+                    listOf("url", FEED_A, "Tech"),
+                    listOf("url", FEED_B),
+                ))
+
+    assertEquals(
+        listOf(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B, null)),
+        codec.decode(event, AUTHOR)?.feeds)
+  }
+
+  @Test
+  fun `decode trims the category and treats a blank one as none`() {
+    val event =
+        listEvent(
+            tags =
+                listOf(
+                    listOf("d", "pinosu/rss-subscriptions"),
+                    listOf("url", FEED_A, " Tech  "),
+                    listOf("url", FEED_B, "  "),
+                ))
+
+    assertEquals(
+        listOf(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B, null)),
+        codec.decode(event, AUTHOR)?.feeds)
+  }
+
+  @Test
+  fun `decode keeps the category of the first occurrence of a duplicate url`() {
+    val event =
+        listEvent(
+            tags =
+                listOf(
+                    listOf("d", "pinosu/rss-subscriptions"),
+                    listOf("url", FEED_A),
+                    listOf("url", FEED_B, "News"),
+                    listOf("url", FEED_A, "Tech"),
+                ))
+
+    assertEquals(
+        listOf(FeedSubscription(FEED_A, null), FeedSubscription(FEED_B, "News")),
+        codec.decode(event, AUTHOR)?.feeds)
+  }
+
+  @Test
+  fun `decode of an encoded event returns the same feeds with their categories`() {
+    val feeds =
+        listOf(
+            FeedSubscription(FEED_A, "Tech"),
+            FeedSubscription(FEED_B, null),
+            FeedSubscription(FEED_C, "日本語 ニュース"))
+
+    val decoded = codec.decode(signed(encodeFeeds(feeds)), AUTHOR)
+
+    assertEquals(FeedSubscriptionList(feeds, NOW), decoded)
+  }
+
+  private fun encodeFeeds(feeds: List<FeedSubscription>): UnsignedNostrEvent =
+      codec.encode(AUTHOR, feeds, NOW, previousCreatedAt = null, includeClientTag = false)
+
   private fun encode(
       feedUrls: List<String>,
       now: Long = NOW,
@@ -194,5 +306,6 @@ class FeedSubscriptionListCodecTest {
     const val NOW = 1_700_000_000L
     const val FEED_A = "https://a.example.com/feed.xml"
     const val FEED_B = "https://b.example.com/atom.xml"
+    const val FEED_C = "https://c.example.com/rss"
   }
 }

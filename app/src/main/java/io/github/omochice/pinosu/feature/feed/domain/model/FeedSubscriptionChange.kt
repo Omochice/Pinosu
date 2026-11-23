@@ -35,9 +35,16 @@ sealed interface FeedSubscriptionChange {
   data class AlreadySubscribed(val feedUrl: String) : FeedSubscriptionChange
 
   /**
-   * The feed to remove is not in the list, so nothing changes
+   * The feed to remove or file under a category is not in the list, so nothing changes
    *
    * @property feedUrl URL of the feed
    */
   data class NotSubscribed(val feedUrl: String) : FeedSubscriptionChange
+
+  /**
+   * The feed is already in the category it was to be filed under, so nothing changes
+   *
+   * @property feedUrl URL of the feed
+   */
+  data class CategoryUnchanged(val feedUrl: String) : FeedSubscriptionChange
 }

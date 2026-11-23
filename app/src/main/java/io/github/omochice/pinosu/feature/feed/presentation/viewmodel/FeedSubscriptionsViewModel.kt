@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the feed subscription screen
  *
- * Loads the subscription list when created, and turns each add or remove into a signer request
- * whose answer is then published.
+ * Loads the subscription list when created, and turns each add, remove, or category change into a
+ * signer request whose answer is then published.
  *
  * @param loadSubscriptions UseCase that loads the subscribed feed URLs
  * @param prepareChange UseCase that builds the changed list
@@ -88,6 +88,18 @@ constructor(
    */
   fun remove(feedUrl: String) {
     prepare { prepareChange.remove(feedUrl) }
+  }
+
+  /**
+   * File a subscribed feed under a category, or take it out of its category
+   *
+   * Ignored while another change is in progress.
+   *
+   * @param feedUrl URL of the feed, as subscribed
+   * @param category Name of the category, or null or blank for none
+   */
+  fun setCategory(feedUrl: String, category: String?) {
+    prepare { prepareChange.setCategory(feedUrl, category) }
   }
 
   /** Continue publishing the first list after the user agreed that it is public */
@@ -173,6 +185,9 @@ constructor(
       is FeedSubscriptionChange.NotSubscribed -> {
         _uiState.update { it.copy(isWorking = false) }
         reload()
+      }
+      is FeedSubscriptionChange.CategoryUnchanged -> {
+        _uiState.update { it.copy(isWorking = false) }
       }
     }
   }

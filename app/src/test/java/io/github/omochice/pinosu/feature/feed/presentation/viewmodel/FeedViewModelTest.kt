@@ -265,6 +265,150 @@ class FeedViewModelTest {
     assertFalse(viewModel.uiState.value.isRefreshing)
   }
 
+  @Test
+  fun `the tabs name every category in name order ignoring case`() = runTest {
+    coEvery { loadFeedTimeline() } returns
+        Result.success(
+            FeedTimeline(
+                listOf(ITEM), emptyList(), categories = listOf("tech", "News", "Tech", "art")))
+
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    assertEquals(listOf("art", "News", "tech", "Tech"), viewModel.uiState.value.categories)
+  }
+
+  @Test
+  fun `a timeline opens on All with every item`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    assertNull(viewModel.uiState.value.selectedCategory)
+    assertEquals(
+        FeedUiState.Content.Loaded(CATEGORIZED.items, CATEGORIZED.failedFeeds),
+        viewModel.uiState.value.content)
+  }
+
+  @Test
+  fun `selecting a category shows only its items and failures without loading again`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    viewModel.selectCategory("Tech")
+    advanceUntilIdle()
+
+    assertEquals("Tech", viewModel.uiState.value.selectedCategory)
+    assertEquals(
+        FeedUiState.Content.Loaded(listOf(TECH_ITEM), listOf(TECH_FAILURE)),
+        viewModel.uiState.value.content)
+    coVerify(exactly = 1) { loadFeedTimeline() }
+  }
+
+  @Test
+  fun `uncategorized items are shown only under All`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    val shownPerTab =
+        (listOf(null) + viewModel.uiState.value.categories).associateWith { category ->
+          viewModel.selectCategory(category)
+          (viewModel.uiState.value.content as FeedUiState.Content.Loaded).items
+        }
+
+    assertEquals(
+        mapOf(
+            null to CATEGORIZED.items,
+            "News" to listOf(NEWS_ITEM),
+            "Tech" to listOf(TECH_ITEM),
+        ),
+        shownPerTab)
+  }
+
+  @Test
+  fun `a category whose feeds have no items shows an empty list instead of the empty state`() =
+      runTest {
+        coEvery { loadFeedTimeline() } returns
+            Result.success(FeedTimeline(listOf(ITEM), emptyList(), categories = listOf("Quiet")))
+        val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+        advanceUntilIdle()
+
+        viewModel.selectCategory("Quiet")
+
+        assertEquals(
+            FeedUiState.Content.Loaded(emptyList(), emptyList()), viewModel.uiState.value.content)
+      }
+
+  @Test
+  fun `the selected category stays selected across a refresh while it still exists`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+    viewModel.selectCategory("News")
+    val newer = NEWS_ITEM.copy(id = "n2", title = "Newer news")
+    coEvery { loadFeedTimeline() } returns
+        Result.success(CATEGORIZED.copy(items = listOf(newer) + CATEGORIZED.items))
+
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    assertEquals("News", viewModel.uiState.value.selectedCategory)
+    assertEquals(
+        FeedUiState.Content.Loaded(listOf(newer, NEWS_ITEM), emptyList()),
+        viewModel.uiState.value.content)
+  }
+
+  @Test
+  fun `the selected category falls back to All when a reload no longer has it`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+    viewModel.selectCategory("News")
+    val withoutNews =
+        FeedTimeline(listOf(TECH_ITEM, ITEM), listOf(TECH_FAILURE), categories = listOf("Tech"))
+    coEvery { loadFeedTimeline() } returns Result.success(withoutNews)
+
+    viewModel.reloadAfterSubscriptionChange()
+    advanceUntilIdle()
+
+    assertNull(viewModel.uiState.value.selectedCategory)
+    assertEquals(listOf("Tech"), viewModel.uiState.value.categories)
+    assertEquals(
+        FeedUiState.Content.Loaded(withoutNews.items, withoutNews.failedFeeds),
+        viewModel.uiState.value.content)
+  }
+
+  @Test
+  fun `the reader can open items of every category whatever tab is selected`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+
+    viewModel.selectCategory("Tech")
+
+    assertEquals(NEWS_ITEM, loadedItems.find(NEWS_ITEM.feedUrl, NEWS_ITEM.id))
+    assertEquals(ITEM, loadedItems.find(ITEM.feedUrl, ITEM.id))
+  }
+
+  @Test
+  fun `a failed load drops the tabs and returns to All`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    val viewModel = FeedViewModel(loadFeedTimeline, loadedItems)
+    advanceUntilIdle()
+    viewModel.selectCategory("Tech")
+    coEvery { loadFeedTimeline() } returns Result.failure(IOException("offline"))
+
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    assertEquals(emptyList(), viewModel.uiState.value.categories)
+    assertNull(viewModel.uiState.value.selectedCategory)
+    assertEquals(FeedUiState.Content.Error(FeedLoadError.Unknown), viewModel.uiState.value.content)
+  }
+
   private companion object {
     val ITEM =
         FeedItem(
@@ -276,5 +420,18 @@ class FeedViewModelTest {
             publishedAt = Instant.parse("2026-01-01T00:00:00Z"),
             summary = "Summary")
     val OTHER_ITEM = ITEM.copy(id = "2", title = "Second", link = "https://a.example/2")
+    val TECH_ITEM =
+        ITEM.copy(
+            id = "t", feedUrl = "https://tech.example/feed", title = "Tech", feedCategory = "Tech")
+    val NEWS_ITEM =
+        ITEM.copy(
+            id = "n", feedUrl = "https://news.example/feed", title = "News", feedCategory = "News")
+    val TECH_FAILURE =
+        FeedFetchFailure("https://broken-tech.example/feed", IOException("timeout"), "Tech")
+    val CATEGORIZED =
+        FeedTimeline(
+            items = listOf(TECH_ITEM, NEWS_ITEM, ITEM),
+            failedFeeds = listOf(TECH_FAILURE),
+            categories = listOf("Tech", "News"))
   }
 }

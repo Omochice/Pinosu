@@ -34,6 +34,8 @@ constructor(
 
   private var loadJob: Job? = null
 
+  private var allContent: FeedUiState.Content = FeedUiState.Content.Loading
+
   init {
     load()
   }
@@ -57,12 +59,33 @@ constructor(
     load()
   }
 
+  /**
+   * Show only the items of feeds in a category, without loading the timeline again
+   *
+   * @param category Category whose tab the user selected, or null for the tab showing every feed
+   */
+  fun selectCategory(category: String?) {
+    _uiState.update {
+      it.copy(selectedCategory = category, content = allContent.inCategory(category))
+    }
+  }
+
   private fun load() {
     loadJob =
         viewModelScope.launch {
-          val content = loadFeedTimeline().fold(onSuccess = ::toContent, onFailure = ::toError)
+          val timeline = loadFeedTimeline()
+          val content = timeline.fold(onSuccess = ::toContent, onFailure = ::toError)
+          val categories = orderedCategories(timeline.getOrNull()?.categories.orEmpty())
+          allContent = content
           loadedItems.replace((content as? FeedUiState.Content.Loaded)?.items.orEmpty())
-          _uiState.update { FeedUiState(content = content, isRefreshing = false) }
+          _uiState.update { current ->
+            val selected = current.selectedCategory?.takeIf { it in categories }
+            FeedUiState(
+                content = content.inCategory(selected),
+                isRefreshing = false,
+                categories = categories,
+                selectedCategory = selected)
+          }
         }
   }
 

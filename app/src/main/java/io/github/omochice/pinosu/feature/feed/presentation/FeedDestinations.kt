@@ -131,7 +131,8 @@ private fun FeedTimelineDestination(
         navController.navigate(FeedItemReader(feedUrl = item.feedUrl, itemId = item.id)) {
           launchSingleTop = true
         }
-      })
+      },
+      onSelectCategory = feedViewModel::selectCategory)
 }
 
 @Composable
@@ -182,6 +183,7 @@ private fun FeedSubscriptionsDestination(
             onRetry = viewModel::reload,
             onAdd = viewModel::add,
             onRemove = viewModel::remove,
+            onSetCategory = viewModel::setCategory,
             onConfirmPublicNotice = viewModel::confirmPublicNotice,
             onDismissDialog = viewModel::dismissDialog,
             onMessageShown = viewModel::dismissMessage)
