@@ -17,9 +17,16 @@ internal sealed interface RenderedBlock
 internal data class RenderedText(val text: AnnotatedString, val isHeading: Boolean) : RenderedBlock
 
 /**
+ * Block laid out as a grid of cells
+ *
+ * @property table Table with the styled text of its caption and cells
+ */
+internal data class RenderedTable(val table: Table<AnnotatedString>) : RenderedBlock
+
+/**
  * Split HTML into blocks and convert each to styled text with tappable links
  *
- * @param html HTML to render, already reduced to text formatting
+ * @param html HTML to render, already reduced to text formatting and tables
  * @param linkStyles Styles of the links in the text
  * @param linkListener Listener called when a link in the text is tapped
  * @return The blocks with text, in document order
@@ -40,6 +47,7 @@ internal fun renderHtmlBlocks(
   return splitHtmlBlocks(html).map { block ->
     when (block) {
       is TextBlock -> RenderedText(annotate(block.html), block.isHeading)
+      is TableBlock -> RenderedTable(block.table.map(::annotate))
     }
   }
 }

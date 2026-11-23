@@ -4,14 +4,22 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
@@ -20,6 +28,7 @@ import io.github.omochice.pinosu.getTestString
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import org.junit.Rule
 
@@ -132,7 +141,124 @@ class FeedItemReaderScreenTest {
     }
   }
 
-  private fun wordBreakOf(text: String): LineBreak.WordBreak {
+  @Test
+  fun `shows the caption and every cell of a table`() {
+    setReader(item.copy(contentHtml = scoreTable))
+
+    listOf("Scores", "Name", "Score", "Alice", "90", "Bob", "75").forEach { text ->
+      composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun `a table caption is shown above the table`() {
+    setReader(item.copy(contentHtml = scoreTable))
+
+    val caption = composeTestRule.onNodeWithText("Scores").getUnclippedBoundsInRoot()
+    val header = composeTestRule.onNodeWithText("Name").getUnclippedBoundsInRoot()
+
+    assertTrue(caption.bottom <= header.top, "caption $caption should be above header $header")
+  }
+
+  @Test
+  fun `cells of a table row are side by side and columns line up across rows`() {
+    setReader(item.copy(contentHtml = scoreTable))
+
+    val name = composeTestRule.onNodeWithText("Name").getUnclippedBoundsInRoot()
+    val score = composeTestRule.onNodeWithText("Score").getUnclippedBoundsInRoot()
+    val alice = composeTestRule.onNodeWithText("Alice").getUnclippedBoundsInRoot()
+    val ninety = composeTestRule.onNodeWithText("90").getUnclippedBoundsInRoot()
+
+    assertTrue(name.right <= score.left, "header cells should be side by side")
+    assertTrue(name.bottom <= alice.top, "rows should be stacked")
+    assertEquals(name.left, alice.left)
+    assertEquals(score.left, ninety.left)
+  }
+
+  @Test
+  fun `a header cell is shown in bold and a data cell is not`() {
+    setReader(item.copy(contentHtml = scoreTable))
+
+    assertEquals(FontWeight.Bold, layoutOf("Name").layoutInput.style.fontWeight)
+    assertNotEquals(FontWeight.Bold, layoutOf("Alice").layoutInput.style.fontWeight)
+  }
+
+  @Test
+  fun `table cells break lines at phrases`() {
+    setReader(item.copy(contentHtml = scoreTable))
+
+    listOf("Name", "Alice").forEach { text ->
+      assertEquals(LineBreak.WordBreak.Phrase, wordBreakOf(text), text)
+    }
+  }
+
+  @Test
+  fun `tapping a link in a table cell opens it in the browser`() {
+    setReader(
+        item.copy(
+            contentHtml =
+                "<table><tr><th>Site</th><th>Note</th></tr>" +
+                    "<tr><td><a href=\"https://blog.example/cell\">Cell link</a></td>" +
+                    "<td>Plain</td></tr></table>"))
+
+    composeTestRule.onNodeWithText("Cell link").performClick()
+
+    assertEquals(listOf("https://blog.example/cell"), openedUris)
+  }
+
+  @Test
+  fun `a wide table scrolls sideways on its own to its far right cell`() {
+    setReader(item.copy(contentHtml = wideTable))
+
+    val leftBefore = composeTestRule.onNodeWithText("Leftmost cell").getUnclippedBoundsInRoot()
+    composeTestRule.onNodeWithText("Far right cell").assertIsNotDisplayed()
+    composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
+
+    composeTestRule.onNode(isHorizontallyScrollable).performTouchInput { swipeLeft() }
+
+    val leftAfter = composeTestRule.onNodeWithText("Leftmost cell").getUnclippedBoundsInRoot()
+    assertTrue(leftAfter.left < leftBefore.left, "the table should move left when swiped")
+    assertEquals(leftBefore.top, leftAfter.top)
+    composeTestRule.onNodeWithText("Hello feeds").assertIsDisplayed()
+
+    composeTestRule.onNodeWithText("Far right cell").performScrollTo().assertIsDisplayed()
+  }
+
+  @Test
+  fun `swiping up on a wide table scrolls the article`() {
+    setReader(item.copy(contentHtml = wideTable))
+
+    val before = composeTestRule.onNodeWithText("Leftmost cell").getUnclippedBoundsInRoot()
+
+    composeTestRule.onNode(isHorizontallyScrollable).performTouchInput { swipeUp() }
+
+    val after = composeTestRule.onNodeWithText("Leftmost cell").getUnclippedBoundsInRoot()
+    assertTrue(after.top < before.top, "the article should scroll up when the table is swiped up")
+    assertEquals(before.left, after.left)
+  }
+
+  private val scoreTable =
+      "<table><caption>Scores</caption>" +
+          "<thead><tr><th>Name</th><th>Score</th></tr></thead>" +
+          "<tbody><tr><td>Alice</td><td>90</td></tr><tr><td>Bob</td><td>75</td></tr></tbody>" +
+          "</table>"
+
+  private val wideTable =
+      "<table><tr><th>Leftmost cell</th>" +
+          (1..8).joinToString("") { "<th>Column $it with a long header that needs room</th>" } +
+          "<th>Far right cell</th></tr>" +
+          "<tr><td>Row</td>" +
+          (1..8).joinToString("") { "<td>Value $it in a wide table</td>" } +
+          "<td>End</td></tr></table>" +
+          (1..30).joinToString("") { "<p>Paragraph $it after the table</p>" }
+
+  private val isHorizontallyScrollable =
+      SemanticsMatcher.keyIsDefined(SemanticsProperties.HorizontalScrollAxisRange)
+
+  private fun wordBreakOf(text: String): LineBreak.WordBreak =
+      layoutOf(text).layoutInput.style.lineBreak.wordBreak
+
+  private fun layoutOf(text: String): TextLayoutResult {
     val layouts = mutableListOf<TextLayoutResult>()
     composeTestRule
         .onNodeWithText(text)
@@ -140,7 +266,7 @@ class FeedItemReaderScreenTest {
         .config[SemanticsActions.GetTextLayoutResult]
         .action
         ?.invoke(layouts)
-    return layouts.single().layoutInput.style.lineBreak.wordBreak
+    return layouts.single()
   }
 
   @Test

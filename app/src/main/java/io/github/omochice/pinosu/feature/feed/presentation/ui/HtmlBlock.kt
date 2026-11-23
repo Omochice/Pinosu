@@ -16,9 +16,18 @@ internal sealed interface HtmlBlock
  */
 internal data class TextBlock(val html: String, val isHeading: Boolean) : HtmlBlock
 
+/**
+ * Block of an HTML body that is laid out as a grid of cells
+ *
+ * @property table Table with the inner HTML of its caption and cells
+ */
+internal data class TableBlock(val table: Table<String>) : HtmlBlock
+
 private const val DIV = "div"
+private const val TABLE = "table"
 private val HEADING_TAGS = setOf("h1", "h2", "h3", "h4", "h5", "h6")
-private val BLOCK_TAGS = HEADING_TAGS + setOf("p", "ul", "ol", "dl", "blockquote", "pre", DIV)
+private val BLOCK_TAGS =
+    HEADING_TAGS + setOf("p", "ul", "ol", "dl", "blockquote", "pre", DIV, TABLE)
 
 /**
  * Split HTML into its block-level parts
@@ -53,10 +62,20 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
 
 private fun addBlock(element: Element, blocks: MutableList<HtmlBlock>) {
   when {
+    element.normalName() == TABLE -> addTable(element, blocks)
     element.normalName() == DIV && element.children().any { it.normalName() in BLOCK_TAGS } ->
         collectBlocks(element, blocks)
     element.hasText() ->
         blocks += TextBlock(element.outerHtml(), isHeading = element.normalName() in HEADING_TAGS)
+  }
+}
+
+/** A table with a single cell is opened like a `div`, because it lays out the page around it. */
+private fun addTable(table: Element, blocks: MutableList<HtmlBlock>) {
+  val soleCell = soleCellOf(table)
+  when {
+    soleCell != null -> collectBlocks(soleCell, blocks)
+    table.hasText() -> blocks += TableBlock(parseHtmlTable(table))
   }
 }
 

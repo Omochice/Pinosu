@@ -26,10 +26,10 @@ private val GapBetweenBlocks = 8.dp
 /**
  * Text rendered from HTML as spaced blocks, with tappable links
  *
- * @param html HTML to render, already reduced to text formatting
+ * @param html HTML to render, already reduced to text formatting and tables
  * @param onOpenLink Callback with the URL of a link that is tapped
  * @param modifier Modifier for the blocks
- * @param style Style of the text outside headings
+ * @param style Style of the text outside headings, including table captions and cells
  * @param headingStyle Style of headings, which are additionally enlarged and bolded by the HTML
  */
 @Composable
@@ -60,6 +60,7 @@ fun HtmlText(
       when (block) {
         is RenderedText ->
             Text(text = block.text, style = if (block.isHeading) headingStyle else style)
+        is RenderedTable -> ArticleTable(table = block.table, style = style)
       }
     }
   }
