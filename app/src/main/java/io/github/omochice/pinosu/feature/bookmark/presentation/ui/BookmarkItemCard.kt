@@ -7,14 +7,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -36,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.ui.component.OgpThumbnail
+import io.github.omochice.pinosu.ui.component.ThumbnailRow
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -50,12 +49,7 @@ fun BookmarkItemCard(
       onClick = onClick,
       onLongPress = onLongPress,
       onCopyNostrLink = onCopyNostrLink) {
-        Row(modifier = Modifier.padding(16.dp)) {
-          OgpThumbnail(
-              imageUrl = bookmark.imageUrl,
-              contentDescription = bookmark.title,
-              modifier = Modifier.size(80.dp))
-          Spacer(modifier = Modifier.width(12.dp))
+        ThumbnailRow(imageUrl = bookmark.imageUrl, contentDescription = bookmark.title) {
           BookmarkCardTextContent(bookmark = bookmark, modifier = Modifier.weight(1f))
         }
       }

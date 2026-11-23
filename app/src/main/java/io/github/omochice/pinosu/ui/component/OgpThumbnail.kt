@@ -1,4 +1,4 @@
-package io.github.omochice.pinosu.feature.bookmark.presentation.ui
+package io.github.omochice.pinosu.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
