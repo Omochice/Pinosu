@@ -6,6 +6,7 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
@@ -191,7 +192,8 @@ class LoadFeedTimelineUseCaseTest {
 
   private fun givenSubscriptions(vararg feedUrls: String) {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feedUrls.toList(), createdAt = 1L))
+        FeedSubscriptionLoadResult.Found(
+            FeedSubscriptionList(feedUrls.map(::FeedSubscription), createdAt = 1L))
   }
 
   private fun givenFeed(feedUrl: String, vararg items: FeedItem) {

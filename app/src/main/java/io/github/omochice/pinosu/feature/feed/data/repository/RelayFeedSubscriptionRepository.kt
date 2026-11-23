@@ -9,6 +9,7 @@ import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.core.relay.RelayQueryResult
 import io.github.omochice.pinosu.core.relay.RelayTermination
 import io.github.omochice.pinosu.feature.feed.data.codec.FeedSubscriptionListCodec
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
@@ -52,12 +53,12 @@ constructor(
 
   override fun createSubscriptionListEvent(
       hexPubkey: String,
-      feedUrls: List<String>,
+      feeds: List<FeedSubscription>,
       previous: FeedSubscriptionList?,
   ): UnsignedNostrEvent =
       codec.encode(
           hexPubkey = hexPubkey,
-          feedUrls = feedUrls,
+          feeds = feeds,
           now = clock.instant().epochSecond,
           previousCreatedAt = previous?.createdAt,
           includeClientTag = clientTagRepository.clientTagEnabledFlow.value)

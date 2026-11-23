@@ -12,6 +12,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip78.Nip78
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedCandidate
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsDialog
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsMessage
@@ -51,7 +52,8 @@ class FeedSubscriptionsScreenTest {
           content = "")
 
   private fun loaded(vararg feedUrls: String) =
-      FeedSubscriptionsUiState(content = FeedSubscriptionsUiState.Content.Loaded(feedUrls.toList()))
+      FeedSubscriptionsUiState(
+          content = FeedSubscriptionsUiState.Content.Loaded(feedUrls.map(::FeedSubscription)))
 
   private fun show(uiState: FeedSubscriptionsUiState, isReadOnly: Boolean = false) {
     composeTestRule.setContent {

@@ -10,6 +10,7 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedCandidate
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedResolution
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
@@ -98,24 +99,23 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
   @Test
   fun `add appends the resolved feed to the loaded list`() = runTest {
-    val current = FeedSubscriptionList(listOf(FEED_A), createdAt = 1L)
+    val current = FeedSubscriptionList(feeds(FEED_A), createdAt = 1L)
     givenLoaded(FeedSubscriptionLoadResult.Found(current))
     givenResolvedDirect(FEED_B)
 
     val result = useCase.add(INPUT)
 
     assertEquals(
-        FeedSubscriptionChange.ReadyToSign(EVENT, listOf(FEED_A, FEED_B), isFirstList = false),
+        FeedSubscriptionChange.ReadyToSign(EVENT, feeds(FEED_A, FEED_B), isFirstList = false),
         result.getOrNull())
     verify(exactly = 1) {
-      subscriptionRepository.createSubscriptionListEvent(
-          HEX_PUBKEY, listOf(FEED_A, FEED_B), current)
+      subscriptionRepository.createSubscriptionListEvent(HEX_PUBKEY, feeds(FEED_A, FEED_B), current)
     }
   }
 
   @Test
   fun `add resolves the input, then loads the list, then builds the event`() = runTest {
-    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), 1L)))
+    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), 1L)))
     givenResolvedDirect(FEED_B)
 
     useCase.add(INPUT)
@@ -129,7 +129,7 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
   @Test
   fun `add of a feed already in the list builds no event`() = runTest {
-    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), 1L)))
+    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), 1L)))
     givenResolvedDirect(FEED_A)
 
     val result = useCase.add(INPUT)
@@ -174,10 +174,10 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
     val result = useCase.add(INPUT)
 
     assertEquals(
-        FeedSubscriptionChange.ReadyToSign(EVENT, listOf(FEED_A), isFirstList = true),
+        FeedSubscriptionChange.ReadyToSign(EVENT, feeds(FEED_A), isFirstList = true),
         result.getOrNull())
     verify(exactly = 1) {
-      subscriptionRepository.createSubscriptionListEvent(HEX_PUBKEY, listOf(FEED_A), null)
+      subscriptionRepository.createSubscriptionListEvent(HEX_PUBKEY, feeds(FEED_A), null)
     }
   }
 
@@ -196,8 +196,8 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
   @Test
   fun `every change loads the list again`() = runTest {
-    val first = FeedSubscriptionList(listOf(FEED_A), createdAt = 1L)
-    val second = FeedSubscriptionList(listOf(FEED_A, FEED_B), createdAt = 2L)
+    val first = FeedSubscriptionList(feeds(FEED_A), createdAt = 1L)
+    val second = FeedSubscriptionList(feeds(FEED_A, FEED_B), createdAt = 2L)
     coEvery { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) } returnsMany
         listOf(FeedSubscriptionLoadResult.Found(first), FeedSubscriptionLoadResult.Found(second))
     givenResolvedDirect(FEED_C)
@@ -207,34 +207,33 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
     assertEquals(
         FeedSubscriptionChange.ReadyToSign(
-            EVENT, listOf(FEED_A, FEED_B, FEED_C), isFirstList = false),
+            EVENT, feeds(FEED_A, FEED_B, FEED_C), isFirstList = false),
         result.getOrNull())
     coVerify(exactly = 2) { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) }
     verify(exactly = 1) {
       subscriptionRepository.createSubscriptionListEvent(
-          HEX_PUBKEY, listOf(FEED_A, FEED_B, FEED_C), second)
+          HEX_PUBKEY, feeds(FEED_A, FEED_B, FEED_C), second)
     }
   }
 
   @Test
   fun `remove drops the feed from the loaded list`() = runTest {
-    val current = FeedSubscriptionList(listOf(FEED_A, FEED_B, FEED_C), createdAt = 1L)
+    val current = FeedSubscriptionList(feeds(FEED_A, FEED_B, FEED_C), createdAt = 1L)
     givenLoaded(FeedSubscriptionLoadResult.Found(current))
 
     val result = useCase.remove(FEED_B)
 
     assertEquals(
-        FeedSubscriptionChange.ReadyToSign(EVENT, listOf(FEED_A, FEED_C), isFirstList = false),
+        FeedSubscriptionChange.ReadyToSign(EVENT, feeds(FEED_A, FEED_C), isFirstList = false),
         result.getOrNull())
     verify(exactly = 1) {
-      subscriptionRepository.createSubscriptionListEvent(
-          HEX_PUBKEY, listOf(FEED_A, FEED_C), current)
+      subscriptionRepository.createSubscriptionListEvent(HEX_PUBKEY, feeds(FEED_A, FEED_C), current)
     }
   }
 
   @Test
   fun `remove of the last feed builds an empty list`() = runTest {
-    val current = FeedSubscriptionList(listOf(FEED_A), createdAt = 1L)
+    val current = FeedSubscriptionList(feeds(FEED_A), createdAt = 1L)
     givenLoaded(FeedSubscriptionLoadResult.Found(current))
 
     val result = useCase.remove(FEED_A)
@@ -249,7 +248,7 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
   @Test
   fun `remove of a feed not in the list builds no event`() = runTest {
-    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), 1L)))
+    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), 1L)))
 
     val result = useCase.remove(FEED_B)
 
@@ -281,13 +280,16 @@ class PrepareFeedSubscriptionChangeUseCaseTest {
 
   @Test
   fun `remove loads the list on every call`() = runTest {
-    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), 1L)))
+    givenLoaded(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), 1L)))
 
     useCase.remove(FEED_A)
     useCase.remove(FEED_A)
 
     coVerify(exactly = 2) { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) }
   }
+
+  private fun feeds(vararg feedUrls: String): List<FeedSubscription> =
+      feedUrls.map(::FeedSubscription)
 
   private fun givenLoaded(result: FeedSubscriptionLoadResult) {
     coEvery { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) } returns result

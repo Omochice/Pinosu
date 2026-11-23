@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.feed.domain.usecase
 
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
@@ -36,23 +37,23 @@ constructor(
         user.pubkey.hex ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
 
     return when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
-      is FeedSubscriptionLoadResult.Found -> Result.success(fetchAll(loaded.list.feedUrls))
+      is FeedSubscriptionLoadResult.Found -> Result.success(fetchAll(loaded.list.feeds))
       FeedSubscriptionLoadResult.Absent -> Result.success(FeedTimeline(emptyList(), emptyList()))
       is FeedSubscriptionLoadResult.Unavailable ->
           Result.failure(FeedSubscriptionListUnavailableException(loaded.reason))
     }
   }
 
-  private suspend fun fetchAll(feedUrls: List<String>): FeedTimeline {
+  private suspend fun fetchAll(feeds: List<FeedSubscription>): FeedTimeline {
     val permits = Semaphore(MAX_CONCURRENT_FETCHES)
     val results = coroutineScope {
-      feedUrls
-          .map { url -> async { permits.withPermit { feedRepository.fetchFeed(url) } } }
+      feeds
+          .map { feed -> async { permits.withPermit { feedRepository.fetchFeed(feed.url) } } }
           .awaitAll()
     }
     val failures =
-        feedUrls.zip(results).mapNotNull { (url, result) ->
-          result.exceptionOrNull()?.let { FeedFetchFailure(url, it) }
+        feeds.zip(results).mapNotNull { (feed, result) ->
+          result.exceptionOrNull()?.let { FeedFetchFailure(feed.url, it) }
         }
     val items = mergeNewestFirst(results.mapNotNull { it.getOrNull()?.items })
     return FeedTimeline(items = items, failedFeeds = failures)

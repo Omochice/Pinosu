@@ -9,13 +9,13 @@ sealed interface FeedSubscriptionChange {
    * The new list is built and has to be signed before it is published
    *
    * @property event Unsigned list event for NIP-55 signing
-   * @property feedUrls Feed URLs the new list holds, in order
+   * @property feeds Feeds the new list holds, in order
    * @property isFirstList Whether the user has published no list before, in which case they must be
    *   told that the list is public before it is published
    */
   data class ReadyToSign(
       val event: UnsignedNostrEvent,
-      val feedUrls: List<String>,
+      val feeds: List<FeedSubscription>,
       val isFirstList: Boolean,
   ) : FeedSubscriptionChange
 

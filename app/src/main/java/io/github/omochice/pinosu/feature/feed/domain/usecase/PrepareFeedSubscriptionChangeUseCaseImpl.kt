@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.domain.usecase
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedResolution
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
@@ -40,7 +41,9 @@ constructor(
       writerPubkey()
           .fold(
               onSuccess = { hexPubkey ->
-                rewrite(hexPubkey, FeedSubscriptionChange.NotSubscribed(feedUrl)) { it - feedUrl }
+                rewrite(hexPubkey, FeedSubscriptionChange.NotSubscribed(feedUrl)) { feeds ->
+                  feeds.filterNot { it.url == feedUrl }
+                }
               },
               onFailure = { Result.failure(it) },
           )
@@ -71,14 +74,14 @@ constructor(
           )
 
   private suspend fun addFeed(hexPubkey: String, feedUrl: String): Result<FeedSubscriptionChange> =
-      rewrite(hexPubkey, FeedSubscriptionChange.AlreadySubscribed(feedUrl)) {
-        (it + feedUrl).distinct()
+      rewrite(hexPubkey, FeedSubscriptionChange.AlreadySubscribed(feedUrl)) { feeds ->
+        (feeds + FeedSubscription(feedUrl)).distinctBy { it.url }
       }
 
   private suspend fun rewrite(
       hexPubkey: String,
       unchanged: FeedSubscriptionChange,
-      edit: (List<String>) -> List<String>,
+      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): Result<FeedSubscriptionChange> =
       when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
         is FeedSubscriptionLoadResult.Found ->
@@ -92,17 +95,17 @@ constructor(
   private fun prepare(
       hexPubkey: String,
       previous: FeedSubscriptionList?,
-      edit: (List<String>) -> List<String>,
+      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
       unchanged: FeedSubscriptionChange,
   ): FeedSubscriptionChange {
-    val current = previous?.feedUrls.orEmpty()
-    val feedUrls = edit(current)
-    return if (feedUrls == current) {
+    val current = previous?.feeds.orEmpty()
+    val feeds = edit(current)
+    return if (feeds == current) {
       unchanged
     } else {
       FeedSubscriptionChange.ReadyToSign(
-          event = subscriptionRepository.createSubscriptionListEvent(hexPubkey, feedUrls, previous),
-          feedUrls = feedUrls,
+          event = subscriptionRepository.createSubscriptionListEvent(hexPubkey, feeds, previous),
+          feeds = feeds,
           isFirstList = previous == null,
       )
     }

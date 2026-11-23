@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsUiState
 
@@ -73,28 +74,11 @@ fun FeedSubscriptionsScreen(
 
   Scaffold(
       topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_feed_subscriptions)) },
-            navigationIcon = {
-              IconButton(onClick = callbacks.onNavigateUp) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.cd_navigate_up))
-              }
-            },
-            actions = {
-              if (!isReadOnly) {
-                IconButton(
-                    onClick = { isAddDialogOpen = true },
-                    enabled =
-                        uiState.content is FeedSubscriptionsUiState.Content.Loaded &&
-                            !uiState.isWorking) {
-                      Icon(
-                          imageVector = Icons.Filled.Add,
-                          contentDescription = stringResource(R.string.cd_add_feed))
-                    }
-              }
-            })
+        FeedSubscriptionsTopBar(
+            onNavigateUp = callbacks.onNavigateUp,
+            onAdd = { isAddDialogOpen = true }.takeIf { !isReadOnly },
+            isAddEnabled =
+                uiState.content is FeedSubscriptionsUiState.Content.Loaded && !uiState.isWorking)
       },
       snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
@@ -120,6 +104,33 @@ fun FeedSubscriptionsScreen(
   FeedSubscriptionsDialogHost(dialog = uiState.dialog, callbacks = callbacks)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FeedSubscriptionsTopBar(
+    onNavigateUp: () -> Unit,
+    onAdd: (() -> Unit)?,
+    isAddEnabled: Boolean,
+) {
+  TopAppBar(
+      title = { Text(stringResource(R.string.title_feed_subscriptions)) },
+      navigationIcon = {
+        IconButton(onClick = onNavigateUp) {
+          Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = stringResource(R.string.cd_navigate_up))
+        }
+      },
+      actions = {
+        onAdd?.let { add ->
+          IconButton(onClick = add, enabled = isAddEnabled) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.cd_add_feed))
+          }
+        }
+      })
+}
+
 @Composable
 private fun FeedSubscriptionsContent(
     content: FeedSubscriptionsUiState.Content,
@@ -137,12 +148,12 @@ private fun FeedSubscriptionsContent(
           Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
         }
     is FeedSubscriptionsUiState.Content.Loaded ->
-        if (content.feedUrls.isEmpty()) {
+        if (content.feeds.isEmpty()) {
           CenteredMessage(text = stringResource(R.string.message_no_feeds))
         } else {
           LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(content.feedUrls, key = { it }) { feedUrl ->
-              FeedSubscriptionRow(feedUrl = feedUrl, onRemove = onRemove, isEnabled = isEnabled)
+            items(content.feeds, key = { it.url }) { feed ->
+              FeedSubscriptionRow(feed = feed, onRemove = onRemove, isEnabled = isEnabled)
             }
           }
         }
@@ -164,18 +175,18 @@ private fun CenteredMessage(text: String, action: (@Composable () -> Unit)? = nu
 
 @Composable
 private fun FeedSubscriptionRow(
-    feedUrl: String,
+    feed: FeedSubscription,
     onRemove: ((String) -> Unit)?,
     isEnabled: Boolean,
 ) {
   ListItem(
       headlineContent = {
-        Text(text = feedUrl, maxLines = FEED_URL_MAX_LINES, overflow = TextOverflow.Ellipsis)
+        Text(text = feed.url, maxLines = FEED_URL_MAX_LINES, overflow = TextOverflow.Ellipsis)
       },
       trailingContent =
           onRemove?.let { remove ->
             {
-              IconButton(onClick = { remove(feedUrl) }, enabled = isEnabled) {
+              IconButton(onClick = { remove(feed.url) }, enabled = isEnabled) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = stringResource(R.string.cd_remove_feed))
@@ -192,7 +203,9 @@ private fun SubscriptionsPreview() {
           FeedSubscriptionsUiState(
               content =
                   FeedSubscriptionsUiState.Content.Loaded(
-                      listOf("https://blog.example/feed", "https://news.example/atom.xml"))),
+                      listOf(
+                          FeedSubscription("https://blog.example/feed"),
+                          FeedSubscription("https://news.example/atom.xml")))),
       callbacks = previewCallbacks)
 }
 

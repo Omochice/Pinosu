@@ -10,6 +10,7 @@ import io.github.omochice.pinosu.core.nip.nip55.SignedEventResponse
 import io.github.omochice.pinosu.core.nip.nip78.Nip78
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedCandidate
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
@@ -77,7 +78,7 @@ class FeedSubscriptionsViewModelTest {
     publishList = mockk()
     nip55SignerClient = mockk()
     savedStateHandle = SavedStateHandle()
-    coEvery { loadSubscriptions() } returns Result.success(listOf(FEED_A))
+    coEvery { loadSubscriptions() } returns Result.success(feeds(FEED_A))
     every { nip55SignerClient.createSignEventIntent(any()) } returns signIntent
     coEvery { publishList(any()) } returns
         Result.success(PublishResult("id", listOf(RELAY), emptyList()))
@@ -107,9 +108,12 @@ class FeedSubscriptionsViewModelTest {
         Result.success(SignedEventResponse(signature))
   }
 
+  private fun feeds(vararg feedUrls: String): List<FeedSubscription> =
+      feedUrls.map(::FeedSubscription)
+
   private fun readyToSign(isFirstList: Boolean = false) =
       Result.success<FeedSubscriptionChange>(
-          FeedSubscriptionChange.ReadyToSign(event, listOf(FEED_A), isFirstList))
+          FeedSubscriptionChange.ReadyToSign(event, feeds(FEED_A), isFirstList))
 
   @Test
   fun `loads the subscribed feeds on open`() = runTest {
@@ -117,7 +121,7 @@ class FeedSubscriptionsViewModelTest {
     advanceUntilIdle()
 
     assertEquals(
-        FeedSubscriptionsUiState.Content.Loaded(listOf(FEED_A)), viewModel.uiState.value.content)
+        FeedSubscriptionsUiState.Content.Loaded(feeds(FEED_A)), viewModel.uiState.value.content)
   }
 
   @Test
@@ -335,14 +339,14 @@ class FeedSubscriptionsViewModelTest {
     advanceUntilIdle()
     viewModel.add(INPUT)
     advanceUntilIdle()
-    coEvery { loadSubscriptions() } returns Result.success(listOf(FEED_A, FEED_B))
+    coEvery { loadSubscriptions() } returns Result.success(feeds(FEED_A, FEED_B))
 
     viewModel.processSignedEvent(Activity.RESULT_OK, Intent())
     advanceUntilIdle()
 
     coVerify(exactly = 1) { publishList(event.toSignedJson(SIGNATURE)) }
     val state = viewModel.uiState.value
-    assertEquals(FeedSubscriptionsUiState.Content.Loaded(listOf(FEED_A, FEED_B)), state.content)
+    assertEquals(FeedSubscriptionsUiState.Content.Loaded(feeds(FEED_A, FEED_B)), state.content)
     assertFalse(state.isWorking)
     assertTrue(state.hasPublished, "the timeline has to learn that the list changed")
     assertNull(state.message)
@@ -454,7 +458,7 @@ class FeedSubscriptionsViewModelTest {
             FeedSubscriptionListUnavailableException(FeedSubscriptionLoadResult.Reason.UNREACHABLE))
     val viewModel = createViewModel()
     advanceUntilIdle()
-    coEvery { loadSubscriptions() } returns Result.success(listOf(FEED_B))
+    coEvery { loadSubscriptions() } returns Result.success(feeds(FEED_B))
 
     viewModel.reload()
 
@@ -465,24 +469,24 @@ class FeedSubscriptionsViewModelTest {
     advanceUntilIdle()
 
     assertEquals(
-        FeedSubscriptionsUiState.Content.Loaded(listOf(FEED_B)), viewModel.uiState.value.content)
+        FeedSubscriptionsUiState.Content.Loaded(feeds(FEED_B)), viewModel.uiState.value.content)
   }
 
   @Test
   fun `an older load does not overwrite a newer one`() = runTest {
-    val stale = CompletableDeferred<Result<List<String>>>()
+    val stale = CompletableDeferred<Result<List<FeedSubscription>>>()
     coEvery { loadSubscriptions() } coAnswers { stale.await() }
     val viewModel = createViewModel()
     runCurrent()
-    coEvery { loadSubscriptions() } returns Result.success(listOf(FEED_B))
+    coEvery { loadSubscriptions() } returns Result.success(feeds(FEED_B))
 
     viewModel.reload()
     advanceUntilIdle()
-    stale.complete(Result.success(listOf(FEED_A)))
+    stale.complete(Result.success(feeds(FEED_A)))
     advanceUntilIdle()
 
     assertEquals(
-        FeedSubscriptionsUiState.Content.Loaded(listOf(FEED_B)), viewModel.uiState.value.content)
+        FeedSubscriptionsUiState.Content.Loaded(feeds(FEED_B)), viewModel.uiState.value.content)
   }
 
   @Test

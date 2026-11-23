@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.data.codec
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.core.nip.nip78.Nip78
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -88,7 +89,9 @@ class FeedSubscriptionListCodecTest {
 
     val decoded = codec.decode(signed(encoded), AUTHOR)
 
-    assertEquals(FeedSubscriptionList(listOf(FEED_A, FEED_B), NOW), decoded)
+    assertEquals(
+        FeedSubscriptionList(listOf(FeedSubscription(FEED_A), FeedSubscription(FEED_B)), NOW),
+        decoded)
   }
 
   @Test
@@ -104,7 +107,7 @@ class FeedSubscriptionListCodecTest {
                     listOf("url", FEED_B),
                 ))
 
-    assertEquals(listOf(FEED_B, FEED_A), codec.decode(event, AUTHOR)?.feedUrls)
+    assertEquals(listOf(FEED_B, FEED_A), decodedUrls(event))
   }
 
   @Test
@@ -120,7 +123,7 @@ class FeedSubscriptionListCodecTest {
                     listOf("url", FEED_A),
                 ))
 
-    assertEquals(listOf(FEED_A), codec.decode(event, AUTHOR)?.feedUrls)
+    assertEquals(listOf(FEED_A), decodedUrls(event))
   }
 
   @Test
@@ -150,7 +153,12 @@ class FeedSubscriptionListCodecTest {
       now: Long = NOW,
       previousCreatedAt: Long? = null,
       includeClientTag: Boolean = false,
-  ): UnsignedNostrEvent = codec.encode(AUTHOR, feedUrls, now, previousCreatedAt, includeClientTag)
+  ): UnsignedNostrEvent =
+      codec.encode(
+          AUTHOR, feedUrls.map(::FeedSubscription), now, previousCreatedAt, includeClientTag)
+
+  private fun decodedUrls(event: NostrEvent): List<String>? =
+      codec.decode(event, AUTHOR)?.feeds?.map { it.url }
 
   private fun urlTagValues(event: UnsignedNostrEvent): List<String> =
       event.tags.filter { it.first() == "url" }.map { it[1] }
