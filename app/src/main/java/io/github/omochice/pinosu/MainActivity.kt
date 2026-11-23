@@ -385,7 +385,7 @@ fun PinosuApp(
 
                 LaunchedEffect(postBookmarkUiState.postSuccess) {
                   if (postBookmarkUiState.postSuccess) {
-                    postBookmarkViewModel.resetForm()
+                    postBookmarkViewModel.initializeForNew()
                     navController.navigateUp()
                   }
                 }
@@ -398,7 +398,7 @@ fun PinosuApp(
                         categories = postBookmarkRoute.editCategories.orEmpty(),
                         comment = postBookmarkRoute.editComment.orEmpty())
                   } else {
-                    postBookmarkViewModel.resetForm()
+                    postBookmarkViewModel.initializeForNew()
                     postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
                     postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
                   }

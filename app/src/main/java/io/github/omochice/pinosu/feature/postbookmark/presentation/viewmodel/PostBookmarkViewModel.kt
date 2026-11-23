@@ -105,8 +105,8 @@ constructor(
     }
   }
 
-  /** Reset form to initial state for new bookmark creation */
-  fun resetForm() {
+  /** Initialize the form for creating a new bookmark, discarding any previous state */
+  fun initializeForNew() {
     _uiState.value = PostBookmarkUiState()
   }
 

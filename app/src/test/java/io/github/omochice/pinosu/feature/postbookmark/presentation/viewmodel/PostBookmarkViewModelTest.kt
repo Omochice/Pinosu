@@ -361,7 +361,7 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
-  fun `resetForm should clear edit mode and all fields`() = runTest {
+  fun `initializeForNew without arguments should clear edit mode and all fields`() = runTest {
     viewModel.initializeForEdit(
         url = "example.com/article",
         title = "Title",
@@ -369,7 +369,7 @@ class PostBookmarkViewModelTest {
         comment = "Comment")
     advanceUntilIdle()
 
-    viewModel.resetForm()
+    viewModel.initializeForNew()
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
