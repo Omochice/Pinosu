@@ -10,6 +10,8 @@ internal object RssReader {
   private const val TITLE = "title"
   private const val LINK = "link"
   private const val ITEM = "item"
+  private const val DESCRIPTION = "description"
+  private const val CONTENT_ENCODED = "content:encoded"
 
   /**
    * Read a feed from the document's root element
@@ -42,7 +44,9 @@ internal object RssReader {
         title = title,
         link = link,
         publishedAt = rawDate?.let(FeedDateParser::parse),
-        summary = item.childPlainText("description", "content:encoded"),
+        summary = item.childPlainText(DESCRIPTION, CONTENT_ENCODED),
+        contentHtml =
+            item.childBodyHtml(CONTENT_ENCODED, DESCRIPTION, feedUrl = feedUrl) { it.htmlSource() },
     )
   }
 

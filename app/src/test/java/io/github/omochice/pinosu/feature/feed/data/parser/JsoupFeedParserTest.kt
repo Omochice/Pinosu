@@ -356,6 +356,228 @@ class JsoupFeedParserTest {
   }
 
   @Test
+  fun `RSS body prefers content encoded while the summary still prefers description`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    "<description>Short</description>" +
+                        "<content:encoded><![CDATA[<p>Full <b>text</b></p>]]></content:encoded>"))
+            .items
+            .single()
+
+    assertEquals("Short", item.summary)
+    assertEquals("<p>Full <b>text</b></p>", item.contentHtml)
+  }
+
+  @Test
+  fun `RSS body falls back to description written as escaped HTML`() {
+    val item = parseFeed(RSS_2_0).items.first()
+
+    assertEquals("<p>Hello <b>world</b></p>", item.contentHtml)
+  }
+
+  @Test
+  fun `RSS body falls back to description when content encoded has no text left after sanitizing`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    "<description>Short</description>" +
+                        """<content:encoded><![CDATA[<img src="a.png">]]></content:encoded>"""))
+            .items
+            .single()
+
+    assertEquals("Short", item.contentHtml)
+  }
+
+  @Test
+  fun `Atom body prefers html content over summary while the summary still prefers summary`() {
+    val entry = parseFeed(ATOM).items.first()
+
+    assertEquals("Atom summary", entry.summary)
+    assertEquals("<p>Ignored content</p>", entry.contentHtml)
+  }
+
+  @Test
+  fun `Atom xhtml content keeps its inline markup as the body`() {
+    val entry =
+        parseFeed(
+                """
+                <feed xmlns="http://www.w3.org/2005/Atom">
+                  <entry>
+                    <id>1</id>
+                    <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml"><p>One <em>two</em></p></div></content>
+                  </entry>
+                </feed>
+                """
+                    .trimIndent())
+            .items
+            .single()
+
+    assertEquals("<div><p>One <em>two</em></p></div>", entry.contentHtml)
+  }
+
+  @Test
+  fun `Atom text content and content without a type are escaped so markup shows as text`() {
+    val entries =
+        parseFeed(
+                """
+                <feed xmlns="http://www.w3.org/2005/Atom">
+                  <entry><id>1</id><content type="text">1 &lt; 2 &lt;b&gt;not bold&lt;/b&gt;</content></entry>
+                  <entry><id>2</id><content>&lt;i&gt;plain&lt;/i&gt;</content></entry>
+                </feed>
+                """
+                    .trimIndent())
+            .items
+
+    assertEquals(
+        listOf("1 &lt; 2 &lt;b&gt;not bold&lt;/b&gt;", "&lt;i&gt;plain&lt;/i&gt;"),
+        entries.map { it.contentHtml })
+  }
+
+  @Test
+  fun `Atom body falls back to an html summary when there is no content`() {
+    val entry =
+        parseFeed(
+                """
+                <feed xmlns="http://www.w3.org/2005/Atom">
+                  <entry><id>1</id><summary type="html">&lt;p&gt;From summary&lt;/p&gt;</summary></entry>
+                </feed>
+                """
+                    .trimIndent())
+            .items
+            .single()
+
+    assertEquals("<p>From summary</p>", entry.contentHtml)
+  }
+
+  @Test
+  fun `body keeps the separation between headings and blocks`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    "<content:encoded><![CDATA[<h2>Title</h2><div>One</div><div>Two</div>" +
+                        "<ul><li>Item</li></ul><blockquote>Quote</blockquote>" +
+                        "<pre><code>val x = 1</code></pre>]]></content:encoded>"))
+            .items
+            .single()
+
+    assertEquals(
+        "<h2>Title</h2><div>One</div><div>Two</div><ul><li>Item</li></ul>" +
+            "<blockquote>Quote</blockquote><pre><code>val x = 1</code></pre>",
+        item.contentHtml)
+  }
+
+  @Test
+  fun `body drops scripts, styles, iframes, forms, images, and event attributes`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    "<content:encoded><![CDATA[" +
+                        """<p onclick="steal()" style="color:red">Hi<script>alert(1)</script></p>""" +
+                        "<style>p { display: none }</style>" +
+                        """<iframe src="https://evil.example/"></iframe>""" +
+                        """<form action="https://evil.example/"><input name="q"></form>""" +
+                        """<img src="https://example.com/a.png" onerror="steal()">""" +
+                        "]]></content:encoded>"))
+            .items
+            .single()
+
+    assertEquals("<p>Hi</p>", item.contentHtml)
+  }
+
+  @Test
+  fun `relative links in the body resolve against the feed url`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    """<content:encoded><![CDATA[<a href="/about">About</a> """ +
+                        """<a href="next.html">Next</a>]]></content:encoded>"""),
+                feedUrl = "https://example.com/blog/feed.xml")
+            .items
+            .single()
+
+    assertEquals(
+        """<a href="https://example.com/about">About</a> """ +
+            """<a href="https://example.com/blog/next.html">Next</a>""",
+        item.contentHtml)
+  }
+
+  @Test
+  fun `relative links in an Atom body resolve against the xml_base of the content`() {
+    val entry =
+        parseFeed(
+                """
+                <feed xmlns="http://www.w3.org/2005/Atom" xml:base="https://base.example.com/blog/">
+                  <entry xml:base="2024/">
+                    <id>1</id>
+                    <content type="html" xml:base="post/">&lt;a href="image.html"&gt;Image&lt;/a&gt;</content>
+                  </entry>
+                </feed>
+                """
+                    .trimIndent())
+            .items
+            .single()
+
+    assertEquals(
+        """<a href="https://base.example.com/blog/2024/post/image.html">Image</a>""",
+        entry.contentHtml)
+  }
+
+  @Test
+  fun `links in the body with schemes other than http and https lose their target`() {
+    val item =
+        parseFeed(
+                rssItem(
+                    "<content:encoded><![CDATA[" +
+                        """<a href="javascript:alert(1)">a</a>""" +
+                        """<a href="intent://scan/#Intent;scheme=zxing;end">b</a>""" +
+                        """<a href="nostrsigner:{}">c</a>""" +
+                        """<a href="mailto:someone@example.com">d</a>""" +
+                        """<a href="ftp://example.com/file">e</a>""" +
+                        """<a href="https://example.com/ok">f</a>""" +
+                        "]]></content:encoded>"))
+            .items
+            .single()
+
+    assertEquals(
+        """<a>a</a><a>b</a><a>c</a><a>d</a><a>e</a><a href="https://example.com/ok">f</a>""",
+        item.contentHtml)
+  }
+
+  @Test
+  fun `item without any body text has no body`() {
+    val items =
+        parseFeed(
+                """
+                <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>
+                  <item><title>None</title></item>
+                  <item><title>Blank</title><description>   </description></item>
+                  <item><title>Image only</title><content:encoded><![CDATA[<img src="a.png">]]></content:encoded></item>
+                </channel></rss>
+                """
+                    .trimIndent())
+            .items
+
+    assertEquals(listOf(null, null, null), items.map { it.contentHtml })
+  }
+
+  @Test
+  fun `Atom entry with content that refers to another document has no body`() {
+    val entry =
+        parseFeed(
+                """
+                <feed xmlns="http://www.w3.org/2005/Atom">
+                  <entry><id>1</id><content type="text/html" src="https://example.com/a.html"/></entry>
+                </feed>
+                """
+                    .trimIndent())
+            .items
+            .single()
+
+    assertNull(entry.contentHtml)
+  }
+
+  @Test
   fun `stream that fails to read gives a failure instead of throwing`() {
     val failing =
         object : InputStream() {
