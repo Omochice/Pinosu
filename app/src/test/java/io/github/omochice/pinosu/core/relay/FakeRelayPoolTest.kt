@@ -96,9 +96,61 @@ class FakeRelayPoolTest {
   }
 
   @Test
+  fun queryEachRelay_returnsConfiguredResultPerRelayInInputOrder() = runTest {
+    val event = createTestEvent()
+    val accepted =
+        RelayQueryResult("wss://relay1.example.com", listOf(event), RelayTermination.Eose)
+    val refused =
+        RelayQueryResult(
+            "wss://relay2.example.com",
+            emptyList(),
+            RelayTermination.Closed("auth-required: login first"))
+    fakeRelayPool.queryResults[refused.relayUrl] = refused
+    fakeRelayPool.queryResults[accepted.relayUrl] = accepted
+
+    val results =
+        fakeRelayPool.queryEachRelay(
+            relays =
+                listOf(
+                    RelayConfig("wss://relay1.example.com"),
+                    RelayConfig("wss://relay2.example.com")),
+            filters = listOf("""{"kinds":[30078]}"""),
+            timeoutMs = 1000)
+
+    assertEquals(listOf(accepted, refused), results)
+  }
+
+  @Test
+  fun queryEachRelay_returnsEoseWithoutEventsForUnconfiguredRelay() = runTest {
+    val results =
+        fakeRelayPool.queryEachRelay(
+            relays = listOf(RelayConfig("wss://relay.example.com")),
+            filters = listOf("""{"kinds":[30078]}"""),
+            timeoutMs = 1000)
+
+    assertEquals(
+        listOf(RelayQueryResult("wss://relay.example.com", emptyList(), RelayTermination.Eose)),
+        results)
+  }
+
+  @Test
+  fun queryEachRelay_recordsCallArguments() = runTest {
+    val relays = listOf(RelayConfig("wss://relay.example.com"))
+    val filters = listOf("""{"kinds":[30078],"limit":1}""")
+    val timeoutMs = 4000L
+
+    fakeRelayPool.queryEachRelay(relays, filters, timeoutMs)
+
+    assertEquals(
+        listOf(FakeRelayPool.QueryCall(relays, filters, timeoutMs)), fakeRelayPool.queryCallArgs)
+  }
+
+  @Test
   fun reset_clearsAllState() = runTest {
     val event = createTestEvent()
     fakeRelayPool.eventsToReturn = listOf(event)
+    fakeRelayPool.queryResults["wss://relay.example.com"] =
+        RelayQueryResult("wss://relay.example.com", listOf(event), RelayTermination.TimedOut)
     fakeRelayPool.publishResult =
         Result.success(
             PublishResult(
@@ -106,12 +158,15 @@ class FakeRelayPoolTest {
                 successfulRelays = listOf("wss://relay.example.com"),
                 failedRelays = emptyList()))
     fakeRelayPool.subscribeWithTimeout(emptyList(), listOf("{}"), 1000)
+    fakeRelayPool.queryEachRelay(emptyList(), listOf("{}"), 1000)
     fakeRelayPool.publishEvent(emptyList(), "{}", 1000)
 
     fakeRelayPool.reset()
 
     assertTrue(fakeRelayPool.eventsToReturn.isEmpty())
+    assertTrue(fakeRelayPool.queryResults.isEmpty())
     assertTrue(fakeRelayPool.subscribeCallArgs.isEmpty())
+    assertTrue(fakeRelayPool.queryCallArgs.isEmpty())
     assertTrue(fakeRelayPool.publishCallArgs.isEmpty())
   }
 

@@ -4,9 +4,11 @@ import android.util.Log
 import io.github.omochice.pinosu.core.model.NostrEvent
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
@@ -49,6 +51,24 @@ interface RelayPool {
       filters: List<String>,
       timeoutMs: Long
   ): List<NostrEvent>
+
+  /**
+   * Query each relay in parallel and report its outcome separately
+   *
+   * Unlike [subscribeWithTimeout], results are not merged across relays, so a relay that answered
+   * with no events can be told apart from one that refused, failed, or timed out.
+   *
+   * @param relays List of relay configurations to query
+   * @param filters Nostr filters as JSON strings; a relay ORs multiple filters within one REQ
+   * @param timeoutMs Timeout in milliseconds for each relay
+   * @return One result per relay, in the order of [relays]; empty when [relays] is empty
+   * @throws IllegalArgumentException if [filters] is empty
+   */
+  suspend fun queryEachRelay(
+      relays: List<RelayConfig>,
+      filters: List<String>,
+      timeoutMs: Long
+  ): List<RelayQueryResult>
 
   /**
    * Publish an event to multiple relays
@@ -107,6 +127,17 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
       val allEvents = deferredResults.awaitAll().flatten()
       allEvents.distinctBy { it.id }
+    }
+  }
+
+  override suspend fun queryEachRelay(
+      relays: List<RelayConfig>,
+      filters: List<String>,
+      timeoutMs: Long
+  ): List<RelayQueryResult> {
+    require(filters.isNotEmpty()) { "At least one filter is required" }
+    return coroutineScope {
+      relays.map { relay -> async { queryRelay(relay.url, filters, timeoutMs) } }.awaitAll()
     }
   }
 
@@ -286,6 +317,91 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
 
         awaitClose { webSocket.close(1000, "Flow cancelled") }
       }
+
+  /**
+   * Query a single relay until it ends the subscription, the connection fails, or time runs out
+   *
+   * @param relayUrl WebSocket URL of the relay
+   * @param filters Nostr filters as JSON strings, sent as separate elements of the REQ message
+   * @param timeoutMs Timeout in milliseconds
+   * @return Events received before the query ended, together with how it ended
+   */
+  private suspend fun queryRelay(
+      relayUrl: String,
+      filters: List<String>,
+      timeoutMs: Long
+  ): RelayQueryResult {
+    val events = ConcurrentLinkedQueue<NostrEvent>()
+    val termination = CompletableDeferred<RelayTermination>()
+    val webSocket =
+        try {
+          okHttpClient.newWebSocket(
+              Request.Builder().url(relayUrl).build(),
+              QueryListener(relayUrl, filters, events, termination))
+        } catch (e: IllegalArgumentException) {
+          Log.w(TAG, "Failed to query relay $relayUrl: ${e.message}")
+          return RelayQueryResult(
+              relayUrl, emptyList(), RelayTermination.Failed(e.message ?: "Invalid relay URL"))
+        }
+    val outcome =
+        try {
+          withTimeoutOrNull(timeoutMs) { termination.await() } ?: RelayTermination.TimedOut
+        } finally {
+          webSocket.close(1000, "Query finished")
+        }
+    return RelayQueryResult(relayUrl, events.distinctBy { it.id }, outcome)
+  }
+
+  /**
+   * Listener that records events of one REQ and completes [termination] with the first ending
+   *
+   * Only the first ending counts because closing the socket after EOSE or CLOSED triggers
+   * [onClosed], which must not overwrite the real outcome.
+   */
+  private class QueryListener(
+      private val relayUrl: String,
+      private val filters: List<String>,
+      private val events: MutableCollection<NostrEvent>,
+      private val termination: CompletableDeferred<RelayTermination>,
+  ) : WebSocketListener() {
+
+    override fun onOpen(webSocket: WebSocket, response: Response) {
+      val subscriptionId = UUID.randomUUID().toString()
+      webSocket.send("""["REQ","$subscriptionId",${filters.joinToString(",")}]""")
+    }
+
+    override fun onMessage(webSocket: WebSocket, text: String) {
+      val message =
+          try {
+            json.decodeFromString<NostrRelayMessage>(text)
+          } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "Unparsable query response from $relayUrl: $text", e)
+            termination.complete(RelayTermination.Failed("Unparsable relay message: ${e.message}"))
+            return
+          }
+      when (message) {
+        is NostrRelayMessage.Event -> if (!termination.isCompleted) events.add(message.event)
+        is NostrRelayMessage.Eose -> termination.complete(RelayTermination.Eose)
+        is NostrRelayMessage.Closed ->
+            termination.complete(RelayTermination.Closed(message.message))
+        is NostrRelayMessage.Ok,
+        is NostrRelayMessage.Unknown -> Unit
+      }
+    }
+
+    override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+      Log.w(TAG, "Query connection to $relayUrl failed: ${t.message}")
+      termination.complete(RelayTermination.Failed(t.message ?: "Connection failed"))
+    }
+
+    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+      termination.complete(RelayTermination.Failed("Connection closed by relay: $reason"))
+    }
+
+    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+      termination.complete(RelayTermination.Failed("Connection closed: $reason"))
+    }
+  }
 
   companion object {
     private const val TAG = "RelayPool"
