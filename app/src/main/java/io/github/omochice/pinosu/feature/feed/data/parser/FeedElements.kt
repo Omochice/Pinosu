@@ -36,4 +36,9 @@ internal fun Element.childPlainText(vararg names: String): String =
         }
         .orEmpty()
 
-private fun Element.htmlSource(): String = if (childrenSize() > 0) html() else wholeText()
+/**
+ * HTML held by this element, whether written as markup or as escaped text
+ *
+ * @return The inner markup when the element has child elements, otherwise its unescaped text
+ */
+internal fun Element.htmlSource(): String = if (childrenSize() > 0) html() else wholeText()

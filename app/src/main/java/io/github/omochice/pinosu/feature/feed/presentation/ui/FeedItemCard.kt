@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
 
@@ -69,11 +68,7 @@ private fun FeedItemText(item: FeedItem, modifier: Modifier = Modifier) {
         maxLines = TITLE_MAX_LINES,
         overflow = TextOverflow.Ellipsis)
     Text(
-        text =
-            listOfNotNull(
-                    item.feedTitle.ifEmpty { item.feedUrl },
-                    item.publishedAt?.let { formatTimestamp(it.epochSecond) })
-                .joinToString(separator = " · "),
+        text = feedItemByline(item),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,
