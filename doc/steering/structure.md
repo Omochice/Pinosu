@@ -156,7 +156,7 @@ feature/{name}/
 **Subdirectories**:
 
 - `theme/` - Material Design 3 theme
-- `component/` - Reusable dialogs (ErrorDialog, UrlSelectionDialog) and list card parts (OgpThumbnail, ThumbnailRow)
+- `component/` - Reusable dialogs (ErrorDialog, UrlSelectionDialog) and list card parts (OgpThumbnail, ThumbnailRow), and the pager-synced tab indicator (PagerSyncedTabIndicator)
 - `drawer/` - Navigation drawer components
 
 ### Root DI (`di/`)
