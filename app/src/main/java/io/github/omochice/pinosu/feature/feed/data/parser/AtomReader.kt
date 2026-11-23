@@ -43,6 +43,7 @@ internal object AtomReader {
         publishedAt = rawDate?.let(FeedDateParser::parse),
         summary = entry.childPlainText(SUMMARY, CONTENT),
         contentHtml = entry.childBodyHtml(CONTENT, SUMMARY, feedUrl = feedUrl, htmlOf = ::textHtml),
+        imageUrl = ItemImageFinder.find(entry, feedUrl, listOf(CONTENT, SUMMARY), ::textHtml),
     )
   }
 

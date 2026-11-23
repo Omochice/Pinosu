@@ -17,6 +17,8 @@ import java.time.Instant
  *   formatting remains and every link is an absolute HTTP(S) URL; null when the item has no body
  *   text
  * @property feedCategory Category the user filed the feed under, or null when the feed is in none
+ * @property imageUrl Absolute HTTP(S) URL of the image the feed gives the item, or null when it
+ *   gives none
  */
 data class FeedItem(
     val id: String,
@@ -28,4 +30,5 @@ data class FeedItem(
     val summary: String,
     val contentHtml: String? = null,
     val feedCategory: String? = null,
+    val imageUrl: String? = null,
 )

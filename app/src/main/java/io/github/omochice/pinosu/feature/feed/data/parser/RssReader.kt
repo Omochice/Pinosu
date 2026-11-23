@@ -47,6 +47,10 @@ internal object RssReader {
         summary = item.childPlainText(DESCRIPTION, CONTENT_ENCODED),
         contentHtml =
             item.childBodyHtml(CONTENT_ENCODED, DESCRIPTION, feedUrl = feedUrl) { it.htmlSource() },
+        imageUrl =
+            ItemImageFinder.find(item, feedUrl, listOf(CONTENT_ENCODED, DESCRIPTION)) {
+              it.htmlSource()
+            },
     )
   }
 
