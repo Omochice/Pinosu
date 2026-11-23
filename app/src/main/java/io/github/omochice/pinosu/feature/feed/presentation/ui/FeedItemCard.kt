@@ -33,8 +33,7 @@ private const val SUMMARY_MAX_LINES = 3
  * Card showing one feed item
  *
  * @param item Item to show
- * @param onOpen Callback when the card is tapped; the card is not tappable when the item has no
- *   link
+ * @param onOpen Callback when the card is tapped
  * @param onBookmark Callback when the bookmark action is tapped, or null to hide the action
  */
 @Composable
@@ -44,7 +43,7 @@ fun FeedItemCard(
     onBookmark: ((FeedItem) -> Unit)?,
 ) {
   Card(
-      modifier = Modifier.fillMaxWidth().clickable(enabled = item.link != null) { onOpen(item) },
+      modifier = Modifier.fillMaxWidth().clickable { onOpen(item) },
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
           FeedItemText(item = item, modifier = Modifier.weight(1f))

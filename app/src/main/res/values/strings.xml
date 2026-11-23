@@ -134,5 +134,9 @@
     <string name="error_feed_http_not_supported">Feeds served only over HTTP are not supported.</string>
     <string name="error_feed_list_publish_failed">Failed to save your feed list.</string>
     <string name="error_feed_change_failed">Failed to change your feeds.</string>
+    <string name="cd_open_in_browser">Open in browser</string>
+    <string name="message_feed_item_no_content">This article has no text to show here.</string>
+    <string name="message_feed_item_not_found">This article is no longer loaded. Go back to the feeds and open it again.</string>
+    <string name="button_back_to_feeds">Back to feeds</string>
 
 </resources>

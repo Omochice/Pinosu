@@ -15,7 +15,9 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import io.github.omochice.pinosu.core.navigation.Feed
+import io.github.omochice.pinosu.core.navigation.FeedItemReader
 import io.github.omochice.pinosu.core.navigation.FeedSubscriptions
 import io.github.omochice.pinosu.core.navigation.Login
 import io.github.omochice.pinosu.core.navigation.PostBookmark
@@ -23,16 +25,19 @@ import io.github.omochice.pinosu.core.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultExitTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopExitTransition
+import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedItemReaderScreen
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedScreen
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedSubscriptionsCallbacks
 import io.github.omochice.pinosu.feature.feed.presentation.ui.FeedSubscriptionsScreen
+import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedItemReaderViewModel
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsViewModel
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedViewModel
 
 private const val KEY_SUBSCRIPTIONS_CHANGED = "feed_subscriptions_changed"
 
 /**
- * Add the feed timeline destination and the subscribed feeds destination opened from it
+ * Add the feed timeline destination and the subscribed feeds and item reader destinations opened
+ * from it
  *
  * The login state is passed as functions because the navigation graph outlives a single
  * composition, so a plain value would go stale.
@@ -68,6 +73,18 @@ fun NavGraphBuilder.feedDestinations(
       popExitTransition = { defaultPopExitTransition }) {
         FeedSubscriptionsDestination(
             navController = navController, isLoggedIn = isLoggedIn(), isReadOnly = isReadOnly())
+      }
+
+  composable<FeedItemReader>(
+      enterTransition = { defaultEnterTransition },
+      exitTransition = { defaultExitTransition },
+      popEnterTransition = { defaultPopEnterTransition },
+      popExitTransition = { defaultPopExitTransition }) { backStackEntry ->
+        FeedItemReaderDestination(
+            navController = navController,
+            route = backStackEntry.toRoute<FeedItemReader>(),
+            isLoggedIn = isLoggedIn(),
+            isReadOnly = isReadOnly())
       }
 }
 
@@ -108,6 +125,38 @@ private fun FeedTimelineDestination(
       },
       onManageSubscriptions = {
         navController.navigate(FeedSubscriptions) { launchSingleTop = true }
+      },
+      isReadOnly = isReadOnly,
+      onOpenItem = { item ->
+        navController.navigate(FeedItemReader(feedUrl = item.feedUrl, itemId = item.id)) {
+          launchSingleTop = true
+        }
+      })
+}
+
+@Composable
+private fun FeedItemReaderDestination(
+    navController: NavController,
+    route: FeedItemReader,
+    isLoggedIn: Boolean,
+    isReadOnly: Boolean,
+) {
+  val viewModel =
+      hiltViewModel<FeedItemReaderViewModel, FeedItemReaderViewModel.Factory> { factory ->
+        factory.create(route)
+      }
+
+  LaunchedEffect(isLoggedIn) {
+    if (!isLoggedIn) {
+      navController.navigate(Login) { popUpTo<FeedItemReader> { inclusive = true } }
+    }
+  }
+
+  FeedItemReaderScreen(
+      item = viewModel.item,
+      onNavigateUp = { navController.navigateUp() },
+      onBookmark = { link, title ->
+        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
       },
       isReadOnly = isReadOnly)
 }

@@ -20,17 +20,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +35,6 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
-import kotlinx.coroutines.launch
 
 /**
  * Composable function for the feed timeline screen
@@ -53,6 +47,7 @@ import kotlinx.coroutines.launch
  * @param onManageSubscriptions Callback when the user asks to change the subscribed feeds
  * @param isReadOnly Whether to hide the bookmark action and the subscription entry points for
  *   read-only login
+ * @param onOpenItem Callback with the item whose card is tapped
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,24 +58,13 @@ fun FeedScreen(
     onBookmarkItem: (link: String, title: String) -> Unit = { _, _ -> },
     onManageSubscriptions: () -> Unit = {},
     isReadOnly: Boolean = false,
+    onOpenItem: (FeedItem) -> Unit = {},
 ) {
   val manageSubscriptions = if (isReadOnly) null else onManageSubscriptions
-  val uriHandler = LocalUriHandler.current
-  val snackbarHostState = remember { SnackbarHostState() }
-  val scope = rememberCoroutineScope()
-  val openFailedMessage = stringResource(R.string.error_url_open_failed)
 
   val callbacks =
       FeedItemCallbacks(
-          onOpen = { item ->
-            item.link?.let { link ->
-              try {
-                uriHandler.openUri(link)
-              } catch (_: IllegalArgumentException) {
-                scope.launch { snackbarHostState.showSnackbar(openFailedMessage) }
-              }
-            }
-          },
+          onOpen = onOpenItem,
           onBookmark =
               if (isReadOnly) {
                 null
@@ -91,8 +75,7 @@ fun FeedScreen(
   Scaffold(
       topBar = {
         FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
-      },
-      snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
+      }) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = onRefresh,

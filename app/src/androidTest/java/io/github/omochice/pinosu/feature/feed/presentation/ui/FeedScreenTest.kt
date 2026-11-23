@@ -18,6 +18,7 @@ import java.io.IOException
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Rule
 
@@ -88,23 +89,38 @@ class FeedScreenTest {
   }
 
   @Test
-  fun `tapping an item opens its link`() {
-    var opened: String? = null
+  fun `tapping an item opens it in the app instead of the browser`() {
+    var opened: FeedItem? = null
+    var browsed: String? = null
     val uriHandler =
         object : UriHandler {
           override fun openUri(uri: String) {
-            opened = uri
+            browsed = uri
           }
         }
     composeTestRule.setContent {
       CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-        FeedScreen(uiState = loaded(item), onRefresh = {})
+        FeedScreen(uiState = loaded(item), onRefresh = {}, onOpenItem = { opened = it })
       }
     }
 
     composeTestRule.onNodeWithText("Hello feeds").performClick()
 
-    assertEquals("https://blog.example/hello", opened)
+    assertEquals(item.feedUrl to item.id, opened?.let { it.feedUrl to it.id })
+    assertNull(browsed, "the browser should not open")
+  }
+
+  @Test
+  fun `tapping an item without a link still opens it`() {
+    var opened: FeedItem? = null
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = loaded(item.copy(link = null)), onRefresh = {}, onOpenItem = { opened = it })
+    }
+
+    composeTestRule.onNodeWithText("Hello feeds").performClick()
+
+    assertEquals(item.id, opened?.id)
   }
 
   @Test

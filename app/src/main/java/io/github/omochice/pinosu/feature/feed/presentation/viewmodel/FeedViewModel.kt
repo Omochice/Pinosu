@@ -19,10 +19,15 @@ import kotlinx.coroutines.launch
  * Loads the timeline once when created, which happens when the screen opens.
  *
  * @param loadFeedTimeline UseCase that builds the timeline from the user's subscriptions
+ * @param loadedItems Holder the shown items are handed to, so the reader can open them
  */
 @HiltViewModel
-class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTimelineUseCase) :
-    ViewModel() {
+class FeedViewModel
+@Inject
+constructor(
+    private val loadFeedTimeline: LoadFeedTimelineUseCase,
+    private val loadedItems: LoadedFeedItems,
+) : ViewModel() {
 
   private val _uiState = MutableStateFlow(FeedUiState())
   val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
@@ -56,6 +61,7 @@ class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTi
     loadJob =
         viewModelScope.launch {
           val content = loadFeedTimeline().fold(onSuccess = ::toContent, onFailure = ::toError)
+          loadedItems.replace((content as? FeedUiState.Content.Loaded)?.items.orEmpty())
           _uiState.update { FeedUiState(content = content, isRefreshing = false) }
         }
   }
