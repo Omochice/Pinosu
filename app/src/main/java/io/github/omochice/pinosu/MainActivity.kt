@@ -398,9 +398,10 @@ fun PinosuApp(
                         categories = postBookmarkRoute.editCategories.orEmpty(),
                         comment = postBookmarkRoute.editComment.orEmpty())
                   } else {
-                    postBookmarkViewModel.initializeForNew()
-                    postBookmarkRoute.sharedUrl?.let { postBookmarkViewModel.updateUrl(it) }
-                    postBookmarkRoute.sharedComment?.let { postBookmarkViewModel.updateComment(it) }
+                    postBookmarkViewModel.initializeForNew(
+                        url = postBookmarkRoute.sharedUrl,
+                        title = postBookmarkRoute.sharedTitle,
+                        comment = postBookmarkRoute.sharedComment)
                   }
                 }
 

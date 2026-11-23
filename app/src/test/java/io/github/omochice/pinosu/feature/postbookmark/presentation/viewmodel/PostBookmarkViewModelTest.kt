@@ -381,6 +381,52 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `initializeForNew should prefill url without scheme, title and comment`() = runTest {
+    viewModel.initializeForNew(
+        url = "https://example.com/article", title = "Article Title", comment = "Nice read")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("example.com/article", state.url, "url should have scheme stripped")
+    assertEquals("Article Title", state.title, "title should be set")
+    assertEquals("", state.categories, "categories should be empty")
+    assertEquals("Nice read", state.comment, "comment should be set")
+  }
+
+  @Test
+  fun `initializeForNew with null values should leave fields empty`() = runTest {
+    viewModel.initializeForNew(url = null, title = null, comment = null)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("", state.url, "url should be empty")
+    assertEquals("", state.title, "title should be empty")
+    assertEquals("", state.comment, "comment should be empty")
+  }
+
+  @Test
+  fun `initializeForNew should clear previous edit mode state`() = runTest {
+    viewModel.initializeForEdit(
+        url = "old.example.com",
+        title = "Old Title",
+        categories = listOf("tech"),
+        comment = "Old comment")
+    advanceUntilIdle()
+
+    viewModel.initializeForNew(url = "https://new.example.com", title = null, comment = null)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("new.example.com", state.url, "url should be replaced")
+    assertEquals("", state.title, "title should be cleared")
+    assertEquals("", state.categories, "categories should be cleared")
+    assertEquals("", state.comment, "comment should be cleared")
+  }
+
+  @Test
   fun `prepareSignEventIntent in edit mode should use original URL`() = runTest {
     val realEvent =
         UnsignedNostrEvent(

@@ -105,9 +105,19 @@ constructor(
     }
   }
 
-  /** Initialize the form for creating a new bookmark, discarding any previous state */
-  fun initializeForNew() {
-    _uiState.value = PostBookmarkUiState()
+  /**
+   * Initialize the form for creating a new bookmark, discarding any previous state
+   *
+   * @param url URL to prefill (http/https scheme is stripped), or null to leave empty
+   * @param title Title to prefill, or null to leave empty
+   * @param comment Comment to prefill, or null to leave empty
+   */
+  fun initializeForNew(url: String? = null, title: String? = null, comment: String? = null) {
+    _uiState.value =
+        PostBookmarkUiState(
+            url = url?.let(::stripUrlScheme).orEmpty(),
+            title = title.orEmpty(),
+            comment = comment.orEmpty())
   }
 
   /** Dismiss error message */
