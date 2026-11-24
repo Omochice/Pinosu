@@ -127,7 +127,7 @@ private fun FeedItemReaderTopBar(
           IconButton(onClick = { onOpenInBrowser(link) }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                contentDescription = stringResource(R.string.cd_open_in_browser))
+                contentDescription = stringResource(R.string.button_open_in_browser))
           }
         }
       })

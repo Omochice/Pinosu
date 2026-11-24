@@ -286,7 +286,7 @@ class FeedItemReaderScreenTest {
     setReader(item)
 
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.cd_open_in_browser))
+        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
         .performClick()
 
     assertEquals(listOf("https://blog.example/hello"), openedUris)
@@ -297,7 +297,7 @@ class FeedItemReaderScreenTest {
     setReader(item.copy(link = null))
 
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.cd_open_in_browser))
+        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
         .assertDoesNotExist()
   }
 
@@ -321,7 +321,7 @@ class FeedItemReaderScreenTest {
         .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
         .assertDoesNotExist()
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.cd_open_in_browser))
+        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
         .assertIsDisplayed()
   }
 
@@ -343,7 +343,7 @@ class FeedItemReaderScreenTest {
         .onNodeWithText(getTestString(R.string.message_feed_item_not_found))
         .assertIsDisplayed()
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.cd_open_in_browser))
+        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
         .assertDoesNotExist()
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
