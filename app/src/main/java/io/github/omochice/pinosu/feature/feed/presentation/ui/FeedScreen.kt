@@ -78,9 +78,9 @@ fun FeedScreen(
       { content, pageCallbacks ->
         FeedContent(content = content, onRetry = onRefresh, onAddFeed = manageSubscriptions) {
             loaded ->
-          FeedList(
-              items = loaded.items,
-              failedFeeds = loaded.failedFeeds,
+          FeedItems(
+              loaded = loaded,
+              displayMode = uiState.displayMode,
               articleImages = articleImages,
               callbacks = pageCallbacks)
         }

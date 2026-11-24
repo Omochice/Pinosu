@@ -1,13 +1,16 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
 import io.github.omochice.pinosu.feature.feed.domain.model.feedItem
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
+import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 import java.time.Instant
@@ -21,6 +24,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -33,6 +37,8 @@ class FeedViewModelTest {
 
   private lateinit var loadFeedTimeline: LoadFeedTimelineUseCase
   private lateinit var loadedItems: LoadedFeedItems
+  private val displayMode = MutableStateFlow(BookmarkDisplayMode.List)
+  private val observeDisplayMode = mockk<ObserveDisplayModeUseCase>()
 
   private val testDispatcher = StandardTestDispatcher()
 
@@ -41,6 +47,7 @@ class FeedViewModelTest {
     Dispatchers.setMain(testDispatcher)
     loadFeedTimeline = mockk()
     loadedItems = LoadedFeedItems()
+    every { observeDisplayMode() } returns displayMode
   }
 
   @AfterTest
@@ -48,7 +55,7 @@ class FeedViewModelTest {
     Dispatchers.resetMain()
   }
 
-  private fun createViewModel() = FeedViewModel(loadFeedTimeline, loadedItems)
+  private fun createViewModel() = FeedViewModel(loadFeedTimeline, loadedItems, observeDisplayMode)
 
   @Test
   fun `shows loading until the first load completes`() = runTest {
@@ -423,6 +430,36 @@ class FeedViewModelTest {
     assertEquals(emptyList(), viewModel.uiState.value.categories)
     assertNull(viewModel.uiState.value.selectedCategory)
     assertEquals(FeedUiState.Content.Error(FeedLoadError.Unknown), viewModel.uiState.value.content)
+  }
+
+  @Test
+  fun `shows the timeline in the display mode the settings choose`() = runTest {
+    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+    assertEquals(BookmarkDisplayMode.List, viewModel.uiState.value.displayMode)
+
+    displayMode.value = BookmarkDisplayMode.Grid
+    runCurrent()
+
+    assertEquals(BookmarkDisplayMode.Grid, viewModel.uiState.value.displayMode)
+  }
+
+  @Test
+  fun `the display mode survives loading and refreshing the timeline`() = runTest {
+    displayMode.value = BookmarkDisplayMode.Grid
+    val pending = CompletableDeferred<Result<FeedTimeline>>()
+    coEvery { loadFeedTimeline() } coAnswers { pending.await() }
+    val viewModel = createViewModel()
+    runCurrent()
+
+    pending.complete(Result.success(FeedTimeline(listOf(ITEM), emptyList())))
+    advanceUntilIdle()
+    assertEquals(BookmarkDisplayMode.Grid, viewModel.uiState.value.displayMode, "after the load")
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(BookmarkDisplayMode.Grid, viewModel.uiState.value.displayMode, "after refresh")
   }
 
   private companion object {

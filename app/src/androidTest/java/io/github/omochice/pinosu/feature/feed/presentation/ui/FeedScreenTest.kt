@@ -29,6 +29,7 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
@@ -91,10 +92,11 @@ class FeedScreenTest {
       initialCategory: String? = null,
       onRefresh: () -> Unit = {},
       onLoadArticleImage: suspend (String) -> Unit = {},
+      displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
   ) {
     var selectedCategory by remember { mutableStateOf(initialCategory) }
     FeedScreen(
-        uiState = categorized.copy(selectedCategory = selectedCategory),
+        uiState = categorized.copy(selectedCategory = selectedCategory, displayMode = displayMode),
         onRefresh = onRefresh,
         onSelectCategory = { selectedCategory = it },
         onLoadArticleImage = onLoadArticleImage)
@@ -123,6 +125,9 @@ class FeedScreenTest {
 
   private fun loaded(vararg items: FeedItem, failedFeeds: List<FeedFetchFailure> = emptyList()) =
       FeedUiState(content = FeedUiState.Content.Loaded(items.toList(), failedFeeds))
+
+  private fun grid(vararg items: FeedItem, failedFeeds: List<FeedFetchFailure> = emptyList()) =
+      loaded(*items, failedFeeds = failedFeeds).copy(displayMode = BookmarkDisplayMode.Grid)
 
   @Test
   fun `shows the title together with the feed title but not the summary`() {
@@ -640,6 +645,155 @@ class FeedScreenTest {
         .performClick()
 
     assertTrue(opened, "drawer should open")
+  }
+
+  @Test
+  fun `grid mode lays the cards out side by side`() {
+    val second = item.copy(id = "2", title = "Second post", link = "https://blog.example/2")
+    composeTestRule.setContent { FeedScreen(uiState = grid(item, second), onRefresh = {}) }
+
+    val first = composeTestRule.onNodeWithText("Hello feeds").getBoundsInRoot()
+    val next = composeTestRule.onNodeWithText("Second post").getBoundsInRoot()
+    assertTrue(next.left > first.right, "second card $next should be right of the first $first")
+    assertTrue(abs((next.top - first.top).value) < 1f, "cards should share a row: $first, $next")
+  }
+
+  @Test
+  fun `grid card shows the image above the title`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = grid(item.copy(imageUrl = "https://blog.example/hello.png")), onRefresh = {})
+    }
+
+    val image = onItemImage().getBoundsInRoot()
+    val title =
+        composeTestRule.onNodeWithText("Hello feeds", useUnmergedTree = true).getBoundsInRoot()
+    assertTrue(image.bottom <= title.top, "image $image should be above the title $title")
+  }
+
+  @Test
+  fun `tapping a grid card opens it`() {
+    var opened: FeedItem? = null
+    composeTestRule.setContent {
+      FeedScreen(uiState = grid(item), onRefresh = {}, onOpenItem = { opened = it })
+    }
+
+    composeTestRule.onNodeWithText("Hello feeds").performClick()
+
+    assertEquals(item.feedUrl to item.id, opened?.let { it.feedUrl to it.id })
+  }
+
+  @Test
+  fun `grid card bookmark action passes the link and title of the item`() {
+    var bookmarked: Pair<String, String>? = null
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState = grid(item),
+          onRefresh = {},
+          onBookmarkItem = { link, title -> bookmarked = link to title })
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
+        .performClick()
+
+    assertEquals("https://blog.example/hello" to "Hello feeds", bookmarked)
+  }
+
+  @Test
+  fun `grid card bookmark action is hidden in read-only mode`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = grid(item), onRefresh = {}, isReadOnly = true)
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
+        .assertDoesNotExist()
+  }
+
+  @Test
+  fun `only grid cards that are shown ask for their article image`() {
+    val many =
+        (1..50).map { index ->
+          item.copy(id = "$index", title = "Item $index", link = "https://blog.example/$index")
+        }
+
+    val requested = requestedArticleImages(grid(*many.toTypedArray()))
+
+    assertTrue(requested.isNotEmpty(), "the cards on screen should ask")
+    assertTrue("https://blog.example/50" !in requested, "a card far below should not ask yet")
+  }
+
+  @Test
+  fun `the failed feeds notice spans the whole grid`() {
+    val failure = FeedFetchFailure("https://broken.example/feed", IOException("timeout"))
+    composeTestRule.setContent {
+      FeedScreen(uiState = grid(item, failedFeeds = listOf(failure)), onRefresh = {})
+    }
+
+    val notice = composeTestRule.onNodeWithText("https://broken.example/feed").getBoundsInRoot()
+    val card = composeTestRule.onNodeWithText("Hello feeds").getBoundsInRoot()
+    assertTrue(
+        notice.bottom <= card.top,
+        "card $card should start below the notice $notice rather than in the next column")
+  }
+
+  @Test
+  fun `grid mode still shows the empty state`() {
+    composeTestRule.setContent {
+      FeedScreen(
+          uiState =
+              FeedUiState(
+                  content = FeedUiState.Content.Empty, displayMode = BookmarkDisplayMode.Grid),
+          onRefresh = {})
+    }
+
+    composeTestRule.onNodeWithText(getTestString(R.string.message_no_feeds)).assertIsDisplayed()
+  }
+
+  @Test
+  fun `grid mode shows each category page as a grid of its items`() {
+    composeTestRule.setContent {
+      CategorizedFeedScreen(initialCategory = "News", displayMode = BookmarkDisplayMode.Grid)
+    }
+
+    composeTestRule.onRoot().performTouchInput { swipeLeft() }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Tech").assertIsSelected()
+    composeTestRule.onNodeWithText("Kotlin release").assertIsDisplayed()
+  }
+
+  @Test
+  fun `grid mode asks for article images only on the shown page`() {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      CategorizedFeedScreen(
+          initialCategory = "News",
+          onLoadArticleImage = { requested.add(it) },
+          displayMode = BookmarkDisplayMode.Grid)
+    }
+    composeTestRule.waitForIdle()
+
+    assertEquals(listOf(newsItem.link), requested)
+  }
+
+  @Test
+  fun `pulling down on a grid page refreshes the timeline`() {
+    var refreshed = false
+    composeTestRule.setContent {
+      CategorizedFeedScreen(
+          initialCategory = "Tech",
+          onRefresh = { refreshed = true },
+          displayMode = BookmarkDisplayMode.Grid)
+    }
+
+    composeTestRule.onRoot().performTouchInput {
+      swipeDown(startY = height * PULL_START_FRACTION, endY = bottom)
+    }
+    composeTestRule.waitForIdle()
+
+    assertTrue(refreshed, "pulling down should refresh")
   }
 
   companion object {

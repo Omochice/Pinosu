@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
+import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 
@@ -12,12 +13,15 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
  * @property categories Names of the category tabs that follow the tab showing every feed, in the
  *   order to show them
  * @property selectedCategory Category whose tab is selected, or null for the tab showing every feed
+ * @property displayMode Whether the timeline is laid out as a list or a grid, following the setting
+ *   shared with the bookmark list
  */
 data class FeedUiState(
     val content: Content = Content.Loading,
     val isRefreshing: Boolean = false,
     val categories: List<String> = emptyList(),
     val selectedCategory: String? = null,
+    val displayMode: BookmarkDisplayMode = BookmarkDisplayMode.List,
 ) {
 
   /**
