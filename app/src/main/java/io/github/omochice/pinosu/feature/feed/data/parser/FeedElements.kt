@@ -52,11 +52,14 @@ internal fun Element.childBodyHtml(
     feedUrl: String,
     htmlOf: (Element) -> String?,
 ): String? {
-  val bodies =
-      names.asSequence().mapNotNull(::firstChildNamed).mapNotNull { child ->
+  var imageOnly: SanitizedBody? = null
+  for (child in names.mapNotNull(::firstChildNamed)) {
+    val body =
         htmlOf(child)?.let { ItemBodySanitizer.sanitize(it, LinkResolver.baseOf(child, feedUrl)) }
-      }
-  return (bodies.firstOrNull { it.hasText } ?: bodies.firstOrNull())?.html
+    if (body?.hasText == true) return body.html
+    imageOnly = imageOnly ?: body
+  }
+  return imageOnly?.html
 }
 
 /** HTML held by this element, whether written as markup or as escaped text */
