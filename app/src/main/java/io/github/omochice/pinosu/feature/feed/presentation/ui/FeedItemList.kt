@@ -34,7 +34,15 @@ internal fun FeedList(
           item(key = "failedFeeds") { FailedFeedsNotice(failedFeeds = failedFeeds) }
         }
         items(items, key = ::feedItemKey) { item ->
-          FeedListItem(item = item, articleImages = articleImages, callbacks = callbacks)
+          FeedListItem(item = item, articleImages = articleImages, callbacks = callbacks) {
+              imageUrl,
+              onBookmark ->
+            FeedItemCard(
+                item = item,
+                imageUrl = imageUrl,
+                onOpen = callbacks.onOpen,
+                onBookmark = onBookmark)
+          }
         }
       }
 }

@@ -14,12 +14,15 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
  * @param item Item to show
  * @param articleImages Image of each article link looked up so far, null for an article without one
  * @param callbacks Callbacks for the item's interactions and its article image lookup
+ * @param card Card laying out the item with the image to show, or null for the placeholder, and the
+ *   bookmark action, or null to hide it
  */
 @Composable
 internal fun FeedListItem(
     item: FeedItem,
     articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
+    card: @Composable (imageUrl: String?, onBookmark: (() -> Unit)?) -> Unit,
 ) {
   val link = item.link
   val articleLink = link.takeIf { item.imageUrl == null }
@@ -34,9 +37,5 @@ internal fun FeedListItem(
       } else {
         null
       }
-  FeedItemCard(
-      item = item,
-      imageUrl = item.imageUrl ?: articleLink?.let(articleImages::get),
-      onOpen = callbacks.onOpen,
-      onBookmark = onBookmark)
+  card(item.imageUrl ?: articleLink?.let(articleImages::get), onBookmark)
 }
