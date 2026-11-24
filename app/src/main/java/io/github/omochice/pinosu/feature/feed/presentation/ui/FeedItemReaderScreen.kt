@@ -193,7 +193,7 @@ private fun FeedItemArticleColumn(
           Spacer(modifier = Modifier.height(12.dp))
         }
         Text(
-            text = item.title.ifEmpty { item.link.orEmpty() },
+            text = feedItemTitle(item),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineSmall.copy(

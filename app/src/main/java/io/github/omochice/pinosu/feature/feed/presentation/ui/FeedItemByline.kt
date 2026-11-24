@@ -14,3 +14,6 @@ internal fun feedItemByline(item: FeedItem): String =
             item.feedTitle.ifEmpty { item.feedUrl },
             item.publishedAt?.let { formatTimestamp(it.epochSecond) })
         .joinToString(separator = " · ")
+
+/** Title to show for [item], which is its link when the feed gives it no title */
+internal fun feedItemTitle(item: FeedItem): String = item.title.ifEmpty { item.link.orEmpty() }

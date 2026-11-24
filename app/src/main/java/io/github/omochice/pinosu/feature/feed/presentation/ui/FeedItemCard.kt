@@ -41,7 +41,7 @@ fun FeedItemCard(
     onOpen: (FeedItem) -> Unit,
     onBookmark: (() -> Unit)?,
 ) {
-  val title = item.title.ifEmpty { item.link.orEmpty() }
+  val title = feedItemTitle(item)
   Card(
       modifier = Modifier.fillMaxWidth().clickable { onOpen(item) },
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
