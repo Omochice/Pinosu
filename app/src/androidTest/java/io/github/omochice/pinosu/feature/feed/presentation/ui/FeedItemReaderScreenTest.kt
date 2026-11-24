@@ -61,11 +61,13 @@ class FeedItemReaderScreenTest {
       onNavigateUp: () -> Unit = {},
       onBookmark: (String, String) -> Unit = { _, _ -> },
       isReadOnly: Boolean = false,
+      imageUrl: String? = null,
   ) {
     composeTestRule.setContent {
       CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         FeedItemReaderScreen(
             item = item,
+            imageUrl = imageUrl,
             onNavigateUp = onNavigateUp,
             onBookmark = onBookmark,
             isReadOnly = isReadOnly)
@@ -84,6 +86,24 @@ class FeedItemReaderScreenTest {
         .assertIsDisplayed()
     composeTestRule.onNodeWithText("Second bold paragraph", substring = true).assertIsDisplayed()
     composeTestRule.onNodeWithText("A short summary").assertDoesNotExist()
+  }
+
+  @Test
+  fun `shows the article image above the title`() {
+    setReader(item, imageUrl = "https://blog.example/cover.png")
+
+    val image = composeTestRule.onNodeWithContentDescription("Hello feeds")
+    image.assertExists()
+    val title = composeTestRule.onNodeWithText("Hello feeds").getUnclippedBoundsInRoot()
+    assertTrue(
+        image.getUnclippedBoundsInRoot().bottom <= title.top, "the image should be above the title")
+  }
+
+  @Test
+  fun `shows no image when the item has none`() {
+    setReader(item, imageUrl = null)
+
+    composeTestRule.onNodeWithContentDescription("Hello feeds").assertDoesNotExist()
   }
 
   @Test

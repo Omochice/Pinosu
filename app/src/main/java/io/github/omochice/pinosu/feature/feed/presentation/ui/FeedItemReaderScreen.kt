@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -38,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
@@ -56,6 +62,7 @@ private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.Wo
  * @param onNavigateUp Callback when the user leaves the reader
  * @param onBookmark Callback with the link and title of the item when its bookmark action is tapped
  * @param isReadOnly Whether to hide the bookmark action for read-only login
+ * @param imageUrl Image of the article shown above its title, or null to show none
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +71,7 @@ fun FeedItemReaderScreen(
     onNavigateUp: () -> Unit,
     onBookmark: (link: String, title: String) -> Unit = { _, _ -> },
     isReadOnly: Boolean = false,
+    imageUrl: String? = null,
 ) {
   val snackbarHostState = remember { SnackbarHostState() }
   val openLink = rememberLinkOpener(snackbarHostState)
@@ -79,7 +87,8 @@ fun FeedItemReaderScreen(
         if (item == null) {
           FeedItemNotFound(onNavigateUp = onNavigateUp, modifier = modifier)
         } else {
-          FeedItemArticle(item = item, onOpenLink = openLink, modifier = modifier)
+          FeedItemArticle(
+              item = item, imageUrl = imageUrl, onOpenLink = openLink, modifier = modifier)
         }
       }
 }
@@ -138,8 +147,21 @@ private fun OpenInBrowserButton(link: String, onOpenLink: (String) -> Unit) {
 }
 
 @Composable
-private fun FeedItemArticle(item: FeedItem, onOpenLink: (String) -> Unit, modifier: Modifier) {
+private fun FeedItemArticle(
+    item: FeedItem,
+    imageUrl: String?,
+    onOpenLink: (String) -> Unit,
+    modifier: Modifier,
+) {
   Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
+    imageUrl?.let { url ->
+      AsyncImage(
+          model = url,
+          contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
+          modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
+          contentScale = ContentScale.Crop)
+      Spacer(modifier = Modifier.height(12.dp))
+    }
     Text(
         text = item.title.ifEmpty { item.link.orEmpty() },
         style = MaterialTheme.typography.headlineSmall.copy(lineBreak = PhraseHeadingBreak))
