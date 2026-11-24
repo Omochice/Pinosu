@@ -14,7 +14,7 @@ private val CELL_TAGS = setOf("th", "td")
  *
  * A table inside a cell is reduced to its text.
  *
- * @param table Element of the table, whose nested tables are replaced by their text
+ * @param table Element of the table
  * @return The table, with rows that have no cells left out
  */
 internal fun parseHtmlTable(table: Element): Table<String> {
@@ -116,10 +116,11 @@ private fun Element.span(attribute: String): Int =
  * placeholder character.
  */
 private fun inlineHtmlOf(element: Element): String {
-  element.select("img").remove()
-  generateSequence { element.selectFirst("table") }
+  val copy = element.clone()
+  copy.select("img").remove()
+  generateSequence { copy.selectFirst("table") }
       .forEach { nested -> nested.replaceWith(TextNode(nested.text())) }
-  return element.html()
+  return copy.html()
 }
 
 private fun List<TableCell<String>>.columnCount(): Int = sumOf { it.columnSpan }
