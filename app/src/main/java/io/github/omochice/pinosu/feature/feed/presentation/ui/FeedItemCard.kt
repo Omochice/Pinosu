@@ -5,21 +5,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.ui.component.ThumbnailRow
 import java.time.Instant
@@ -48,13 +42,7 @@ fun FeedItemCard(
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         ThumbnailRow(imageUrl = imageUrl, contentDescription = title) {
           FeedItemText(title = title, byline = feedItemByline(item), modifier = Modifier.weight(1f))
-          onBookmark?.let { bookmark ->
-            IconButton(onClick = bookmark) {
-              Icon(
-                  imageVector = Icons.Outlined.BookmarkAdd,
-                  contentDescription = stringResource(R.string.cd_bookmark_feed_item))
-            }
-          }
+          onBookmark?.let { FeedItemBookmarkButton(onClick = it) }
         }
       }
 }

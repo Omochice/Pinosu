@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -136,11 +135,7 @@ private fun FeedItemReaderTopBar(
       },
       actions = {
         if (link != null && onBookmark != null) {
-          IconButton(onClick = { onBookmark(link) }) {
-            Icon(
-                imageVector = Icons.Outlined.BookmarkAdd,
-                contentDescription = stringResource(R.string.cd_bookmark_feed_item))
-          }
+          FeedItemBookmarkButton(onClick = { onBookmark(link) })
         }
       })
 }
