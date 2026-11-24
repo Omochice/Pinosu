@@ -123,9 +123,7 @@ private fun FeedTimelineDestination(
       uiState = feedUiState,
       onRefresh = feedViewModel::refresh,
       onOpenDrawer = onOpenDrawer,
-      onBookmarkItem = { link, title ->
-        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
-      },
+      onBookmarkItem = navController::navigateToPostBookmark,
       onManageSubscriptions = {
         navController.navigate(FeedSubscriptions) { launchSingleTop = true }
       },
@@ -167,11 +165,13 @@ private fun FeedItemReaderDestination(
   FeedItemReaderScreen(
       item = item,
       onNavigateUp = { navController.navigateUp() },
-      onBookmark = { link, title ->
-        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
-      },
+      onBookmark = navController::navigateToPostBookmark,
       isReadOnly = isReadOnly,
       imageUrl = item?.imageUrl ?: articleLink?.let(articleImages::get))
+}
+
+private fun NavController.navigateToPostBookmark(link: String, title: String) {
+  navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
 }
 
 /**
