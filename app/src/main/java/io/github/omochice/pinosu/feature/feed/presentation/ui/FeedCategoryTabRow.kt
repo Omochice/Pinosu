@@ -7,8 +7,14 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.ui.component.PagerSyncedTabIndicator
+
+// The Material defaults of 52dp inset and 90dp tabs leave short category names floating in gaps,
+// so tabs start at the timeline's margin and shrink to their names down to a touch target.
+private val TabRowEdgePadding = 16.dp
+private val MinTabWidth = 48.dp
 
 /**
  * Tabs that narrow the timeline to one category: a tab showing every feed, then one per category
@@ -30,6 +36,8 @@ fun FeedCategoryTabRow(
   val tabs = feedCategoryTabs(categories)
   PrimaryScrollableTabRow(
       selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory),
+      edgePadding = TabRowEdgePadding,
+      minTabWidth = MinTabWidth,
       indicator = { PagerSyncedTabIndicator(pagerState) }) {
         tabs.forEach { category ->
           Tab(

@@ -13,6 +13,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -23,6 +24,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
@@ -471,6 +473,26 @@ class FeedScreenTest {
     assertTrue(
         indicatorCenter > newsTab.left && indicatorCenter < newsTab.right,
         "indicator center  should be under the News tab ")
+  }
+
+  @Test
+  fun `the first category tab starts at the content margin`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    val allTab =
+        composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).getBoundsInRoot()
+    assertTrue(abs((allTab.left - 16.dp).value) < 1f, "first tab started at ${allTab.left}")
+  }
+
+  @Test
+  fun `a category tab with a short name is only as wide as its name`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    val allTab =
+        composeTestRule
+            .onNodeWithText(getTestString(R.string.tab_all_feeds))
+            .getUnclippedBoundsInRoot()
+    assertTrue(allTab.right - allTab.left < 90.dp, "tab was ${allTab.right - allTab.left} wide")
   }
 
   @Test
