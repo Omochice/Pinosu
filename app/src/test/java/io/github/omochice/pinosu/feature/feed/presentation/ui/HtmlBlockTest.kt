@@ -171,6 +171,13 @@ class HtmlBlockTest {
   }
 
   @Test
+  fun `the HTML of a cell is kept as written, without reformatting`() {
+    val table = tableOf("<table><tr><td> a <p>b</p>\n<p>c</p></td><td>d</td></tr></table>")
+
+    assertEquals(" a <p>b</p>\n<p>c</p>", table.rows.single().first().content)
+  }
+
+  @Test
   fun `a table nested in a cell is reduced to its text`() {
     val table =
         tableOf(
