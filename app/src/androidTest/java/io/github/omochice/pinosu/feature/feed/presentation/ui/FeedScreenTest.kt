@@ -752,7 +752,17 @@ class FeedScreenTest {
   }
 
   @Test
-  fun `grid mode shows each category page as a grid of its items`() {
+  fun `grid mode lays the cards of a category page out side by side`() {
+    composeTestRule.setContent { CategorizedFeedScreen(displayMode = BookmarkDisplayMode.Grid) }
+
+    val first = composeTestRule.onNodeWithText("Election results").getBoundsInRoot()
+    val next = composeTestRule.onNodeWithText("Kotlin release").getBoundsInRoot()
+    assertTrue(next.left > first.right, "second card $next should be right of the first $first")
+    assertTrue(abs((next.top - first.top).value) < 1f, "cards should share a row: $first, $next")
+  }
+
+  @Test
+  fun `swiping between category pages works in grid mode`() {
     composeTestRule.setContent {
       CategorizedFeedScreen(initialCategory = "News", displayMode = BookmarkDisplayMode.Grid)
     }
