@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.data.repository
 
+import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
@@ -15,12 +16,7 @@ constructor(private val fetcher: HttpsDocumentFetcher, private val parser: FeedP
     FeedRepository {
 
   override suspend fun fetchFeed(feedUrl: String): Result<Feed> =
-      fetcher
-          .fetch(feedUrl)
-          .fold(
-              onSuccess = { document ->
-                withContext(Dispatchers.Default) { parser.parseFetched(document, feedUrl) }
-              },
-              onFailure = { Result.failure(it) },
-          )
+      fetcher.fetch(feedUrl).andThen { document ->
+        withContext(Dispatchers.Default) { parser.parseFetched(document, feedUrl) }
+      }
 }

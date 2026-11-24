@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.domain.usecase
 
+import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedResolution
@@ -24,37 +25,25 @@ constructor(
 ) : PrepareFeedSubscriptionChangeUseCase {
 
   override suspend fun add(input: String): Result<FeedSubscriptionChange> =
-      writerPubkey()
-          .fold(
-              onSuccess = { hexPubkey -> addResolved(hexPubkey, input) },
-              onFailure = { Result.failure(it) },
-          )
+      writerPubkey().andThen { hexPubkey -> addResolved(hexPubkey, input) }
 
   override suspend fun remove(feedUrl: String): Result<FeedSubscriptionChange> =
-      writerPubkey()
-          .fold(
-              onSuccess = { hexPubkey ->
-                rewrite(hexPubkey, { FeedSubscriptionChange.NotSubscribed(feedUrl) }) { feeds ->
-                  feeds.filterNot { it.url == feedUrl }
-                }
-              },
-              onFailure = { Result.failure(it) },
-          )
+      writerPubkey().andThen { hexPubkey ->
+        rewrite(hexPubkey, { FeedSubscriptionChange.NotSubscribed(feedUrl) }) { feeds ->
+          feeds.filterNot { it.url == feedUrl }
+        }
+      }
 
   override suspend fun setCategory(
       feedUrl: String,
       category: String?
   ): Result<FeedSubscriptionChange> {
     val name = FeedSubscription.normalizeCategory(category)
-    return writerPubkey()
-        .fold(
-            onSuccess = { hexPubkey ->
-              rewrite(hexPubkey, { feeds -> categoryUnchangedOrMissing(feeds, feedUrl) }) { feeds ->
-                feeds.map { if (it.url == feedUrl) it.copy(category = name) else it }
-              }
-            },
-            onFailure = { Result.failure(it) },
-        )
+    return writerPubkey().andThen { hexPubkey ->
+      rewrite(hexPubkey, { feeds -> categoryUnchangedOrMissing(feeds, feedUrl) }) { feeds ->
+        feeds.map { if (it.url == feedUrl) it.copy(category = name) else it }
+      }
+    }
   }
 
   private suspend fun writerPubkey(): Result<String> {
@@ -69,18 +58,13 @@ constructor(
       hexPubkey: String,
       input: String
   ): Result<FeedSubscriptionChange> =
-      discoveryRepository
-          .resolve(input)
-          .fold(
-              onSuccess = { resolution ->
-                when (resolution) {
-                  is FeedResolution.Candidates ->
-                      Result.success(FeedSubscriptionChange.ChooseCandidate(resolution.candidates))
-                  is FeedResolution.Direct -> addFeed(hexPubkey, resolution.feedUrl)
-                }
-              },
-              onFailure = { Result.failure(it) },
-          )
+      discoveryRepository.resolve(input).andThen { resolution ->
+        when (resolution) {
+          is FeedResolution.Candidates ->
+              Result.success(FeedSubscriptionChange.ChooseCandidate(resolution.candidates))
+          is FeedResolution.Direct -> addFeed(hexPubkey, resolution.feedUrl)
+        }
+      }
 
   private suspend fun addFeed(hexPubkey: String, feedUrl: String): Result<FeedSubscriptionChange> =
       rewrite(hexPubkey, { FeedSubscriptionChange.AlreadySubscribed(feedUrl) }) { feeds ->
