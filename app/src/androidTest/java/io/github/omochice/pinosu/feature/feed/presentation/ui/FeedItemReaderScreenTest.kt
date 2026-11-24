@@ -1,8 +1,12 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -12,6 +16,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -26,6 +31,7 @@ import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.getTestString
 import java.time.Instant
+import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -73,6 +79,35 @@ class FeedItemReaderScreenTest {
             isReadOnly = isReadOnly)
       }
     }
+  }
+
+  @Test
+  fun `the article keeps a readable width centered on a wide screen`() {
+    composeTestRule.setContent {
+      Box(modifier = Modifier.requiredWidth(1000.dp).testTag("wideScreen")) {
+        FeedItemReaderScreen(item = item, onNavigateUp = {})
+      }
+    }
+
+    val screen = composeTestRule.onNodeWithTag("wideScreen").getUnclippedBoundsInRoot()
+    val button =
+        composeTestRule
+            .onNodeWithText(getTestString(R.string.button_open_in_browser))
+            .getUnclippedBoundsInRoot()
+    val column = composeTestRule.onNodeWithTag("readerArticle").getUnclippedBoundsInRoot()
+    assertTrue(column.right - column.left <= 640.dp, "column was ${column.right - column.left}")
+    assertTrue(
+        abs(((column.left - screen.left) - (screen.right - column.right)).value) < 1f,
+        "the column should be centered")
+    assertTrue(button.left >= column.left, "the content should be inside the column")
+  }
+
+  @Test
+  fun `the article fills a phone in portrait`() {
+    setReader(item)
+
+    val title = composeTestRule.onNodeWithText("Hello feeds").getUnclippedBoundsInRoot()
+    assertTrue(title.left <= 16.dp, "title started at ${title.left}")
   }
 
   @Test

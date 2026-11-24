@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +61,10 @@ private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.Wo
 
 // Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
 private val ReaderLineHeight = 1.75.em
+
+// Lines and images stretched across a landscape phone or a tablet are hard to follow, so the
+// article keeps to a centered column instead of the full width.
+private val ReaderMaxWidth = 640.dp
 
 /**
  * Composable function for the screen reading one feed item in the app
@@ -158,30 +165,49 @@ private fun FeedItemArticle(
     onOpenLink: (String) -> Unit,
     modifier: Modifier,
 ) {
-  Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
-    imageUrl?.let { url ->
-      AsyncImage(
-          model = url,
-          contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
-          modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
-          contentScale = ContentScale.Crop)
-      Spacer(modifier = Modifier.height(12.dp))
-    }
-    Text(
-        text = item.title.ifEmpty { item.link.orEmpty() },
-        style = MaterialTheme.typography.headlineSmall.copy(lineBreak = PhraseHeadingBreak))
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(
-        text = feedItemByline(item),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant)
-    item.link?.let { link ->
-      Spacer(modifier = Modifier.height(8.dp))
-      OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
-  }
+  Box(
+      modifier = modifier.verticalScroll(rememberScrollState()),
+      contentAlignment = Alignment.TopCenter) {
+        FeedItemArticleColumn(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+      }
+}
+
+@Composable
+private fun FeedItemArticleColumn(
+    item: FeedItem,
+    imageUrl: String?,
+    onOpenLink: (String) -> Unit,
+) {
+  Column(
+      modifier =
+          Modifier.widthIn(max = ReaderMaxWidth)
+              .fillMaxWidth()
+              .testTag("readerArticle")
+              .padding(16.dp)) {
+        imageUrl?.let { url ->
+          AsyncImage(
+              model = url,
+              contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
+              modifier =
+                  Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
+              contentScale = ContentScale.Crop)
+          Spacer(modifier = Modifier.height(12.dp))
+        }
+        Text(
+            text = item.title.ifEmpty { item.link.orEmpty() },
+            style = MaterialTheme.typography.headlineSmall.copy(lineBreak = PhraseHeadingBreak))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = feedItemByline(item),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        item.link?.let { link ->
+          Spacer(modifier = Modifier.height(8.dp))
+          OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+      }
 }
 
 @Composable
