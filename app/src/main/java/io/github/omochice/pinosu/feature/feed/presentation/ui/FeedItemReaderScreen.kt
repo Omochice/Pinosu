@@ -162,48 +162,43 @@ private fun FeedItemArticle(
   Box(
       modifier = modifier.verticalScroll(rememberScrollState()),
       contentAlignment = Alignment.TopCenter) {
-        FeedItemArticleColumn(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
-      }
-}
-
-@Composable
-private fun FeedItemArticleColumn(
-    item: FeedItem,
-    imageUrl: String?,
-    onOpenLink: (String) -> Unit,
-) {
-  Column(
-      modifier =
-          Modifier.widthIn(max = ReaderMaxWidth)
-              .fillMaxWidth()
-              .testTag("readerArticle")
-              .padding(16.dp)) {
-        imageUrl?.let { url ->
-          AsyncImage(
-              model = url,
-              contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
-              modifier =
-                  Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
-              contentScale = ContentScale.Crop)
-          Spacer(modifier = Modifier.height(12.dp))
-        }
-        Text(
-            text = feedItemTitle(item),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = feedItemByline(item),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        item.link?.let { link ->
-          Spacer(modifier = Modifier.height(8.dp))
-          OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+        Column(
+            modifier =
+                Modifier.widthIn(max = ReaderMaxWidth)
+                    .fillMaxWidth()
+                    .testTag("readerArticle")
+                    .padding(16.dp)) {
+              imageUrl?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription =
+                        item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop)
+                Spacer(modifier = Modifier.height(12.dp))
+              }
+              Text(
+                  text = feedItemTitle(item),
+                  modifier = Modifier.fillMaxWidth(),
+                  textAlign = TextAlign.Center,
+                  style =
+                      MaterialTheme.typography.headlineSmall.copy(
+                          lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
+              Spacer(modifier = Modifier.height(8.dp))
+              Text(
+                  text = feedItemByline(item),
+                  style = MaterialTheme.typography.bodySmall,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant)
+              item.link?.let { link ->
+                Spacer(modifier = Modifier.height(8.dp))
+                OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
+              }
+              Spacer(modifier = Modifier.height(16.dp))
+              FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+            }
       }
 }
 
