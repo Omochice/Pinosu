@@ -14,6 +14,8 @@ internal object RssReader {
   private const val CONTENT_ENCODED = "content:encoded"
   private const val DC_LANGUAGE = "dc:language"
 
+  private val BODY_NAMES = listOf(CONTENT_ENCODED, DESCRIPTION)
+
   /**
    * Read a feed from the document's root element
    *
@@ -52,12 +54,8 @@ internal object RssReader {
         link = link,
         publishedAt = rawDate?.let(FeedDateParser::parse),
         summary = item.childPlainText(DESCRIPTION, CONTENT_ENCODED),
-        contentHtml =
-            item.childBodyHtml(CONTENT_ENCODED, DESCRIPTION, feedUrl = feedUrl) { it.htmlSource() },
-        imageUrl =
-            ItemImageFinder.find(item, feedUrl, listOf(CONTENT_ENCODED, DESCRIPTION)) {
-              it.htmlSource()
-            },
+        contentHtml = item.childBodyHtml(BODY_NAMES, feedUrl, Element::htmlSource),
+        imageUrl = ItemImageFinder.find(item, feedUrl, BODY_NAMES, Element::htmlSource),
         language = LanguageTag.normalize(item.childText(DC_LANGUAGE) ?: channelLanguage),
     )
   }

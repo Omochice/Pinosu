@@ -48,7 +48,7 @@ internal fun Element.childPlainText(vararg names: String): String =
  * @return The body, or null when none of the children has any text or image
  */
 internal fun Element.childBodyHtml(
-    vararg names: String,
+    names: List<String>,
     feedUrl: String,
     htmlOf: (Element) -> String?,
 ): String? {
