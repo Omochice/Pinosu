@@ -1,11 +1,15 @@
 repository: https://github.com/Omochice/Pinosu
-summary: A decentralized web bookmark app for Android, powered by Nostr
+summary: A decentralized feed reader and web bookmark app for Android, powered by Nostr
 description: |
-  Pinosu is a decentralized web bookmark app for Android, powered by Nostr.
+  Pinosu is a decentralized feed reader and web bookmark app for Android, powered by Nostr.
+  Read your RSS and Atom feeds, and bookmark the articles worth keeping.
   You keep full ownership of your data, with no central server.
 
   Features:
 
+  - Read RSS and Atom feeds, grouped into categories
+  - Read articles in the app, with their images and tables
+  - Feed subscriptions stored as NIP-78 (Kind 30078) app data, shared across devices
   - Save and organize web bookmarks
   - Bookmarks stored as Nostr Kind 39701 (web bookmark) events
   - Access from any Nostr-compatible client
@@ -21,6 +25,8 @@ license: zlib
 tags:
   - nostr
   - japan
+  - rss
+  - feed_reader
   - web_bookmark
   - bookmark
 release_notes: CHANGELOG.md
@@ -30,6 +36,7 @@ supported_nips:
   - "22"
   - "55"
   - "65"
+  - "78"
   - "89"
   - "B0"
 match: app-release.apk

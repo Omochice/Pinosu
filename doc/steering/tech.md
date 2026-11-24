@@ -52,6 +52,7 @@ devbox run ./gradlew :app:lintDebug
 - **NIP-22**: Comment system for kind 1111 replies and kind 1 text note references; constants in `core/nip/nip22/Nip22`
 - **NIP-55**: External signer integration (e.g., Amber: com.greenart7c3.nostrsigner)
 - **NIP-65**: Relay list fetching from kind 10002 events (bootstrap relay: wss://yabu.me)
+- **NIP-78**: Feed subscription list as kind 30078 app data (d tag `pinosu/rss-subscriptions`); constants in `core/nip/nip78/Nip78`
 - **NIP-89**: Client tag identification; opt-in setting to include `["client", "Pinosu"]` tag in published events
 - **Default Signer Package**: com.greenart7c3.nostrsigner (Amber)
 - **WebSocket Client**: OkHttp for relay connections

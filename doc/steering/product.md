@@ -1,25 +1,25 @@
 # Product Overview
 
-Pinosu is a decentralized memo/note-taking app for Android that uses Nostr Kind 39701 events for storing and syncing notes, similar to Google Keep but with Nostr's decentralized infrastructure.
+Pinosu is a decentralized feed reader and web bookmark app for Android.
+It reads RSS and Atom feeds, and saves the articles worth keeping as Nostr Kind 39701 bookmark events.
+The feed subscription list is stored on Nostr relays as well, so both follow the user across devices.
 
 ## Core Capabilities
 
-- **Decentralized Note Storage**: Notes stored as Nostr Kind 39701 (bookmark list) events, accessible across relays
+- **Feed Reading**: Subscribe to RSS and Atom feeds by feed or site URL, read the merged timeline by category, and read articles in the app with their images and tables
+- **Decentralized Subscriptions**: The subscription list stored as NIP-78 app data (Kind 30078), shared across the user's devices
+- **Decentralized Bookmarks**: Bookmarks stored as Nostr Kind 39701 events, accessible across relays
 - **Secure Authentication**: Integration with NIP-55 external signer (e.g., Amber) for key management without exposing private keys; alternatively, read-only login via direct npub entry for browse-only access
-- **Bookmark Posting**: Create and publish bookmark events via NIP-55 signing workflow
+- **Bookmark Posting**: Create and publish bookmark events via NIP-55 signing workflow, from the bookmark form or straight from a feed item
 - **Dynamic Relay Discovery**: NIP-65 relay list fetching from user's kind 10002 events for personalized relay preferences
-- **Cross-Device Sync**: Notes automatically sync across devices via Nostr relays
-- **Rich Note Features**: Create, edit, organize, and search notes with tags and metadata
-- **Offline-First**: Local encrypted storage with background sync when online
 - **Comments & Engagement**: View and post comments on bookmarks using NIP-22 kind 1111 comments and kind 1 text notes
 - **Share Intent Integration**: Receive URLs and text from other Android apps for quick bookmark creation
 
 ## Target Use Cases
 
-- **Personal Note-Taking**: Quick memos, to-do lists, ideas, and reminders stored decentralized on Nostr
-- **Cross-Platform Users**: Access notes from any Nostr-compatible client, not locked to a single vendor
-- **Privacy-Conscious Users**: Notes encrypted with user's keys, stored on relays of their choice
-- **Nostr Ecosystem**: Integrate note-taking into existing Nostr workflows and identity
+- **Feed Readers on Nostr**: Follow blogs and news sites, and keep the articles worth rereading as bookmarks
+- **Cross-Platform Users**: Access bookmarks and subscriptions from any Nostr-compatible client, not locked to a single vendor
+- **Nostr Ecosystem**: Bring reading and bookmarking into existing Nostr workflows and identity
 
 ## Value Proposition
 
@@ -34,6 +34,7 @@ Nostr's decentralization means users own their data and never lose access due to
 - **NIP-55 Integration**: Secure external signing without key exposure (default: Amber)
 - **NIP-89 Integration**: Client tag identification for published events (opt-in via settings)
 - **NIP-65 Integration**: Dynamic relay list discovery from user preferences
+- **NIP-78 Integration**: Feed subscription list as Kind 30078 app data
 - **Android Native**: Built with Jetpack Compose and Material Design 3
 - **Encrypted Storage**: Tink Android with DataStore for secure local caching
 

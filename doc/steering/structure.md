@@ -96,6 +96,7 @@ graph TB
 **Features**:
 
 - `auth/` - Login, logout, session management
+- `feed/` - RSS/Atom feed subscriptions, timeline by category, and the in-app article reader
 - `bookmark/` - Bookmark listing and display
 - `postbookmark/` - Creating and posting new bookmarks
 - `comment/` - Bookmark detail screen with kind 1111/1 comments viewing and posting
