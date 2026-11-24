@@ -1,25 +1,37 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.ui.component.PagerSyncedTabIndicator
 
-// As few tabs as the bookmark screen has share the width as its tabs do; more scroll instead,
-// because shared widths would cut long category names short.
-private const val MAX_FIXED_TABS = 2
-
-// The Material defaults of 52dp inset and 90dp tabs leave short category names floating in gaps,
-// so tabs start at the timeline's margin and shrink to their names down to a touch target.
-private val TabRowEdgePadding = 16.dp
-private val MinTabWidth = 48.dp
+// Tabs keep one width, unlike tabs sized to their names, so the row looks even however long the
+// names are; beyond what fits, the list of every category is the way to reach a far tab.
+private const val TABS_PER_SCREEN = 2
 
 /**
  * Tabs that narrow the timeline to one category: a tab showing every feed, then one per category
@@ -39,29 +51,68 @@ fun FeedCategoryTabRow(
     onSelect: (String?) -> Unit,
 ) {
   val tabs = feedCategoryTabs(categories)
-  val selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory)
-  val tabContent: @Composable () -> Unit = {
-    tabs.forEach { category ->
-      Tab(
-          selected = category == selectedCategory,
-          onClick = { onSelect(category) },
-          text = { Text(category ?: stringResource(R.string.tab_all_feeds)) })
+  Column {
+    BoxWithConstraints {
+      val tabWidth = maxWidth / TABS_PER_SCREEN
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        PrimaryScrollableTabRow(
+            selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory),
+            modifier = Modifier.weight(1f),
+            edgePadding = 0.dp,
+            minTabWidth = tabWidth,
+            indicator = { PagerSyncedTabIndicator(pagerState) },
+            divider = {}) {
+              tabs.forEach { category ->
+                Tab(
+                    selected = category == selectedCategory,
+                    onClick = { onSelect(category) },
+                    text = { Text(feedCategoryLabel(category)) })
+              }
+            }
+        if (tabs.size > TABS_PER_SCREEN) {
+          FeedCategoryMenu(tabs = tabs, selectedCategory = selectedCategory, onSelect = onSelect)
+        }
+      }
     }
-  }
-  if (tabs.size <= MAX_FIXED_TABS) {
-    PrimaryTabRow(
-        selectedTabIndex = selectedTabIndex,
-        indicator = { PagerSyncedTabIndicator(pagerState) },
-        tabs = tabContent)
-  } else {
-    PrimaryScrollableTabRow(
-        selectedTabIndex = selectedTabIndex,
-        edgePadding = TabRowEdgePadding,
-        minTabWidth = MinTabWidth,
-        indicator = { PagerSyncedTabIndicator(pagerState) },
-        tabs = tabContent)
+    HorizontalDivider()
   }
 }
+
+@Composable
+private fun FeedCategoryMenu(
+    tabs: List<String?>,
+    selectedCategory: String?,
+    onSelect: (String?) -> Unit,
+) {
+  var expanded by remember { mutableStateOf(false) }
+  Box {
+    IconButton(onClick = { expanded = true }) {
+      Icon(
+          imageVector = Icons.Default.MoreHoriz,
+          contentDescription = stringResource(R.string.cd_show_all_categories))
+    }
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      tabs.forEach { category ->
+        DropdownMenuItem(
+            text = { Text(feedCategoryLabel(category)) },
+            onClick = {
+              expanded = false
+              onSelect(category)
+            },
+            trailingIcon =
+                if (category == selectedCategory) {
+                  { Icon(imageVector = Icons.Default.Check, contentDescription = null) }
+                } else {
+                  null
+                })
+      }
+    }
+  }
+}
+
+@Composable
+private fun feedCategoryLabel(category: String?): String =
+    category ?: stringResource(R.string.tab_all_feeds)
 
 /**
  * Category of each tab in the order shown
