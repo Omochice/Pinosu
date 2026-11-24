@@ -48,7 +48,7 @@
 
     <string name="title_settings">設定</string>
     <string name="menu_settings">設定</string>
-    <string name="settings_display_mode">ブックマーク表示</string>
+    <string name="settings_display_mode">表示</string>
     <string name="display_mode_list">リスト</string>
     <string name="display_mode_grid">グリッド</string>
     <string name="settings_theme_mode">テーマ</string>

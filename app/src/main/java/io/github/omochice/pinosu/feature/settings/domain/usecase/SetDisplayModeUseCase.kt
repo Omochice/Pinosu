@@ -3,14 +3,14 @@ package io.github.omochice.pinosu.feature.settings.domain.usecase
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 
 /**
- * UseCase interface for saving bookmark display mode preference.
+ * UseCase interface for saving display mode preference.
  *
  * Provides abstraction for persisting display mode setting.
  */
 interface SetDisplayModeUseCase {
 
   /**
-   * Save the bookmark display mode preference.
+   * Save the display mode preference.
    *
    * @param mode Display mode to save
    */
