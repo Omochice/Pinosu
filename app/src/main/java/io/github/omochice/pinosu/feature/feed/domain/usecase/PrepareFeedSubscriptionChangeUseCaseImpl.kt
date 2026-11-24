@@ -7,8 +7,6 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedResolution
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
-import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
 import io.github.omochice.pinosu.feature.feed.domain.model.error.ReadOnlyLoginException
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
@@ -76,13 +74,8 @@ constructor(
       unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
       edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): Result<FeedSubscriptionChange> =
-      when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
-        is FeedSubscriptionLoadResult.Found ->
-            Result.success(prepare(hexPubkey, loaded.list, edit, unchanged))
-        FeedSubscriptionLoadResult.Absent ->
-            Result.success(prepare(hexPubkey, null, edit, unchanged))
-        is FeedSubscriptionLoadResult.Unavailable ->
-            Result.failure(FeedSubscriptionListUnavailableException(loaded.reason))
+      subscriptionRepository.loadSubscriptionList(hexPubkey).toListResult().map { previous ->
+        prepare(hexPubkey, previous, unchanged, edit)
       }
 
   private fun categoryUnchangedOrMissing(
@@ -98,8 +91,8 @@ constructor(
   private fun prepare(
       hexPubkey: String,
       previous: FeedSubscriptionList?,
-      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
       unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
+      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): FeedSubscriptionChange {
     val current = previous?.feeds.orEmpty()
     val feeds = edit(current)

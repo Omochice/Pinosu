@@ -38,7 +38,9 @@ class LoadFeedTimelineUseCaseTest {
     feedRepository = mockk()
     getLoginStateUseCase = mockk()
     useCase =
-        LoadFeedTimelineUseCaseImpl(subscriptionRepository, feedRepository, getLoginStateUseCase)
+        LoadFeedTimelineUseCaseImpl(
+            LoadFeedSubscriptionsUseCaseImpl(subscriptionRepository, getLoginStateUseCase),
+            feedRepository)
     coEvery { getLoginStateUseCase() } returns User(Pubkey.parse(VALID_NPUB)!!)
   }
 

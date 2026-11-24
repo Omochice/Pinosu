@@ -1,13 +1,9 @@
 package io.github.omochice.pinosu.feature.feed.domain.usecase
 
-import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
-import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
-import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -19,24 +15,11 @@ import kotlinx.coroutines.sync.withPermit
 class LoadFeedTimelineUseCaseImpl
 @Inject
 constructor(
-    private val subscriptionRepository: FeedSubscriptionRepository,
+    private val loadSubscriptions: LoadFeedSubscriptionsUseCase,
     private val feedRepository: FeedRepository,
-    private val getLoginStateUseCase: GetLoginStateUseCase,
 ) : LoadFeedTimelineUseCase {
 
-  override suspend fun invoke(): Result<FeedTimeline> {
-    val user =
-        getLoginStateUseCase() ?: return Result.failure(IllegalStateException("User not logged in"))
-    val hexPubkey =
-        user.pubkey.hex ?: return Result.failure(IllegalArgumentException("Invalid npub format"))
-
-    return when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
-      is FeedSubscriptionLoadResult.Found -> Result.success(fetchAll(loaded.list.feeds))
-      FeedSubscriptionLoadResult.Absent -> Result.success(FeedTimeline(emptyList(), emptyList()))
-      is FeedSubscriptionLoadResult.Unavailable ->
-          Result.failure(FeedSubscriptionListUnavailableException(loaded.reason))
-    }
-  }
+  override suspend fun invoke(): Result<FeedTimeline> = loadSubscriptions().map { fetchAll(it) }
 
   private suspend fun fetchAll(feeds: List<FeedSubscription>): FeedTimeline {
     val permits = Semaphore(MAX_CONCURRENT_FETCHES)
