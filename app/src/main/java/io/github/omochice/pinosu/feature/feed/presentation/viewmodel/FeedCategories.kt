@@ -10,17 +10,3 @@ package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
  */
 internal fun orderedCategories(categories: List<String>): List<String> =
     categories.distinct().sortedWith(String.CASE_INSENSITIVE_ORDER)
-
-/**
- * What the tab of [category] shows of this content
- *
- * @param category Selected category, or null for the tab that shows every feed
- */
-internal fun FeedUiState.Content.inCategory(category: String?): FeedUiState.Content =
-    if (category == null || this !is FeedUiState.Content.Loaded) {
-      this
-    } else {
-      FeedUiState.Content.Loaded(
-          items = items.filter { it.feedCategory == category },
-          failedFeeds = failedFeeds.filter { it.feedCategory == category })
-    }

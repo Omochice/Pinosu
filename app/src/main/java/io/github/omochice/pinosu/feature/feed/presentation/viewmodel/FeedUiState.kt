@@ -25,7 +25,14 @@ data class FeedUiState(
    *
    * @param category Category of the tab, or null for the tab showing every feed
    */
-  fun contentIn(category: String?): Content = content.inCategory(category)
+  fun contentIn(category: String?): Content =
+      if (category == null || content !is Content.Loaded) {
+        content
+      } else {
+        Content.Loaded(
+            items = content.items.filter { it.feedCategory == category },
+            failedFeeds = content.failedFeeds.filter { it.feedCategory == category })
+      }
 
   /** What the timeline shows */
   sealed interface Content {
