@@ -151,36 +151,22 @@ constructor(
   }
 
   private fun continueWith(change: FeedSubscriptionChange) {
-    when (change) {
-      is FeedSubscriptionChange.ReadyToSign -> {
-        if (change.isFirstList) {
-          _uiState.update {
-            it.copy(
-                isWorking = false, dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
-          }
-        } else {
-          publisher.requestSignature(change.event)
-        }
-      }
-      is FeedSubscriptionChange.ChooseCandidate -> {
-        _uiState.update {
-          it.copy(
-              isWorking = false,
-              dialog = FeedSubscriptionsDialog.ChooseCandidate(change.candidates))
-        }
-      }
-      is FeedSubscriptionChange.AlreadySubscribed -> {
-        _uiState.update {
-          it.copy(isWorking = false, message = FeedSubscriptionsMessage.AlreadySubscribed)
-        }
-      }
-      is FeedSubscriptionChange.NotSubscribed -> {
-        _uiState.update { it.copy(isWorking = false) }
-        reload()
-      }
-      is FeedSubscriptionChange.CategoryUnchanged -> {
-        _uiState.update { it.copy(isWorking = false) }
-      }
+    if (change is FeedSubscriptionChange.ReadyToSign && !change.isFirstList) {
+      publisher.requestSignature(change.event)
+      return
     }
+    _uiState.update { state ->
+      when (change) {
+        is FeedSubscriptionChange.ReadyToSign ->
+            state.copy(dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
+        is FeedSubscriptionChange.ChooseCandidate ->
+            state.copy(dialog = FeedSubscriptionsDialog.ChooseCandidate(change.candidates))
+        is FeedSubscriptionChange.AlreadySubscribed ->
+            state.copy(message = FeedSubscriptionsMessage.AlreadySubscribed)
+        is FeedSubscriptionChange.NotSubscribed,
+        is FeedSubscriptionChange.CategoryUnchanged -> state
+      }.copy(isWorking = false)
+    }
+    if (change is FeedSubscriptionChange.NotSubscribed) reload()
   }
 }
