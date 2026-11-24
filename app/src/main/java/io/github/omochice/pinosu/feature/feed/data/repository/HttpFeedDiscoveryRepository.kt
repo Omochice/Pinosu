@@ -16,9 +16,6 @@ import kotlinx.coroutines.withContext
 /**
  * Implementation of [FeedDiscoveryRepository] that downloads the URL over HTTPS and, when it is a
  * web page, looks for the feeds it advertises
- *
- * @param fetcher Fetcher that downloads the entered URL and the advertised feed
- * @param parser Parser for feed documents
  */
 class HttpFeedDiscoveryRepository
 @Inject

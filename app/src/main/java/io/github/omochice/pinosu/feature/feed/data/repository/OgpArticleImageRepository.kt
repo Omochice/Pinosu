@@ -5,11 +5,7 @@ import io.github.omochice.pinosu.feature.feed.domain.repository.ArticleImageRepo
 import javax.inject.Inject
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
-/**
- * Implementation of [ArticleImageRepository] reading the page's Open Graph `og:image`
- *
- * @param urlMetadataFetcher Fetcher of the page's Open Graph metadata
- */
+/** Implementation of [ArticleImageRepository] reading the page's Open Graph `og:image` */
 class OgpArticleImageRepository
 @Inject
 constructor(private val urlMetadataFetcher: UrlMetadataFetcher) : ArticleImageRepository {

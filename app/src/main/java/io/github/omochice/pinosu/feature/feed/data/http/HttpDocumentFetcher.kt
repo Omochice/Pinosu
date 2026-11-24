@@ -9,11 +9,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-/**
- * Downloads a document with a GET request, refusing error statuses and oversized bodies
- *
- * @param okHttpClient HTTP client shared across the app
- */
+/** Downloads a document with a GET request, refusing error statuses and oversized bodies */
 class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpClient) {
 
   /**

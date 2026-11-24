@@ -11,8 +11,6 @@ internal object LinkResolver {
   /**
    * Resolve a link found on or inside [element]
    *
-   * The base is [feedUrl], refined by every `xml:base` from the root down to [element] itself.
-   *
    * @param element Element the link was read from
    * @param link Link as written in the feed
    * @param feedUrl URL the feed was fetched from
@@ -24,8 +22,6 @@ internal object LinkResolver {
   /**
    * Base URL that links on or inside [element] are relative to
    *
-   * @param element Element whose links are resolved
-   * @param feedUrl URL the feed was fetched from
    * @return [feedUrl] refined by every `xml:base` from the root down to [element] itself
    */
   fun baseOf(element: Element, feedUrl: String): String =

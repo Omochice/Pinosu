@@ -37,8 +37,7 @@ internal fun Element.childPlainText(vararg names: String): String =
         .orEmpty()
 
 /**
- * Sanitized HTML body of the first direct child among [names] that has any text left once
- * sanitized, or else of the first that has an image left
+ * Sanitized body of the first child among [names] with text, else of the first with an image
  *
  * A body holding only images gives way to a later one with text, because the text carries the
  * article while the image is often shown as the image of the item already.
@@ -60,9 +59,5 @@ internal fun Element.childBodyHtml(
   return (bodies.firstOrNull { it.hasText } ?: bodies.firstOrNull())?.html
 }
 
-/**
- * HTML held by this element, whether written as markup or as escaped text
- *
- * @return The inner markup when the element has child elements, otherwise its unescaped text
- */
+/** HTML held by this element, whether written as markup or as escaped text */
 internal fun Element.htmlSource(): String = if (childrenSize() > 0) html() else wholeText()

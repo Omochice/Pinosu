@@ -8,12 +8,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Implementation of [FeedRepository] that downloads feeds over HTTPS
- *
- * @param fetcher Fetcher that downloads the feed document
- * @param parser Parser for the downloaded document
- */
+/** Implementation of [FeedRepository] that downloads feeds over HTTPS */
 class HttpFeedRepository
 @Inject
 constructor(private val fetcher: HttpsDocumentFetcher, private val parser: FeedParser) :
