@@ -377,12 +377,12 @@ class JsoupFeedParserTest {
   }
 
   @Test
-  fun `RSS body falls back to description when content encoded has no text left after sanitizing`() {
+  fun `RSS body falls back to description when content encoded has neither text nor an image left`() {
     val item =
         parseFeed(
                 rssItem(
                     "<description>Short</description>" +
-                        """<content:encoded><![CDATA[<img src="a.png">]]></content:encoded>"""))
+                        """<content:encoded><![CDATA[<img src="javascript:alert(1)">]]></content:encoded>"""))
             .items
             .single()
 
@@ -468,7 +468,7 @@ class JsoupFeedParserTest {
   }
 
   @Test
-  fun `body drops scripts, styles, iframes, forms, images, and event attributes`() {
+  fun `body drops scripts, styles, iframes, forms, and event attributes`() {
     val item =
         parseFeed(
                 rssItem(
@@ -482,7 +482,7 @@ class JsoupFeedParserTest {
             .items
             .single()
 
-    assertEquals("<p>Hi</p>", item.contentHtml)
+    assertEquals("""<p>Hi</p><img src="https://example.com/a.png">""", item.contentHtml)
   }
 
   @Test
@@ -552,7 +552,7 @@ class JsoupFeedParserTest {
                 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>
                   <item><title>None</title></item>
                   <item><title>Blank</title><description>   </description></item>
-                  <item><title>Image only</title><content:encoded><![CDATA[<img src="a.png">]]></content:encoded></item>
+                  <item><title>Unusable image</title><content:encoded><![CDATA[<img src="javascript:alert(1)">]]></content:encoded></item>
                 </channel></rss>
                 """
                     .trimIndent())

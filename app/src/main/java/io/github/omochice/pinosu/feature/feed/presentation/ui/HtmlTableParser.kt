@@ -111,7 +111,12 @@ private class ExpandedRow(private val spansFromAbove: Map<Int, RowSpan>) {
 private fun Element.span(attribute: String): Int =
     attr(attribute).trim().toIntOrNull()?.takeIf { it > 0 } ?: 1
 
+/**
+ * Images are removed because a cell is laid out as styled text, where an image would only leave a
+ * placeholder character.
+ */
 private fun inlineHtmlOf(element: Element): String {
+  element.select("img").remove()
   generateSequence { element.selectFirst("table") }
       .forEach { nested -> nested.replaceWith(TextNode(nested.text())) }
   return element.html()

@@ -56,11 +56,13 @@ class JsoupFeedParserTableTest {
   }
 
   @Test
-  fun `body drops images inside table cells`() {
+  fun `body keeps images inside table cells`() {
     val body =
         bodyOf("""<table><tr><td>Logo<img src="https://example.com/a.png"></td></tr></table>""")
 
-    assertEquals("<table><tbody><tr><td>Logo</td></tr></tbody></table>", body)
+    assertEquals(
+        """<table><tbody><tr><td>Logo<img src="https://example.com/a.png"></td></tr></tbody></table>""",
+        body)
   }
 
   @Test

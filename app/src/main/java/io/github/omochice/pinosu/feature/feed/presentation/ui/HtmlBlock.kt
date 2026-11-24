@@ -23,8 +23,17 @@ internal data class TextBlock(val html: String, val isHeading: Boolean) : HtmlBl
  */
 internal data class TableBlock(val table: Table<String>) : HtmlBlock
 
+/**
+ * Block of an HTML body that is laid out as an image
+ *
+ * @property url Absolute HTTP(S) URL of the image
+ * @property alt Text describing the image, empty when it has none
+ */
+internal data class ImageBlock(val url: String, val alt: String) : HtmlBlock
+
 private const val DIV = "div"
 private const val TABLE = "table"
+private const val IMAGE = "img"
 private val HEADING_TAGS = setOf("h1", "h2", "h3", "h4", "h5", "h6")
 private val BLOCK_TAGS =
     HEADING_TAGS + setOf("p", "ul", "ol", "dl", "blockquote", "pre", DIV, TABLE)
@@ -32,8 +41,11 @@ private val BLOCK_TAGS =
 /**
  * Split HTML into its block-level parts
  *
+ * An image outside a table cell becomes a block of its own, which splits the text around it out of
+ * the element that held both, at the cost of that element, such as a heading or a link.
+ *
  * @param html HTML to split
- * @return The blocks with text, in document order
+ * @return The blocks with text or an image, in document order
  */
 internal fun splitHtmlBlocks(html: String): List<HtmlBlock> {
   val document = Jsoup.parseBodyFragment(html)
@@ -50,7 +62,7 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
     inlineRun.clear()
   }
   parent.childNodes().forEach { node ->
-    if (node is Element && node.normalName() in BLOCK_TAGS) {
+    if (node is Element && (node.normalName() in BLOCK_TAGS || node.selectFirst(IMAGE) != null)) {
       flushInlineRun()
       addBlock(node, blocks)
     } else {
@@ -62,7 +74,9 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
 
 private fun addBlock(element: Element, blocks: MutableList<HtmlBlock>) {
   when {
+    element.normalName() == IMAGE -> blocks += ImageBlock(element.attr("src"), element.attr("alt"))
     element.normalName() == TABLE -> addTable(element, blocks)
+    element.selectFirst(IMAGE) != null -> collectBlocks(element, blocks)
     element.normalName() == DIV && element.children().any { it.normalName() in BLOCK_TAGS } ->
         collectBlocks(element, blocks)
     element.hasText() ->

@@ -107,6 +107,51 @@ class FeedItemReaderScreenTest {
   }
 
   @Test
+  fun `shows an image of the body between the paragraphs around it`() {
+    setReader(
+        item.copy(
+            contentHtml =
+                "<p>Before the picture</p>" +
+                    "<img src=\"https://blog.example/body.png\" alt=\"Body picture\">" +
+                    "<p>After the picture</p>"))
+
+    val before = composeTestRule.onNodeWithText("Before the picture").getUnclippedBoundsInRoot()
+    val image =
+        composeTestRule
+            .onNodeWithContentDescription("Body picture")
+            .assertExists()
+            .getUnclippedBoundsInRoot()
+    val after = composeTestRule.onNodeWithText("After the picture").getUnclippedBoundsInRoot()
+    assertTrue(before.bottom <= image.top, "the image should be below the text before it")
+    assertTrue(image.bottom <= after.top, "the image should be above the text after it")
+  }
+
+  @Test
+  fun `a body image that is the article image is not shown twice`() {
+    setReader(
+        item.copy(
+            contentHtml =
+                "<img src=\"https://blog.example/cover.png\" alt=\"Cover in the body\">" +
+                    "<p>Text</p>" +
+                    "<img src=\"https://blog.example/other.png\" alt=\"Other picture\">"),
+        imageUrl = "https://blog.example/cover.png")
+
+    composeTestRule.onNodeWithContentDescription("Hello feeds").assertExists()
+    composeTestRule.onNodeWithContentDescription("Cover in the body").assertDoesNotExist()
+    composeTestRule.onNodeWithContentDescription("Other picture").assertExists()
+  }
+
+  @Test
+  fun `a body holding only the article image still shows it`() {
+    setReader(
+        item.copy(
+            contentHtml = "<img src=\"https://blog.example/cover.png\" alt=\"Cover in the body\">"),
+        imageUrl = "https://blog.example/cover.png")
+
+    composeTestRule.onNodeWithContentDescription("Cover in the body").assertExists()
+  }
+
+  @Test
   fun `shows the summary when the item has no body`() {
     setReader(item.copy(contentHtml = null))
 

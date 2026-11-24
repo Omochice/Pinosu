@@ -226,6 +226,59 @@ class HtmlBlockTest {
     assertEquals(listOf(TextBlock("<p>Kept</p>", false)), blocks)
   }
 
+  @Test
+  fun `an image between paragraphs becomes an image block in document order`() {
+    val blocks = splitHtmlBlocks("""<p>One</p><img src="$IMAGE" alt="Picture"><p>Two</p>""")
+
+    assertEquals(
+        listOf(
+            TextBlock("<p>One</p>", false),
+            ImageBlock(IMAGE, "Picture"),
+            TextBlock("<p>Two</p>", false)),
+        blocks)
+  }
+
+  @Test
+  fun `an image inside a paragraph splits the text around it`() {
+    val blocks = splitHtmlBlocks("""<p>a <img src="$IMAGE"> b</p>""")
+
+    assertEquals(
+        listOf(TextBlock("a ", false), ImageBlock(IMAGE, ""), TextBlock(" b", false)), blocks)
+  }
+
+  @Test
+  fun `an image inside a link becomes an image block without the link`() {
+    val blocks = splitHtmlBlocks("""<a href="https://blog.example/a"><img src="$IMAGE"></a>""")
+
+    assertEquals(listOf(ImageBlock(IMAGE, "")), blocks)
+  }
+
+  @Test
+  fun `an image in a div without text is kept`() {
+    val blocks = splitHtmlBlocks("""<div><img src="$IMAGE" alt="Picture"></div>""")
+
+    assertEquals(listOf(ImageBlock(IMAGE, "Picture")), blocks)
+  }
+
+  @Test
+  fun `an image in a table holding a single cell becomes an image block`() {
+    val blocks =
+        splitHtmlBlocks("""<table><tr><td><img src="$IMAGE"><p>Caption</p></td></tr></table>""")
+
+    assertEquals(listOf(ImageBlock(IMAGE, ""), TextBlock("<p>Caption</p>", false)), blocks)
+  }
+
+  @Test
+  fun `images in the cells of a table are left out of the cells`() {
+    val table = tableOf("""<table><tr><td>A<img src="$IMAGE"></td><td>B</td></tr></table>""")
+
+    assertEquals(listOf(listOf(TableCell("A", false), TableCell("B", false))), table.rows)
+  }
+
   private fun tableOf(html: String): Table<String> =
       (splitHtmlBlocks(html).single() as TableBlock).table
+
+  companion object {
+    private const val IMAGE = "https://blog.example/a.png"
+  }
 }

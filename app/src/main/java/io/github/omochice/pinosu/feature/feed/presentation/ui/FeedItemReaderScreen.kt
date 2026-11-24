@@ -62,7 +62,8 @@ private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.Wo
  * @param onNavigateUp Callback when the user leaves the reader
  * @param onBookmark Callback with the link and title of the item when its bookmark action is tapped
  * @param isReadOnly Whether to hide the bookmark action for read-only login
- * @param imageUrl Image of the article shown above its title, or null to show none
+ * @param imageUrl Image of the article shown above its title, and left out of the body, or null to
+ *   show none
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,12 +176,12 @@ private fun FeedItemArticle(
       OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
     }
     Spacer(modifier = Modifier.height(16.dp))
-    FeedItemBody(item = item, onOpenLink = onOpenLink)
+    FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
   }
 }
 
 @Composable
-private fun FeedItemBody(item: FeedItem, onOpenLink: (String) -> Unit) {
+private fun FeedItemBody(item: FeedItem, imageUrl: String?, onOpenLink: (String) -> Unit) {
   val html = item.contentHtml
   val bodyStyle = MaterialTheme.typography.bodyLarge.copy(lineBreak = PhraseParagraphBreak)
   when {
@@ -190,7 +191,8 @@ private fun FeedItemBody(item: FeedItem, onOpenLink: (String) -> Unit) {
             onOpenLink = onOpenLink,
             style = bodyStyle,
             headingStyle =
-                bodyStyle.copy(lineHeight = TextUnit.Unspecified, lineBreak = PhraseHeadingBreak))
+                bodyStyle.copy(lineHeight = TextUnit.Unspecified, lineBreak = PhraseHeadingBreak),
+            omittedImageUrl = imageUrl)
     item.summary.isNotBlank() -> Text(text = item.summary, style = bodyStyle)
     else ->
         Text(

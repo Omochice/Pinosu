@@ -6,12 +6,15 @@ import org.jsoup.safety.Cleaner
 import org.jsoup.safety.Safelist
 
 /**
- * Reduces the HTML body of a feed item to text formatting and tables with absolute HTTP(S) links
+ * Reduces the HTML body of a feed item to text formatting, tables, and images, with absolute
+ * HTTP(S) links and image sources
  */
 internal object ItemBodySanitizer {
 
   private const val ANCHOR = "a"
   private const val HREF = "href"
+  private const val IMAGE = "img"
+  private const val SRC = "src"
   private const val COLSPAN = "colspan"
   private const val ROWSPAN = "rowspan"
 
@@ -23,9 +26,10 @@ internal object ItemBodySanitizer {
 
   /**
    * [Safelist.basic] drops headings and `div`, which would run separate blocks of an article
-   * together, and tables, which would run their cells together, so they are added.
+   * together, tables, which would run their cells together, and images, so they are added.
    *
-   * [Safelist.relaxed] is not used for tables, because it also lets images through.
+   * [Safelist.relaxed] is not used, because it also keeps sizing attributes that would fight the
+   * reader's own layout, and removing them one by one is longer than adding what is needed.
    */
   private val SAFELIST: Safelist =
       Safelist.basic()
@@ -33,6 +37,9 @@ internal object ItemBodySanitizer {
           .addTags("table", "caption", "thead", "tbody", "tfoot", "tr", "th", "td")
           .addAttributes("th", COLSPAN, ROWSPAN)
           .addAttributes("td", COLSPAN, ROWSPAN)
+          .addTags(IMAGE)
+          .addAttributes(IMAGE, SRC, "alt")
+          .addProtocols(IMAGE, SRC, "http", "https")
           .removeProtocols(ANCHOR, HREF, "ftp", "mailto")
           .removeEnforcedAttribute(ANCHOR, "rel")
 
@@ -40,16 +47,20 @@ internal object ItemBodySanitizer {
    * Sanitize the HTML body of an item
    *
    * @param html Body as HTML
-   * @param base URL that relative links in [html] are relative to
-   * @return The sanitized HTML, or null when no text is left
+   * @param base URL that relative links and image sources in [html] are relative to
+   * @return The sanitized body, or null when neither text nor an image is left
    */
-  fun sanitize(html: String, base: String): String? {
+  fun sanitize(html: String, base: String): SanitizedBody? {
     val dirty = Jsoup.parseBodyFragment(html)
     resolveLinks(dirty, base)
+    resolveImages(dirty, base)
     val clean = Cleaner(SAFELIST).clean(dirty)
     limitSpans(clean)
     clean.outputSettings().prettyPrint(false)
-    return clean.body().takeIf { it.hasText() }?.html()
+    val body = clean.body()
+    return SanitizedBody(body.html(), body.hasText()).takeIf {
+      it.hasText || body.selectFirst(IMAGE) != null
+    }
   }
 
   /**
@@ -67,6 +78,28 @@ internal object ItemBodySanitizer {
     }
   }
 
+  /**
+   * Images are resolved like links, by the same rules [ItemImageFinder] uses, so that a body image
+   * that is also the image of the item has the same URL and can be recognised as such.
+   *
+   * An empty source is not resolved, because it would resolve to the page itself.
+   */
+  private fun resolveImages(document: Document, base: String) {
+    document.select(IMAGE).forEach { image ->
+      val resolved =
+          image
+              .attr(SRC)
+              .trim()
+              .takeIf { it.isNotEmpty() }
+              ?.let { LinkResolver.resolveAgainst(base, it) }
+      if (resolved == null) {
+        image.remove()
+      } else {
+        image.attr(SRC, resolved)
+      }
+    }
+  }
+
   private fun limitSpans(document: Document) {
     listOf(COLSPAN, ROWSPAN).forEach { attribute ->
       document.select("[$attribute]").forEach { cell ->
@@ -80,3 +113,11 @@ internal object ItemBodySanitizer {
     }
   }
 }
+
+/**
+ * HTML body of a feed item reduced by [ItemBodySanitizer]
+ *
+ * @property html Sanitized HTML
+ * @property hasText Whether any text is left, as opposed to images alone
+ */
+internal data class SanitizedBody(val html: String, val hasText: Boolean)

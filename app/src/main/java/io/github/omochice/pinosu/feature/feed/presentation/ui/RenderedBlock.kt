@@ -5,7 +5,7 @@ import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.fromHtml
 
-/** One block of an HTML body with its HTML converted to styled text */
+/** One block of an HTML body with its HTML converted to styled text or an image */
 internal sealed interface RenderedBlock
 
 /**
@@ -24,12 +24,20 @@ internal data class RenderedText(val text: AnnotatedString, val isHeading: Boole
 internal data class RenderedTable(val table: Table<AnnotatedString>) : RenderedBlock
 
 /**
+ * Block laid out as an image
+ *
+ * @property url Absolute HTTP(S) URL of the image
+ * @property alt Text describing the image, empty when it has none
+ */
+internal data class RenderedImage(val url: String, val alt: String) : RenderedBlock
+
+/**
  * Split HTML into blocks and convert each to styled text with tappable links
  *
- * @param html HTML to render, already reduced to text formatting and tables
+ * @param html HTML to render, already reduced to text formatting, tables, and images
  * @param linkStyles Styles of the links in the text
  * @param linkListener Listener called when a link in the text is tapped
- * @return The blocks with text, in document order
+ * @return The blocks with text or an image, in document order
  */
 internal fun renderHtmlBlocks(
     html: String,
@@ -48,6 +56,7 @@ internal fun renderHtmlBlocks(
     when (block) {
       is TextBlock -> RenderedText(annotate(block.html), block.isHeading)
       is TableBlock -> RenderedTable(block.table.map(::annotate))
+      is ImageBlock -> RenderedImage(block.url, block.alt)
     }
   }
 }

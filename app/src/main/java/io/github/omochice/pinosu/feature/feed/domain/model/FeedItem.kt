@@ -14,8 +14,8 @@ import java.time.Instant
  * @property publishedAt When the item was published, or null when the date is missing or unreadable
  * @property summary Item summary as plain text, or an empty string when the item has none
  * @property contentHtml Fullest body the item carries, as HTML that is safe to render: only text
- *   formatting and tables remain and every link is an absolute HTTP(S) URL; null when the item has
- *   no body text
+ *   formatting, tables, and images remain and every link and image source is an absolute HTTP(S)
+ *   URL; null when the item has neither body text nor a body image
  * @property feedCategory Category the user filed the feed under, or null when the feed is in none
  * @property imageUrl Absolute HTTP(S) URL of the image the feed gives the item, or null when it
  *   gives none
