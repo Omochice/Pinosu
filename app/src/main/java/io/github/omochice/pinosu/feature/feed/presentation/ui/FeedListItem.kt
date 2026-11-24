@@ -21,14 +21,22 @@ internal fun FeedListItem(
     articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
 ) {
-  val articleLink = item.link.takeIf { item.imageUrl == null }
+  val link = item.link
+  val articleLink = link.takeIf { item.imageUrl == null }
   val loadArticleImage = callbacks.onLoadArticleImage
   if (articleLink != null && loadArticleImage != null) {
     LaunchedEffect(articleLink) { loadArticleImage(articleLink) }
   }
+  val bookmark = callbacks.onBookmark
+  val onBookmark: (() -> Unit)? =
+      if (link != null && bookmark != null) {
+        { bookmark(link, item.title) }
+      } else {
+        null
+      }
   FeedItemCard(
       item = item,
       imageUrl = item.imageUrl ?: articleLink?.let(articleImages::get),
       onOpen = callbacks.onOpen,
-      onBookmark = callbacks.onBookmark?.takeIf { item.link != null })
+      onBookmark = onBookmark)
 }

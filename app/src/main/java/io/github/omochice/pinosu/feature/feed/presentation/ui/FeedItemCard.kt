@@ -39,7 +39,7 @@ fun FeedItemCard(
     item: FeedItem,
     imageUrl: String?,
     onOpen: (FeedItem) -> Unit,
-    onBookmark: ((FeedItem) -> Unit)?,
+    onBookmark: (() -> Unit)?,
 ) {
   val title = item.title.ifEmpty { item.link.orEmpty() }
   Card(
@@ -49,7 +49,7 @@ fun FeedItemCard(
         ThumbnailRow(imageUrl = imageUrl, contentDescription = title) {
           FeedItemText(title = title, byline = feedItemByline(item), modifier = Modifier.weight(1f))
           onBookmark?.let { bookmark ->
-            IconButton(onClick = { bookmark(item) }) {
+            IconButton(onClick = bookmark) {
               Icon(
                   imageVector = Icons.Outlined.BookmarkAdd,
                   contentDescription = stringResource(R.string.cd_bookmark_feed_item))

@@ -75,12 +75,7 @@ fun FeedScreen(
   val callbacks =
       FeedItemCallbacks(
           onOpen = onOpenItem,
-          onBookmark =
-              if (isReadOnly) {
-                null
-              } else {
-                { item -> item.link?.let { link -> onBookmarkItem(link, item.title) } }
-              },
+          onBookmark = if (isReadOnly) null else onBookmarkItem,
           onLoadArticleImage = onLoadArticleImage)
 
   val showContent: @Composable (FeedUiState.Content, FeedItemCallbacks) -> Unit =
