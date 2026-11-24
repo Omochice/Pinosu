@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import coil3.compose.AsyncImage
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
@@ -54,6 +55,9 @@ import kotlinx.coroutines.launch
 // instead of failing, which is why no version check is needed here.
 private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
 private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.WordBreak.Phrase)
+
+// Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
+private val ReaderLineHeight = 1.75.em
 
 /**
  * Composable function for the screen reading one feed item in the app
@@ -183,7 +187,9 @@ private fun FeedItemArticle(
 @Composable
 private fun FeedItemBody(item: FeedItem, imageUrl: String?, onOpenLink: (String) -> Unit) {
   val html = item.contentHtml
-  val bodyStyle = MaterialTheme.typography.bodyLarge.copy(lineBreak = PhraseParagraphBreak)
+  val bodyStyle =
+      MaterialTheme.typography.bodyLarge.copy(
+          lineHeight = ReaderLineHeight, lineBreak = PhraseParagraphBreak)
   when {
     html != null ->
         HtmlText(

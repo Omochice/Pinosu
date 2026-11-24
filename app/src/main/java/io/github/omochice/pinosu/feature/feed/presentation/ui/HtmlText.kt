@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 
-private val GapBeforeHeading = 16.dp
-private val GapBetweenBlocks = 8.dp
+private val GapBeforeHeading = 28.dp
+private val GapBetweenBlocks = 16.dp
 
 /**
  * Text and images rendered from HTML as spaced blocks, with tappable links

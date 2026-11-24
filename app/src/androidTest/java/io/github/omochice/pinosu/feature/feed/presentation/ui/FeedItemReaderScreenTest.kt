@@ -198,6 +198,31 @@ class FeedItemReaderScreenTest {
   }
 
   @Test
+  fun `body text and table cells are set with loose line spacing`() {
+    setReader(item.copy(contentHtml = "<p>First paragraph</p>$scoreTable"))
+
+    listOf("First paragraph", "Alice").forEach { text ->
+      assertTrue(lineSpacingOf(text) >= 1.7f, "line spacing of $text was ${lineSpacingOf(text)}")
+    }
+  }
+
+  @Test
+  fun `a summary is set with loose line spacing`() {
+    setReader(item.copy(contentHtml = null))
+
+    assertTrue(lineSpacingOf("A short summary") >= 1.7f)
+  }
+
+  @Test
+  fun `paragraphs are kept apart by a clear gap`() {
+    setReader(item.copy(contentHtml = "<p>First paragraph</p><p>Next paragraph</p>"))
+
+    val first = composeTestRule.onNodeWithText("First paragraph").getUnclippedBoundsInRoot()
+    val next = composeTestRule.onNodeWithText("Next paragraph").getUnclippedBoundsInRoot()
+    assertTrue(next.top - first.bottom >= 12.dp, "gap was ${next.top - first.bottom}")
+  }
+
+  @Test
   fun `title and body break lines at phrases`() {
     setReader(item.copy(contentHtml = "<h2>Section heading</h2><p>First paragraph</p>"))
 
@@ -322,6 +347,17 @@ class FeedItemReaderScreenTest {
 
   private fun wordBreakOf(text: String): LineBreak.WordBreak =
       layoutOf(text).layoutInput.style.lineBreak.wordBreak
+
+  /** Line height of [text] as a multiple of its font size */
+  private fun lineSpacingOf(text: String): Float {
+    val input = layoutOf(text).layoutInput
+    val lineHeight = input.style.lineHeight
+    return if (lineHeight.isEm) {
+      lineHeight.value
+    } else {
+      with(input.density) { lineHeight.toPx() / input.style.fontSize.toPx() }
+    }
+  }
 
   private fun layoutOf(text: String): TextLayoutResult {
     val layouts = mutableListOf<TextLayoutResult>()
