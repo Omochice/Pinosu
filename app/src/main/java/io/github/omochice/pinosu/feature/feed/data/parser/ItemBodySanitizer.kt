@@ -81,17 +81,10 @@ internal object ItemBodySanitizer {
   /**
    * Images are resolved like links, by the same rules [ItemImageFinder] uses, so that a body image
    * that is also the image of the item has the same URL and can be recognised as such.
-   *
-   * An empty source is not resolved, because it would resolve to the page itself.
    */
   private fun resolveImages(document: Document, base: String) {
     document.select(IMAGE).forEach { image ->
-      val resolved =
-          image
-              .attr(SRC)
-              .trim()
-              .takeIf { it.isNotEmpty() }
-              ?.let { LinkResolver.resolveAgainst(base, it) }
+      val resolved = LinkResolver.resolveWritten(base, image.attr(SRC))
       if (resolved == null) {
         image.remove()
       } else {

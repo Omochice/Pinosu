@@ -64,9 +64,6 @@ internal object RssReader {
 
   private fun link(parent: Element, feedUrl: String): String? {
     val element = parent.firstChildNamed(LINK) ?: return null
-    return element
-        .text()
-        .takeIf { it.isNotEmpty() }
-        ?.let { LinkResolver.resolve(element, it, feedUrl) }
+    return LinkResolver.resolve(element, element.text(), feedUrl)
   }
 }

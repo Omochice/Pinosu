@@ -12,12 +12,22 @@ internal object LinkResolver {
    * Resolve a link found on or inside [element]
    *
    * @param element Element the link was read from
-   * @param link Link as written in the feed
+   * @param link Link as written in the feed, possibly with surrounding whitespace
    * @param feedUrl URL the feed was fetched from
    * @return The absolute HTTP(S) URL, or null when [link] does not resolve to one
    */
   fun resolve(element: Element, link: String, feedUrl: String): String? =
-      resolveAgainst(baseOf(element, feedUrl), link)
+      resolveWritten(baseOf(element, feedUrl), link)
+
+  /**
+   * Resolve [link] as written in a feed against [base]
+   *
+   * An empty link is rejected rather than resolved, because it would resolve to the page itself.
+   *
+   * @return The absolute HTTP(S) URL, or null when [link] is blank or does not resolve to one
+   */
+  fun resolveWritten(base: String, link: String): String? =
+      link.trim().takeIf { it.isNotEmpty() }?.let { resolveAgainst(base, it) }
 
   /**
    * Base URL that links on or inside [element] are relative to

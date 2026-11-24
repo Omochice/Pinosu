@@ -79,10 +79,6 @@ internal object AtomReader {
         links.firstOrNull { it.attr(REL) == "alternate" }
             ?: links.firstOrNull { !it.hasAttr(REL) }
             ?: return null
-    return element
-        .attr("href")
-        .trim()
-        .takeIf { it.isNotEmpty() }
-        ?.let { LinkResolver.resolve(element, it, feedUrl) }
+    return LinkResolver.resolve(element, element.attr("href"), feedUrl)
   }
 }
