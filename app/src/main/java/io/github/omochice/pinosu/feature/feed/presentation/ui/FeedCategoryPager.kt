@@ -35,8 +35,7 @@ internal fun rememberFeedCategoryPagerState(
       key(categories) {
         val tabs = feedCategoryTabs(categories)
         rememberPagerState(
-            initialPage = tabs.indexOf(selectedCategory).coerceAtLeast(0),
-            pageCount = { tabs.size })
+            initialPage = feedCategoryTabIndex(tabs, selectedCategory), pageCount = { tabs.size })
       }
     }
 
@@ -64,7 +63,7 @@ internal fun FeedCategoryPager(
     page: @Composable (category: String?, isShown: Boolean) -> Unit,
 ) {
   val tabs = remember(categories) { feedCategoryTabs(categories) }
-  val selectedPage = tabs.indexOf(selectedCategory).coerceAtLeast(0)
+  val selectedPage = feedCategoryTabIndex(tabs, selectedCategory)
   LaunchedEffect(pagerState, selectedPage) {
     if (pagerState.currentPage != selectedPage) {
       pagerState.animateScrollToPage(selectedPage)

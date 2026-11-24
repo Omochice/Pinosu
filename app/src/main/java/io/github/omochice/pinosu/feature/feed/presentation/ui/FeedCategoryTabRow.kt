@@ -30,7 +30,7 @@ fun FeedCategoryTabRow(
 ) {
   val tabs = feedCategoryTabs(categories)
   PrimaryScrollableTabRow(
-      selectedTabIndex = tabs.indexOf(selectedCategory).coerceAtLeast(0),
+      selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory),
       indicator = { PagerSyncedTabIndicator(pagerState) }) {
         tabs.forEach { category ->
           Tab(
@@ -48,3 +48,12 @@ fun FeedCategoryTabRow(
  * @return null for the tab showing every feed, followed by [categories]
  */
 internal fun feedCategoryTabs(categories: List<String>): List<String?> = listOf(null) + categories
+
+/**
+ * Index of the tab of [category] among [tabs], or of the tab showing every feed when no tab has it
+ *
+ * @param tabs Tabs from [feedCategoryTabs]
+ * @param category Category to look up, or null for the tab showing every feed
+ */
+internal fun feedCategoryTabIndex(tabs: List<String?>, category: String?): Int =
+    tabs.indexOf(category).coerceAtLeast(0)
