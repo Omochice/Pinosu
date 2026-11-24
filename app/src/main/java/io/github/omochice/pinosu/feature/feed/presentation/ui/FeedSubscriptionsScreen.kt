@@ -51,7 +51,7 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.orderedCate
 private const val FEED_URL_MAX_LINES = 2
 
 /**
- * Composable function for the screen listing the feeds the user subscribes to
+ * Screen listing the feeds the user subscribes to
  *
  * @param uiState Subscription screen UI state
  * @param callbacks Callbacks for the user's actions

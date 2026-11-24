@@ -49,7 +49,6 @@ private val BLOCK_TAGS =
  * An image outside a table cell becomes a block of its own, which splits the text around it out of
  * the element that held both, at the cost of that element, such as a heading or a link.
  *
- * @param html HTML to split
  * @return The blocks with text or an image, in document order
  */
 internal fun splitHtmlBlocks(html: String): List<HtmlBlock<String>> {

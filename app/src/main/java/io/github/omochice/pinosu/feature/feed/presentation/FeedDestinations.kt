@@ -177,8 +177,6 @@ private fun NavController.navigateToPostBookmark(link: String, title: String) {
 /**
  * Article images of the timeline the reader was opened from, so the reader shows the image its card
  * showed without fetching the article page again
- *
- * The reader's own instance is used only when no timeline is below it on the back stack.
  */
 @Composable
 private fun timelineArticleImages(navController: NavController): ArticleImageViewModel {

@@ -38,7 +38,7 @@ import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadErr
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
 
 /**
- * Composable function for the feed timeline screen
+ * Feed timeline screen
  *
  * @param uiState Feed screen UI state
  * @param onRefresh Callback when pull-to-refresh or retry is triggered

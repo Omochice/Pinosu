@@ -7,8 +7,7 @@ private val WEB_SCHEMES = listOf("http://", "https://")
 /**
  * Whether [url] is an HTTP(S) URL
  *
- * Links from feeds are checked again before opening, because any other scheme (`intent:`,
- * `nostrsigner:`, `javascript:`) would hand control to another app.
+ * Feed links are checked again here, because any other scheme would hand control to another app.
  */
 internal fun isWebLink(url: String): Boolean =
     WEB_SCHEMES.any { url.startsWith(it, ignoreCase = true) }

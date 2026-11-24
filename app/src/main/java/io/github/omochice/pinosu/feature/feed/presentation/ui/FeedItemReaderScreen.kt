@@ -52,9 +52,7 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
 import kotlinx.coroutines.launch
 
-// Phrase breaking is applied by the platform from API 33 only.
-// Compose skips the line break config below it, so older devices keep the default word breaking
-// instead of failing, which is why no version check is needed here.
+// No SDK check: Compose ignores the phrase word break below API 33.
 private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
 
 // Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
@@ -65,7 +63,7 @@ private val ReaderLineHeight = 1.75.em
 private val ReaderMaxWidth = 640.dp
 
 /**
- * Composable function for the screen reading one feed item in the app
+ * Screen reading one feed item in the app
  *
  * @param item Item to read, or null when it is no longer loaded
  * @param onNavigateUp Callback when the user leaves the reader
