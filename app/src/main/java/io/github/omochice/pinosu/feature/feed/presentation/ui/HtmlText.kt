@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,11 +10,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
@@ -79,13 +84,37 @@ fun HtmlText(
 
 @Composable
 private fun ArticleImage(image: RenderedImage) {
+  // The height follows from the width by the image's own ratio rather than from the image
+  // loader's measuring, which kept the height of a previous width after the screen rotated.
+  var aspectRatio by remember(image.url) { mutableStateOf<Float?>(null) }
+  val ratio = aspectRatio
   AsyncImage(
       model = image.url,
       contentDescription = image.alt.ifBlank { null },
-      modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)),
+      modifier =
+          Modifier.fillMaxWidth()
+              .then(if (ratio == null) Modifier else Modifier.aspectRatio(ratio))
+              .clip(RoundedCornerShape(8.dp)),
       alignment = Alignment.CenterStart,
-      contentScale = ContentScale.Inside)
+      contentScale = if (ratio == null) ContentScale.Inside else ContentScale.Fit,
+      onSuccess = { aspectRatio = articleImageAspectRatio(it.painter.intrinsicSize) })
 }
+
+/**
+ * Aspect ratio at which an image in an article body fills the width of the article
+ *
+ * Icons and tracking pixels keep their own size, because stretched to the width they would be a
+ * blur or a large empty square.
+ *
+ * @param intrinsicSize Size of the decoded image in pixels
+ * @return Width divided by height for a picture, or null for anything that keeps its own size
+ */
+internal fun articleImageAspectRatio(intrinsicSize: Size): Float? =
+    intrinsicSize
+        .takeIf { it.isSpecified && it.width >= MIN_FILL_WIDTH_PX && it.height > 0f }
+        ?.let { it.width / it.height }
+
+private const val MIN_FILL_WIDTH_PX = 64f
 
 private fun gapAbove(block: RenderedBlock): Dp =
     if (block is RenderedText && block.isHeading) GapBeforeHeading else GapBetweenBlocks
