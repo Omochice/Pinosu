@@ -76,12 +76,14 @@ fun FeedScreen(
 
   val showContent: @Composable (FeedUiState.Content, FeedItemCallbacks) -> Unit =
       { content, pageCallbacks ->
-        FeedContent(
-            content = content,
-            articleImages = articleImages,
-            callbacks = pageCallbacks,
-            onRetry = onRefresh,
-            onAddFeed = manageSubscriptions)
+        FeedContent(content = content, onRetry = onRefresh, onAddFeed = manageSubscriptions) {
+            loaded ->
+          FeedList(
+              items = loaded.items,
+              failedFeeds = loaded.failedFeeds,
+              articleImages = articleImages,
+              callbacks = pageCallbacks)
+        }
       }
 
   val pagerState =
@@ -125,10 +127,9 @@ fun FeedScreen(
 @Composable
 private fun FeedContent(
     content: FeedUiState.Content,
-    articleImages: Map<String, String?>,
-    callbacks: FeedItemCallbacks,
     onRetry: () -> Unit,
     onAddFeed: (() -> Unit)?,
+    loaded: @Composable (FeedUiState.Content.Loaded) -> Unit,
 ) {
   when (content) {
     FeedUiState.Content.Loading ->
@@ -138,12 +139,7 @@ private fun FeedContent(
     FeedUiState.Content.Empty -> ScrollableCenteredBox { FeedEmpty(onAddFeed = onAddFeed) }
     is FeedUiState.Content.Error ->
         ScrollableCenteredBox { FeedError(reason = content.reason, onRetry = onRetry) }
-    is FeedUiState.Content.Loaded ->
-        FeedList(
-            items = content.items,
-            failedFeeds = content.failedFeeds,
-            articleImages = articleImages,
-            callbacks = callbacks)
+    is FeedUiState.Content.Loaded -> loaded(content)
   }
 }
 
