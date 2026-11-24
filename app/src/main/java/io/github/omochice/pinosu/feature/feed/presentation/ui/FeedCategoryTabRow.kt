@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,6 +11,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.ui.component.PagerSyncedTabIndicator
+
+// As few tabs as the bookmark screen has share the width as its tabs do; more scroll instead,
+// because shared widths would cut long category names short.
+private const val MAX_FIXED_TABS = 2
 
 // The Material defaults of 52dp inset and 90dp tabs leave short category names floating in gaps,
 // so tabs start at the timeline's margin and shrink to their names down to a touch target.
@@ -34,18 +39,28 @@ fun FeedCategoryTabRow(
     onSelect: (String?) -> Unit,
 ) {
   val tabs = feedCategoryTabs(categories)
-  PrimaryScrollableTabRow(
-      selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory),
-      edgePadding = TabRowEdgePadding,
-      minTabWidth = MinTabWidth,
-      indicator = { PagerSyncedTabIndicator(pagerState) }) {
-        tabs.forEach { category ->
-          Tab(
-              selected = category == selectedCategory,
-              onClick = { onSelect(category) },
-              text = { Text(category ?: stringResource(R.string.tab_all_feeds)) })
-        }
-      }
+  val selectedTabIndex = feedCategoryTabIndex(tabs, selectedCategory)
+  val tabContent: @Composable () -> Unit = {
+    tabs.forEach { category ->
+      Tab(
+          selected = category == selectedCategory,
+          onClick = { onSelect(category) },
+          text = { Text(category ?: stringResource(R.string.tab_all_feeds)) })
+    }
+  }
+  if (tabs.size <= MAX_FIXED_TABS) {
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
+        indicator = { PagerSyncedTabIndicator(pagerState) },
+        tabs = tabContent)
+  } else {
+    PrimaryScrollableTabRow(
+        selectedTabIndex = selectedTabIndex,
+        edgePadding = TabRowEdgePadding,
+        minTabWidth = MinTabWidth,
+        indicator = { PagerSyncedTabIndicator(pagerState) },
+        tabs = tabContent)
+  }
 }
 
 /**

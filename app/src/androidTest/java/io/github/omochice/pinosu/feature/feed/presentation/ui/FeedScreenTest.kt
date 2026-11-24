@@ -476,6 +476,23 @@ class FeedScreenTest {
   }
 
   @Test
+  fun `two category tabs share the width evenly`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(newsItem, item).copy(categories = listOf("News")), onRefresh = {})
+    }
+
+    val root = composeTestRule.onRoot().getUnclippedBoundsInRoot()
+    val allTab =
+        composeTestRule
+            .onNodeWithText(getTestString(R.string.tab_all_feeds))
+            .getUnclippedBoundsInRoot()
+    val newsTab = composeTestRule.onNodeWithText("News").getUnclippedBoundsInRoot()
+    val half = (root.right - root.left) / 2
+    assertTrue(abs((allTab.right - allTab.left - half).value) < 1f, "All tab was $allTab")
+    assertTrue(abs((newsTab.left - half).value) < 1f, "News tab was $newsTab")
+  }
+
+  @Test
   fun `the first category tab starts at the content margin`() {
     composeTestRule.setContent { CategorizedFeedScreen() }
 
