@@ -36,14 +36,21 @@ fun FeedItemCard(
     onBookmark: (() -> Unit)?,
 ) {
   val title = feedItemTitle(item)
+  FeedItemCardShell(onClick = { onOpen(item) }) {
+    ThumbnailRow(imageUrl = imageUrl, contentDescription = title) {
+      FeedItemText(title = title, byline = feedItemByline(item), modifier = Modifier.weight(1f))
+      onBookmark?.let { FeedItemBookmarkButton(onClick = it) }
+    }
+  }
+}
+
+@Composable
+private fun FeedItemCardShell(onClick: () -> Unit, content: @Composable () -> Unit) {
   Card(
-      modifier = Modifier.fillMaxWidth().clickable { onOpen(item) },
+      modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
       elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
       colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-        ThumbnailRow(imageUrl = imageUrl, contentDescription = title) {
-          FeedItemText(title = title, byline = feedItemByline(item), modifier = Modifier.weight(1f))
-          onBookmark?.let { FeedItemBookmarkButton(onClick = it) }
-        }
+        content()
       }
 }
 
