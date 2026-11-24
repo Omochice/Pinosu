@@ -38,7 +38,7 @@ class HtmlBlockTest {
             "<blockquote>Quote</blockquote>",
             "<pre>code  here</pre>",
             "<ol><li>C</li></ol>"),
-        blocks.map { (it as TextBlock).html })
+        blocks.map { (it as TextBlock).content })
   }
 
   @Test
@@ -48,7 +48,7 @@ class HtmlBlockTest {
 
     assertEquals(
         "<h3>See <a href=\"https://blog.example/a\">this</a></h3>",
-        (blocks.first() as TextBlock).html)
+        (blocks.first() as TextBlock).content)
   }
 
   @Test
