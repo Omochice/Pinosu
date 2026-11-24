@@ -7,12 +7,7 @@ import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptio
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import javax.inject.Inject
 
-/**
- * Implementation of [LoadFeedSubscriptionsUseCase]
- *
- * @param subscriptionRepository Repository for the subscription list
- * @param getLoginStateUseCase UseCase for retrieving current login state
- */
+/** Implementation of [LoadFeedSubscriptionsUseCase] */
 class LoadFeedSubscriptionsUseCaseImpl
 @Inject
 constructor(

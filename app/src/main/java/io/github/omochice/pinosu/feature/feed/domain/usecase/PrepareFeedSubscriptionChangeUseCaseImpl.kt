@@ -13,14 +13,7 @@ import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRep
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import javax.inject.Inject
 
-/**
- * Implementation of [PrepareFeedSubscriptionChangeUseCase]
- *
- * @param subscriptionRepository Repository for the subscription list
- * @param discoveryRepository Repository that finds the feed the user entered
- * @param getLoginStateUseCase UseCase for retrieving current login state
- * @param authRepository Repository that tells whether the user logged in read-only
- */
+/** Implementation of [PrepareFeedSubscriptionChangeUseCase] */
 class PrepareFeedSubscriptionChangeUseCaseImpl
 @Inject
 constructor(

@@ -9,7 +9,6 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
  * item in their input order.
  *
  * @param itemsPerFeed Items of each feed, in subscription order
- * @return The merged items
  */
 internal fun mergeNewestFirst(itemsPerFeed: List<List<FeedItem>>): List<FeedItem> {
   val (dated, undated) = itemsPerFeed.flatten().partition { it.publishedAt != null }

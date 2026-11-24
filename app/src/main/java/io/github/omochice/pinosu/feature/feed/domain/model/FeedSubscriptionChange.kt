@@ -27,24 +27,12 @@ sealed interface FeedSubscriptionChange {
    */
   data class ChooseCandidate(val candidates: List<FeedCandidate>) : FeedSubscriptionChange
 
-  /**
-   * The feed to add is already in the list, so nothing changes
-   *
-   * @property feedUrl URL of the feed
-   */
+  /** The feed to add is already in the list, so nothing changes */
   data class AlreadySubscribed(val feedUrl: String) : FeedSubscriptionChange
 
-  /**
-   * The feed to remove or file under a category is not in the list, so nothing changes
-   *
-   * @property feedUrl URL of the feed
-   */
+  /** The feed to remove or file under a category is not in the list, so nothing changes */
   data class NotSubscribed(val feedUrl: String) : FeedSubscriptionChange
 
-  /**
-   * The feed is already in the category it was to be filed under, so nothing changes
-   *
-   * @property feedUrl URL of the feed
-   */
+  /** The feed is already in the category it was to be filed under, so nothing changes */
   data class CategoryUnchanged(val feedUrl: String) : FeedSubscriptionChange
 }

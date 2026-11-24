@@ -15,13 +15,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
-/**
- * Implementation of [LoadFeedTimelineUseCase]
- *
- * @param subscriptionRepository Repository for the subscription list
- * @param feedRepository Repository that fetches each feed
- * @param getLoginStateUseCase UseCase for retrieving current login state
- */
+/** Implementation of [LoadFeedTimelineUseCase] */
 class LoadFeedTimelineUseCaseImpl
 @Inject
 constructor(
