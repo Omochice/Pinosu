@@ -67,9 +67,10 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock<String>
     inlineRun.clear()
   }
   parent.childNodes().forEach { node ->
-    if (node is Element && (node.normalName() in BLOCK_TAGS || node.selectFirst(IMAGE) != null)) {
+    val holdsImage = node is Element && node.selectFirst(IMAGE) != null
+    if (node is Element && (node.normalName() in BLOCK_TAGS || holdsImage)) {
       flushInlineRun()
-      addBlock(node, blocks)
+      addBlock(node, holdsImage, blocks)
     } else {
       inlineRun += node
     }
@@ -77,11 +78,15 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock<String>
   flushInlineRun()
 }
 
-private fun addBlock(element: Element, blocks: MutableList<HtmlBlock<String>>) {
+private fun addBlock(
+    element: Element,
+    holdsImage: Boolean,
+    blocks: MutableList<HtmlBlock<String>>
+) {
   when {
     element.normalName() == IMAGE -> blocks += ImageBlock(element.attr("src"), element.attr("alt"))
     element.normalName() == TABLE -> addTable(element, blocks)
-    element.selectFirst(IMAGE) != null -> collectBlocks(element, blocks)
+    holdsImage -> collectBlocks(element, blocks)
     element.normalName() == DIV && element.children().any { it.normalName() in BLOCK_TAGS } ->
         collectBlocks(element, blocks)
     element.hasText() ->
