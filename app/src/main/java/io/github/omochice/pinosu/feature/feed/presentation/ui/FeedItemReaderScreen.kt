@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,10 +15,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -68,11 +72,7 @@ fun FeedItemReaderScreen(
 
   Scaffold(
       topBar = {
-        FeedItemReaderTopBar(
-            link = item?.link,
-            onNavigateUp = onNavigateUp,
-            onOpenInBrowser = openLink,
-            onBookmark = bookmark)
+        FeedItemReaderTopBar(link = item?.link, onNavigateUp = onNavigateUp, onBookmark = bookmark)
       },
       snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         val modifier = Modifier.padding(paddingValues).fillMaxSize()
@@ -103,7 +103,6 @@ private fun rememberLinkOpener(snackbarHostState: SnackbarHostState): (String) -
 private fun FeedItemReaderTopBar(
     link: String?,
     onNavigateUp: () -> Unit,
-    onOpenInBrowser: (String) -> Unit,
     onBookmark: ((String) -> Unit)?,
 ) {
   TopAppBar(
@@ -116,21 +115,26 @@ private fun FeedItemReaderTopBar(
         }
       },
       actions = {
-        if (link != null) {
-          if (onBookmark != null) {
-            IconButton(onClick = { onBookmark(link) }) {
-              Icon(
-                  imageVector = Icons.Outlined.BookmarkAdd,
-                  contentDescription = stringResource(R.string.cd_bookmark_feed_item))
-            }
-          }
-          IconButton(onClick = { onOpenInBrowser(link) }) {
+        if (link != null && onBookmark != null) {
+          IconButton(onClick = { onBookmark(link) }) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                contentDescription = stringResource(R.string.button_open_in_browser))
+                imageVector = Icons.Outlined.BookmarkAdd,
+                contentDescription = stringResource(R.string.cd_bookmark_feed_item))
           }
         }
       })
+}
+
+@Composable
+private fun OpenInBrowserButton(link: String, onOpenLink: (String) -> Unit) {
+  OutlinedButton(onClick = { onOpenLink(link) }) {
+    Icon(
+        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+        contentDescription = null,
+        modifier = Modifier.size(ButtonDefaults.IconSize))
+    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+    Text(stringResource(R.string.button_open_in_browser))
+  }
 }
 
 @Composable
@@ -144,6 +148,10 @@ private fun FeedItemArticle(item: FeedItem, onOpenLink: (String) -> Unit, modifi
         text = feedItemByline(item),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
+    item.link?.let { link ->
+      Spacer(modifier = Modifier.height(8.dp))
+      OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
+    }
     Spacer(modifier = Modifier.height(16.dp))
     FeedItemBody(item = item, onOpenLink = onOpenLink)
   }

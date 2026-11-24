@@ -282,22 +282,38 @@ class FeedItemReaderScreenTest {
   }
 
   @Test
-  fun `open in browser action opens the item link`() {
+  fun `open in browser button opens the item link`() {
     setReader(item)
 
-    composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
-        .performClick()
+    composeTestRule.onNodeWithText(getTestString(R.string.button_open_in_browser)).performClick()
 
     assertEquals(listOf("https://blog.example/hello"), openedUris)
   }
 
   @Test
-  fun `open in browser action is hidden for an item without a link`() {
+  fun `open in browser button sits between the byline and the body`() {
+    setReader(item)
+
+    val byline =
+        composeTestRule.onNodeWithText("Example Blog", substring = true).getUnclippedBoundsInRoot()
+    val button =
+        composeTestRule
+            .onNodeWithText(getTestString(R.string.button_open_in_browser))
+            .getUnclippedBoundsInRoot()
+    val body =
+        composeTestRule
+            .onNodeWithText("First paragraph of the article", substring = true)
+            .getUnclippedBoundsInRoot()
+    assertTrue(byline.bottom <= button.top, "the button should be below the byline")
+    assertTrue(button.bottom <= body.top, "the button should be above the body")
+  }
+
+  @Test
+  fun `open in browser button is hidden for an item without a link`() {
     setReader(item.copy(link = null))
 
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
+        .onNodeWithText(getTestString(R.string.button_open_in_browser))
         .assertDoesNotExist()
   }
 
@@ -321,7 +337,7 @@ class FeedItemReaderScreenTest {
         .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
         .assertDoesNotExist()
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
+        .onNodeWithText(getTestString(R.string.button_open_in_browser))
         .assertIsDisplayed()
   }
 
@@ -343,7 +359,7 @@ class FeedItemReaderScreenTest {
         .onNodeWithText(getTestString(R.string.message_feed_item_not_found))
         .assertIsDisplayed()
     composeTestRule
-        .onNodeWithContentDescription(getTestString(R.string.button_open_in_browser))
+        .onNodeWithText(getTestString(R.string.button_open_in_browser))
         .assertDoesNotExist()
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_bookmark_feed_item))
