@@ -16,8 +16,6 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the feed timeline screen
  *
- * Loads the timeline once when created, which happens when the screen opens.
- *
  * @param loadFeedTimeline UseCase that builds the timeline from the user's subscriptions
  * @param loadedItems Holder the shown items are handed to, so the reader can open them
  */
@@ -58,8 +56,7 @@ constructor(
   }
 
   /**
-   * Select the tab of a category, whose items are already in the timeline so nothing is loaded
-   * again
+   * Select the tab of a category
    *
    * @param category Category whose tab the user selected, or null for the tab showing every feed
    */

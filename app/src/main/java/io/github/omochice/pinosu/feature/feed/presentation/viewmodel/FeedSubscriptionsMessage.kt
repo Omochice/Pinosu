@@ -45,12 +45,7 @@ enum class FeedSubscriptionsMessage {
   ChangeFailed,
 }
 
-/**
- * Message for a failure to prepare a change
- *
- * @param error Failure reported while preparing the change
- * @return The message to show
- */
+/** Message for a failure to prepare a change */
 internal fun prepareFailureMessage(error: Throwable): FeedSubscriptionsMessage =
     when (error) {
       is ReadOnlyLoginException -> FeedSubscriptionsMessage.ReadOnly
@@ -60,12 +55,7 @@ internal fun prepareFailureMessage(error: Throwable): FeedSubscriptionsMessage =
       else -> FeedSubscriptionsMessage.ChangeFailed
     }
 
-/**
- * Message for a failure to sign or publish a prepared list
- *
- * @param error Failure reported while signing or publishing
- * @return The message to show
- */
+/** Message for a failure to sign or publish a prepared list */
 internal fun publishFailureMessage(error: Throwable): FeedSubscriptionsMessage =
     when (error) {
       is Nip55Error -> FeedSubscriptionsMessage.SigningCancelled

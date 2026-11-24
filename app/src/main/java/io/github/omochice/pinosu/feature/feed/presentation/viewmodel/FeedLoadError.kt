@@ -21,9 +21,7 @@ enum class FeedLoadError {
 /**
  * Classify a failure to load the subscription list
  *
- * @param error Failure reported while loading the list
- * @return The matching reason, or [FeedLoadError.Unknown] for anything but a list that no relay
- *   served
+ * @return [FeedLoadError.Unknown] for anything but a list that no relay served
  */
 internal fun feedLoadErrorOf(error: Throwable): FeedLoadError =
     if (error is FeedSubscriptionListUnavailableException) {
@@ -32,12 +30,7 @@ internal fun feedLoadErrorOf(error: Throwable): FeedLoadError =
       FeedLoadError.Unknown
     }
 
-/**
- * Classify why no relay served the subscription list
- *
- * @param reason Reason reported by the subscription repository
- * @return The matching reason
- */
+/** Classify why no relay served the subscription list */
 internal fun feedLoadErrorOf(reason: FeedSubscriptionLoadResult.Reason): FeedLoadError =
     when (reason) {
       FeedSubscriptionLoadResult.Reason.NO_USER_RELAYS -> FeedLoadError.NoUserRelays

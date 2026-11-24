@@ -12,27 +12,20 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
  * ViewModel for the feed item reader screen
  *
  * The item is looked up once, so a timeline reload while reading does not take it away.
- *
- * @param route Route naming the item to read
- * @param loadedItems Items of the timeline the reader was opened from
  */
 @HiltViewModel(assistedFactory = FeedItemReaderViewModel.Factory::class)
 class FeedItemReaderViewModel
 @AssistedInject
 constructor(@Assisted route: FeedItemReader, loadedItems: LoadedFeedItems) : ViewModel() {
 
-  /** The item to read, or null when the timeline no longer holds it, as after process death */
+  /** The item to read, or null when the timeline no longer holds it */
   val item: FeedItem? = loadedItems.find(route.feedUrl, route.itemId)
 
   /** Creates the ViewModel for one route */
   @AssistedFactory
   interface Factory {
 
-    /**
-     * Create the ViewModel
-     *
-     * @param route Route naming the item to read
-     */
+    /** Create the ViewModel for [route] */
     fun create(route: FeedItemReader): FeedItemReaderViewModel
   }
 }

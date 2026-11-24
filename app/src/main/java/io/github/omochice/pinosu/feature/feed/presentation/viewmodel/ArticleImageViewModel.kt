@@ -19,8 +19,6 @@ import kotlinx.coroutines.sync.withPermit
  *
  * Each article is looked up at most once while the timeline lives, including when it has no image,
  * so scrolling back to a card does not fetch its page again.
- *
- * @param repository Repository that finds the image of an article
  */
 @HiltViewModel
 class ArticleImageViewModel @Inject constructor(private val repository: ArticleImageRepository) :
@@ -39,8 +37,7 @@ class ArticleImageViewModel @Inject constructor(private val repository: ArticleI
    * Look up the image of an article unless it is already known
    *
    * This runs in the caller's coroutine rather than in a ViewModel scope, so that a card scrolled
-   * away before its turn cancels its lookup instead of delaying the cards still on screen. A
-   * cancelled lookup is not remembered and runs again on the next call.
+   * away before its turn cancels its lookup instead of delaying the cards still on screen.
    *
    * A call for a link already being looked up waits for that lookup rather than returning at once,
    * because the same item can be shown on two pager pages and the lookup of the page swiped away is

@@ -11,8 +11,7 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
  * @property isRefreshing Whether a pull-to-refresh reload is running over [content]
  * @property categories Names of the category tabs that follow the tab showing every feed, in the
  *   order to show them
- * @property selectedCategory Category whose tab is selected, or null when the tab showing every
- *   feed is
+ * @property selectedCategory Category whose tab is selected, or null for the tab showing every feed
  */
 data class FeedUiState(
     val content: Content = Content.Loading,
