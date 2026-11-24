@@ -1,15 +1,12 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.RssFeed
@@ -32,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
@@ -213,29 +209,6 @@ private fun FeedError(reason: FeedLoadError, onRetry: () -> Unit) {
     Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
   }
 }
-
-@Composable
-private fun FeedList(
-    items: List<FeedItem>,
-    failedFeeds: List<FeedFetchFailure>,
-    articleImages: Map<String, String?>,
-    callbacks: FeedItemCallbacks,
-) {
-  LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (failedFeeds.isNotEmpty()) {
-          item(key = "failedFeeds") { FailedFeedsNotice(failedFeeds = failedFeeds) }
-        }
-        items(items, key = ::feedItemKey) { item ->
-          FeedListItem(item = item, articleImages = articleImages, callbacks = callbacks)
-        }
-      }
-}
-
-/** Lazy list key of [item]; its id is unique only within its own feed */
-private fun feedItemKey(item: FeedItem): String = "${item.feedUrl}\n${item.id}"
 
 @Preview(showBackground = true)
 @Composable
