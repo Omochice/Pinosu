@@ -57,7 +57,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 [versions]
 aboutlibraries = "15.3.0"
 activityCompose = "1.13.0"
-agp = "9.5.2"
+agp = "9.5.3"
 coil = "3.6.3"
 composeBom = "2026.09.00"
 coreKtx = "1.19.1"
