@@ -19,6 +19,8 @@ import java.time.Instant
  * @property feedCategory Category the user filed the feed under, or null when the feed is in none
  * @property imageUrl Absolute HTTP(S) URL of the image the feed gives the item, or null when it
  *   gives none
+ * @property language BCP 47 tag of the language the item is written in, as the feed declares it, or
+ *   null when the feed declares none
  */
 data class FeedItem(
     val id: String,
@@ -31,4 +33,5 @@ data class FeedItem(
     val contentHtml: String? = null,
     val feedCategory: String? = null,
     val imageUrl: String? = null,
+    val language: String? = null,
 )
