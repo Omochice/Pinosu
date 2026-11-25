@@ -194,6 +194,8 @@ private fun FeedItemArticleColumn(
         }
         Text(
             text = item.title.ifEmpty { item.link.orEmpty() },
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineSmall.copy(
                 lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
         Spacer(modifier = Modifier.height(8.dp))
