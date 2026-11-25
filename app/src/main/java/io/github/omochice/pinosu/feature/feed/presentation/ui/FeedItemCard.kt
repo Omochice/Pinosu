@@ -18,11 +18,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.ui.component.CardTitle
 import io.github.omochice.pinosu.ui.component.OgpThumbnail
 import io.github.omochice.pinosu.ui.component.ThumbnailRow
 import java.time.Instant
-
-private const val TITLE_MAX_LINES = 2
 
 /**
  * Card showing one feed item, laid out like a bookmark in the bookmark list
@@ -96,12 +95,7 @@ private fun FeedItemCardShell(onClick: () -> Unit, content: @Composable () -> Un
 @Composable
 private fun FeedItemText(title: String, byline: String, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-        color = MaterialTheme.colorScheme.primary,
-        maxLines = TITLE_MAX_LINES,
-        overflow = TextOverflow.Ellipsis)
+    CardTitle(text = title)
     Spacer(modifier = Modifier.height(8.dp))
     Text(
         text = byline,

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
+import io.github.omochice.pinosu.ui.component.CardTitle
 import io.github.omochice.pinosu.ui.component.OgpThumbnail
 import io.github.omochice.pinosu.ui.component.ThumbnailRow
 
@@ -174,12 +175,7 @@ private fun BookmarkLongPressMenu(
 private fun BookmarkCardTextContent(bookmark: BookmarkItem, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     bookmark.title?.let { title ->
-      Text(
-          text = title,
-          style = MaterialTheme.typography.titleLarge,
-          color = MaterialTheme.colorScheme.primary,
-          maxLines = 2,
-          overflow = TextOverflow.Ellipsis)
+      CardTitle(text = title)
       Spacer(modifier = Modifier.height(8.dp))
     }
 
