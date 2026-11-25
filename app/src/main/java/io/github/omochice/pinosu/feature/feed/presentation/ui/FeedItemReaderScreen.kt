@@ -57,7 +57,6 @@ import kotlinx.coroutines.launch
 // Compose skips the line break config below it, so older devices keep the default word breaking
 // instead of failing, which is why no version check is needed here.
 private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
-private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.WordBreak.Phrase)
 
 // Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
 private val ReaderLineHeight = 1.75.em
@@ -196,7 +195,7 @@ private fun FeedItemArticleColumn(
         Text(
             text = item.title.ifEmpty { item.link.orEmpty() },
             style = MaterialTheme.typography.headlineSmall.copy(
-                lineBreak = PhraseHeadingBreak, localeList = item.localeList()))
+                lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = feedItemByline(item),
@@ -225,8 +224,7 @@ private fun FeedItemBody(item: FeedItem, imageUrl: String?, onOpenLink: (String)
             html = html,
             onOpenLink = onOpenLink,
             style = bodyStyle,
-            headingStyle =
-                bodyStyle.copy(lineHeight = TextUnit.Unspecified, lineBreak = PhraseHeadingBreak),
+            headingStyle = bodyStyle.copy(lineHeight = TextUnit.Unspecified),
             omittedImageUrl = imageUrl)
     item.summary.isNotBlank() -> Text(text = item.summary, style = bodyStyle)
     else ->
