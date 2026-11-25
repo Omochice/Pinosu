@@ -41,8 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -238,12 +236,6 @@ private fun FeedItemBody(item: FeedItem, imageUrl: String?, onOpenLink: (String)
             color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
-
-/**
- * Locale the text of [this] is written in, without which Android applies the phrase word break only
- * when the device itself is set to Japanese
- */
-private fun FeedItem.localeList(): LocaleList? = language?.let { LocaleList(Locale(it)) }
 
 @Composable
 private fun FeedItemNotFound(onNavigateUp: () -> Unit, modifier: Modifier) {
