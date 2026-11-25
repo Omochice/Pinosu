@@ -12,7 +12,7 @@ private const val CARD_TITLE_MAX_LINES = 2
 fun CardTitle(text: String) {
   Text(
       text = text,
-      style = MaterialTheme.typography.titleLarge,
+      style = MaterialTheme.typography.titleMedium,
       color = MaterialTheme.colorScheme.primary,
       maxLines = CARD_TITLE_MAX_LINES,
       overflow = TextOverflow.Ellipsis)
