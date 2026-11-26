@@ -1,12 +1,7 @@
 package io.github.omochice.pinosu.core.relay
 
-import io.github.omochice.pinosu.core.model.NostrEvent
-import io.mockk.every
 import io.mockk.mockk
-import java.io.IOException
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -16,11 +11,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -43,106 +34,13 @@ class RelayPoolQueryEachRelayTest {
     executor.shutdown()
   }
 
-  private fun createMockEvent(id: String): NostrEvent {
-    return NostrEvent(
-        id = id,
-        pubkey = "testpubkey",
-        createdAt = 1_700_000_000L,
-        kind = 1,
-        tags = listOf(listOf("d", "test")),
-        content = "",
-        sig = "dummy-sig")
-  }
-
-  private fun eventMessage(subscriptionId: String, event: NostrEvent): String {
-    val eventJson = Json.encodeToString(NostrEvent.serializer(), event)
-    return """["EVENT","$subscriptionId",$eventJson]"""
-  }
-
-  /**
-   * WebSocket mock that answers a REQ with relay messages built from the subscription ID.
-   *
-   * When [closeAfterScript] is set, the relay drops the connection after the last message instead
-   * of waiting for the client to close it.
-   */
-  private inner class ScriptedWebSocketState(
-      private val closeAfterScript: Boolean = false,
-      private val script: (subscriptionId: String) -> List<String>,
-  ) {
-    val ws: WebSocket = mockk(relaxed = true)
-    val sentMessages = CopyOnWriteArrayList<String>()
-    private val closed = AtomicBoolean(false)
-
-    @Volatile private var wsListener: WebSocketListener? = null
-
-    init {
-      every { ws.send(any<String>()) } answers
-          {
-            val message = firstArg<String>()
-            sentMessages.add(message)
-            val currentListener = wsListener
-            if (currentListener != null && message.startsWith("[\"REQ\"")) {
-              val subscriptionId = extractSubscriptionId(message)
-              executor.execute {
-                Thread.sleep(50)
-                for (reply in script(subscriptionId)) {
-                  if (!closed.get()) {
-                    currentListener.onMessage(ws, reply)
-                    Thread.sleep(10)
-                  }
-                }
-                if (closeAfterScript && !closed.get()) {
-                  currentListener.onClosing(ws, 1001, "going away")
-                }
-              }
-            }
-            true
-          }
-
-      every { ws.close(any(), any()) } answers
-          {
-            closed.set(true)
-            val code = firstArg<Int>()
-            val reason = secondArg<String?>() ?: ""
-            val currentListener = wsListener
-            if (currentListener != null) {
-              executor.execute {
-                Thread.sleep(30)
-                currentListener.onClosed(ws, code, reason)
-              }
-            }
-            true
-          }
-    }
-
-    private fun extractSubscriptionId(reqMessage: String): String {
-      val regex = """\["REQ","([^"]+)".*\]""".toRegex()
-      return regex.find(reqMessage)?.groupValues?.get(1) ?: "unknown"
-    }
-
-    fun connect(listener: WebSocketListener): WebSocket {
-      wsListener = listener
-      executor.execute {
-        Thread.sleep(30)
-        listener.onOpen(ws, mockk<Response>(relaxed = true))
-      }
-      return ws
-    }
-  }
-
-  private fun stubRelay(urlPart: String, state: ScriptedWebSocketState) {
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains(urlPart) }, any())
-    } answers { state.connect(secondArg()) }
-  }
-
   @Test
   fun `EOSE after events should yield Eose with those events`() = runBlocking {
-    val event1 = createMockEvent("event1")
-    val event2 = createMockEvent("event2")
-    stubRelay(
+    val event1 = relayTestEvent("event1")
+    val event2 = relayTestEvent("event2")
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState { subId ->
+        ScriptedRelayWebSocket(executor) { subId ->
           listOf(eventMessage(subId, event1), eventMessage(subId, event2), """["EOSE","$subId"]""")
         })
 
@@ -158,7 +56,8 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `EOSE without events should yield Eose with no events`() = runBlocking {
-    stubRelay("relay1", ScriptedWebSocketState { subId -> listOf("""["EOSE","$subId"]""") })
+    okHttpClient.stubRelay(
+        "relay1", ScriptedRelayWebSocket(executor) { subId -> listOf("""["EOSE","$subId"]""") })
 
     val result =
         relayPool
@@ -171,9 +70,9 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `CLOSED with auth-required prefix should yield an access-denied Closed`() = runBlocking {
-    stubRelay(
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState { subId ->
+        ScriptedRelayWebSocket(executor) { subId ->
           listOf("""["CLOSED","$subId","auth-required: we only serve authenticated users"]""")
         })
 
@@ -189,9 +88,9 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `CLOSED with restricted prefix should yield an access-denied Closed`() = runBlocking {
-    stubRelay(
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState { subId ->
+        ScriptedRelayWebSocket(executor) { subId ->
           listOf("""["CLOSED","$subId","restricted: you are not a member"]""")
         })
 
@@ -206,9 +105,9 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `CLOSED with another prefix should yield a Closed that is not access-denied`() = runBlocking {
-    stubRelay(
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState { subId ->
+        ScriptedRelayWebSocket(executor) { subId ->
           listOf("""["CLOSED","$subId","rate-limited: slow down"]""")
         })
 
@@ -223,13 +122,7 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `socket failure should yield Failed`() = runBlocking {
-    every { okHttpClient.newWebSocket(any(), any()) } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          val ws = mockk<WebSocket>(relaxed = true)
-          listener.onFailure(ws, IOException("Connection refused"), null)
-          ws
-        }
+    okHttpClient.stubFailingRelay("relay1", "Connection refused")
 
     val result =
         relayPool
@@ -243,10 +136,10 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `connection closed by relay before EOSE should yield Failed`() = runBlocking {
-    val event = createMockEvent("event1")
-    stubRelay(
+    val event = relayTestEvent("event1")
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState(closeAfterScript = true) { subId ->
+        ScriptedRelayWebSocket(executor, closeAfterScript = true) { subId ->
           listOf(eventMessage(subId, event))
         })
 
@@ -262,7 +155,8 @@ class RelayPoolQueryEachRelayTest {
   @Test
   fun `unparsable relay message should yield Failed`() =
       runBlocking<Unit> {
-        stubRelay("relay1", ScriptedWebSocketState { listOf("""["EVENT"]""") })
+        okHttpClient.stubRelay(
+            "relay1", ScriptedRelayWebSocket(executor) { listOf("""["EVENT"]""") })
 
         val result =
             relayPool
@@ -283,8 +177,9 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `timeout should yield TimedOut and keep events received before it`() = runBlocking {
-    val event = createMockEvent("event1")
-    stubRelay("relay1", ScriptedWebSocketState { subId -> listOf(eventMessage(subId, event)) })
+    val event = relayTestEvent("event1")
+    okHttpClient.stubRelay(
+        "relay1", ScriptedRelayWebSocket(executor) { subId -> listOf(eventMessage(subId, event)) })
 
     val result =
         relayPool
@@ -297,11 +192,15 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `AUTH challenge should be ignored and not end the query`() = runBlocking {
-    val event = createMockEvent("event1")
-    val state = ScriptedWebSocketState { subId ->
-      listOf("""["AUTH","challenge-string"]""", eventMessage(subId, event), """["EOSE","$subId"]""")
-    }
-    stubRelay("relay1", state)
+    val event = relayTestEvent("event1")
+    val state =
+        ScriptedRelayWebSocket(executor) { subId ->
+          listOf(
+              """["AUTH","challenge-string"]""",
+              eventMessage(subId, event),
+              """["EOSE","$subId"]""")
+        }
+    okHttpClient.stubRelay("relay1", state)
 
     val result =
         relayPool
@@ -315,10 +214,10 @@ class RelayPoolQueryEachRelayTest {
 
   @Test
   fun `duplicate events from one relay should be returned once`() = runBlocking {
-    val event = createMockEvent("event1")
-    stubRelay(
+    val event = relayTestEvent("event1")
+    okHttpClient.stubRelay(
         "relay1",
-        ScriptedWebSocketState { subId ->
+        ScriptedRelayWebSocket(executor) { subId ->
           listOf(eventMessage(subId, event), eventMessage(subId, event), """["EOSE","$subId"]""")
         })
 
@@ -333,20 +232,22 @@ class RelayPoolQueryEachRelayTest {
   @Test
   fun `results should be one per relay in input order without merging events`() =
       runBlocking<Unit> {
-        val sharedEvent = createMockEvent("shared")
-        stubRelay(
+        val sharedEvent = relayTestEvent("shared")
+        okHttpClient.stubRelay(
             "relay1",
-            ScriptedWebSocketState { subId ->
+            ScriptedRelayWebSocket(executor) { subId ->
               listOf(eventMessage(subId, sharedEvent), """["EOSE","$subId"]""")
             })
-        stubRelay(
+        okHttpClient.stubRelay(
             "relay2",
-            ScriptedWebSocketState { subId ->
+            ScriptedRelayWebSocket(executor) { subId ->
               listOf(eventMessage(subId, sharedEvent), """["EOSE","$subId"]""")
             })
-        stubRelay(
+        okHttpClient.stubRelay(
             "relay3",
-            ScriptedWebSocketState { subId -> listOf("""["CLOSED","$subId","restricted: no"]""") })
+            ScriptedRelayWebSocket(executor) { subId ->
+              listOf("""["CLOSED","$subId","restricted: no"]""")
+            })
 
         val results =
             relayPool.queryEachRelay(
