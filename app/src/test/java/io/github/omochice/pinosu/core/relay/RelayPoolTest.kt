@@ -109,6 +109,25 @@ class RelayPoolTest {
   }
 
   @Test
+  fun `subscribeWithTimeout should keep events a relay sent before timing out`() = runBlocking {
+    okHttpClient.stubRelay(
+        "slow",
+        ScriptedRelayWebSocket(executor) { subId ->
+          listOf(eventMessage(subId, relayTestEvent("early-event")))
+        })
+    okHttpClient.stubRelay("fast", answeringWith(relayTestEvent("fast-event")))
+
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://slow.example.com"),
+            RelayConfig(url = "wss://fast.example.com"))
+
+    val result = relayPool.subscribeWithTimeout(relays, listOf("""{"kinds":[39701]}"""), 1000L)
+
+    assertEquals(setOf("early-event", "fast-event"), result.map { it.id }.toSet())
+  }
+
+  @Test
   fun `subscribeWithTimeout with empty relay list should return empty list`() = runBlocking {
     val result = relayPool.subscribeWithTimeout(emptyList(), listOf("""{"kinds":[39701]}"""), 5000L)
 

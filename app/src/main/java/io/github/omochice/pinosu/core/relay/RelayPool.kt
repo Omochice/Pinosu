@@ -11,11 +11,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.SerializationException
@@ -38,13 +34,13 @@ interface RelayPool {
   /**
    * Subscribe to events from multiple relays with timeout
    *
-   * Connects to all specified relays in parallel, collects events, deduplicates by event ID, and
-   * returns the merged result.
+   * Merges the events of [queryEachRelay], deduplicated by event ID. Events a relay sent before it
+   * failed or timed out are included.
    *
    * @param relays List of relay configurations to query
    * @param filters Nostr filters as JSON strings; a relay ORs multiple filters within one REQ
    * @param timeoutMs Timeout in milliseconds for each relay
-   * @return List of deduplicated events from all relays
+   * @return List of deduplicated events from all relays; empty when [relays] or [filters] is empty
    */
   suspend fun subscribeWithTimeout(
       relays: List<RelayConfig>,
@@ -55,8 +51,8 @@ interface RelayPool {
   /**
    * Query each relay in parallel and report its outcome separately
    *
-   * Unlike [subscribeWithTimeout], results are not merged across relays, so a relay that answered
-   * with no events can be told apart from one that refused, failed, or timed out.
+   * Results are not merged across relays, so a relay that answered with no events can be told apart
+   * from one that refused, failed, or timed out.
    *
    * @param relays List of relay configurations to query
    * @param filters Nostr filters as JSON strings; a relay ORs multiple filters within one REQ
@@ -107,27 +103,7 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
     if (relays.isEmpty() || filters.isEmpty()) {
       return emptyList()
     }
-
-    return coroutineScope {
-      val deferredResults =
-          relays.map { relay ->
-            async {
-              try {
-                withTimeoutOrNull(timeoutMs) { subscribeToRelay(relay.url, filters).toList() }
-                    ?: emptyList()
-              } catch (e: IOException) {
-                Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
-                emptyList()
-              } catch (e: IllegalArgumentException) {
-                Log.w(TAG, "Failed to fetch from relay ${relay.url}: ${e.message}")
-                emptyList()
-              }
-            }
-          }
-
-      val allEvents = deferredResults.awaitAll().flatten()
-      allEvents.distinctBy { it.id }
-    }
+    return queryEachRelay(relays, filters, timeoutMs).flatMap { it.events }.distinctBy { it.id }
   }
 
   override suspend fun queryEachRelay(
@@ -269,54 +245,6 @@ class RelayPoolImpl @Inject constructor(private val okHttpClient: OkHttpClient) 
       continuation.invokeOnCancellation { webSocket.close(1000, "Cancelled") }
     }
   }
-
-  /**
-   * Subscribe to events from a single relay
-   *
-   * @param relayUrl WebSocket URL of the relay
-   * @param filters Nostr filters as JSON strings, sent as separate elements of the REQ message
-   * @return Flow of events from the relay
-   */
-  private fun subscribeToRelay(relayUrl: String, filters: List<String>): Flow<NostrEvent> =
-      callbackFlow {
-        val subscriptionId = UUID.randomUUID().toString()
-        val request = Request.Builder().url(relayUrl).build()
-
-        val listener =
-            object : WebSocketListener() {
-              override fun onOpen(webSocket: WebSocket, response: Response) {
-                val reqMessage = """["REQ","$subscriptionId",${filters.joinToString(",")}]"""
-                webSocket.send(reqMessage)
-              }
-
-              override fun onMessage(webSocket: WebSocket, text: String) {
-                try {
-                  when (val message = json.decodeFromString<NostrRelayMessage>(text)) {
-                    is NostrRelayMessage.Event -> trySend(message.event)
-                    is NostrRelayMessage.Eose -> webSocket.close(1000, "EOSE received")
-                    is NostrRelayMessage.Closed -> close()
-                    else -> {}
-                  }
-                } catch (e: IllegalArgumentException) {
-                  Log.e(TAG, "Error parsing message from $relayUrl: $text", e)
-                  close(e)
-                }
-              }
-
-              override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.w(TAG, "WebSocket failure for $relayUrl: ${t.message}")
-                close(t)
-              }
-
-              override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                close()
-              }
-            }
-
-        val webSocket = okHttpClient.newWebSocket(request, listener)
-
-        awaitClose { webSocket.close(1000, "Flow cancelled") }
-      }
 
   /**
    * Query a single relay until it ends the subscription, the connection fails, or time runs out
