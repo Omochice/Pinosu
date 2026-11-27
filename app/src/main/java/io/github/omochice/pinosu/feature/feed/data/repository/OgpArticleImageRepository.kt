@@ -14,8 +14,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * Implementation of [ArticleImageRepository] reading the page's Open Graph `og:image`
  *
  * The answer of a page that was read, image or none, is stored and reused for [LOOKUP_INTERVAL], so
- * that reopening the app does not fetch every article page again. An older answer is still given
- * when the page cannot be read again.
+ * that reopening the app does not fetch every article page again.
+ *
+ * An older answer is still given when the page cannot be read again.
  *
  * @param urlMetadataFetcher Reader of the Open Graph tags of a page
  * @param store Where the answers of the pages are kept
