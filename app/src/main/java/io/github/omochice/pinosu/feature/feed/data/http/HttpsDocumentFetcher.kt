@@ -8,8 +8,10 @@ import okhttp3.CacheControl
  *
  * The app does not allow cleartext traffic, so an `http://` URL is fetched from its `https://`
  * counterpart, and a URL without a scheme is taken as `https://`.
+ *
+ * @param fetcher Fetcher the HTTPS URL is downloaded with
  */
-class HttpsDocumentFetcher(private val fetcher: HttpDocumentFetcher) {
+class HttpsDocumentFetcher(private val fetcher: DocumentFetcher) {
 
   /**
    * Download the document at [url] over HTTPS
@@ -18,7 +20,7 @@ class HttpsDocumentFetcher(private val fetcher: HttpDocumentFetcher) {
    * @param cacheControl Cache directives sent with the request, or null to send none
    * @return The document, whose [FetchedDocument.requestedUrl] is the HTTPS URL actually requested,
    *   or a failure with [HttpFeedNotSupportedException] when [url] is `http://` and its HTTPS
-   *   counterpart cannot be fetched, or the failure of [HttpDocumentFetcher.fetch] otherwise
+   *   counterpart cannot be fetched, or the failure of [DocumentFetcher.fetch] otherwise
    */
   suspend fun fetch(url: String, cacheControl: CacheControl? = null): Result<FetchedDocument> {
     val trimmed = url.trim()

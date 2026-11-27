@@ -10,7 +10,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 
 /** Downloads a document with a GET request, refusing error statuses and oversized bodies */
-class HttpDocumentFetcher(private val okHttpClient: OkHttpClient) {
+class HttpDocumentFetcher(private val okHttpClient: OkHttpClient) : DocumentFetcher {
 
   /**
    * Download the document at [url]
@@ -22,7 +22,7 @@ class HttpDocumentFetcher(private val okHttpClient: OkHttpClient) {
    *   [IllegalArgumentException] when [url] is not a valid HTTP(S) URL, or with an [IOException]
    *   when the transfer fails
    */
-  suspend fun fetch(url: String, cacheControl: CacheControl? = null): Result<FetchedDocument> =
+  override suspend fun fetch(url: String, cacheControl: CacheControl?): Result<FetchedDocument> =
       withContext(Dispatchers.IO) {
         try {
           val request = request(url, cacheControl)
