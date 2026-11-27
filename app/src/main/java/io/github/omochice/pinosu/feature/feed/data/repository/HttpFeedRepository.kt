@@ -4,6 +4,7 @@ import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.feed.data.http.FeedHttp
 import io.github.omochice.pinosu.feature.feed.data.http.HttpDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
+import io.github.omochice.pinosu.feature.feed.data.http.StaleCacheFallbackFetcher
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
@@ -25,7 +26,8 @@ class HttpFeedRepository
 @Inject
 constructor(@FeedHttp okHttpClient: OkHttpClient, private val parser: FeedParser) : FeedRepository {
 
-  private val fetcher = HttpsDocumentFetcher(HttpDocumentFetcher(okHttpClient))
+  private val fetcher =
+      HttpsDocumentFetcher(StaleCacheFallbackFetcher(HttpDocumentFetcher(okHttpClient)))
 
   override suspend fun fetchFeed(feedUrl: String, mode: FeedFetchMode): Result<Feed> =
       fetcher.fetch(feedUrl, cacheControlOf(mode)).andThen { document ->

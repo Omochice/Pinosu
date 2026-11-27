@@ -91,6 +91,16 @@ class HttpFeedRepositoryTest {
   }
 
   @Test
+  fun `a feed that cannot be reached is asked of the cache, http subscriptions included`() =
+      runTest {
+        http.fail(FEED_URL, IOException("connection refused"))
+
+        repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal)
+
+        assertEquals(listOf(false, true), http.requests.map { it.cacheControl.onlyIfCached })
+      }
+
+  @Test
   fun `a normal fetch leaves the cache to the response headers`() = runTest {
     http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
 

@@ -11,18 +11,18 @@ import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
+import mockwebserver3.SocketEffect
 import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 
-class StaleCacheOnNetworkFailureTest {
+class StaleCacheFallbackFetcherTest {
 
   private val server = MockWebServer().apply { start() }
   private val cacheDir: File = Files.createTempDirectory("feed-cache").toFile()
   private val cache = Cache(cacheDir, CACHE_BYTES)
-  private val client =
-      OkHttpClient.Builder().cache(cache).addInterceptor(StaleCacheOnNetworkFailure()).build()
-  private val fetcher = HttpDocumentFetcher(client)
+  private val client = OkHttpClient.Builder().cache(cache).build()
+  private val fetcher = StaleCacheFallbackFetcher(HttpDocumentFetcher(client))
   private val url = server.url("/feed.xml").toString()
 
   @AfterTest
@@ -51,6 +51,22 @@ class StaleCacheOnNetworkFailureTest {
 
     val document = fetcher.fetch(url, MAX_AGE_0).getOrThrow()
 
+    assertEquals(BODY, document.openBody().readBytes().decodeToString())
+  }
+
+  @Test
+  fun `a stale cached feed is served when the connection drops during the new body`() = runTest {
+    server.enqueue(feed("max-age=0").build())
+    server.enqueue(
+        feed("max-age=0")
+            .body(BODY.repeat(BODY_REPEATS))
+            .onResponseBody(SocketEffect.ShutdownConnection)
+            .build())
+    fetcher.fetch(url).getOrThrow()
+
+    val document = fetcher.fetch(url).getOrThrow()
+
+    assertEquals(2, server.requestCount)
     assertEquals(BODY, document.openBody().readBytes().decodeToString())
   }
 
@@ -101,7 +117,7 @@ class StaleCacheOnNetworkFailureTest {
 
   @Test
   fun `only-if-cached with nothing cached is answered with 504 by OkHttp`() = runTest {
-    val plain = HttpDocumentFetcher(OkHttpClient.Builder().cache(cache).build())
+    val plain = HttpDocumentFetcher(client)
 
     val error = plain.fetch(url, CacheControl.FORCE_CACHE).exceptionOrNull()
 
@@ -118,6 +134,7 @@ class StaleCacheOnNetworkFailureTest {
 
   private companion object {
     const val CACHE_BYTES = 1024L * 1024
+    const val BODY_REPEATS = 1000
     const val BODY = "<rss version=\"2.0\"><channel><title>Cached</title></channel></rss>"
     val MAX_AGE_0: CacheControl = CacheControl.Builder().maxAge(0, TimeUnit.SECONDS).build()
   }
