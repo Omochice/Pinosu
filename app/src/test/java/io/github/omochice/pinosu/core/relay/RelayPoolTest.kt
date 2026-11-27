@@ -3,7 +3,6 @@ package io.github.omochice.pinosu.core.relay
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.mockk.every
 import io.mockk.mockk
-import java.io.IOException
 import java.util.concurrent.Executors
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -41,129 +40,15 @@ class RelayPoolTest {
     executor.shutdown()
   }
 
-  private fun createMockEvent(id: String, pubkey: String = "testpubkey"): NostrEvent {
-    return NostrEvent(
-        id = id,
-        pubkey = pubkey,
-        createdAt = System.currentTimeMillis() / 1000,
-        kind = 39701,
-        tags = listOf(listOf("r", "https://example.com")),
-        content = "",
-        sig = "dummy-sig")
-  }
-
-  /**
-   * Helper class to manage WebSocket mock state and async callback invocation.
-   *
-   * Uses executor-based scheduling to ensure callbacks happen after callbackFlow is ready. The
-   * subscription ID is extracted from the REQ message to ensure EOSE matches correctly.
-   */
-  private inner class MockWebSocketState(private val events: List<NostrEvent>) {
-    val ws: WebSocket = mockk(relaxed = true)
-    val sentMessages = java.util.concurrent.CopyOnWriteArrayList<String>()
-    private val closed = java.util.concurrent.atomic.AtomicBoolean(false)
-
-    @Volatile private var wsListener: WebSocketListener? = null
-
-    init {
-      every { ws.send(any<String>()) } answers
-          {
-            val message = firstArg<String>()
-            sentMessages.add(message)
-            val currentListener = wsListener
-
-            if (currentListener != null && message.startsWith("[\"REQ\"")) {
-              val subId = extractSubscriptionId(message)
-
-              executor.execute {
-                try {
-                  Thread.sleep(50)
-                  if (!closed.get()) {
-                    for (event in events) {
-                      if (!closed.get()) {
-                        val eventJson = buildEventJson(subId, event)
-                        currentListener.onMessage(ws, eventJson)
-                        Thread.sleep(10)
-                      }
-                    }
-                    Thread.sleep(20)
-                    if (!closed.get()) {
-                      currentListener.onMessage(ws, """["EOSE","$subId"]""")
-                    }
-                  }
-                } catch (_: InterruptedException) {}
-              }
-            }
-            true
-          }
-
-      every { ws.close(any(), any()) } answers
-          {
-            closed.set(true)
-            val code = firstArg<Int>()
-            val reason = secondArg<String?>() ?: ""
-            val currentListener = wsListener
-            if (currentListener != null) {
-              executor.execute {
-                try {
-                  Thread.sleep(30)
-                  currentListener.onClosed(ws, code, reason)
-                } catch (_: InterruptedException) {}
-              }
-            }
-            true
-          }
-    }
-
-    private fun extractSubscriptionId(reqMessage: String): String {
-      val regex = """\["REQ","([^"]+)".*\]""".toRegex()
-      return regex.find(reqMessage)?.groupValues?.get(1) ?: "unknown"
-    }
-
-    private fun buildEventJson(subscriptionId: String, event: NostrEvent): String {
-      val eventJson = Json.encodeToString(NostrEvent.serializer(), event)
-      return """["EVENT","$subscriptionId",$eventJson]"""
-    }
-
-    fun setListener(l: WebSocketListener) {
-      wsListener = l
-    }
-
-    fun triggerOpen() {
-      executor.execute {
-        try {
-          Thread.sleep(30)
-          val mockResponse = mockk<Response>(relaxed = true)
-          wsListener?.onOpen(ws, mockResponse)
-        } catch (_: InterruptedException) {}
+  private fun answeringWith(vararg events: NostrEvent) =
+      ScriptedRelayWebSocket(executor) { subId ->
+        events.map { eventMessage(subId, it) } + eoseMessage(subId)
       }
-    }
-  }
 
   @Test
   fun `subscribeWithTimeout should merge events from multiple relays`() = runBlocking {
-    val state1 = MockWebSocketState(listOf(createMockEvent("event1")))
-    val state2 = MockWebSocketState(listOf(createMockEvent("event2")))
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("relay1") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state1.setListener(listener)
-          state1.triggerOpen()
-          state1.ws
-        }
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("relay2") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state2.setListener(listener)
-          state2.triggerOpen()
-          state2.ws
-        }
+    okHttpClient.stubRelay("relay1", answeringWith(relayTestEvent("event1")))
+    okHttpClient.stubRelay("relay2", answeringWith(relayTestEvent("event2")))
 
     val relays =
         listOf(
@@ -181,30 +66,9 @@ class RelayPoolTest {
 
   @Test
   fun `subscribeWithTimeout should deduplicate events by ID`() = runBlocking {
-    val sameEvent = createMockEvent("same-event-id")
-
-    val state1 = MockWebSocketState(listOf(sameEvent))
-    val state2 = MockWebSocketState(listOf(sameEvent))
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("relay1") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state1.setListener(listener)
-          state1.triggerOpen()
-          state1.ws
-        }
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("relay2") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state2.setListener(listener)
-          state2.triggerOpen()
-          state2.ws
-        }
+    val sameEvent = relayTestEvent("same-event-id")
+    okHttpClient.stubRelay("relay1", answeringWith(sameEvent))
+    okHttpClient.stubRelay("relay2", answeringWith(sameEvent))
 
     val relays =
         listOf(
@@ -221,15 +85,7 @@ class RelayPoolTest {
 
   @Test
   fun `subscribeWithTimeout with single relay should return events`() = runBlocking {
-    val state = MockWebSocketState(listOf(createMockEvent("single-event")))
-
-    every { okHttpClient.newWebSocket(any(), any()) } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state.setListener(listener)
-          state.triggerOpen()
-          state.ws
-        }
+    okHttpClient.stubRelay("relay.example.com", answeringWith(relayTestEvent("single-event")))
 
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     val filter = """{"kinds":[39701],"limit":10}"""
@@ -242,15 +98,7 @@ class RelayPoolTest {
 
   @Test
   fun `subscribeWithTimeout when all relays fail should return empty list`() = runBlocking {
-    every { okHttpClient.newWebSocket(any(), any()) } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          val ws = mockk<WebSocket>(relaxed = true)
-          every { ws.close(any(), any()) } returns true
-
-          listener.onFailure(ws, IOException("Connection failed"), null)
-          ws
-        }
+    okHttpClient.stubFailingRelay("relay.example.com", "Connection failed")
 
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     val filter = """{"kinds":[39701],"limit":10}"""
@@ -258,6 +106,25 @@ class RelayPoolTest {
     val result = relayPool.subscribeWithTimeout(relays, listOf(filter), 5000L)
 
     assertTrue(result.isEmpty(), "Should return empty list when all relays fail")
+  }
+
+  @Test
+  fun `subscribeWithTimeout should keep events a relay sent before timing out`() = runBlocking {
+    okHttpClient.stubRelay(
+        "slow",
+        ScriptedRelayWebSocket(executor) { subId ->
+          listOf(eventMessage(subId, relayTestEvent("early-event")))
+        })
+    okHttpClient.stubRelay("fast", answeringWith(relayTestEvent("fast-event")))
+
+    val relays =
+        listOf(
+            RelayConfig(url = "wss://slow.example.com"),
+            RelayConfig(url = "wss://fast.example.com"))
+
+    val result = relayPool.subscribeWithTimeout(relays, listOf("""{"kinds":[39701]}"""), 1000L)
+
+    assertEquals(setOf("early-event", "fast-event"), result.map { it.id }.toSet())
   }
 
   @Test
@@ -278,15 +145,8 @@ class RelayPoolTest {
 
   @Test
   fun `subscribeWithTimeout should send each filter as its own REQ element`() = runBlocking {
-    val state = MockWebSocketState(emptyList())
-
-    every { okHttpClient.newWebSocket(any(), any()) } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          state.setListener(listener)
-          state.triggerOpen()
-          state.ws
-        }
+    val state = answeringWith()
+    okHttpClient.stubRelay("relay.example.com", state)
 
     val relays = listOf(RelayConfig(url = "wss://relay.example.com"))
     val rootFilter = """{"kinds":[1111],"#A":["addr"]}"""
@@ -303,29 +163,8 @@ class RelayPoolTest {
 
   @Test
   fun `subscribeWithTimeout should continue on individual relay failure`() = runBlocking {
-    val workingState = MockWebSocketState(listOf(createMockEvent("working-event")))
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("failing") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          val ws = mockk<WebSocket>(relaxed = true)
-          every { ws.close(any(), any()) } returns true
-
-          listener.onFailure(ws, IOException("Connection failed"), null)
-          ws
-        }
-
-    every {
-      okHttpClient.newWebSocket(match { it.url.toString().contains("working") }, any())
-    } answers
-        {
-          val listener = secondArg<WebSocketListener>()
-          workingState.setListener(listener)
-          workingState.triggerOpen()
-          workingState.ws
-        }
+    okHttpClient.stubFailingRelay("failing", "Connection failed")
+    okHttpClient.stubRelay("working", answeringWith(relayTestEvent("working-event")))
 
     val relays =
         listOf(

@@ -12,6 +12,13 @@ class FakeRelayPool : RelayPool {
   /** Events to return from subscribeWithTimeout */
   var eventsToReturn: List<NostrEvent> = emptyList()
 
+  /**
+   * Results to return from queryEachRelay, keyed by relay URL
+   *
+   * A queried relay without an entry answers with EOSE and no events.
+   */
+  val queryResults = mutableMapOf<String, RelayQueryResult>()
+
   /** Result to return from publishEvent */
   var publishResult: Result<PublishResult> =
       Result.success(
@@ -20,10 +27,19 @@ class FakeRelayPool : RelayPool {
   /** Recorded calls to subscribeWithTimeout */
   val subscribeCallArgs = mutableListOf<SubscribeCall>()
 
+  /** Recorded calls to queryEachRelay */
+  val queryCallArgs = mutableListOf<QueryCall>()
+
   /** Recorded calls to publishEvent */
   val publishCallArgs = mutableListOf<PublishCall>()
 
   data class SubscribeCall(
+      val relays: List<RelayConfig>,
+      val filters: List<String>,
+      val timeoutMs: Long
+  )
+
+  data class QueryCall(
       val relays: List<RelayConfig>,
       val filters: List<String>,
       val timeoutMs: Long
@@ -44,6 +60,17 @@ class FakeRelayPool : RelayPool {
     return eventsToReturn
   }
 
+  override suspend fun queryEachRelay(
+      relays: List<RelayConfig>,
+      filters: List<String>,
+      timeoutMs: Long
+  ): List<RelayQueryResult> {
+    queryCallArgs.add(QueryCall(relays, filters, timeoutMs))
+    return relays.map { relay ->
+      queryResults[relay.url] ?: RelayQueryResult(relay.url, emptyList(), RelayTermination.Eose)
+    }
+  }
+
   override suspend fun publishEvent(
       relays: List<RelayConfig>,
       signedEventJson: String,
@@ -56,10 +83,12 @@ class FakeRelayPool : RelayPool {
   /** Resets all configured values and recorded calls */
   fun reset() {
     eventsToReturn = emptyList()
+    queryResults.clear()
     publishResult =
         Result.success(
             PublishResult(eventId = "", successfulRelays = emptyList(), failedRelays = emptyList()))
     subscribeCallArgs.clear()
+    queryCallArgs.clear()
     publishCallArgs.clear()
   }
 }
