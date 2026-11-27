@@ -40,6 +40,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-mockwebserver3 = { group = "com.squareup.okhttp3", name = "mockwebserver3", version.ref = "okhttp" }
 quartz = { group = "com.vitorpamplona.quartz", name = "quartz", version.ref = "quartz" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 tink-android = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
