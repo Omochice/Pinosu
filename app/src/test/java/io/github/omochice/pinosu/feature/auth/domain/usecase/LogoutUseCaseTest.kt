@@ -1,9 +1,11 @@
 package io.github.omochice.pinosu.feature.auth.domain.usecase
 
+import io.github.omochice.pinosu.core.logout.LogoutCleanup
 import io.github.omochice.pinosu.feature.auth.domain.model.error.LogoutError
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -19,12 +21,14 @@ import kotlinx.coroutines.test.runTest
 class LogoutUseCaseTest {
 
   private lateinit var authRepository: AuthRepository
+  private lateinit var cleanup: LogoutCleanup
   private lateinit var logoutUseCase: LogoutUseCase
 
   @BeforeTest
   fun setup() {
     authRepository = mockk(relaxed = true)
-    logoutUseCase = Nip55LogoutUseCase(authRepository)
+    cleanup = mockk(relaxed = true)
+    logoutUseCase = Nip55LogoutUseCase(authRepository, setOf(cleanup))
   }
 
   @Test
@@ -49,6 +53,28 @@ class LogoutUseCaseTest {
     assertTrue(
         exception is LogoutError.StorageError, "Exception should be LogoutError.StorageError")
     coVerify { authRepository.logout() }
+  }
+
+  @Test
+  fun `the data features keep for the user is deleted once the user is logged out`() = runTest {
+    coEvery { authRepository.logout() } returns Result.success(Unit)
+
+    logoutUseCase()
+
+    coVerifyOrder {
+      authRepository.logout()
+      cleanup.cleanUp()
+    }
+  }
+
+  @Test
+  fun `the data features keep is left alone when the user could not be logged out`() = runTest {
+    coEvery { authRepository.logout() } returns
+        Result.failure(LogoutError.StorageError("Failed to clear"))
+
+    logoutUseCase()
+
+    coVerify(exactly = 0) { cleanup.cleanUp() }
   }
 
   @Test
