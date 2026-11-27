@@ -10,13 +10,18 @@ class OgpArticleImageRepository
 @Inject
 constructor(private val urlMetadataFetcher: UrlMetadataFetcher) : ArticleImageRepository {
 
+  override suspend fun findImage(link: String): String? = lookUp(link).getOrNull()
+
   /**
    * The scheme is checked here rather than in [UrlMetadataFetcher], whose bookmark callers would
    * otherwise change behaviour; pages come from arbitrary hosts, so a `data:` or `intent:` image
    * must not reach the image loader.
+   *
+   * @return The image of a page that was read, null for a page that declares none, or a failure
+   *   when the page could not be read
    */
-  override suspend fun findImage(link: String): String? =
-      urlMetadataFetcher.fetchMetadata(link).getOrNull()?.imageUrl?.takeIf {
-        it.toHttpUrlOrNull() != null
+  private suspend fun lookUp(link: String): Result<String?> =
+      urlMetadataFetcher.fetchMetadata(link).map { metadata ->
+        metadata.imageUrl?.takeIf { it.toHttpUrlOrNull() != null }
       }
 }
