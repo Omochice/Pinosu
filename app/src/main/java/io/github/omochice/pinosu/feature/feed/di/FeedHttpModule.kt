@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.feed.data.http.FeedHttp
+import io.github.omochice.pinosu.feature.feed.data.http.StaleCacheOnNetworkFailure
 import java.io.File
 import javax.inject.Singleton
 import okhttp3.Cache
@@ -30,11 +31,12 @@ object FeedHttpModule {
   /**
    * @param client Client shared with the rest of the app, whose connections and settings are reused
    * @param cache Cache the downloaded feeds are kept in
-   * @return Client that downloads feeds through [cache]
+   * @return Client that downloads feeds through [cache], falling back to a stale cached feed when
+   *   the network cannot be reached
    */
   @Provides
   @Singleton
   @FeedHttp
   fun provideFeedHttpClient(client: OkHttpClient, @FeedHttp cache: Cache): OkHttpClient =
-      client.newBuilder().cache(cache).build()
+      client.newBuilder().cache(cache).addInterceptor(StaleCacheOnNetworkFailure()).build()
 }
