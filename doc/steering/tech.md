@@ -69,6 +69,10 @@ devbox run ./gradlew :app:lintDebug
 - **Connection Timeouts**: 10s connect, 10s read (configured in NetworkModule)
 - **HTML Parsing**: Jsoup for Open Graph metadata extraction
 - **Caching**: LruCache for URL metadata (max 100 entries)
+- **Feed Cache**: Feeds are downloaded with a `@FeedHttp` OkHttpClient carrying a 20 MB disk `Cache` that follows the server's `Cache-Control`; pull-to-refresh sends `max-age=0`, and an unreachable feed is answered from the cache however stale
+    - Site pages fetched for feed discovery and article pages stay on the uncached client
+    - Article image (`og:image`) lookups are kept in a DataStore for 7 days, at most 500 of them
+- **Logout Cleanup**: Features delete what they keep for the user by contributing a `core/logout/LogoutCleanup` with Hilt `@IntoSet`, which the logout use case runs
 - **Image Loading**: Coil with OkHttp integration (coil-compose, coil-network-okhttp)
 
 ### Testing

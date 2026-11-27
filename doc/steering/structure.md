@@ -134,6 +134,7 @@ feature/{name}/
 
 - `crypto/` - Encryption utilities (TinkKeyManager)
 - `di/` - Core Hilt modules (NetworkModule, RelayPoolModule) — distinct from the root `di/` package below
+- `logout/` - Hook through which features delete the data they keep for the user on logout (LogoutCleanup)
 - `metadata/` - Open Graph metadata of web pages (UrlMetadataFetcher)
 - `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey, UserProfile)
 - `navigation/` - App navigation (NavHost, animations)
