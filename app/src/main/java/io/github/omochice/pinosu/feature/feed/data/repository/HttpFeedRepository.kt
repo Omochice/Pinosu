@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.data.repository
 
 import io.github.omochice.pinosu.core.result.andThen
+import io.github.omochice.pinosu.feature.feed.data.http.FeedHttp
 import io.github.omochice.pinosu.feature.feed.data.http.HttpDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
@@ -14,12 +15,12 @@ import okhttp3.OkHttpClient
 /**
  * Implementation of [FeedRepository] that downloads feeds over HTTPS
  *
- * @param okHttpClient Client the feeds are downloaded with
+ * @param okHttpClient Client the feeds are downloaded with, which keeps them in its cache
  * @param parser Parser of the downloaded feed documents
  */
 class HttpFeedRepository
 @Inject
-constructor(okHttpClient: OkHttpClient, private val parser: FeedParser) : FeedRepository {
+constructor(@FeedHttp okHttpClient: OkHttpClient, private val parser: FeedParser) : FeedRepository {
 
   private val fetcher = HttpsDocumentFetcher(HttpDocumentFetcher(okHttpClient))
 
