@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.data.repository
 import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.feed.data.discovery.FeedLinkDiscoverer
 import io.github.omochice.pinosu.feature.feed.data.http.FetchedDocument
+import io.github.omochice.pinosu.feature.feed.data.http.HttpDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.UnsupportedFeedFormatException
@@ -13,15 +14,20 @@ import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRep
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 
 /**
  * Implementation of [FeedDiscoveryRepository] that downloads the URL over HTTPS and, when it is a
  * web page, looks for the feeds it advertises
+ *
+ * @param okHttpClient Client the pages and feeds are downloaded with
+ * @param parser Parser of the downloaded feed documents
  */
 class HttpFeedDiscoveryRepository
 @Inject
-constructor(private val fetcher: HttpsDocumentFetcher, private val parser: FeedParser) :
-    FeedDiscoveryRepository {
+constructor(okHttpClient: OkHttpClient, private val parser: FeedParser) : FeedDiscoveryRepository {
+
+  private val fetcher = HttpsDocumentFetcher(HttpDocumentFetcher(okHttpClient))
 
   override suspend fun resolve(input: String): Result<FeedResolution> =
       fetcher.fetch(input).andThen { resolveDocument(it) }

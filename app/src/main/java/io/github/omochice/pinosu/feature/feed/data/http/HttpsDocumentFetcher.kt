@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.data.http
 
 import io.github.omochice.pinosu.feature.feed.domain.model.error.HttpFeedNotSupportedException
-import javax.inject.Inject
 
 /**
  * Downloads documents over HTTPS only
@@ -9,7 +8,7 @@ import javax.inject.Inject
  * The app does not allow cleartext traffic, so an `http://` URL is fetched from its `https://`
  * counterpart, and a URL without a scheme is taken as `https://`.
  */
-class HttpsDocumentFetcher @Inject constructor(private val fetcher: HttpDocumentFetcher) {
+class HttpsDocumentFetcher(private val fetcher: HttpDocumentFetcher) {
 
   /**
    * Download the document at [url] over HTTPS

@@ -1,7 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.data.http
 
 import java.io.IOException
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -10,7 +9,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 
 /** Downloads a document with a GET request, refusing error statuses and oversized bodies */
-class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpClient) {
+class HttpDocumentFetcher(private val okHttpClient: OkHttpClient) {
 
   /**
    * Download the document at [url]

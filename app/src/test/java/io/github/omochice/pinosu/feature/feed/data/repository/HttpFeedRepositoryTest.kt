@@ -1,9 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.data.repository
 
 import io.github.omochice.pinosu.feature.feed.data.http.FeedFixtures
-import io.github.omochice.pinosu.feature.feed.data.http.HttpDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.HttpStatusException
-import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.OkHttpStub
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.UnsupportedFeedFormatException
@@ -17,8 +15,7 @@ import kotlinx.coroutines.test.runTest
 class HttpFeedRepositoryTest {
 
   private val http = OkHttpStub()
-  private val repository =
-      HttpFeedRepository(HttpsDocumentFetcher(HttpDocumentFetcher(http.client)), JsoupFeedParser())
+  private val repository = HttpFeedRepository(http.client, JsoupFeedParser())
 
   @Test
   fun `feed response is parsed`() = runTest {
