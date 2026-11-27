@@ -4,6 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import io.github.omochice.pinosu.core.logout.LogoutCleanup
+import io.github.omochice.pinosu.feature.feed.data.local.FeedLogoutCleanup
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.repository.HttpFeedDiscoveryRepository
@@ -43,6 +46,10 @@ object FeedModule {
 
   @Provides
   fun provideArticleImageRepository(impl: OgpArticleImageRepository): ArticleImageRepository = impl
+
+  @Provides
+  @IntoSet
+  fun provideFeedLogoutCleanup(cleanup: FeedLogoutCleanup): LogoutCleanup = cleanup
 
   @Provides
   fun provideLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase =
