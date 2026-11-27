@@ -195,6 +195,19 @@ class LoadFeedTimelineUseCaseTest {
   }
 
   @Test
+  fun `every feed is fetched in the mode the timeline is loaded in`() = runTest {
+    givenSubscriptions(FEED_A, FEED_B)
+    givenFeed(FEED_A)
+    givenFeed(FEED_B)
+
+    useCase(FeedFetchMode.Revalidate)
+
+    coVerify(exactly = 1) { feedRepository.fetchFeed(FEED_A, FeedFetchMode.Revalidate) }
+    coVerify(exactly = 1) { feedRepository.fetchFeed(FEED_B, FeedFetchMode.Revalidate) }
+    coVerify(exactly = 0) { feedRepository.fetchFeed(any(), FeedFetchMode.Normal) }
+  }
+
+  @Test
   fun `each item carries the category of the feed it came from`() = runTest {
     givenFeeds(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B))
     givenFeed(FEED_A, item(FEED_A, "a", "2026-01-02T00:00:00Z"))

@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
@@ -108,6 +109,45 @@ class FeedViewModelTest {
         FeedUiState.Content.Loaded(listOf(OTHER_ITEM), emptyList()),
         viewModel.uiState.value.content)
     coVerify(exactly = 2) { loadFeedTimeline(any()) }
+  }
+
+  @Test
+  fun `opening the timeline trusts feeds kept while their servers say they are current`() =
+      runTest {
+        coEvery { loadFeedTimeline(any()) } returns
+            Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { loadFeedTimeline(FeedFetchMode.Normal) }
+      }
+
+  @Test
+  fun `refresh asks every feed server again`() = runTest {
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    coVerify(exactly = 1) { loadFeedTimeline(FeedFetchMode.Revalidate) }
+  }
+
+  @Test
+  fun `reloading after the subscriptions changed trusts feeds that are still current`() = runTest {
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    val viewModel = createViewModel()
+    advanceUntilIdle()
+
+    viewModel.reloadAfterSubscriptionChange()
+    advanceUntilIdle()
+
+    coVerify(exactly = 2) { loadFeedTimeline(FeedFetchMode.Normal) }
+    coVerify(exactly = 0) { loadFeedTimeline(FeedFetchMode.Revalidate) }
   }
 
   @Test

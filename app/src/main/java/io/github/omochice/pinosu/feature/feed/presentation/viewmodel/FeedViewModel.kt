@@ -45,11 +45,16 @@ constructor(
     load(FeedFetchMode.Normal)
   }
 
-  /** Reload the timeline, keeping the current content visible until the reload finishes */
+  /**
+   * Reload the timeline, keeping the current content visible until the reload finishes
+   *
+   * Every feed is asked for again, even one whose server said a copy kept earlier is still current,
+   * because the user pulled to refresh to see what is new now.
+   */
   fun refresh() {
     if (loadJob?.isActive == true) return
     _uiState.update { it.copy(isRefreshing = true) }
-    load(FeedFetchMode.Normal)
+    load(FeedFetchMode.Revalidate)
   }
 
   /**

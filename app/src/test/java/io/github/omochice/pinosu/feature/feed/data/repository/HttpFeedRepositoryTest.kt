@@ -11,6 +11,7 @@ import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
 class HttpFeedRepositoryTest {
@@ -88,6 +89,34 @@ class HttpFeedRepositoryTest {
 
     assertIs<HttpStatusException>(error)
   }
+
+  @Test
+  fun `a normal fetch leaves the cache to the response headers`() = runTest {
+    http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+    repository.fetchFeed(FEED_URL, FeedFetchMode.Normal)
+
+    assertNull(http.requests.single().header("Cache-Control"))
+  }
+
+  @Test
+  fun `a revalidating fetch asks for a copy no older than now`() = runTest {
+    http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+    repository.fetchFeed(FEED_URL, FeedFetchMode.Revalidate)
+
+    assertEquals("max-age=0", http.requests.single().header("Cache-Control"))
+  }
+
+  @Test
+  fun `a revalidating fetch of a stored http url asks the https url for a current copy`() =
+      runTest {
+        http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+        repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Revalidate)
+
+        assertEquals("max-age=0", http.requests.single().header("Cache-Control"))
+      }
 
   companion object {
     private const val FEED_URL = "https://example.com/feed.xml"

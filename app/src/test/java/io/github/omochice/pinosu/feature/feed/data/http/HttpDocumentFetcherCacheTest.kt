@@ -6,6 +6,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import okhttp3.Cache
+import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 
 class HttpDocumentFetcherCacheTest {
@@ -89,6 +91,32 @@ class HttpDocumentFetcherCacheTest {
     assertEquals(2, server.requestCount)
   }
 
+  @Test
+  fun `a request with max-age 0 revalidates a fresh copy and keeps its body on 304`() = runTest {
+    server.enqueue(
+        feed().addHeader("Cache-Control", "max-age=3600").addHeader("ETag", "\"v1\"").build())
+    server.enqueue(MockResponse.Builder().code(304).build())
+    fetcher.fetch(url).getOrThrow()
+
+    val revalidated = fetcher.fetch(url, MAX_AGE_0).getOrThrow()
+
+    server.takeRequest()
+    val conditional = server.takeRequest()
+    assertEquals("\"v1\"", conditional.headers["If-None-Match"])
+    assertEquals(BODY, revalidated.openBody().readBytes().decodeToString())
+  }
+
+  @Test
+  fun `a request with max-age 0 for a copy without validators downloads it again`() = runTest {
+    server.enqueue(feed().addHeader("Cache-Control", "max-age=3600").build())
+    server.enqueue(feed().build())
+    fetcher.fetch(url).getOrThrow()
+
+    fetcher.fetch(url, MAX_AGE_0).getOrThrow()
+
+    assertEquals(2, server.requestCount)
+  }
+
   private fun feed(): MockResponse.Builder =
       MockResponse.Builder().addHeader("Content-Type", "application/rss+xml").body(BODY)
 
@@ -98,6 +126,7 @@ class HttpDocumentFetcherCacheTest {
   private companion object {
     const val CACHE_BYTES = 1024L * 1024
     val NOW: Instant = Instant.now()
+    val MAX_AGE_0: CacheControl = CacheControl.Builder().maxAge(0, TimeUnit.SECONDS).build()
     const val BODY = "<rss version=\"2.0\"><channel><title>Cached</title></channel></rss>"
   }
 }
