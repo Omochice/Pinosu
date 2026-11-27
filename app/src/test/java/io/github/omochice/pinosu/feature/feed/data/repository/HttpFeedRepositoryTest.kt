@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.feature.feed.data.http.HttpStatusException
 import io.github.omochice.pinosu.feature.feed.data.http.OkHttpStub
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.UnsupportedFeedFormatException
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.error.HttpFeedNotSupportedException
 import java.io.IOException
 import kotlin.test.Test
@@ -21,7 +22,7 @@ class HttpFeedRepositoryTest {
   fun `feed response is parsed`() = runTest {
     http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
 
-    val feed = repository.fetchFeed(FEED_URL).getOrThrow()
+    val feed = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).getOrThrow()
 
     assertEquals(FEED_URL, feed.url)
     assertEquals("Example Blog", feed.title)
@@ -38,7 +39,7 @@ class HttpFeedRepositoryTest {
             finalUrl = "https://cdn.example.com/feeds/main.xml",
         )
 
-        val feed = repository.fetchFeed(FEED_URL).getOrThrow()
+        val feed = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).getOrThrow()
 
         assertEquals(FEED_URL, feed.url)
         assertEquals(FEED_URL, feed.items.single().feedUrl)
@@ -50,7 +51,8 @@ class HttpFeedRepositoryTest {
       runTest {
         http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
 
-        val feed = repository.fetchFeed("http://example.com/feed.xml").getOrThrow()
+        val feed =
+            repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal).getOrThrow()
 
         assertEquals("http://example.com/feed.xml", feed.url)
         assertEquals(listOf("https"), http.requests.map { it.url.scheme })
@@ -61,7 +63,10 @@ class HttpFeedRepositoryTest {
       runTest {
         http.fail(FEED_URL, IOException("connection refused"))
 
-        val error = repository.fetchFeed("http://example.com/feed.xml").exceptionOrNull()
+        val error =
+            repository
+                .fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal)
+                .exceptionOrNull()
 
         assertIs<HttpFeedNotSupportedException>(error)
       }
@@ -70,7 +75,7 @@ class HttpFeedRepositoryTest {
   fun `html response fails as not a feed`() = runTest {
     http.respond(FEED_URL, FeedFixtures.html(""))
 
-    val error = repository.fetchFeed(FEED_URL).exceptionOrNull()
+    val error = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).exceptionOrNull()
 
     assertIs<UnsupportedFeedFormatException>(error)
   }
@@ -79,7 +84,7 @@ class HttpFeedRepositoryTest {
   fun `non-2xx response fails`() = runTest {
     http.respond(FEED_URL, "Gone", code = 410)
 
-    val error = repository.fetchFeed(FEED_URL).exceptionOrNull()
+    val error = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).exceptionOrNull()
 
     assertIs<HttpStatusException>(error)
   }

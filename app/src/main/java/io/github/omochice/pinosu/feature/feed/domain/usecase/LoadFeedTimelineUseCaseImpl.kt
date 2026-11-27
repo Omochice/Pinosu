@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.domain.usecase
 
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
@@ -20,13 +21,14 @@ constructor(
     private val feedRepository: FeedRepository,
 ) : LoadFeedTimelineUseCase {
 
-  override suspend fun invoke(): Result<FeedTimeline> = loadSubscriptions().map { fetchAll(it) }
+  override suspend fun invoke(mode: FeedFetchMode): Result<FeedTimeline> =
+      loadSubscriptions().map { fetchAll(it, mode) }
 
-  private suspend fun fetchAll(feeds: List<FeedSubscription>): FeedTimeline {
+  private suspend fun fetchAll(feeds: List<FeedSubscription>, mode: FeedFetchMode): FeedTimeline {
     val permits = Semaphore(MAX_CONCURRENT_FETCHES)
     val results = coroutineScope {
       feeds
-          .map { feed -> async { permits.withPermit { feedRepository.fetchFeed(feed.url) } } }
+          .map { feed -> async { permits.withPermit { feedRepository.fetchFeed(feed.url, mode) } } }
           .awaitAll()
     }
     val failures = mutableListOf<FeedFetchFailure>()

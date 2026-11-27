@@ -5,6 +5,7 @@ import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
@@ -49,7 +50,7 @@ class LoadFeedTimelineUseCaseTest {
   fun `fails when the user is not logged in`() = runTest {
     coEvery { getLoginStateUseCase() } returns null
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertIs<IllegalStateException>(result.exceptionOrNull())
     coVerify(exactly = 0) { subscriptionRepository.loadSubscriptionList(any()) }
@@ -60,7 +61,7 @@ class LoadFeedTimelineUseCaseTest {
     coEvery { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) } returns
         FeedSubscriptionLoadResult.Absent
 
-    useCase()
+    useCase(FeedFetchMode.Normal)
 
     coVerify(exactly = 1) { subscriptionRepository.loadSubscriptionList(HEX_PUBKEY) }
   }
@@ -70,7 +71,7 @@ class LoadFeedTimelineUseCaseTest {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
         FeedSubscriptionLoadResult.Absent
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(FeedTimeline(items = emptyList(), failedFeeds = emptyList()), result.getOrNull())
   }
@@ -79,7 +80,7 @@ class LoadFeedTimelineUseCaseTest {
   fun `an empty list gives an empty timeline`() = runTest {
     givenSubscriptions()
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(FeedTimeline(items = emptyList(), failedFeeds = emptyList()), result.getOrNull())
   }
@@ -89,7 +90,7 @@ class LoadFeedTimelineUseCaseTest {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
         FeedSubscriptionLoadResult.Unavailable(FeedSubscriptionLoadResult.Reason.ACCESS_DENIED)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     val error = assertIs<FeedSubscriptionListUnavailableException>(result.exceptionOrNull())
     assertEquals(FeedSubscriptionLoadResult.Reason.ACCESS_DENIED, error.reason)
@@ -105,7 +106,7 @@ class LoadFeedTimelineUseCaseTest {
     givenFeed(FEED_A, a1, a2)
     givenFeed(FEED_B, b1, b2)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(listOf(b2, a2, b1, a1), result.getOrNull()?.items)
   }
@@ -121,7 +122,7 @@ class LoadFeedTimelineUseCaseTest {
     givenFeed(FEED_A, u1, dated, u2)
     givenFeed(FEED_B, u3, older)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(listOf(dated, older, u1, u2, u3), result.getOrNull()?.items)
   }
@@ -134,7 +135,7 @@ class LoadFeedTimelineUseCaseTest {
     givenFeed(FEED_A, a)
     givenFeed(FEED_B, b)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(listOf(a, b), result.getOrNull()?.items)
   }
@@ -144,10 +145,10 @@ class LoadFeedTimelineUseCaseTest {
     givenSubscriptions(FEED_A, FEED_B)
     val error = IOException("timeout")
     val b = item(FEED_B, "b", "2026-01-01T00:00:00Z")
-    coEvery { feedRepository.fetchFeed(FEED_A) } returns Result.failure(error)
+    coEvery { feedRepository.fetchFeed(FEED_A, any()) } returns Result.failure(error)
     givenFeed(FEED_B, b)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(
         FeedTimeline(items = listOf(b), failedFeeds = listOf(FeedFetchFailure(FEED_A, error))),
@@ -159,10 +160,10 @@ class LoadFeedTimelineUseCaseTest {
     givenSubscriptions(FEED_A, FEED_B)
     val errorA = IOException("a")
     val errorB = IOException("b")
-    coEvery { feedRepository.fetchFeed(FEED_A) } returns Result.failure(errorA)
-    coEvery { feedRepository.fetchFeed(FEED_B) } returns Result.failure(errorB)
+    coEvery { feedRepository.fetchFeed(FEED_A, any()) } returns Result.failure(errorA)
+    coEvery { feedRepository.fetchFeed(FEED_B, any()) } returns Result.failure(errorB)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(
         FeedTimeline(
@@ -178,7 +179,7 @@ class LoadFeedTimelineUseCaseTest {
     givenSubscriptions(*urls.toTypedArray())
     var inFlight = 0
     var maxInFlight = 0
-    coEvery { feedRepository.fetchFeed(any()) } coAnswers
+    coEvery { feedRepository.fetchFeed(any(), any()) } coAnswers
         {
           inFlight++
           maxInFlight = maxOf(maxInFlight, inFlight)
@@ -187,10 +188,10 @@ class LoadFeedTimelineUseCaseTest {
           Result.success(Feed(url = firstArg(), title = "", siteUrl = null, items = emptyList()))
         }
 
-    useCase()
+    useCase(FeedFetchMode.Normal)
 
     assertEquals(LoadFeedTimelineUseCaseImpl.MAX_CONCURRENT_FETCHES, maxInFlight)
-    coVerify(exactly = urls.size) { feedRepository.fetchFeed(any()) }
+    coVerify(exactly = urls.size) { feedRepository.fetchFeed(any(), any()) }
   }
 
   @Test
@@ -199,7 +200,7 @@ class LoadFeedTimelineUseCaseTest {
     givenFeed(FEED_A, item(FEED_A, "a", "2026-01-02T00:00:00Z"))
     givenFeed(FEED_B, item(FEED_B, "b", "2026-01-01T00:00:00Z"))
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(
         listOf("a" to "Tech", "b" to null),
@@ -211,7 +212,7 @@ class LoadFeedTimelineUseCaseTest {
     givenFeeds(FeedSubscription(FEED_A, "Tech"))
     givenFeed(FEED_A, item("https://moved.example.com/feed.xml", "a", null))
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(listOf("Tech"), result.getOrNull()?.items?.map { it.feedCategory })
   }
@@ -220,10 +221,10 @@ class LoadFeedTimelineUseCaseTest {
   fun `a feed that fails to fetch is reported with its category`() = runTest {
     val error = IOException("timeout")
     givenFeeds(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B))
-    coEvery { feedRepository.fetchFeed(FEED_A) } returns Result.failure(error)
-    coEvery { feedRepository.fetchFeed(FEED_B) } returns Result.failure(error)
+    coEvery { feedRepository.fetchFeed(FEED_A, any()) } returns Result.failure(error)
+    coEvery { feedRepository.fetchFeed(FEED_B, any()) } returns Result.failure(error)
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(
         listOf(FeedFetchFailure(FEED_A, error, "Tech"), FeedFetchFailure(FEED_B, error, null)),
@@ -238,9 +239,10 @@ class LoadFeedTimelineUseCaseTest {
             FeedSubscription(FEED_B),
             FeedSubscription(FEED_C, "News"),
             FeedSubscription(FEED_D, "Tech"))
-        coEvery { feedRepository.fetchFeed(any()) } returns Result.failure(IOException("down"))
+        coEvery { feedRepository.fetchFeed(any(), any()) } returns
+            Result.failure(IOException("down"))
 
-        val result = useCase()
+        val result = useCase(FeedFetchMode.Normal)
 
         assertEquals(listOf("Tech", "News"), result.getOrNull()?.categories)
       }
@@ -250,7 +252,7 @@ class LoadFeedTimelineUseCaseTest {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
         FeedSubscriptionLoadResult.Absent
 
-    val result = useCase()
+    val result = useCase(FeedFetchMode.Normal)
 
     assertEquals(emptyList(), result.getOrNull()?.categories)
   }
@@ -267,7 +269,7 @@ class LoadFeedTimelineUseCaseTest {
   }
 
   private fun givenFeed(feedUrl: String, vararg items: FeedItem) {
-    coEvery { feedRepository.fetchFeed(feedUrl) } returns
+    coEvery { feedRepository.fetchFeed(feedUrl, any()) } returns
         Result.success(Feed(url = feedUrl, title = "", siteUrl = null, items = items.toList()))
   }
 

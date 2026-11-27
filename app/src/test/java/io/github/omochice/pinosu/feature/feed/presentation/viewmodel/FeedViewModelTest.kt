@@ -60,7 +60,7 @@ class FeedViewModelTest {
   @Test
   fun `shows loading until the first load completes`() = runTest {
     val pending = CompletableDeferred<Result<FeedTimeline>>()
-    coEvery { loadFeedTimeline() } coAnswers { pending.await() }
+    coEvery { loadFeedTimeline(any()) } coAnswers { pending.await() }
 
     val viewModel = createViewModel()
     runCurrent()
@@ -71,23 +71,25 @@ class FeedViewModelTest {
 
   @Test
   fun `loads the timeline once when opened`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
 
     val viewModel = createViewModel()
     advanceUntilIdle()
 
-    coVerify(exactly = 1) { loadFeedTimeline() }
+    coVerify(exactly = 1) { loadFeedTimeline(any()) }
     assertEquals(
         FeedUiState.Content.Loaded(listOf(ITEM), emptyList()), viewModel.uiState.value.content)
   }
 
   @Test
   fun `refresh reloads the timeline and reports refreshing while it runs`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
     val viewModel = createViewModel()
     advanceUntilIdle()
     val pending = CompletableDeferred<Result<FeedTimeline>>()
-    coEvery { loadFeedTimeline() } coAnswers { pending.await() }
+    coEvery { loadFeedTimeline(any()) } coAnswers { pending.await() }
 
     viewModel.refresh()
     runCurrent()
@@ -105,20 +107,20 @@ class FeedViewModelTest {
     assertEquals(
         FeedUiState.Content.Loaded(listOf(OTHER_ITEM), emptyList()),
         viewModel.uiState.value.content)
-    coVerify(exactly = 2) { loadFeedTimeline() }
+    coVerify(exactly = 2) { loadFeedTimeline(any()) }
   }
 
   @Test
   fun `refresh is ignored while a load is still running`() = runTest {
     val pending = CompletableDeferred<Result<FeedTimeline>>()
-    coEvery { loadFeedTimeline() } coAnswers { pending.await() }
+    coEvery { loadFeedTimeline(any()) } coAnswers { pending.await() }
     val viewModel = createViewModel()
     runCurrent()
 
     viewModel.refresh()
     runCurrent()
 
-    coVerify(exactly = 1) { loadFeedTimeline() }
+    coVerify(exactly = 1) { loadFeedTimeline(any()) }
     assertFalse(viewModel.uiState.value.isRefreshing, "an ignored refresh does not show progress")
   }
 
@@ -126,10 +128,10 @@ class FeedViewModelTest {
   fun `reloading after the subscriptions changed restarts a load that is still running`() =
       runTest {
         val stale = CompletableDeferred<Result<FeedTimeline>>()
-        coEvery { loadFeedTimeline() } coAnswers { stale.await() }
+        coEvery { loadFeedTimeline(any()) } coAnswers { stale.await() }
         val viewModel = createViewModel()
         runCurrent()
-        coEvery { loadFeedTimeline() } returns
+        coEvery { loadFeedTimeline(any()) } returns
             Result.success(FeedTimeline(listOf(OTHER_ITEM), emptyList()))
 
         viewModel.reloadAfterSubscriptionChange()
@@ -137,7 +139,7 @@ class FeedViewModelTest {
         stale.complete(Result.success(FeedTimeline(listOf(ITEM), emptyList())))
         advanceUntilIdle()
 
-        coVerify(exactly = 2) { loadFeedTimeline() }
+        coVerify(exactly = 2) { loadFeedTimeline(any()) }
         assertEquals(
             FeedUiState.Content.Loaded(listOf(OTHER_ITEM), emptyList()),
             viewModel.uiState.value.content,
@@ -147,7 +149,8 @@ class FeedViewModelTest {
 
   @Test
   fun `a timeline without items or failures is empty`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(emptyList(), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(emptyList(), emptyList()))
 
     val viewModel = createViewModel()
     advanceUntilIdle()
@@ -164,7 +167,7 @@ class FeedViewModelTest {
             FeedSubscriptionLoadResult.Reason.UNREACHABLE to FeedLoadError.Unreachable,
         )
     FeedSubscriptionLoadResult.Reason.entries.forEach { reason ->
-      coEvery { loadFeedTimeline() } returns
+      coEvery { loadFeedTimeline(any()) } returns
           Result.failure(FeedSubscriptionListUnavailableException(reason))
 
       val viewModel = createViewModel()
@@ -180,7 +183,7 @@ class FeedViewModelTest {
   @Test
   fun `feeds that failed are listed next to the items that loaded`() = runTest {
     val failure = FeedFetchFailure("https://broken.example/feed", IOException("timeout"))
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(FeedTimeline(listOf(ITEM), listOf(failure)))
 
     val viewModel = createViewModel()
@@ -193,7 +196,7 @@ class FeedViewModelTest {
   @Test
   fun `a timeline whose every feed failed is loaded with the failures, not empty`() = runTest {
     val failure = FeedFetchFailure("https://broken.example/feed", IOException("timeout"))
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(FeedTimeline(emptyList(), listOf(failure)))
 
     val viewModel = createViewModel()
@@ -207,7 +210,7 @@ class FeedViewModelTest {
   fun `an item repeated within its feed is shown once`() = runTest {
     val repeated = ITEM.copy(title = "First, again")
     val sameIdOtherFeed = ITEM.copy(feedUrl = "https://b.example/feed")
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(FeedTimeline(listOf(ITEM, repeated, sameIdOtherFeed), emptyList()))
 
     val viewModel = createViewModel()
@@ -221,7 +224,7 @@ class FeedViewModelTest {
   @Test
   fun `the items shown are shared so the reader can open them`() = runTest {
     val repeated = ITEM.copy(title = "First, again")
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(FeedTimeline(listOf(ITEM, repeated, OTHER_ITEM), emptyList()))
 
     createViewModel()
@@ -233,10 +236,11 @@ class FeedViewModelTest {
 
   @Test
   fun `a refresh shares the reloaded items in place of the previous ones`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
     val viewModel = createViewModel()
     advanceUntilIdle()
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(FeedTimeline(listOf(OTHER_ITEM), emptyList()))
 
     viewModel.refresh()
@@ -248,7 +252,7 @@ class FeedViewModelTest {
 
   @Test
   fun `any other failure is an unknown error`() = runTest {
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.failure(IllegalStateException("User not logged in"))
 
     val viewModel = createViewModel()
@@ -259,10 +263,11 @@ class FeedViewModelTest {
 
   @Test
   fun `a failed refresh replaces the items with the error`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
     val viewModel = createViewModel()
     advanceUntilIdle()
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.failure(
             FeedSubscriptionListUnavailableException(FeedSubscriptionLoadResult.Reason.UNREACHABLE))
 
@@ -276,7 +281,7 @@ class FeedViewModelTest {
 
   @Test
   fun `the tabs name every category in name order ignoring case`() = runTest {
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(
             FeedTimeline(
                 listOf(ITEM), emptyList(), categories = listOf("tech", "News", "Tech", "art")))
@@ -289,7 +294,7 @@ class FeedViewModelTest {
 
   @Test
   fun `a timeline opens on All with every item`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
 
     val viewModel = createViewModel()
     advanceUntilIdle()
@@ -302,7 +307,7 @@ class FeedViewModelTest {
 
   @Test
   fun `selecting a category shows only its items and failures without loading again`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
 
@@ -313,12 +318,12 @@ class FeedViewModelTest {
     assertEquals(
         FeedUiState.Content.Loaded(listOf(TECH_ITEM), listOf(TECH_FAILURE)),
         viewModel.uiState.value.contentIn("Tech"))
-    coVerify(exactly = 1) { loadFeedTimeline() }
+    coVerify(exactly = 1) { loadFeedTimeline(any()) }
   }
 
   @Test
   fun `selecting a category keeps the whole timeline for the pages of the other tabs`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
 
@@ -333,7 +338,7 @@ class FeedViewModelTest {
 
   @Test
   fun `uncategorized items are shown only under All`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
 
@@ -355,7 +360,7 @@ class FeedViewModelTest {
   @Test
   fun `a category whose feeds have no items shows an empty list instead of the empty state`() =
       runTest {
-        coEvery { loadFeedTimeline() } returns
+        coEvery { loadFeedTimeline(any()) } returns
             Result.success(FeedTimeline(listOf(ITEM), emptyList(), categories = listOf("Quiet")))
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -367,12 +372,12 @@ class FeedViewModelTest {
 
   @Test
   fun `the selected category stays selected across a refresh while it still exists`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
     viewModel.selectCategory("News")
     val newer = NEWS_ITEM.copy(id = "n2", title = "Newer news")
-    coEvery { loadFeedTimeline() } returns
+    coEvery { loadFeedTimeline(any()) } returns
         Result.success(CATEGORIZED.copy(items = listOf(newer) + CATEGORIZED.items))
 
     viewModel.refresh()
@@ -386,13 +391,13 @@ class FeedViewModelTest {
 
   @Test
   fun `the selected category falls back to All when a reload no longer has it`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
     viewModel.selectCategory("News")
     val withoutNews =
         FeedTimeline(listOf(TECH_ITEM, ITEM), listOf(TECH_FAILURE), categories = listOf("Tech"))
-    coEvery { loadFeedTimeline() } returns Result.success(withoutNews)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(withoutNews)
 
     viewModel.reloadAfterSubscriptionChange()
     advanceUntilIdle()
@@ -406,7 +411,7 @@ class FeedViewModelTest {
 
   @Test
   fun `the reader can open items of every category whatever tab is selected`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
 
@@ -418,11 +423,11 @@ class FeedViewModelTest {
 
   @Test
   fun `a failed load drops the tabs and returns to All`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(CATEGORIZED)
+    coEvery { loadFeedTimeline(any()) } returns Result.success(CATEGORIZED)
     val viewModel = createViewModel()
     advanceUntilIdle()
     viewModel.selectCategory("Tech")
-    coEvery { loadFeedTimeline() } returns Result.failure(IOException("offline"))
+    coEvery { loadFeedTimeline(any()) } returns Result.failure(IOException("offline"))
 
     viewModel.refresh()
     advanceUntilIdle()
@@ -434,7 +439,8 @@ class FeedViewModelTest {
 
   @Test
   fun `shows the timeline in the display mode the settings choose`() = runTest {
-    coEvery { loadFeedTimeline() } returns Result.success(FeedTimeline(listOf(ITEM), emptyList()))
+    coEvery { loadFeedTimeline(any()) } returns
+        Result.success(FeedTimeline(listOf(ITEM), emptyList()))
     val viewModel = createViewModel()
     advanceUntilIdle()
     assertEquals(BookmarkDisplayMode.List, viewModel.uiState.value.displayMode)
@@ -449,7 +455,7 @@ class FeedViewModelTest {
   fun `the display mode survives loading and refreshing the timeline`() = runTest {
     displayMode.value = BookmarkDisplayMode.Grid
     val pending = CompletableDeferred<Result<FeedTimeline>>()
-    coEvery { loadFeedTimeline() } coAnswers { pending.await() }
+    coEvery { loadFeedTimeline(any()) } coAnswers { pending.await() }
     val viewModel = createViewModel()
     runCurrent()
 

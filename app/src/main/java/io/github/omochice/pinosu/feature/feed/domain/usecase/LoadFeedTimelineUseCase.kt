@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.domain.usecase
 
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 
 /** Use case that builds the logged-in user's timeline from every feed they subscribe to */
@@ -12,10 +13,11 @@ interface LoadFeedTimelineUseCase {
    * whole timeline. Each item and failure carries the category its feed is in on the subscription
    * list, whatever URL the fetched feed document names.
    *
+   * @param mode How much a copy of a feed kept from an earlier download is trusted
    * @return The timeline, empty when the user has no list yet, or a failure with
    *   [io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException]
    *   when the list cannot be loaded, or with [IllegalStateException] when the user is not logged
    *   in
    */
-  suspend operator fun invoke(): Result<FeedTimeline>
+  suspend operator fun invoke(mode: FeedFetchMode): Result<FeedTimeline>
 }
