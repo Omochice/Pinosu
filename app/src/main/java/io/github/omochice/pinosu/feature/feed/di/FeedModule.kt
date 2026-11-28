@@ -6,7 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
+import io.github.omochice.pinosu.feature.feed.data.repository.HttpFeedRepository
 import io.github.omochice.pinosu.feature.feed.data.repository.RelayFeedSubscriptionRepository
+import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 
 /** Hilt module for the feed feature */
@@ -20,4 +22,6 @@ object FeedModule {
   ): FeedSubscriptionRepository = impl
 
   @Provides fun provideFeedParser(impl: JsoupFeedParser): FeedParser = impl
+
+  @Provides fun provideFeedRepository(impl: HttpFeedRepository): FeedRepository = impl
 }
