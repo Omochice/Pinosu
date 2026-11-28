@@ -21,6 +21,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.navigation.AppInfo
+import io.github.omochice.pinosu.core.navigation.License
+import io.github.omochice.pinosu.core.navigation.Route
+import io.github.omochice.pinosu.core.navigation.Settings
 
 private const val DRAWER_WIDTH_FRACTION = 0.75f
 
@@ -33,18 +37,14 @@ private const val DRAWER_WIDTH_FRACTION = 0.75f
  * - Settings
  * - Logout
  *
- * @param onNavigateToLicense Callback when License menu is clicked
- * @param onNavigateToAppInfo Callback when App Info menu is clicked
- * @param onNavigateToSettings Callback when Settings menu is clicked
+ * @param onNavigate Callback with the destination route when a navigation menu item is clicked
  * @param onLogout Callback when Logout menu is clicked
  * @param onCloseDrawer Callback to close the drawer after navigation
  * @param modifier Modifier for this composable
  */
 @Composable
 fun AppDrawer(
-    onNavigateToLicense: () -> Unit,
-    onNavigateToAppInfo: () -> Unit,
-    onNavigateToSettings: () -> Unit,
+    onNavigate: (Route) -> Unit,
     onLogout: () -> Unit,
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
@@ -65,7 +65,7 @@ fun AppDrawer(
           text = stringResource(R.string.menu_licenses),
           onClick = {
             onCloseDrawer()
-            onNavigateToLicense()
+            onNavigate(License)
           })
 
       DrawerMenuItem(
@@ -73,7 +73,7 @@ fun AppDrawer(
           text = stringResource(R.string.menu_app_info),
           onClick = {
             onCloseDrawer()
-            onNavigateToAppInfo()
+            onNavigate(AppInfo)
           })
 
       DrawerMenuItem(
@@ -81,7 +81,7 @@ fun AppDrawer(
           text = stringResource(R.string.menu_settings),
           onClick = {
             onCloseDrawer()
-            onNavigateToSettings()
+            onNavigate(Settings)
           })
 
       HorizontalDivider()
@@ -100,10 +100,5 @@ fun AppDrawer(
 @Preview(showBackground = true)
 @Composable
 private fun AppDrawerPreview() {
-  AppDrawer(
-      onNavigateToLicense = {},
-      onNavigateToAppInfo = {},
-      onNavigateToSettings = {},
-      onLogout = {},
-      onCloseDrawer = {})
+  AppDrawer(onNavigate = {}, onLogout = {}, onCloseDrawer = {})
 }

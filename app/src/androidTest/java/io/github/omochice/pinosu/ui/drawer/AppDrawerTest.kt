@@ -5,8 +5,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.core.navigation.License
+import io.github.omochice.pinosu.core.navigation.Route
 import io.github.omochice.pinosu.getTestString
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Rule
 
@@ -23,14 +26,7 @@ class AppDrawerTest {
 
   @Test
   fun `AppDrawer should display all menu items`() {
-    composeTestRule.setContent {
-      AppDrawer(
-          onNavigateToLicense = {},
-          onNavigateToAppInfo = {},
-          onNavigateToSettings = {},
-          onLogout = {},
-          onCloseDrawer = {})
-    }
+    composeTestRule.setContent { AppDrawer(onNavigate = {}, onLogout = {}, onCloseDrawer = {}) }
 
     composeTestRule.onNodeWithText(getTestString(R.string.menu_licenses)).assertIsDisplayed()
     composeTestRule.onNodeWithText(getTestString(R.string.menu_app_info)).assertIsDisplayed()
@@ -39,20 +35,18 @@ class AppDrawerTest {
 
   @Test
   fun `AppDrawer should handle license click`() {
-    var licenseClicked = false
+    var navigatedTo: Route? = null
     var drawerClosed = false
 
     composeTestRule.setContent {
       AppDrawer(
-          onNavigateToLicense = { licenseClicked = true },
-          onNavigateToAppInfo = {},
-          onNavigateToSettings = {},
+          onNavigate = { route -> navigatedTo = route },
           onLogout = {},
           onCloseDrawer = { drawerClosed = true })
     }
 
     composeTestRule.onNodeWithText(getTestString(R.string.menu_licenses)).performClick()
-    assertTrue(licenseClicked, "License navigation should be triggered")
+    assertEquals(License, navigatedTo, "License navigation should be triggered")
     assertTrue(drawerClosed, "Drawer should be closed after click")
   }
 
@@ -63,9 +57,7 @@ class AppDrawerTest {
 
     composeTestRule.setContent {
       AppDrawer(
-          onNavigateToLicense = {},
-          onNavigateToAppInfo = {},
-          onNavigateToSettings = {},
+          onNavigate = {},
           onLogout = { logoutClicked = true },
           onCloseDrawer = { drawerClosed = true })
     }
