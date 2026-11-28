@@ -8,7 +8,9 @@ import io.github.omochice.pinosu.feature.feed.data.parser.FeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.repository.HttpFeedDiscoveryRepository
 import io.github.omochice.pinosu.feature.feed.data.repository.HttpFeedRepository
+import io.github.omochice.pinosu.feature.feed.data.repository.OgpArticleImageRepository
 import io.github.omochice.pinosu.feature.feed.data.repository.RelayFeedSubscriptionRepository
+import io.github.omochice.pinosu.feature.feed.domain.repository.ArticleImageRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
@@ -38,6 +40,9 @@ object FeedModule {
   @Provides
   fun provideFeedDiscoveryRepository(impl: HttpFeedDiscoveryRepository): FeedDiscoveryRepository =
       impl
+
+  @Provides
+  fun provideArticleImageRepository(impl: OgpArticleImageRepository): ArticleImageRepository = impl
 
   @Provides
   fun provideLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase =

@@ -6,6 +6,7 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCas
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
@@ -189,9 +190,77 @@ class LoadFeedTimelineUseCaseTest {
     coVerify(exactly = urls.size) { feedRepository.fetchFeed(any()) }
   }
 
+  @Test
+  fun `each item carries the category of the feed it came from`() = runTest {
+    givenFeeds(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B))
+    givenFeed(FEED_A, item(FEED_A, "a", "2026-01-02T00:00:00Z"))
+    givenFeed(FEED_B, item(FEED_B, "b", "2026-01-01T00:00:00Z"))
+
+    val result = useCase()
+
+    assertEquals(
+        listOf("a" to "Tech", "b" to null),
+        result.getOrNull()?.items?.map { it.id to it.feedCategory })
+  }
+
+  @Test
+  fun `the category follows the subscription even when the feed names another url`() = runTest {
+    givenFeeds(FeedSubscription(FEED_A, "Tech"))
+    givenFeed(FEED_A, item("https://moved.example.com/feed.xml", "a", null))
+
+    val result = useCase()
+
+    assertEquals(listOf("Tech"), result.getOrNull()?.items?.map { it.feedCategory })
+  }
+
+  @Test
+  fun `a feed that fails to fetch is reported with its category`() = runTest {
+    val error = IOException("timeout")
+    givenFeeds(FeedSubscription(FEED_A, "Tech"), FeedSubscription(FEED_B))
+    coEvery { feedRepository.fetchFeed(FEED_A) } returns Result.failure(error)
+    coEvery { feedRepository.fetchFeed(FEED_B) } returns Result.failure(error)
+
+    val result = useCase()
+
+    assertEquals(
+        listOf(FeedFetchFailure(FEED_A, error, "Tech"), FeedFetchFailure(FEED_B, error, null)),
+        result.getOrNull()?.failedFeeds)
+  }
+
+  @Test
+  fun `the timeline names every category a subscribed feed is in once in subscription order`() =
+      runTest {
+        givenFeeds(
+            FeedSubscription(FEED_A, "Tech"),
+            FeedSubscription(FEED_B),
+            FeedSubscription(FEED_C, "News"),
+            FeedSubscription(FEED_D, "Tech"))
+        coEvery { feedRepository.fetchFeed(any()) } returns Result.failure(IOException("down"))
+
+        val result = useCase()
+
+        assertEquals(listOf("Tech", "News"), result.getOrNull()?.categories)
+      }
+
+  @Test
+  fun `an absent list has no categories`() = runTest {
+    coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
+        FeedSubscriptionLoadResult.Absent
+
+    val result = useCase()
+
+    assertEquals(emptyList(), result.getOrNull()?.categories)
+  }
+
+  private fun givenFeeds(vararg feeds: FeedSubscription) {
+    coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
+        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds.toList(), createdAt = 1L))
+  }
+
   private fun givenSubscriptions(vararg feedUrls: String) {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feedUrls.toList(), createdAt = 1L))
+        FeedSubscriptionLoadResult.Found(
+            FeedSubscriptionList(feedUrls.map(::FeedSubscription), createdAt = 1L))
   }
 
   private fun givenFeed(feedUrl: String, vararg items: FeedItem) {
@@ -214,5 +283,7 @@ class LoadFeedTimelineUseCaseTest {
     const val HEX_PUBKEY = "fffbfffffffffffffffffffffffffffffffffffffffffffffffffffffffff3ff"
     const val FEED_A = "https://a.example.com/feed.xml"
     const val FEED_B = "https://b.example.com/feed.xml"
+    const val FEED_C = "https://c.example.com/feed.xml"
+    const val FEED_D = "https://d.example.com/feed.xml"
   }
 }

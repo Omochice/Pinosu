@@ -36,4 +36,26 @@ internal fun Element.childPlainText(vararg names: String): String =
         }
         .orEmpty()
 
-private fun Element.htmlSource(): String = if (childrenSize() > 0) html() else wholeText()
+/**
+ * Sanitized HTML body of the first direct child among [names] that has any text left once sanitized
+ *
+ * @param names Names of the children to try, in order of preference
+ * @param feedUrl URL the feed was fetched from, used to resolve relative links
+ * @param htmlOf HTML a child holds, or null when it holds nothing that can be shown
+ * @return The body, or null when none of the children has any text
+ */
+internal fun Element.childBodyHtml(
+    vararg names: String,
+    feedUrl: String,
+    htmlOf: (Element) -> String?,
+): String? =
+    names.asSequence().mapNotNull(::firstChildNamed).firstNotNullOfOrNull { child ->
+      htmlOf(child)?.let { ItemBodySanitizer.sanitize(it, LinkResolver.baseOf(child, feedUrl)) }
+    }
+
+/**
+ * HTML held by this element, whether written as markup or as escaped text
+ *
+ * @return The inner markup when the element has child elements, otherwise its unescaped text
+ */
+internal fun Element.htmlSource(): String = if (childrenSize() > 0) html() else wholeText()

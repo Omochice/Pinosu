@@ -9,13 +9,13 @@ sealed interface FeedSubscriptionChange {
    * The new list is built and has to be signed before it is published
    *
    * @property event Unsigned list event for NIP-55 signing
-   * @property feedUrls Feed URLs the new list holds, in order
+   * @property feeds Feeds the new list holds, in order
    * @property isFirstList Whether the user has published no list before, in which case they must be
    *   told that the list is public before it is published
    */
   data class ReadyToSign(
       val event: UnsignedNostrEvent,
-      val feedUrls: List<String>,
+      val feeds: List<FeedSubscription>,
       val isFirstList: Boolean,
   ) : FeedSubscriptionChange
 
@@ -35,9 +35,16 @@ sealed interface FeedSubscriptionChange {
   data class AlreadySubscribed(val feedUrl: String) : FeedSubscriptionChange
 
   /**
-   * The feed to remove is not in the list, so nothing changes
+   * The feed to remove or file under a category is not in the list, so nothing changes
    *
    * @property feedUrl URL of the feed
    */
   data class NotSubscribed(val feedUrl: String) : FeedSubscriptionChange
+
+  /**
+   * The feed is already in the category it was to be filed under, so nothing changes
+   *
+   * @property feedUrl URL of the feed
+   */
+  data class CategoryUnchanged(val feedUrl: String) : FeedSubscriptionChange
 }

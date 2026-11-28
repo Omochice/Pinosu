@@ -19,10 +19,15 @@ import kotlinx.coroutines.launch
  * Loads the timeline once when created, which happens when the screen opens.
  *
  * @param loadFeedTimeline UseCase that builds the timeline from the user's subscriptions
+ * @param loadedItems Holder the shown items are handed to, so the reader can open them
  */
 @HiltViewModel
-class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTimelineUseCase) :
-    ViewModel() {
+class FeedViewModel
+@Inject
+constructor(
+    private val loadFeedTimeline: LoadFeedTimelineUseCase,
+    private val loadedItems: LoadedFeedItems,
+) : ViewModel() {
 
   private val _uiState = MutableStateFlow(FeedUiState())
   val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
@@ -52,11 +57,31 @@ class FeedViewModel @Inject constructor(private val loadFeedTimeline: LoadFeedTi
     load()
   }
 
+  /**
+   * Select the tab of a category, whose items are already in the timeline so nothing is loaded
+   * again
+   *
+   * @param category Category whose tab the user selected, or null for the tab showing every feed
+   */
+  fun selectCategory(category: String?) {
+    _uiState.update { it.copy(selectedCategory = category) }
+  }
+
   private fun load() {
     loadJob =
         viewModelScope.launch {
-          val content = loadFeedTimeline().fold(onSuccess = ::toContent, onFailure = ::toError)
-          _uiState.update { FeedUiState(content = content, isRefreshing = false) }
+          val timeline = loadFeedTimeline()
+          val content = timeline.fold(onSuccess = ::toContent, onFailure = ::toError)
+          val categories = orderedCategories(timeline.getOrNull()?.categories.orEmpty())
+          loadedItems.replace((content as? FeedUiState.Content.Loaded)?.items.orEmpty())
+          _uiState.update { current ->
+            val selected = current.selectedCategory?.takeIf { it in categories }
+            FeedUiState(
+                content = content,
+                isRefreshing = false,
+                categories = categories,
+                selectedCategory = selected)
+          }
         }
   }
 

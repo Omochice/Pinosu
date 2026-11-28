@@ -1,6 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
 import android.util.Log
+import io.github.omochice.pinosu.core.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
@@ -11,7 +12,6 @@ import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.core.url.stripTrackingQueryParameters
-import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkItem
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkList
 import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkedEvent

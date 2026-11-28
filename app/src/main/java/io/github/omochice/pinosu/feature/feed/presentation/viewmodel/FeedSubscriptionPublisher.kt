@@ -7,6 +7,9 @@ import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.feed.domain.usecase.PublishFeedSubscriptionListUseCase
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 /**
  * Has a prepared subscription list signed by the NIP-55 signer and publishes the signed list
@@ -26,16 +29,25 @@ constructor(
     private val savedStateHandle: SavedStateHandle,
 ) {
 
+  private val _signRequests = Channel<Intent>(Channel.BUFFERED)
+
   /**
-   * Remember [event] as the list awaiting a signature and build the signer request for it
+   * Signer requests the screen has to launch
+   *
+   * Each request is delivered once and waits for a collector, so a request made while the activity
+   * is being recreated is launched by the recreated screen.
+   */
+  val signRequests: Flow<Intent> = _signRequests.receiveAsFlow()
+
+  /**
+   * Remember [event] as the list awaiting a signature and ask the screen to open the signer for it
    *
    * @param event Unsigned list event
-   * @return Intent that opens the signer
    */
-  fun signRequestFor(event: UnsignedNostrEvent): Intent {
+  fun requestSignature(event: UnsignedNostrEvent) {
     val eventJson = event.toJson()
     savedStateHandle[KEY_PENDING_EVENT] = eventJson
-    return nip55SignerClient.createSignEventIntent(eventJson)
+    _signRequests.trySend(nip55SignerClient.createSignEventIntent(eventJson))
   }
 
   /**

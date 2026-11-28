@@ -1,5 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
+
 /**
  * UI state of the feed subscription screen
  *
@@ -26,9 +28,9 @@ data class FeedSubscriptionsUiState(
     /**
      * The list loaded
      *
-     * @property feedUrls Subscribed feed URLs in their stored order
+     * @property feeds Subscribed feeds in their stored order
      */
-    data class Loaded(val feedUrls: List<String>) : Content
+    data class Loaded(val feeds: List<FeedSubscription>) : Content
 
     /**
      * The list could not be loaded

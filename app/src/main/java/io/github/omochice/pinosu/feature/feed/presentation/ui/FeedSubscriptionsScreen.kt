@@ -2,6 +2,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
@@ -41,8 +43,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedSubscriptionsUiState
+import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.orderedCategories
 
 private const val FEED_URL_MAX_LINES = 2
 
@@ -51,7 +55,7 @@ private const val FEED_URL_MAX_LINES = 2
  *
  * @param uiState Subscription screen UI state
  * @param callbacks Callbacks for the user's actions
- * @param isReadOnly Whether to hide adding and removing for read-only login
+ * @param isReadOnly Whether to hide adding, removing, and filing feeds for read-only login
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +66,7 @@ fun FeedSubscriptionsScreen(
 ) {
   val snackbarHostState = remember { SnackbarHostState() }
   var isAddDialogOpen by rememberSaveable { mutableStateOf(false) }
+  var categoryDialogFeedUrl by rememberSaveable { mutableStateOf<String?>(null) }
   val messageText = uiState.message?.let { stringResource(it.messageRes()) }
 
   LaunchedEffect(messageText) {
@@ -73,28 +78,11 @@ fun FeedSubscriptionsScreen(
 
   Scaffold(
       topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_feed_subscriptions)) },
-            navigationIcon = {
-              IconButton(onClick = callbacks.onNavigateUp) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.cd_navigate_up))
-              }
-            },
-            actions = {
-              if (!isReadOnly) {
-                IconButton(
-                    onClick = { isAddDialogOpen = true },
-                    enabled =
-                        uiState.content is FeedSubscriptionsUiState.Content.Loaded &&
-                            !uiState.isWorking) {
-                      Icon(
-                          imageVector = Icons.Filled.Add,
-                          contentDescription = stringResource(R.string.cd_add_feed))
-                    }
-              }
-            })
+        FeedSubscriptionsTopBar(
+            onNavigateUp = callbacks.onNavigateUp,
+            onAdd = { isAddDialogOpen = true }.takeIf { !isReadOnly },
+            isAddEnabled =
+                uiState.content is FeedSubscriptionsUiState.Content.Loaded && !uiState.isWorking)
       },
       snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
@@ -104,7 +92,14 @@ fun FeedSubscriptionsScreen(
           FeedSubscriptionsContent(
               content = uiState.content,
               onRetry = callbacks.onRetry,
-              onRemove = if (isReadOnly) null else callbacks.onRemove,
+              rowActions =
+                  if (isReadOnly) {
+                    null
+                  } else {
+                    FeedRowActions(
+                        onEditCategory = { categoryDialogFeedUrl = it },
+                        onRemove = callbacks.onRemove)
+                  },
               isEnabled = !uiState.isWorking)
         }
       }
@@ -117,14 +112,74 @@ fun FeedSubscriptionsScreen(
         },
         onDismiss = { isAddDialogOpen = false })
   }
+  categoryDialogFeedUrl?.let { feedUrl ->
+    FeedCategoryDialogFor(
+        feedUrl = feedUrl,
+        content = uiState.content,
+        onSetCategory = callbacks.onSetCategory,
+        onClose = { categoryDialogFeedUrl = null })
+  }
   FeedSubscriptionsDialogHost(dialog = uiState.dialog, callbacks = callbacks)
+}
+
+/** Actions offered on each subscribed feed when the user may change the list */
+private data class FeedRowActions(
+    val onEditCategory: (feedUrl: String) -> Unit,
+    val onRemove: (feedUrl: String) -> Unit,
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FeedSubscriptionsTopBar(
+    onNavigateUp: () -> Unit,
+    onAdd: (() -> Unit)?,
+    isAddEnabled: Boolean,
+) {
+  TopAppBar(
+      title = { Text(stringResource(R.string.title_feed_subscriptions)) },
+      navigationIcon = {
+        IconButton(onClick = onNavigateUp) {
+          Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = stringResource(R.string.cd_navigate_up))
+        }
+      },
+      actions = {
+        onAdd?.let { add ->
+          IconButton(onClick = add, enabled = isAddEnabled) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.cd_add_feed))
+          }
+        }
+      })
+}
+
+@Composable
+private fun FeedCategoryDialogFor(
+    feedUrl: String,
+    content: FeedSubscriptionsUiState.Content,
+    onSetCategory: (feedUrl: String, category: String?) -> Unit,
+    onClose: () -> Unit,
+) {
+  val feeds = (content as? FeedSubscriptionsUiState.Content.Loaded)?.feeds.orEmpty()
+  val currentCategory = feeds.firstOrNull { it.url == feedUrl }?.category
+  FeedCategoryDialog(
+      currentCategory = currentCategory,
+      suggestions =
+          orderedCategories(feeds.mapNotNull { it.category }) - setOfNotNull(currentCategory),
+      onSave = { category ->
+        onClose()
+        onSetCategory(feedUrl, category)
+      },
+      onDismiss = onClose)
 }
 
 @Composable
 private fun FeedSubscriptionsContent(
     content: FeedSubscriptionsUiState.Content,
     onRetry: () -> Unit,
-    onRemove: ((String) -> Unit)?,
+    rowActions: FeedRowActions?,
     isEnabled: Boolean,
 ) {
   when (content) {
@@ -137,12 +192,12 @@ private fun FeedSubscriptionsContent(
           Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
         }
     is FeedSubscriptionsUiState.Content.Loaded ->
-        if (content.feedUrls.isEmpty()) {
+        if (content.feeds.isEmpty()) {
           CenteredMessage(text = stringResource(R.string.message_no_feeds))
         } else {
           LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(content.feedUrls, key = { it }) { feedUrl ->
-              FeedSubscriptionRow(feedUrl = feedUrl, onRemove = onRemove, isEnabled = isEnabled)
+            items(content.feeds, key = { it.url }) { feed ->
+              FeedSubscriptionRow(feed = feed, actions = rowActions, isEnabled = isEnabled)
             }
           }
         }
@@ -164,21 +219,29 @@ private fun CenteredMessage(text: String, action: (@Composable () -> Unit)? = nu
 
 @Composable
 private fun FeedSubscriptionRow(
-    feedUrl: String,
-    onRemove: ((String) -> Unit)?,
+    feed: FeedSubscription,
+    actions: FeedRowActions?,
     isEnabled: Boolean,
 ) {
   ListItem(
       headlineContent = {
-        Text(text = feedUrl, maxLines = FEED_URL_MAX_LINES, overflow = TextOverflow.Ellipsis)
+        Text(text = feed.url, maxLines = FEED_URL_MAX_LINES, overflow = TextOverflow.Ellipsis)
       },
+      supportingContent = feed.category?.let { category -> { Text(text = category) } },
       trailingContent =
-          onRemove?.let { remove ->
+          actions?.let { rowActions ->
             {
-              IconButton(onClick = { remove(feedUrl) }, enabled = isEnabled) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(R.string.cd_remove_feed))
+              Row {
+                IconButton(onClick = { rowActions.onEditCategory(feed.url) }, enabled = isEnabled) {
+                  Icon(
+                      imageVector = Icons.AutoMirrored.Outlined.Label,
+                      contentDescription = stringResource(R.string.cd_set_feed_category))
+                }
+                IconButton(onClick = { rowActions.onRemove(feed.url) }, enabled = isEnabled) {
+                  Icon(
+                      imageVector = Icons.Outlined.Delete,
+                      contentDescription = stringResource(R.string.cd_remove_feed))
+                }
               }
             }
           })
@@ -192,7 +255,9 @@ private fun SubscriptionsPreview() {
           FeedSubscriptionsUiState(
               content =
                   FeedSubscriptionsUiState.Content.Loaded(
-                      listOf("https://blog.example/feed", "https://news.example/atom.xml"))),
+                      listOf(
+                          FeedSubscription("https://blog.example/feed", "Tech"),
+                          FeedSubscription("https://news.example/atom.xml")))),
       callbacks = previewCallbacks)
 }
 
@@ -212,6 +277,7 @@ private val previewCallbacks =
         onRetry = {},
         onAdd = {},
         onRemove = {},
+        onSetCategory = { _, _ -> },
         onConfirmPublicNotice = {},
         onDismissDialog = {},
         onMessageShown = {})

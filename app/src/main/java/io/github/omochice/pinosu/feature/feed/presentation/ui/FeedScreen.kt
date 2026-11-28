@@ -20,17 +20,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +36,6 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedLoadError
 import io.github.omochice.pinosu.feature.feed.presentation.viewmodel.FeedUiState
-import kotlinx.coroutines.launch
 
 /**
  * Composable function for the feed timeline screen
@@ -53,6 +48,13 @@ import kotlinx.coroutines.launch
  * @param onManageSubscriptions Callback when the user asks to change the subscribed feeds
  * @param isReadOnly Whether to hide the bookmark action and the subscription entry points for
  *   read-only login
+ * @param onOpenItem Callback with the item whose card is tapped
+ * @param onSelectCategory Callback with the category whose tab is tapped or whose page is swiped
+ *   to, or null for the tab that shows every feed
+ * @param articleImages Image of each article link looked up so far, null for an article without
+ *   one; shown for items whose feed gives them no image
+ * @param onLoadArticleImage Called with the link of a shown item whose feed gives it no image;
+ *   cancelled when the item leaves the screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,45 +65,68 @@ fun FeedScreen(
     onBookmarkItem: (link: String, title: String) -> Unit = { _, _ -> },
     onManageSubscriptions: () -> Unit = {},
     isReadOnly: Boolean = false,
+    onOpenItem: (FeedItem) -> Unit = {},
+    onSelectCategory: (String?) -> Unit = {},
+    articleImages: Map<String, String?> = emptyMap(),
+    onLoadArticleImage: suspend (link: String) -> Unit = {},
 ) {
   val manageSubscriptions = if (isReadOnly) null else onManageSubscriptions
-  val uriHandler = LocalUriHandler.current
-  val snackbarHostState = remember { SnackbarHostState() }
-  val scope = rememberCoroutineScope()
-  val openFailedMessage = stringResource(R.string.error_url_open_failed)
 
   val callbacks =
       FeedItemCallbacks(
-          onOpen = { item ->
-            item.link?.let { link ->
-              try {
-                uriHandler.openUri(link)
-              } catch (_: IllegalArgumentException) {
-                scope.launch { snackbarHostState.showSnackbar(openFailedMessage) }
-              }
-            }
-          },
+          onOpen = onOpenItem,
           onBookmark =
               if (isReadOnly) {
                 null
               } else {
                 { item -> item.link?.let { link -> onBookmarkItem(link, item.title) } }
-              })
+              },
+          onLoadArticleImage = onLoadArticleImage)
+
+  val showContent: @Composable (FeedUiState.Content, FeedItemCallbacks) -> Unit =
+      { content, pageCallbacks ->
+        FeedContent(
+            content = content,
+            articleImages = articleImages,
+            callbacks = pageCallbacks,
+            onRetry = onRefresh,
+            onAddFeed = manageSubscriptions)
+      }
+
+  val pagerState =
+      rememberFeedCategoryPagerState(
+          categories = uiState.categories, selectedCategory = uiState.selectedCategory)
 
   Scaffold(
       topBar = {
-        FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
-      },
-      snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
+        Column {
+          FeedTopBar(onOpenDrawer = onOpenDrawer, onManageSubscriptions = manageSubscriptions)
+          pagerState?.let {
+            FeedCategoryTabRow(
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                pagerState = it,
+                onSelect = onSelectCategory)
+          }
+        }
+      }) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = onRefresh,
             modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-              FeedContent(
-                  content = uiState.content,
-                  callbacks = callbacks,
-                  onRetry = onRefresh,
-                  onAddFeed = manageSubscriptions)
+              if (pagerState == null) {
+                showContent(uiState.content, callbacks)
+              } else {
+                FeedCategoryPager(
+                    pagerState = pagerState,
+                    categories = uiState.categories,
+                    selectedCategory = uiState.selectedCategory,
+                    onSelect = onSelectCategory) { category, isShown ->
+                      showContent(
+                          remember(uiState.content, category) { uiState.contentIn(category) },
+                          callbacks.forPage(isShown))
+                    }
+              }
             }
       }
 }
@@ -109,6 +134,7 @@ fun FeedScreen(
 @Composable
 private fun FeedContent(
     content: FeedUiState.Content,
+    articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
     onRetry: () -> Unit,
     onAddFeed: (() -> Unit)?,
@@ -122,7 +148,11 @@ private fun FeedContent(
     is FeedUiState.Content.Error ->
         ScrollableCenteredBox { FeedError(reason = content.reason, onRetry = onRetry) }
     is FeedUiState.Content.Loaded ->
-        FeedList(items = content.items, failedFeeds = content.failedFeeds, callbacks = callbacks)
+        FeedList(
+            items = content.items,
+            failedFeeds = content.failedFeeds,
+            articleImages = articleImages,
+            callbacks = callbacks)
   }
 }
 
@@ -193,6 +223,7 @@ private fun FeedError(reason: FeedLoadError, onRetry: () -> Unit) {
 private fun FeedList(
     items: List<FeedItem>,
     failedFeeds: List<FeedFetchFailure>,
+    articleImages: Map<String, String?>,
     callbacks: FeedItemCallbacks,
 ) {
   LazyColumn(
@@ -203,10 +234,7 @@ private fun FeedList(
           item(key = "failedFeeds") { FailedFeedsNotice(failedFeeds = failedFeeds) }
         }
         items(items, key = ::feedItemKey) { item ->
-          FeedItemCard(
-              item = item,
-              onOpen = callbacks.onOpen,
-              onBookmark = callbacks.onBookmark?.takeIf { item.link != null })
+          FeedListItem(item = item, articleImages = articleImages, callbacks = callbacks)
         }
       }
 }

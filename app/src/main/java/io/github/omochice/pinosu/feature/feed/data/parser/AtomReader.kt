@@ -3,12 +3,16 @@ package io.github.omochice.pinosu.feature.feed.data.parser
 import io.github.omochice.pinosu.feature.feed.domain.model.Feed
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.Entities
 
 /** Reads Atom (`feed`) documents */
 internal object AtomReader {
 
   private const val TITLE = "title"
   private const val REL = "rel"
+  private const val SUMMARY = "summary"
+  private const val CONTENT = "content"
+  private const val TEXT_TYPE = "text"
 
   /**
    * Read a feed from the document's root element
@@ -37,9 +41,25 @@ internal object AtomReader {
         title = title,
         link = link,
         publishedAt = rawDate?.let(FeedDateParser::parse),
-        summary = entry.childPlainText("summary", "content"),
+        summary = entry.childPlainText(SUMMARY, CONTENT),
+        contentHtml = entry.childBodyHtml(CONTENT, SUMMARY, feedUrl = feedUrl, htmlOf = ::textHtml),
+        imageUrl = ItemImageFinder.find(entry, feedUrl, listOf(CONTENT, SUMMARY), ::textHtml),
     )
   }
+
+  /**
+   * HTML of an Atom text construct, decided by its `type` because plain text may contain `<` that
+   * must not be read as markup
+   *
+   * @return The HTML, or null for any other media type, which is either out of line or binary
+   */
+  private fun textHtml(element: Element): String? =
+      when (element.attr("type").ifEmpty { TEXT_TYPE }) {
+        TEXT_TYPE -> Entities.escape(element.wholeText())
+        "html" -> element.wholeText()
+        "xhtml" -> element.html()
+        else -> null
+      }
 
   private fun alternateLink(parent: Element, feedUrl: String): String? {
     val links = parent.childrenNamed("link")

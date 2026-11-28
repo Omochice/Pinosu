@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.domain.usecase
 import io.github.omochice.pinosu.core.model.Pubkey
 import io.github.omochice.pinosu.feature.auth.domain.model.User
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
@@ -53,11 +54,11 @@ class LoadFeedSubscriptionsUseCaseTest {
   @Test
   fun `a found list gives its feed URLs in stored order`() = runTest {
     coEvery { subscriptionRepository.loadSubscriptionList(any()) } returns
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_B, FEED_A), 1L))
+        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_B, FEED_A), 1L))
 
     val result = useCase()
 
-    assertEquals(listOf(FEED_B, FEED_A), result.getOrNull())
+    assertEquals(feeds(FEED_B, FEED_A), result.getOrNull())
   }
 
   @Test
@@ -80,6 +81,9 @@ class LoadFeedSubscriptionsUseCaseTest {
     val error = assertIs<FeedSubscriptionListUnavailableException>(result.exceptionOrNull())
     assertEquals(FeedSubscriptionLoadResult.Reason.ACCESS_DENIED, error.reason)
   }
+
+  private fun feeds(vararg feedUrls: String): List<FeedSubscription> =
+      feedUrls.map(::FeedSubscription)
 
   private companion object {
     const val VALID_NPUB = "npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq4hl3lg"

@@ -133,6 +133,7 @@ feature/{name}/
 
 - `crypto/` - Encryption utilities (TinkKeyManager)
 - `di/` - Core Hilt modules (NetworkModule, RelayPoolModule) — distinct from the root `di/` package below
+- `metadata/` - Open Graph metadata of web pages (UrlMetadataFetcher)
 - `model/` - Shared DTOs (NostrEvent, UnsignedNostrEvent, Pubkey, UserProfile)
 - `navigation/` - App navigation (NavHost, animations)
 - `nip/` - Nostr protocol implementations
@@ -155,7 +156,7 @@ feature/{name}/
 **Subdirectories**:
 
 - `theme/` - Material Design 3 theme
-- `component/` - Reusable dialogs (ErrorDialog, UrlSelectionDialog)
+- `component/` - Reusable dialogs (ErrorDialog, UrlSelectionDialog) and list card parts (OgpThumbnail, ThumbnailRow), and the pager-synced tab indicator (PagerSyncedTabIndicator)
 - `drawer/` - Navigation drawer components
 
 ### Root DI (`di/`)

@@ -19,6 +19,16 @@ sealed interface Route
 /** Subscribed feeds screen route */
 @Serializable object FeedSubscriptions : Route
 
+/**
+ * Feed item reader screen route
+ *
+ * The item itself is not carried because its body can be too large for a route.
+ *
+ * @property feedUrl URL of the feed the item belongs to
+ * @property itemId Identifier of the item within its feed
+ */
+@Serializable data class FeedItemReader(val feedUrl: String, val itemId: String) : Route
+
 /** License screen route */
 @Serializable object License : Route
 

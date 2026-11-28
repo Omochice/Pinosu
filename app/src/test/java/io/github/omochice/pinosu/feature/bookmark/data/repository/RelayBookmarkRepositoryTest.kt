@@ -1,13 +1,13 @@
 package io.github.omochice.pinosu.feature.bookmark.data.repository
 
+import io.github.omochice.pinosu.core.metadata.UrlMetadata
+import io.github.omochice.pinosu.core.metadata.UrlMetadataFetcher
 import io.github.omochice.pinosu.core.model.NostrEvent
 import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.core.relay.RelayConfig
 import io.github.omochice.pinosu.core.relay.RelayListProvider
 import io.github.omochice.pinosu.core.relay.RelayPool
-import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadata
-import io.github.omochice.pinosu.feature.bookmark.data.metadata.UrlMetadataFetcher
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

@@ -2,11 +2,9 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Card
@@ -16,39 +14,40 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.omochice.pinosu.R
-import io.github.omochice.pinosu.core.timestamp.formatTimestamp
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.ui.component.ThumbnailRow
 import java.time.Instant
 
 private const val TITLE_MAX_LINES = 2
-private const val SUMMARY_MAX_LINES = 3
 
 /**
- * Card showing one feed item
+ * Card showing one feed item, laid out like a bookmark in the bookmark list
  *
  * @param item Item to show
- * @param onOpen Callback when the card is tapped; the card is not tappable when the item has no
- *   link
+ * @param imageUrl Image to show beside the item, or null to show the placeholder
+ * @param onOpen Callback when the card is tapped
  * @param onBookmark Callback when the bookmark action is tapped, or null to hide the action
  */
 @Composable
 fun FeedItemCard(
     item: FeedItem,
+    imageUrl: String?,
     onOpen: (FeedItem) -> Unit,
     onBookmark: ((FeedItem) -> Unit)?,
 ) {
+  val title = item.title.ifEmpty { item.link.orEmpty() }
   Card(
-      modifier = Modifier.fillMaxWidth().clickable(enabled = item.link != null) { onOpen(item) },
-      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
-          FeedItemText(item = item, modifier = Modifier.weight(1f))
+      modifier = Modifier.fillMaxWidth().clickable { onOpen(item) },
+      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+        ThumbnailRow(imageUrl = imageUrl, contentDescription = title) {
+          FeedItemText(title = title, byline = feedItemByline(item), modifier = Modifier.weight(1f))
           onBookmark?.let { bookmark ->
             IconButton(onClick = { bookmark(item) }) {
               Icon(
@@ -61,31 +60,21 @@ fun FeedItemCard(
 }
 
 @Composable
-private fun FeedItemText(item: FeedItem, modifier: Modifier = Modifier) {
+private fun FeedItemText(title: String, byline: String, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     Text(
-        text = item.title.ifEmpty { item.link.orEmpty() },
-        style = MaterialTheme.typography.titleMedium,
+        text = title,
+        style = MaterialTheme.typography.titleLarge,
+        color = MaterialTheme.colorScheme.primary,
         maxLines = TITLE_MAX_LINES,
         overflow = TextOverflow.Ellipsis)
+    Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text =
-            listOfNotNull(
-                    item.feedTitle.ifEmpty { item.feedUrl },
-                    item.publishedAt?.let { formatTimestamp(it.epochSecond) })
-                .joinToString(separator = " · "),
+        text = byline,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis)
-    if (item.summary.isNotBlank()) {
-      Spacer(modifier = Modifier.height(4.dp))
-      Text(
-          text = item.summary,
-          style = MaterialTheme.typography.bodyMedium,
-          maxLines = SUMMARY_MAX_LINES,
-          overflow = TextOverflow.Ellipsis)
-    }
   }
 }
 
@@ -102,6 +91,7 @@ private fun FeedItemCardPreview() {
               link = "https://blog.example/feeds",
               publishedAt = Instant.parse("2026-01-02T03:04:05Z"),
               summary = "A short summary of the article."),
+      imageUrl = null,
       onOpen = {},
       onBookmark = {})
 }

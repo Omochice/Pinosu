@@ -11,6 +11,7 @@ import io.github.omochice.pinosu.core.relay.RelayPool
 import io.github.omochice.pinosu.core.relay.RelayQueryResult
 import io.github.omochice.pinosu.core.relay.RelayTermination
 import io.github.omochice.pinosu.feature.feed.data.codec.FeedSubscriptionListCodec
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.mockk.coEvery
@@ -106,7 +107,7 @@ class RelayFeedSubscriptionRepositoryTest {
     val result = repository.loadSubscriptionList(AUTHOR)
 
     assertEquals(
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_B), NOW - 10)), result)
+        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_B), NOW - 10)), result)
   }
 
   @Test
@@ -122,7 +123,7 @@ class RelayFeedSubscriptionRepositoryTest {
     val result = repository.loadSubscriptionList(AUTHOR)
 
     assertEquals(
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), NOW - 100)), result)
+        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), NOW - 100)), result)
   }
 
   @Test
@@ -132,8 +133,7 @@ class RelayFeedSubscriptionRepositoryTest {
 
     val result = repository.loadSubscriptionList(AUTHOR)
 
-    assertEquals(
-        FeedSubscriptionLoadResult.Found(FeedSubscriptionList(listOf(FEED_A), NOW)), result)
+    assertEquals(FeedSubscriptionLoadResult.Found(FeedSubscriptionList(feeds(FEED_A), NOW)), result)
   }
 
   @Test
@@ -198,7 +198,7 @@ class RelayFeedSubscriptionRepositoryTest {
 
   @Test
   fun `create builds the list event dated now when there is no previous list`() {
-    val event = repository.createSubscriptionListEvent(AUTHOR, listOf(FEED_A, FEED_B), null)
+    val event = repository.createSubscriptionListEvent(AUTHOR, feeds(FEED_A, FEED_B), null)
 
     assertEquals(NOW, event.createdAt)
     assertEquals(Nip78.KIND_APP_DATA, event.kind)
@@ -214,9 +214,9 @@ class RelayFeedSubscriptionRepositoryTest {
 
   @Test
   fun `create dates the event after a previous list that is not older than now`() {
-    val previous = FeedSubscriptionList(listOf(FEED_A), createdAt = NOW + 30)
+    val previous = FeedSubscriptionList(feeds(FEED_A), createdAt = NOW + 30)
 
-    val event = repository.createSubscriptionListEvent(AUTHOR, listOf(FEED_B), previous)
+    val event = repository.createSubscriptionListEvent(AUTHOR, feeds(FEED_B), previous)
 
     assertEquals(NOW + 31, event.createdAt)
   }
@@ -225,7 +225,7 @@ class RelayFeedSubscriptionRepositoryTest {
   fun `create adds the client tag when it is enabled`() {
     clientTagEnabled.value = true
 
-    val event = repository.createSubscriptionListEvent(AUTHOR, listOf(FEED_A), null)
+    val event = repository.createSubscriptionListEvent(AUTHOR, feeds(FEED_A), null)
 
     assertEquals(listOf("client", "Pinosu"), event.tags.last())
   }
@@ -272,6 +272,9 @@ class RelayFeedSubscriptionRepositoryTest {
           tags = listOf(listOf("d", identifier)) + feedUrls.map { listOf("url", it) },
           content = "",
           sig = "sig")
+
+  private fun feeds(vararg feedUrls: String): List<FeedSubscription> =
+      feedUrls.map(::FeedSubscription)
 
   private companion object {
     val AUTHOR = "a".repeat(64)

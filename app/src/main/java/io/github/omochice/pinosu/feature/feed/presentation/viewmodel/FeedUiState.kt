@@ -6,13 +6,27 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 /**
  * UI state of the feed timeline screen
  *
- * @property content What the timeline currently shows
+ * @property content What the timeline shows under the tab showing every feed; [contentIn] narrows
+ *   it to the tab of a category
  * @property isRefreshing Whether a pull-to-refresh reload is running over [content]
+ * @property categories Names of the category tabs that follow the tab showing every feed, in the
+ *   order to show them
+ * @property selectedCategory Category whose tab is selected, or null when the tab showing every
+ *   feed is
  */
 data class FeedUiState(
     val content: Content = Content.Loading,
     val isRefreshing: Boolean = false,
+    val categories: List<String> = emptyList(),
+    val selectedCategory: String? = null,
 ) {
+
+  /**
+   * What the tab of a category shows of the timeline
+   *
+   * @param category Category of the tab, or null for the tab showing every feed
+   */
+  fun contentIn(category: String?): Content = content.inCategory(category)
 
   /** What the timeline shows */
   sealed interface Content {

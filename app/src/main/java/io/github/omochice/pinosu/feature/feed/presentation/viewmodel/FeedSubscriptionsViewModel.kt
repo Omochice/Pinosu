@@ -4,26 +4,23 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedSubscriptionsUseCase
 import io.github.omochice.pinosu.feature.feed.domain.usecase.PrepareFeedSubscriptionChangeUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the feed subscription screen
  *
- * Loads the subscription list when created, and turns each add or remove into a signer request
- * whose answer is then published.
+ * Loads the subscription list when created, and turns each add, remove, or category change into a
+ * signer request whose answer is then published.
  *
  * @param loadSubscriptions UseCase that loads the subscribed feed URLs
  * @param prepareChange UseCase that builds the changed list
@@ -41,15 +38,8 @@ constructor(
   private val _uiState = MutableStateFlow(FeedSubscriptionsUiState())
   val uiState: StateFlow<FeedSubscriptionsUiState> = _uiState.asStateFlow()
 
-  private val _signRequests = Channel<Intent>(Channel.BUFFERED)
-
-  /**
-   * Signer requests the screen has to launch
-   *
-   * Each request is delivered once and waits for a collector, so a request made while the activity
-   * is being recreated is launched by the recreated screen.
-   */
-  val signRequests: Flow<Intent> = _signRequests.receiveAsFlow()
+  /** Signer requests the screen has to launch, each delivered once to a single collector */
+  val signRequests: Flow<Intent> = publisher.signRequests
 
   private var loadJob: Job? = null
 
@@ -100,10 +90,23 @@ constructor(
     prepare { prepareChange.remove(feedUrl) }
   }
 
+  /**
+   * File a subscribed feed under a category, or take it out of its category
+   *
+   * Ignored while another change is in progress.
+   *
+   * @param feedUrl URL of the feed, as subscribed
+   * @param category Name of the category, or null or blank for none
+   */
+  fun setCategory(feedUrl: String, category: String?) {
+    prepare { prepareChange.setCategory(feedUrl, category) }
+  }
+
   /** Continue publishing the first list after the user agreed that it is public */
   fun confirmPublicNotice() {
     val dialog = _uiState.value.dialog as? FeedSubscriptionsDialog.ConfirmPublicList ?: return
-    requestSignature(dialog.event)
+    _uiState.update { it.copy(isWorking = true, dialog = null) }
+    publisher.requestSignature(dialog.event)
   }
 
   /** Close the open dialog, abandoning the change it was asking about */
@@ -164,7 +167,7 @@ constructor(
                 isWorking = false, dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
           }
         } else {
-          requestSignature(change.event)
+          publisher.requestSignature(change.event)
         }
       }
       is FeedSubscriptionChange.ChooseCandidate -> {
@@ -183,11 +186,9 @@ constructor(
         _uiState.update { it.copy(isWorking = false) }
         reload()
       }
+      is FeedSubscriptionChange.CategoryUnchanged -> {
+        _uiState.update { it.copy(isWorking = false) }
+      }
     }
-  }
-
-  private fun requestSignature(event: UnsignedNostrEvent) {
-    _uiState.update { it.copy(isWorking = true, dialog = null) }
-    _signRequests.trySend(publisher.signRequestFor(event))
   }
 }
