@@ -4,7 +4,7 @@ import io.github.omochice.pinosu.feature.bookmark.domain.model.BookmarkDisplayMo
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * UseCase interface for observing bookmark display mode preference changes.
+ * UseCase interface for observing display mode preference changes.
  *
  * Provides reactive updates when display mode setting changes.
  */
