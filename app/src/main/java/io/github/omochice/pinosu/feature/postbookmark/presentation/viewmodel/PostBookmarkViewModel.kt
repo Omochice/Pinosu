@@ -87,7 +87,7 @@ constructor(
   }
 
   /**
-   * Initialize the form for editing an existing bookmark
+   * Initialize the form for editing an existing bookmark, discarding any previous state
    *
    * @param url URL without scheme (read-only in edit mode)
    * @param title Existing bookmark title
@@ -95,19 +95,28 @@ constructor(
    * @param comment Existing bookmark comment
    */
   fun initializeForEdit(url: String, title: String, categories: List<String>, comment: String) {
-    _uiState.update {
-      it.copy(
-          url = url,
-          title = title,
-          categories = categories.joinToString(", "),
-          comment = comment,
-          isEditMode = true)
-    }
+    _uiState.value =
+        PostBookmarkUiState(
+            url = url,
+            title = title,
+            categories = categories.joinToString(", "),
+            comment = comment,
+            isEditMode = true)
   }
 
-  /** Reset form to initial state for new bookmark creation */
-  fun resetForm() {
-    _uiState.value = PostBookmarkUiState()
+  /**
+   * Initialize the form for creating a new bookmark, discarding any previous state
+   *
+   * @param url URL to prefill (http/https scheme is stripped), or null to leave empty
+   * @param title Title to prefill, or null to leave empty
+   * @param comment Comment to prefill, or null to leave empty
+   */
+  fun initializeForNew(url: String? = null, title: String? = null, comment: String? = null) {
+    _uiState.value =
+        PostBookmarkUiState(
+            url = url?.let(::stripUrlScheme).orEmpty(),
+            title = title.orEmpty(),
+            comment = comment.orEmpty())
   }
 
   /** Dismiss error message */

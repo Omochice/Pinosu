@@ -361,7 +361,25 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
-  fun `resetForm should clear edit mode and all fields`() = runTest {
+  fun `initializeForEdit should discard the error of the previous form`() = runTest {
+    viewModel.prepareSignEventIntent {}
+    advanceUntilIdle()
+    assertNotNull(viewModel.uiState.first().errorMessage, "precondition: an error is shown")
+
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = listOf("tech"),
+        comment = "Existing comment")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertNull(state.errorMessage, "errorMessage should be cleared")
+    assertTrue(state.isEditMode, "isEditMode should be true")
+  }
+
+  @Test
+  fun `initializeForNew without arguments should clear edit mode and all fields`() = runTest {
     viewModel.initializeForEdit(
         url = "example.com/article",
         title = "Title",
@@ -369,7 +387,7 @@ class PostBookmarkViewModelTest {
         comment = "Comment")
     advanceUntilIdle()
 
-    viewModel.resetForm()
+    viewModel.initializeForNew()
     advanceUntilIdle()
 
     val state = viewModel.uiState.first()
@@ -378,6 +396,52 @@ class PostBookmarkViewModelTest {
     assertEquals("", state.title, "title should be empty")
     assertEquals("", state.categories, "categories should be empty")
     assertEquals("", state.comment, "comment should be empty")
+  }
+
+  @Test
+  fun `initializeForNew should prefill url without scheme, title and comment`() = runTest {
+    viewModel.initializeForNew(
+        url = "https://example.com/article", title = "Article Title", comment = "Nice read")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("example.com/article", state.url, "url should have scheme stripped")
+    assertEquals("Article Title", state.title, "title should be set")
+    assertEquals("", state.categories, "categories should be empty")
+    assertEquals("Nice read", state.comment, "comment should be set")
+  }
+
+  @Test
+  fun `initializeForNew with null values should leave fields empty`() = runTest {
+    viewModel.initializeForNew(url = null, title = null, comment = null)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("", state.url, "url should be empty")
+    assertEquals("", state.title, "title should be empty")
+    assertEquals("", state.comment, "comment should be empty")
+  }
+
+  @Test
+  fun `initializeForNew should clear previous edit mode state`() = runTest {
+    viewModel.initializeForEdit(
+        url = "old.example.com",
+        title = "Old Title",
+        categories = listOf("tech"),
+        comment = "Old comment")
+    advanceUntilIdle()
+
+    viewModel.initializeForNew(url = "https://new.example.com", title = null, comment = null)
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertFalse(state.isEditMode, "isEditMode should be false")
+    assertEquals("new.example.com", state.url, "url should be replaced")
+    assertEquals("", state.title, "title should be cleared")
+    assertEquals("", state.categories, "categories should be cleared")
+    assertEquals("", state.comment, "comment should be cleared")
   }
 
   @Test

@@ -24,6 +24,7 @@ sealed interface Route
  *
  * @property sharedUrl Pre-filled URL from share intent, or null
  * @property sharedComment Pre-filled comment from share intent, or null
+ * @property sharedTitle Pre-filled title for a new bookmark, or null
  * @property editUrl URL of the bookmark being edited (without scheme), or null for new bookmark
  * @property editTitle Title of the bookmark being edited, or null for new bookmark
  * @property editCategories Categories of the bookmark being edited, or null
@@ -33,6 +34,7 @@ sealed interface Route
 data class PostBookmark(
     val sharedUrl: String? = null,
     val sharedComment: String? = null,
+    val sharedTitle: String? = null,
     val editUrl: String? = null,
     val editTitle: String? = null,
     val editCategories: List<String>? = null,
