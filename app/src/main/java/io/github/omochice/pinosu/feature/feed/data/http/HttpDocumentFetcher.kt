@@ -1,30 +1,31 @@
 package io.github.omochice.pinosu.feature.feed.data.http
 
 import java.io.IOException
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
 /** Downloads a document with a GET request, refusing error statuses and oversized bodies */
-class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpClient) {
+class HttpDocumentFetcher(private val okHttpClient: OkHttpClient) : DocumentFetcher {
 
   /**
    * Download the document at [url]
    *
    * @param url Absolute `http://` or `https://` URL
+   * @param cacheControl Cache directives sent with the request, or null to send none
    * @return The document, or a failure with [HttpStatusException] for a non-2xx status, with
    *   [ResponseTooLargeException] when the body exceeds [MAX_BODY_BYTES], with
    *   [IllegalArgumentException] when [url] is not a valid HTTP(S) URL, or with an [IOException]
    *   when the transfer fails
    */
-  suspend fun fetch(url: String): Result<FetchedDocument> =
+  override suspend fun fetch(url: String, cacheControl: CacheControl?): Result<FetchedDocument> =
       withContext(Dispatchers.IO) {
         try {
-          val request = request(url)
+          val request = request(url, cacheControl)
           okHttpClient.newCall(request).execute().use { read(request.url.toString(), it) }
         } catch (e: IOException) {
           Result.failure(e)
@@ -33,8 +34,13 @@ class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpCl
         }
       }
 
-  private fun request(url: String): Request =
-      Request.Builder().url(url).header("User-Agent", USER_AGENT).header("Accept", ACCEPT).build()
+  private fun request(url: String, cacheControl: CacheControl?): Request =
+      Request.Builder()
+          .url(url)
+          .header("User-Agent", USER_AGENT)
+          .header("Accept", ACCEPT)
+          .apply { cacheControl?.let(::cacheControl) }
+          .build()
 
   private fun read(requestedUrl: String, response: Response): Result<FetchedDocument> {
     if (!response.isSuccessful) return Result.failure(HttpStatusException(response.code))

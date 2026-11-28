@@ -3,6 +3,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
 import io.github.omochice.pinosu.feature.settings.domain.usecase.ObserveDisplayModeUseCase
@@ -41,14 +42,19 @@ constructor(
     observeDisplayMode()
         .onEach { mode -> _uiState.update { it.copy(displayMode = mode) } }
         .launchIn(viewModelScope)
-    load()
+    load(FeedFetchMode.Normal)
   }
 
-  /** Reload the timeline, keeping the current content visible until the reload finishes */
+  /**
+   * Reload the timeline, keeping the current content visible until the reload finishes
+   *
+   * Every feed is asked for again, even one whose server said a copy kept earlier is still current,
+   * because the user pulled to refresh to see what is new now.
+   */
   fun refresh() {
     if (loadJob?.isActive == true) return
     _uiState.update { it.copy(isRefreshing = true) }
-    load()
+    load(FeedFetchMode.Revalidate)
   }
 
   /**
@@ -60,7 +66,7 @@ constructor(
   fun reloadAfterSubscriptionChange() {
     loadJob?.cancel()
     _uiState.update { it.copy(isRefreshing = it.content != FeedUiState.Content.Loading) }
-    load()
+    load(FeedFetchMode.Normal)
   }
 
   /**
@@ -72,10 +78,10 @@ constructor(
     _uiState.update { it.copy(selectedCategory = category) }
   }
 
-  private fun load() {
+  private fun load(mode: FeedFetchMode) {
     loadJob =
         viewModelScope.launch {
-          val timeline = loadFeedTimeline()
+          val timeline = loadFeedTimeline(mode)
           val content = timeline.fold(onSuccess = ::toContent, onFailure = ::toError)
           val categories = orderedCategories(timeline.getOrNull()?.categories.orEmpty())
           loadedItems.replace((content as? FeedUiState.Content.Loaded)?.items.orEmpty())

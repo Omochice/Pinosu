@@ -69,7 +69,7 @@ class PresentationDomainIntegrationTest {
     readOnlyLoginUseCase = mockk(relaxed = true)
 
     loginUseCase = Nip55LoginUseCase(authRepository)
-    logoutUseCase = Nip55LogoutUseCase(authRepository)
+    logoutUseCase = Nip55LogoutUseCase(authRepository, emptySet())
     getLoginStateUseCase = Nip55GetLoginStateUseCase(authRepository)
 
     viewModel =

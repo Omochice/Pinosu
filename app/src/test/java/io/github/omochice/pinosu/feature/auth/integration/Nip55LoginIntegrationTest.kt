@@ -73,7 +73,7 @@ class Nip55LoginIntegrationTest {
     viewModel =
         LoginViewModel(
             Nip55LoginUseCase(authRepository),
-            Nip55LogoutUseCase(authRepository),
+            Nip55LogoutUseCase(authRepository, emptySet()),
             Nip55GetLoginStateUseCase(authRepository),
             authRepository,
             fetchRelayListUseCase,

@@ -1,30 +1,29 @@
 package io.github.omochice.pinosu.feature.feed.data.repository
 
 import io.github.omochice.pinosu.feature.feed.data.http.FeedFixtures
-import io.github.omochice.pinosu.feature.feed.data.http.HttpDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.HttpStatusException
-import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
 import io.github.omochice.pinosu.feature.feed.data.http.OkHttpStub
 import io.github.omochice.pinosu.feature.feed.data.parser.JsoupFeedParser
 import io.github.omochice.pinosu.feature.feed.data.parser.UnsupportedFeedFormatException
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchMode
 import io.github.omochice.pinosu.feature.feed.domain.model.error.HttpFeedNotSupportedException
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
 class HttpFeedRepositoryTest {
 
   private val http = OkHttpStub()
-  private val repository =
-      HttpFeedRepository(HttpsDocumentFetcher(HttpDocumentFetcher(http.client)), JsoupFeedParser())
+  private val repository = HttpFeedRepository(http.client, JsoupFeedParser())
 
   @Test
   fun `feed response is parsed`() = runTest {
     http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
 
-    val feed = repository.fetchFeed(FEED_URL).getOrThrow()
+    val feed = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).getOrThrow()
 
     assertEquals(FEED_URL, feed.url)
     assertEquals("Example Blog", feed.title)
@@ -41,7 +40,7 @@ class HttpFeedRepositoryTest {
             finalUrl = "https://cdn.example.com/feeds/main.xml",
         )
 
-        val feed = repository.fetchFeed(FEED_URL).getOrThrow()
+        val feed = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).getOrThrow()
 
         assertEquals(FEED_URL, feed.url)
         assertEquals(FEED_URL, feed.items.single().feedUrl)
@@ -53,7 +52,8 @@ class HttpFeedRepositoryTest {
       runTest {
         http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
 
-        val feed = repository.fetchFeed("http://example.com/feed.xml").getOrThrow()
+        val feed =
+            repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal).getOrThrow()
 
         assertEquals("http://example.com/feed.xml", feed.url)
         assertEquals(listOf("https"), http.requests.map { it.url.scheme })
@@ -64,7 +64,10 @@ class HttpFeedRepositoryTest {
       runTest {
         http.fail(FEED_URL, IOException("connection refused"))
 
-        val error = repository.fetchFeed("http://example.com/feed.xml").exceptionOrNull()
+        val error =
+            repository
+                .fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal)
+                .exceptionOrNull()
 
         assertIs<HttpFeedNotSupportedException>(error)
       }
@@ -73,7 +76,7 @@ class HttpFeedRepositoryTest {
   fun `html response fails as not a feed`() = runTest {
     http.respond(FEED_URL, FeedFixtures.html(""))
 
-    val error = repository.fetchFeed(FEED_URL).exceptionOrNull()
+    val error = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).exceptionOrNull()
 
     assertIs<UnsupportedFeedFormatException>(error)
   }
@@ -82,10 +85,48 @@ class HttpFeedRepositoryTest {
   fun `non-2xx response fails`() = runTest {
     http.respond(FEED_URL, "Gone", code = 410)
 
-    val error = repository.fetchFeed(FEED_URL).exceptionOrNull()
+    val error = repository.fetchFeed(FEED_URL, FeedFetchMode.Normal).exceptionOrNull()
 
     assertIs<HttpStatusException>(error)
   }
+
+  @Test
+  fun `a feed that cannot be reached is asked of the cache, http subscriptions included`() =
+      runTest {
+        http.fail(FEED_URL, IOException("connection refused"))
+
+        repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Normal)
+
+        assertEquals(listOf(false, true), http.requests.map { it.cacheControl.onlyIfCached })
+      }
+
+  @Test
+  fun `a normal fetch leaves the cache to the response headers`() = runTest {
+    http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+    repository.fetchFeed(FEED_URL, FeedFetchMode.Normal)
+
+    assertNull(http.requests.single().header("Cache-Control"))
+  }
+
+  @Test
+  fun `a revalidating fetch asks for a copy no older than now`() = runTest {
+    http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+    repository.fetchFeed(FEED_URL, FeedFetchMode.Revalidate)
+
+    assertEquals("max-age=0", http.requests.single().header("Cache-Control"))
+  }
+
+  @Test
+  fun `a revalidating fetch of a stored http url asks the https url for a current copy`() =
+      runTest {
+        http.respond(FEED_URL, FeedFixtures.RSS, FeedFixtures.RSS_CONTENT_TYPE)
+
+        repository.fetchFeed("http://example.com/feed.xml", FeedFetchMode.Revalidate)
+
+        assertEquals("max-age=0", http.requests.single().header("Cache-Control"))
+      }
 
   companion object {
     private const val FEED_URL = "https://example.com/feed.xml"
