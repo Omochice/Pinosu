@@ -169,12 +169,9 @@ class ShareIntentNavigationTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule
-          .onAllNodesWithText(getTestString(R.string.title_bookmarks))
-          .fetchSemanticsNodes()
-          .isNotEmpty()
+      composeTestRule.onAllNodes(bookmarkScreenTitle()).fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText(getTestString(R.string.title_bookmarks)).assertIsDisplayed()
+    composeTestRule.onNode(bookmarkScreenTitle()).assertIsDisplayed()
 
     // Set pendingSharedContent directly because
     // Instrumentation.callActivityOnNewIntent does not reliably propagate

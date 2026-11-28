@@ -1,0 +1,193 @@
+package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
+
+import android.content.Intent
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.omochice.pinosu.core.model.UnsignedNostrEvent
+import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
+import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedSubscriptionsUseCase
+import io.github.omochice.pinosu.feature.feed.domain.usecase.PrepareFeedSubscriptionChangeUseCase
+import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+/**
+ * ViewModel for the feed subscription screen
+ *
+ * Loads the subscription list when created, and turns each add or remove into a signer request
+ * whose answer is then published.
+ *
+ * @param loadSubscriptions UseCase that loads the subscribed feed URLs
+ * @param prepareChange UseCase that builds the changed list
+ * @param publisher Signs and publishes the changed list
+ */
+@HiltViewModel
+class FeedSubscriptionsViewModel
+@Inject
+constructor(
+    private val loadSubscriptions: LoadFeedSubscriptionsUseCase,
+    private val prepareChange: PrepareFeedSubscriptionChangeUseCase,
+    private val publisher: FeedSubscriptionPublisher,
+) : ViewModel() {
+
+  private val _uiState = MutableStateFlow(FeedSubscriptionsUiState())
+  val uiState: StateFlow<FeedSubscriptionsUiState> = _uiState.asStateFlow()
+
+  private val _signRequests = Channel<Intent>(Channel.BUFFERED)
+
+  /**
+   * Signer requests the screen has to launch
+   *
+   * Each request is delivered once and waits for a collector, so a request made while the activity
+   * is being recreated is launched by the recreated screen.
+   */
+  val signRequests: Flow<Intent> = _signRequests.receiveAsFlow()
+
+  private var loadJob: Job? = null
+
+  init {
+    reload()
+  }
+
+  /** Load the subscription list again, keeping a loaded list visible until it loads */
+  fun reload() {
+    _uiState.update {
+      if (it.content is FeedSubscriptionsUiState.Content.Error) {
+        it.copy(content = FeedSubscriptionsUiState.Content.Loading)
+      } else {
+        it
+      }
+    }
+    loadJob?.cancel()
+    loadJob =
+        viewModelScope.launch {
+          val content =
+              loadSubscriptions()
+                  .fold(
+                      onSuccess = { FeedSubscriptionsUiState.Content.Loaded(it) },
+                      onFailure = { FeedSubscriptionsUiState.Content.Error(feedLoadErrorOf(it)) })
+          _uiState.update { it.copy(content = content) }
+        }
+  }
+
+  /**
+   * Add the feed the user entered or picked
+   *
+   * Ignored while another change is in progress.
+   *
+   * @param input A feed URL or a web site URL, with or without a scheme
+   */
+  fun add(input: String) {
+    prepare { prepareChange.add(input) }
+  }
+
+  /**
+   * Remove a subscribed feed
+   *
+   * Ignored while another change is in progress.
+   *
+   * @param feedUrl URL of the feed, as subscribed
+   */
+  fun remove(feedUrl: String) {
+    prepare { prepareChange.remove(feedUrl) }
+  }
+
+  /** Continue publishing the first list after the user agreed that it is public */
+  fun confirmPublicNotice() {
+    val dialog = _uiState.value.dialog as? FeedSubscriptionsDialog.ConfirmPublicList ?: return
+    requestSignature(dialog.event)
+  }
+
+  /** Close the open dialog, abandoning the change it was asking about */
+  fun dismissDialog() {
+    _uiState.update { it.copy(dialog = null) }
+  }
+
+  /**
+   * Publish the list the signer answered for
+   *
+   * @param resultCode Activity result code from the signer
+   * @param data Intent data from the signer
+   */
+  fun processSignedEvent(resultCode: Int, data: Intent?) {
+    _uiState.update { it.copy(isWorking = true) }
+    viewModelScope.launch {
+      publisher
+          .publishSigned(resultCode, data)
+          .onSuccess { result ->
+            _uiState.update {
+              it.copy(
+                  isWorking = false,
+                  hasPublished = true,
+                  message =
+                      FeedSubscriptionsMessage.PartiallyPublished.takeIf {
+                        result.failedRelays.isNotEmpty()
+                      })
+            }
+            reload()
+          }
+          .onFailure { error ->
+            _uiState.update { it.copy(isWorking = false, message = publishFailureMessage(error)) }
+          }
+    }
+  }
+
+  /** Forget the message once it has been shown */
+  fun dismissMessage() {
+    _uiState.update { it.copy(message = null) }
+  }
+
+  private fun prepare(change: suspend () -> Result<FeedSubscriptionChange>) {
+    if (_uiState.value.isWorking) return
+    _uiState.update { it.copy(isWorking = true, dialog = null, message = null) }
+    viewModelScope.launch {
+      change().onSuccess(::continueWith).onFailure { error ->
+        _uiState.update { it.copy(isWorking = false, message = prepareFailureMessage(error)) }
+      }
+    }
+  }
+
+  private fun continueWith(change: FeedSubscriptionChange) {
+    when (change) {
+      is FeedSubscriptionChange.ReadyToSign -> {
+        if (change.isFirstList) {
+          _uiState.update {
+            it.copy(
+                isWorking = false, dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
+          }
+        } else {
+          requestSignature(change.event)
+        }
+      }
+      is FeedSubscriptionChange.ChooseCandidate -> {
+        _uiState.update {
+          it.copy(
+              isWorking = false,
+              dialog = FeedSubscriptionsDialog.ChooseCandidate(change.candidates))
+        }
+      }
+      is FeedSubscriptionChange.AlreadySubscribed -> {
+        _uiState.update {
+          it.copy(isWorking = false, message = FeedSubscriptionsMessage.AlreadySubscribed)
+        }
+      }
+      is FeedSubscriptionChange.NotSubscribed -> {
+        _uiState.update { it.copy(isWorking = false) }
+        reload()
+      }
+    }
+  }
+
+  private fun requestSignature(event: UnsignedNostrEvent) {
+    _uiState.update { it.copy(isWorking = true, dialog = null) }
+    _signRequests.trySend(publisher.signRequestFor(event))
+  }
+}

@@ -51,6 +51,7 @@ import io.github.omochice.pinosu.core.navigation.defaultEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultExitTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopEnterTransition
 import io.github.omochice.pinosu.core.navigation.defaultPopExitTransition
+import io.github.omochice.pinosu.core.navigation.navigateFromDrawer
 import io.github.omochice.pinosu.core.nip.nip55.Nip55SignerClient
 import io.github.omochice.pinosu.core.nip.nipb0.NipB0
 import io.github.omochice.pinosu.feature.appinfo.presentation.model.AppInfoUiState
@@ -62,6 +63,7 @@ import io.github.omochice.pinosu.feature.bookmark.presentation.viewmodel.Bookmar
 import io.github.omochice.pinosu.feature.comment.presentation.ui.BookmarkDetailScreen
 import io.github.omochice.pinosu.feature.comment.presentation.ui.BookmarkInfo
 import io.github.omochice.pinosu.feature.comment.presentation.viewmodel.BookmarkDetailViewModel
+import io.github.omochice.pinosu.feature.feed.presentation.feedDestinations
 import io.github.omochice.pinosu.feature.license.presentation.ui.LicenseScreen
 import io.github.omochice.pinosu.feature.main.presentation.ui.MainScreen
 import io.github.omochice.pinosu.feature.postbookmark.presentation.ui.PostBookmarkScreen
@@ -276,7 +278,7 @@ fun PinosuApp(
       gesturesEnabled = true,
       drawerContent = {
         AppDrawer(
-            onNavigate = { route -> navController.navigate(route) },
+            onNavigate = { route -> navController.navigateFromDrawer(route) },
             onLogout = { viewModel.onLogoutButtonClicked() },
             onCloseDrawer = { scope.launch { drawerState.close() } })
       }) {
@@ -357,6 +359,12 @@ fun PinosuApp(
                     onLoadMore = { mode -> bookmarkViewModel.loadMore(mode) },
                     isReadOnly = mainUiState.isReadOnly)
               }
+
+          feedDestinations(
+              navController = navController,
+              isLoggedIn = { mainUiState.userPubkey != null },
+              isReadOnly = { mainUiState.isReadOnly },
+              onOpenDrawer = { scope.launch { drawerState.open() } })
 
           composable<PostBookmark>(
               enterTransition = { defaultEnterTransition },

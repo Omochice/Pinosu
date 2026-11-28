@@ -36,6 +36,8 @@
 
     <string name="title_licenses">オープンソースライセンス</string>
 
+    <string name="menu_bookmarks">ブックマーク</string>
+    <string name="menu_feeds">フィード</string>
     <string name="menu_licenses">ライセンス</string>
     <string name="menu_app_info">アプリ情報</string>
     <string name="menu_logout">ログアウト</string>
@@ -100,4 +102,32 @@
     <string name="menu_copy_content">内容をコピー</string>
     <string name="menu_copy_raw_json">Raw JSONをコピー</string>
     <string name="menu_copy_nostr_link">Nostrリンクをコピー</string>
+
+    <string name="title_feeds">フィード</string>
+    <string name="message_no_feeds">フィードはまだありません</string>
+    <string name="message_feeds_partially_failed">一部のフィードを読み込めませんでした</string>
+    <string name="error_feed_no_user_relays">アカウントにリレーが設定されていないため、フィードの一覧を読み込めませんでした。</string>
+    <string name="error_feed_access_denied">リレーがフィードの一覧の送信を拒否しました。</string>
+    <string name="error_feed_unreachable">どのリレーにも接続できず、フィードの一覧を読み込めませんでした。</string>
+    <string name="error_feed_load_failed">フィードの読み込みに失敗しました</string>
+    <string name="cd_bookmark_feed_item">この記事をブックマーク</string>
+    <string name="title_feed_subscriptions">購読中のフィード</string>
+    <string name="cd_manage_feed_subscriptions">購読中のフィードを管理</string>
+    <string name="button_add_first_feed">フィードを追加</string>
+    <string name="cd_add_feed">フィードを追加</string>
+    <string name="cd_remove_feed">フィードを削除</string>
+    <string name="dialog_title_add_feed">フィードを追加</string>
+    <string name="label_feed_url">フィードまたはサイトのURL</string>
+    <string name="button_add_feed">追加</string>
+    <string name="dialog_title_choose_feed">フィードを選択</string>
+    <string name="dialog_title_feed_list_public">フィードの一覧は公開されます</string>
+    <string name="dialog_message_feed_list_public">購読中のフィードはNostrのリレーに公開され、誰でもどのフィードを購読しているかを見られます。</string>
+    <string name="button_publish_feed_list">公開する</string>
+    <string name="message_feed_already_subscribed">このフィードはすでに購読しています。</string>
+    <string name="message_feed_list_partially_published">保存しましたが、一部のリレーが変更を受け付けませんでした。</string>
+    <string name="error_feed_read_only">読み取り専用モードではフィードを変更できません。</string>
+    <string name="error_feed_not_found">このURLにはフィードが見つかりませんでした。</string>
+    <string name="error_feed_http_not_supported">HTTPでのみ配信されているフィードには対応していません。</string>
+    <string name="error_feed_list_publish_failed">フィードの一覧を保存できませんでした。</string>
+    <string name="error_feed_change_failed">フィードを変更できませんでした。</string>
 </resources>

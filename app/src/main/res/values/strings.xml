@@ -38,6 +38,8 @@
 
     <string name="title_licenses">Open Source Licenses</string>
 
+    <string name="menu_bookmarks">Bookmarks</string>
+    <string name="menu_feeds">Feeds</string>
     <string name="menu_licenses">Licenses</string>
     <string name="menu_app_info">App Info</string>
     <string name="menu_logout">Log out</string>
@@ -104,5 +106,33 @@
     <string name="menu_copy_content">Copy content</string>
     <string name="menu_copy_raw_json">Copy raw JSON</string>
     <string name="menu_copy_nostr_link">Copy nostr link</string>
+
+    <string name="title_feeds">Feeds</string>
+    <string name="message_no_feeds">No feeds yet</string>
+    <string name="message_feeds_partially_failed">Some feeds could not be loaded</string>
+    <string name="error_feed_no_user_relays">Your feed list could not be loaded because your account has no relays of its own.</string>
+    <string name="error_feed_access_denied">Your relays refused to send your feed list.</string>
+    <string name="error_feed_unreachable">Could not reach any of your relays to load your feed list.</string>
+    <string name="error_feed_load_failed">Failed to load feeds</string>
+    <string name="cd_bookmark_feed_item">Bookmark this article</string>
+    <string name="title_feed_subscriptions">Subscribed feeds</string>
+    <string name="cd_manage_feed_subscriptions">Manage subscribed feeds</string>
+    <string name="button_add_first_feed">Add a feed</string>
+    <string name="cd_add_feed">Add feed</string>
+    <string name="cd_remove_feed">Remove feed</string>
+    <string name="dialog_title_add_feed">Add feed</string>
+    <string name="label_feed_url">Feed or website URL</string>
+    <string name="button_add_feed">Add</string>
+    <string name="dialog_title_choose_feed">Choose a feed</string>
+    <string name="dialog_title_feed_list_public">Your feed list will be public</string>
+    <string name="dialog_message_feed_list_public">Your subscribed feeds are published to your Nostr relays, where anyone can see which feeds you follow.</string>
+    <string name="button_publish_feed_list">Publish</string>
+    <string name="message_feed_already_subscribed">You already subscribe to this feed.</string>
+    <string name="message_feed_list_partially_published">Saved, but some relays did not accept the change.</string>
+    <string name="error_feed_read_only">You cannot change feeds in read-only mode.</string>
+    <string name="error_feed_not_found">No feed was found at this URL.</string>
+    <string name="error_feed_http_not_supported">Feeds served only over HTTP are not supported.</string>
+    <string name="error_feed_list_publish_failed">Failed to save your feed list.</string>
+    <string name="error_feed_change_failed">Failed to change your feeds.</string>
 
 </resources>

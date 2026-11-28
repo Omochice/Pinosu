@@ -102,12 +102,9 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule
-          .onAllNodesWithText(getTestString(R.string.title_bookmarks))
-          .fetchSemanticsNodes()
-          .isNotEmpty()
+      composeTestRule.onAllNodes(bookmarkScreenTitle()).fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText(getTestString(R.string.title_bookmarks)).assertIsDisplayed()
+    composeTestRule.onNode(bookmarkScreenTitle()).assertIsDisplayed()
 
     composeTestRule
         .onNodeWithContentDescription(getTestString(R.string.cd_open_menu))
@@ -144,12 +141,9 @@ class UserFlowTest {
     composeTestRule.activityRule.scenario.recreate()
 
     composeTestRule.waitUntil(timeoutMillis = 5000) {
-      composeTestRule
-          .onAllNodesWithText(getTestString(R.string.title_bookmarks))
-          .fetchSemanticsNodes()
-          .isNotEmpty()
+      composeTestRule.onAllNodes(bookmarkScreenTitle()).fetchSemanticsNodes().isNotEmpty()
     }
-    composeTestRule.onNodeWithText(getTestString(R.string.title_bookmarks)).assertIsDisplayed()
+    composeTestRule.onNode(bookmarkScreenTitle()).assertIsDisplayed()
 
     composeTestRule
         .onNodeWithText(getTestString(R.string.button_login_with_nip55))
@@ -172,6 +166,6 @@ class UserFlowTest {
         .onNodeWithText(getTestString(R.string.button_login_with_nip55))
         .assertIsDisplayed()
 
-    composeTestRule.onNodeWithText(getTestString(R.string.title_bookmarks)).assertDoesNotExist()
+    composeTestRule.onNode(bookmarkScreenTitle()).assertDoesNotExist()
   }
 }
