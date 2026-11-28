@@ -38,6 +38,22 @@ constructor(
   val uiState: StateFlow<PostBookmarkUiState> = _uiState.asStateFlow()
 
   /**
+   * Form the screen was last initialized with
+   *
+   * Assigning an equal form is ignored, because the screen asks for initialization again whenever
+   * it is recreated, such as on rotation, while this ViewModel and what the user typed live on.
+   *
+   * The check is kept here rather than in saved screen state, which would outlive this ViewModel
+   * across process death.
+   */
+  private var initialForm = PostBookmarkUiState()
+    set(value) {
+      if (value == field) return
+      field = value
+      _uiState.value = value
+    }
+
+  /**
    * JSON of the unsigned event awaiting a signature, persisted in [SavedStateHandle] so it survives
    * process death while the external NIP-55 signer is in the foreground.
    */
@@ -87,7 +103,9 @@ constructor(
   }
 
   /**
-   * Initialize the form for editing an existing bookmark, discarding any previous state
+   * Initialize the form for editing an existing bookmark
+   *
+   * Any previous state is discarded, unless the values are those of the previous initialization.
    *
    * @param url URL without scheme (read-only in edit mode)
    * @param title Existing bookmark title
@@ -95,7 +113,7 @@ constructor(
    * @param comment Existing bookmark comment
    */
   fun initializeForEdit(url: String, title: String, categories: List<String>, comment: String) {
-    _uiState.value =
+    initialForm =
         PostBookmarkUiState(
             url = url,
             title = title,
@@ -105,14 +123,16 @@ constructor(
   }
 
   /**
-   * Initialize the form for creating a new bookmark, discarding any previous state
+   * Initialize the form for creating a new bookmark
+   *
+   * Any previous state is discarded, unless the values are those of the previous initialization.
    *
    * @param url URL to prefill (http/https scheme is stripped), or null to leave empty
    * @param title Title to prefill, or null to leave empty
    * @param comment Comment to prefill, or null to leave empty
    */
   fun initializeForNew(url: String? = null, title: String? = null, comment: String? = null) {
-    _uiState.value =
+    initialForm =
         PostBookmarkUiState(
             url = url?.let(::stripUrlScheme).orEmpty(),
             title = title.orEmpty(),
