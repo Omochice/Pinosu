@@ -9,11 +9,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-/**
- * Downloads a document with a GET request, refusing error statuses and oversized bodies
- *
- * @param okHttpClient HTTP client shared across the app
- */
+/** Downloads a document with a GET request, refusing error statuses and oversized bodies */
 class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpClient) {
 
   /**
@@ -40,14 +36,8 @@ class HttpDocumentFetcher @Inject constructor(private val okHttpClient: OkHttpCl
   private fun request(url: String): Request =
       Request.Builder().url(url).header("User-Agent", USER_AGENT).header("Accept", ACCEPT).build()
 
-  private fun read(requestedUrl: String, response: Response): Result<FetchedDocument> =
-      if (response.isSuccessful) {
-        readSuccessful(requestedUrl, response)
-      } else {
-        Result.failure(HttpStatusException(response.code))
-      }
-
-  private fun readSuccessful(requestedUrl: String, response: Response): Result<FetchedDocument> {
+  private fun read(requestedUrl: String, response: Response): Result<FetchedDocument> {
+    if (!response.isSuccessful) return Result.failure(HttpStatusException(response.code))
     val body =
         readCapped(response.body)
             ?: return Result.failure(ResponseTooLargeException(MAX_BODY_BYTES))

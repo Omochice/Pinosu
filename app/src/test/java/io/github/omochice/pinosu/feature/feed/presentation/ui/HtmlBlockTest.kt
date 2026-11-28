@@ -38,7 +38,7 @@ class HtmlBlockTest {
             "<blockquote>Quote</blockquote>",
             "<pre>code  here</pre>",
             "<ol><li>C</li></ol>"),
-        blocks.map { (it as TextBlock).html })
+        blocks.map { (it as TextBlock).content })
   }
 
   @Test
@@ -48,7 +48,7 @@ class HtmlBlockTest {
 
     assertEquals(
         "<h3>See <a href=\"https://blog.example/a\">this</a></h3>",
-        (blocks.first() as TextBlock).html)
+        (blocks.first() as TextBlock).content)
   }
 
   @Test
@@ -168,6 +168,13 @@ class HtmlBlockTest {
 
     assertEquals("Scores <i>2026</i>", table.caption)
     assertEquals(listOf(listOf(TableCell("A", false), TableCell("B", false))), table.rows)
+  }
+
+  @Test
+  fun `the HTML of a cell is kept as written, without reformatting`() {
+    val table = tableOf("<table><tr><td> a <p>b</p>\n<p>c</p></td><td>d</td></tr></table>")
+
+    assertEquals(" a <p>b</p>\n<p>c</p>", table.rows.single().first().content)
   }
 
   @Test

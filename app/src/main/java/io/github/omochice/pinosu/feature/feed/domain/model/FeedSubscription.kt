@@ -13,7 +13,6 @@ data class FeedSubscription(val url: String, val category: String? = null) {
     /**
      * Bring a category name the user entered or a relay returned into its stored form
      *
-     * @param name Category name as entered or stored, or null for none
      * @return [name] without surrounding whitespace, or null when it is null or blank
      */
     fun normalizeCategory(name: String?): String? = name?.trim()?.ifEmpty { null }

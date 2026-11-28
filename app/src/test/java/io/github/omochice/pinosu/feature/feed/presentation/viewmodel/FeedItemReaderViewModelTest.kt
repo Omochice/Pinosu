@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
 import io.github.omochice.pinosu.core.navigation.FeedItemReader
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.feature.feed.domain.model.feedItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -43,15 +43,6 @@ class FeedItemReaderViewModelTest {
   }
 
   private companion object {
-    val ITEM =
-        FeedItem(
-            id = "urn:1",
-            feedUrl = "https://a.example/feed",
-            feedTitle = "A",
-            title = "First",
-            link = "https://a.example/1",
-            publishedAt = null,
-            summary = "Summary",
-            contentHtml = "<p>Body</p>")
+    val ITEM = feedItem(id = "urn:1", contentHtml = "<p>Body</p>")
   }
 }

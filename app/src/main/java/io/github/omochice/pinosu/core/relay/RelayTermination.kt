@@ -13,11 +13,7 @@ sealed interface RelayTermination {
    */
   data class Closed(val message: String) : RelayTermination {
 
-    /**
-     * Whether the relay refused to serve the query for this client
-     *
-     * True for the `auth-required` (NIP-42) and `restricted` machine-readable prefixes.
-     */
+    /** Whether the relay refused to serve the query for this client */
     val isAccessDenied: Boolean
       get() = message.substringBefore(':', missingDelimiterValue = "") in ACCESS_DENIED_PREFIXES
 

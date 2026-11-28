@@ -19,6 +19,6 @@ class FetchedDocument(
     val charset: String?,
 ) {
 
-  /** Open a new stream over the raw bytes of the document, starting from the beginning */
+  /** A fresh stream over the body */
   fun openBody(): InputStream = ByteArrayInputStream(body)
 }

@@ -49,8 +49,7 @@ class FeedSubscriptionListCodec @Inject constructor() {
   /**
    * Read the list from an event
    *
-   * A feed stored without a category, as every feed was before categories existed, or with a blank
-   * one is read as having none.
+   * A blank category is read as none.
    *
    * @param event Event received from a relay
    * @param hexPubkey Public key (hex-encoded) of the user whose list is expected

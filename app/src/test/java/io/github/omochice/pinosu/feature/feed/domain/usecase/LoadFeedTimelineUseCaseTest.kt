@@ -11,6 +11,7 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
+import io.github.omochice.pinosu.feature.feed.domain.model.feedItem
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import io.mockk.coEvery
@@ -38,7 +39,9 @@ class LoadFeedTimelineUseCaseTest {
     feedRepository = mockk()
     getLoginStateUseCase = mockk()
     useCase =
-        LoadFeedTimelineUseCaseImpl(subscriptionRepository, feedRepository, getLoginStateUseCase)
+        LoadFeedTimelineUseCaseImpl(
+            LoadFeedSubscriptionsUseCaseImpl(subscriptionRepository, getLoginStateUseCase),
+            feedRepository)
     coEvery { getLoginStateUseCase() } returns User(Pubkey.parse(VALID_NPUB)!!)
   }
 
@@ -269,7 +272,7 @@ class LoadFeedTimelineUseCaseTest {
   }
 
   private fun item(feedUrl: String, id: String, publishedAt: String?) =
-      FeedItem(
+      feedItem(
           id = id,
           feedUrl = feedUrl,
           feedTitle = "",

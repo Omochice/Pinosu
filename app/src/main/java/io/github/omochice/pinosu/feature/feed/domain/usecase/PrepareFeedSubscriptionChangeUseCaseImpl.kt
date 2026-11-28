@@ -1,26 +1,18 @@
 package io.github.omochice.pinosu.feature.feed.domain.usecase
 
+import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.auth.domain.repository.AuthRepository
 import io.github.omochice.pinosu.feature.auth.domain.usecase.GetLoginStateUseCase
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedResolution
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscription
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionChange
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionList
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
-import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
 import io.github.omochice.pinosu.feature.feed.domain.model.error.ReadOnlyLoginException
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedDiscoveryRepository
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import javax.inject.Inject
 
-/**
- * Implementation of [PrepareFeedSubscriptionChangeUseCase]
- *
- * @param subscriptionRepository Repository for the subscription list
- * @param discoveryRepository Repository that finds the feed the user entered
- * @param getLoginStateUseCase UseCase for retrieving current login state
- * @param authRepository Repository that tells whether the user logged in read-only
- */
+/** Implementation of [PrepareFeedSubscriptionChangeUseCase] */
 class PrepareFeedSubscriptionChangeUseCaseImpl
 @Inject
 constructor(
@@ -31,37 +23,25 @@ constructor(
 ) : PrepareFeedSubscriptionChangeUseCase {
 
   override suspend fun add(input: String): Result<FeedSubscriptionChange> =
-      writerPubkey()
-          .fold(
-              onSuccess = { hexPubkey -> addResolved(hexPubkey, input) },
-              onFailure = { Result.failure(it) },
-          )
+      writerPubkey().andThen { hexPubkey -> addResolved(hexPubkey, input) }
 
   override suspend fun remove(feedUrl: String): Result<FeedSubscriptionChange> =
-      writerPubkey()
-          .fold(
-              onSuccess = { hexPubkey ->
-                rewrite(hexPubkey, { FeedSubscriptionChange.NotSubscribed(feedUrl) }) { feeds ->
-                  feeds.filterNot { it.url == feedUrl }
-                }
-              },
-              onFailure = { Result.failure(it) },
-          )
+      writerPubkey().andThen { hexPubkey ->
+        rewrite(hexPubkey, { FeedSubscriptionChange.NotSubscribed(feedUrl) }) { feeds ->
+          feeds.filterNot { it.url == feedUrl }
+        }
+      }
 
   override suspend fun setCategory(
       feedUrl: String,
       category: String?
   ): Result<FeedSubscriptionChange> {
     val name = FeedSubscription.normalizeCategory(category)
-    return writerPubkey()
-        .fold(
-            onSuccess = { hexPubkey ->
-              rewrite(hexPubkey, { feeds -> categoryUnchangedOrMissing(feeds, feedUrl) }) { feeds ->
-                feeds.map { if (it.url == feedUrl) it.copy(category = name) else it }
-              }
-            },
-            onFailure = { Result.failure(it) },
-        )
+    return writerPubkey().andThen { hexPubkey ->
+      rewrite(hexPubkey, { feeds -> categoryUnchangedOrMissing(feeds, feedUrl) }) { feeds ->
+        feeds.map { if (it.url == feedUrl) it.copy(category = name) else it }
+      }
+    }
   }
 
   private suspend fun writerPubkey(): Result<String> {
@@ -76,18 +56,13 @@ constructor(
       hexPubkey: String,
       input: String
   ): Result<FeedSubscriptionChange> =
-      discoveryRepository
-          .resolve(input)
-          .fold(
-              onSuccess = { resolution ->
-                when (resolution) {
-                  is FeedResolution.Candidates ->
-                      Result.success(FeedSubscriptionChange.ChooseCandidate(resolution.candidates))
-                  is FeedResolution.Direct -> addFeed(hexPubkey, resolution.feedUrl)
-                }
-              },
-              onFailure = { Result.failure(it) },
-          )
+      discoveryRepository.resolve(input).andThen { resolution ->
+        when (resolution) {
+          is FeedResolution.Candidates ->
+              Result.success(FeedSubscriptionChange.ChooseCandidate(resolution.candidates))
+          is FeedResolution.Direct -> addFeed(hexPubkey, resolution.feedUrl)
+        }
+      }
 
   private suspend fun addFeed(hexPubkey: String, feedUrl: String): Result<FeedSubscriptionChange> =
       rewrite(hexPubkey, { FeedSubscriptionChange.AlreadySubscribed(feedUrl) }) { feeds ->
@@ -99,13 +74,8 @@ constructor(
       unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
       edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): Result<FeedSubscriptionChange> =
-      when (val loaded = subscriptionRepository.loadSubscriptionList(hexPubkey)) {
-        is FeedSubscriptionLoadResult.Found ->
-            Result.success(prepare(hexPubkey, loaded.list, edit, unchanged))
-        FeedSubscriptionLoadResult.Absent ->
-            Result.success(prepare(hexPubkey, null, edit, unchanged))
-        is FeedSubscriptionLoadResult.Unavailable ->
-            Result.failure(FeedSubscriptionListUnavailableException(loaded.reason))
+      subscriptionRepository.loadSubscriptionList(hexPubkey).toListResult().map { previous ->
+        prepare(hexPubkey, previous, unchanged, edit)
       }
 
   private fun categoryUnchangedOrMissing(
@@ -121,8 +91,8 @@ constructor(
   private fun prepare(
       hexPubkey: String,
       previous: FeedSubscriptionList?,
-      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
       unchanged: (List<FeedSubscription>) -> FeedSubscriptionChange,
+      edit: (List<FeedSubscription>) -> List<FeedSubscription>,
   ): FeedSubscriptionChange {
     val current = previous?.feeds.orEmpty()
     val feeds = edit(current)

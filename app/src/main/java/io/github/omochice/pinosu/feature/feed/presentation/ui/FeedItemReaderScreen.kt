@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,9 +52,7 @@ import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
 import kotlinx.coroutines.launch
 
-// Phrase breaking is applied by the platform from API 33 only.
-// Compose skips the line break config below it, so older devices keep the default word breaking
-// instead of failing, which is why no version check is needed here.
+// No SDK check: Compose ignores the phrase word break below API 33.
 private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
 
 // Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
@@ -66,7 +63,7 @@ private val ReaderLineHeight = 1.75.em
 private val ReaderMaxWidth = 640.dp
 
 /**
- * Composable function for the screen reading one feed item in the app
+ * Screen reading one feed item in the app
  *
  * @param item Item to read, or null when it is no longer loaded
  * @param onNavigateUp Callback when the user leaves the reader
@@ -136,11 +133,7 @@ private fun FeedItemReaderTopBar(
       },
       actions = {
         if (link != null && onBookmark != null) {
-          IconButton(onClick = { onBookmark(link) }) {
-            Icon(
-                imageVector = Icons.Outlined.BookmarkAdd,
-                contentDescription = stringResource(R.string.cd_bookmark_feed_item))
-          }
+          FeedItemBookmarkButton(onClick = { onBookmark(link) })
         }
       })
 }
@@ -167,48 +160,43 @@ private fun FeedItemArticle(
   Box(
       modifier = modifier.verticalScroll(rememberScrollState()),
       contentAlignment = Alignment.TopCenter) {
-        FeedItemArticleColumn(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
-      }
-}
-
-@Composable
-private fun FeedItemArticleColumn(
-    item: FeedItem,
-    imageUrl: String?,
-    onOpenLink: (String) -> Unit,
-) {
-  Column(
-      modifier =
-          Modifier.widthIn(max = ReaderMaxWidth)
-              .fillMaxWidth()
-              .testTag("readerArticle")
-              .padding(16.dp)) {
-        imageUrl?.let { url ->
-          AsyncImage(
-              model = url,
-              contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
-              modifier =
-                  Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
-              contentScale = ContentScale.Crop)
-          Spacer(modifier = Modifier.height(12.dp))
-        }
-        Text(
-            text = item.title.ifEmpty { item.link.orEmpty() },
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = feedItemByline(item),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        item.link?.let { link ->
-          Spacer(modifier = Modifier.height(8.dp))
-          OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+        Column(
+            modifier =
+                Modifier.widthIn(max = ReaderMaxWidth)
+                    .fillMaxWidth()
+                    .testTag("readerArticle")
+                    .padding(16.dp)) {
+              imageUrl?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription =
+                        item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop)
+                Spacer(modifier = Modifier.height(12.dp))
+              }
+              Text(
+                  text = feedItemTitle(item),
+                  modifier = Modifier.fillMaxWidth(),
+                  textAlign = TextAlign.Center,
+                  style =
+                      MaterialTheme.typography.headlineSmall.copy(
+                          lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
+              Spacer(modifier = Modifier.height(8.dp))
+              Text(
+                  text = feedItemByline(item),
+                  style = MaterialTheme.typography.bodySmall,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant)
+              item.link?.let { link ->
+                Spacer(modifier = Modifier.height(8.dp))
+                OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
+              }
+              Spacer(modifier = Modifier.height(16.dp))
+              FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+            }
       }
 }
 

@@ -57,7 +57,7 @@ interface RelayPool {
    * @param relays List of relay configurations to query
    * @param filters Nostr filters as JSON strings; a relay ORs multiple filters within one REQ
    * @param timeoutMs Timeout in milliseconds for each relay
-   * @return One result per relay, in the order of [relays]; empty when [relays] is empty
+   * @return One result per relay, in the order of [relays]
    * @throws IllegalArgumentException if [filters] is empty
    */
   suspend fun queryEachRelay(

@@ -14,7 +14,6 @@ private val CELL_TAGS = setOf("th", "td")
  *
  * A table inside a cell is reduced to its text.
  *
- * @param table Element of the table, whose nested tables are replaced by their text
  * @return The table, with rows that have no cells left out
  */
 internal fun parseHtmlTable(table: Element): Table<String> {
@@ -25,14 +24,7 @@ internal fun parseHtmlTable(table: Element): Table<String> {
       rows = rows.map { it.paddedTo(columnCount) })
 }
 
-/**
- * The only cell of a table that has a single row with a single cell and no caption
- *
- * Such a table lays out the page rather than holding data.
- *
- * @param table Element of the table
- * @return The cell, or null when the table has a caption or more or fewer cells
- */
+/** The only cell of a table that has a single row with a single cell and no caption */
 internal fun soleCellOf(table: Element): Element? =
     rowsOf(table).singleOrNull()?.singleOrNull()?.takeIf { captionOf(table) == null }
 
@@ -116,10 +108,11 @@ private fun Element.span(attribute: String): Int =
  * placeholder character.
  */
 private fun inlineHtmlOf(element: Element): String {
-  element.select("img").remove()
-  generateSequence { element.selectFirst("table") }
+  val copy = element.clone()
+  copy.select("img").remove()
+  generateSequence { copy.selectFirst("table") }
       .forEach { nested -> nested.replaceWith(TextNode(nested.text())) }
-  return element.html()
+  return copy.html()
 }
 
 private fun List<TableCell<String>>.columnCount(): Int = sumOf { it.columnSpan }

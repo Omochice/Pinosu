@@ -35,7 +35,6 @@ interface FeedSubscriptionRepository {
    * Publish a signed subscription list event to the user's write relays
    *
    * @param signedEventJson Signed event as JSON string
-   * @return Result containing PublishResult on success or error on failure
    */
   suspend fun publishSubscriptionList(signedEventJson: String): Result<PublishResult>
 }

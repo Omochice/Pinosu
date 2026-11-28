@@ -4,11 +4,7 @@ import io.github.omochice.pinosu.core.relay.PublishResult
 import io.github.omochice.pinosu.feature.feed.domain.repository.FeedSubscriptionRepository
 import javax.inject.Inject
 
-/**
- * Implementation of [PublishFeedSubscriptionListUseCase]
- *
- * @param subscriptionRepository Repository for the subscription list
- */
+/** Implementation of [PublishFeedSubscriptionListUseCase] */
 class PublishFeedSubscriptionListUseCaseImpl
 @Inject
 constructor(private val subscriptionRepository: FeedSubscriptionRepository) :

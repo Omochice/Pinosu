@@ -20,12 +20,6 @@ import javax.inject.Singleton
 /**
  * Relay-based implementation of [FeedSubscriptionRepository] that keeps the list on the user's own
  * relays
- *
- * @param relayPool Pool for querying and publishing to Nostr relays
- * @param relayListProvider Provider of the user's own relays
- * @param clientTagRepository Repository for NIP-89 client tag settings
- * @param codec Converter between the list and its event
- * @param clock Source of the current time for dating new list events
  */
 @Singleton
 class RelayFeedSubscriptionRepository

@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.data.repository
 
+import io.github.omochice.pinosu.core.result.andThen
 import io.github.omochice.pinosu.feature.feed.data.discovery.FeedLinkDiscoverer
 import io.github.omochice.pinosu.feature.feed.data.http.FetchedDocument
 import io.github.omochice.pinosu.feature.feed.data.http.HttpsDocumentFetcher
@@ -16,9 +17,6 @@ import kotlinx.coroutines.withContext
 /**
  * Implementation of [FeedDiscoveryRepository] that downloads the URL over HTTPS and, when it is a
  * web page, looks for the feeds it advertises
- *
- * @param fetcher Fetcher that downloads the entered URL and the advertised feed
- * @param parser Parser for feed documents
  */
 class HttpFeedDiscoveryRepository
 @Inject
@@ -26,9 +24,7 @@ constructor(private val fetcher: HttpsDocumentFetcher, private val parser: FeedP
     FeedDiscoveryRepository {
 
   override suspend fun resolve(input: String): Result<FeedResolution> =
-      fetcher
-          .fetch(input)
-          .fold(onSuccess = { resolveDocument(it) }, onFailure = { Result.failure(it) })
+      fetcher.fetch(input).andThen { resolveDocument(it) }
 
   private suspend fun resolveDocument(document: FetchedDocument): Result<FeedResolution> {
     val parsed = withContext(Dispatchers.Default) { parseDirect(document) }
@@ -50,12 +46,7 @@ constructor(private val fetcher: HttpsDocumentFetcher, private val parser: FeedP
       }
 
   private suspend fun fetchDirect(feedUrl: String): Result<FeedResolution> =
-      fetcher
-          .fetch(feedUrl)
-          .fold(
-              onSuccess = { withContext(Dispatchers.Default) { parseDirect(it) } },
-              onFailure = { Result.failure(it) },
-          )
+      fetcher.fetch(feedUrl).andThen { withContext(Dispatchers.Default) { parseDirect(it) } }
 
   private fun parseDirect(document: FetchedDocument): Result<FeedResolution> =
       parser.parseFetched(document, document.requestedUrl).map {

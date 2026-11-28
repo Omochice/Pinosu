@@ -15,6 +15,8 @@ internal object AtomReader {
   private const val TEXT_TYPE = "text"
   private const val XML_LANG = "xml:lang"
 
+  private val BODY_NAMES = listOf(CONTENT, SUMMARY)
+
   /**
    * Read a feed from the document's root element
    *
@@ -43,8 +45,8 @@ internal object AtomReader {
         link = link,
         publishedAt = rawDate?.let(FeedDateParser::parse),
         summary = entry.childPlainText(SUMMARY, CONTENT),
-        contentHtml = entry.childBodyHtml(CONTENT, SUMMARY, feedUrl = feedUrl, htmlOf = ::textHtml),
-        imageUrl = ItemImageFinder.find(entry, feedUrl, listOf(CONTENT, SUMMARY), ::textHtml),
+        contentHtml = entry.childBodyHtml(BODY_NAMES, feedUrl, ::textHtml),
+        imageUrl = ItemImageFinder.find(entry, feedUrl, BODY_NAMES, ::textHtml),
         language = declaredLanguage(entry),
     )
   }
@@ -79,10 +81,6 @@ internal object AtomReader {
         links.firstOrNull { it.attr(REL) == "alternate" }
             ?: links.firstOrNull { !it.hasAttr(REL) }
             ?: return null
-    return element
-        .attr("href")
-        .trim()
-        .takeIf { it.isNotEmpty() }
-        ?.let { LinkResolver.resolve(element, it, feedUrl) }
+    return LinkResolver.resolve(element, element.attr("href"), feedUrl)
   }
 }

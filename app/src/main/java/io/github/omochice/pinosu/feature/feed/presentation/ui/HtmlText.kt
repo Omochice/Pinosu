@@ -20,11 +20,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -64,8 +66,11 @@ fun HtmlText(
         val linkListener = LinkInteractionListener { link ->
           (link as? LinkAnnotation.Url)?.let { currentOnOpenLink(it.url) }
         }
-        val rendered = renderHtmlBlocks(html, linkStyles, linkListener)
-        rendered.filterNot { it is RenderedImage && it.url == omittedImageUrl }.ifEmpty { rendered }
+        val rendered =
+            splitHtmlBlocks(html).map { block ->
+              block.map { annotateHtml(it, linkStyles, linkListener) }
+            }
+        rendered.filterNot { it is ImageBlock && it.url == omittedImageUrl }.ifEmpty { rendered }
       }
   Column(modifier = modifier) {
     blocks.forEachIndexed { index, block ->
@@ -73,17 +78,17 @@ fun HtmlText(
         Spacer(modifier = Modifier.height(gapAbove(block)))
       }
       when (block) {
-        is RenderedText ->
-            Text(text = block.text, style = if (block.isHeading) headingStyle else style)
-        is RenderedTable -> ArticleTable(table = block.table, style = style)
-        is RenderedImage -> ArticleImage(image = block)
+        is TextBlock ->
+            Text(text = block.content, style = if (block.isHeading) headingStyle else style)
+        is TableBlock -> ArticleTable(table = block.table, style = style)
+        is ImageBlock -> ArticleImage(image = block)
       }
     }
   }
 }
 
 @Composable
-private fun ArticleImage(image: RenderedImage) {
+private fun ArticleImage(image: ImageBlock) {
   // The height follows from the width by the image's own ratio rather than from the image
   // loader's measuring, which kept the height of a previous width after the screen rotated.
   var aspectRatio by remember(image.url) { mutableStateOf<Float?>(null) }
@@ -116,5 +121,18 @@ internal fun articleImageAspectRatio(intrinsicSize: Size): Float? =
 
 private const val MIN_FILL_WIDTH_PX = 64f
 
-private fun gapAbove(block: RenderedBlock): Dp =
-    if (block is RenderedText && block.isHeading) GapBeforeHeading else GapBetweenBlocks
+private fun gapAbove(block: HtmlBlock<*>): Dp =
+    if (block is TextBlock && block.isHeading) GapBeforeHeading else GapBetweenBlocks
+
+private fun annotateHtml(
+    html: String,
+    linkStyles: TextLinkStyles,
+    linkListener: LinkInteractionListener,
+): AnnotatedString {
+  val text =
+      AnnotatedString.fromHtml(
+          htmlString = html, linkStyles = linkStyles, linkInteractionListener = linkListener)
+  // fromHtml ends a block element with a line break, which would add a blank line on top of the
+  // gap between blocks.
+  return text.subSequence(0, text.text.trimEnd().length)
+}

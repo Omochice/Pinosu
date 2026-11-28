@@ -30,7 +30,6 @@ interface PrepareFeedSubscriptionChangeUseCase {
    * Prepare removing a subscribed feed
    *
    * @param feedUrl URL of the feed, as subscribed
-   * @return The prepared change
    */
   suspend fun remove(feedUrl: String): Result<FeedSubscriptionChange>
 
@@ -40,7 +39,6 @@ interface PrepareFeedSubscriptionChangeUseCase {
    * @param feedUrl URL of the feed, as subscribed
    * @param category Name of the category; surrounding whitespace is dropped, and null or a blank
    *   name leaves the feed in no category
-   * @return The prepared change
    */
   suspend fun setCategory(feedUrl: String, category: String?): Result<FeedSubscriptionChange>
 }

@@ -8,8 +8,6 @@ import javax.inject.Inject
  *
  * The app does not allow cleartext traffic, so an `http://` URL is fetched from its `https://`
  * counterpart, and a URL without a scheme is taken as `https://`.
- *
- * @param fetcher Fetcher that performs the request
  */
 class HttpsDocumentFetcher @Inject constructor(private val fetcher: HttpDocumentFetcher) {
 

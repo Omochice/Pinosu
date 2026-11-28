@@ -123,9 +123,7 @@ private fun FeedTimelineDestination(
       uiState = feedUiState,
       onRefresh = feedViewModel::refresh,
       onOpenDrawer = onOpenDrawer,
-      onBookmarkItem = { link, title ->
-        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
-      },
+      onBookmarkItem = navController::navigateToPostBookmark,
       onManageSubscriptions = {
         navController.navigate(FeedSubscriptions) { launchSingleTop = true }
       },
@@ -167,18 +165,18 @@ private fun FeedItemReaderDestination(
   FeedItemReaderScreen(
       item = item,
       onNavigateUp = { navController.navigateUp() },
-      onBookmark = { link, title ->
-        navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
-      },
+      onBookmark = navController::navigateToPostBookmark,
       isReadOnly = isReadOnly,
       imageUrl = item?.imageUrl ?: articleLink?.let(articleImages::get))
+}
+
+private fun NavController.navigateToPostBookmark(link: String, title: String) {
+  navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
 }
 
 /**
  * Article images of the timeline the reader was opened from, so the reader shows the image its card
  * showed without fetching the article page again
- *
- * The reader's own instance is used only when no timeline is below it on the back stack.
  */
 @Composable
 private fun timelineArticleImages(navController: NavController): ArticleImageViewModel {

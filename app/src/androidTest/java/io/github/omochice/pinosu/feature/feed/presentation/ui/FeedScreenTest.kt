@@ -95,6 +95,18 @@ class FeedScreenTest {
         onLoadArticleImage = onLoadArticleImage)
   }
 
+  private fun onItemImage() =
+      composeTestRule.onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
+
+  private fun requestedArticleImages(uiState: FeedUiState): List<String> {
+    val requested = mutableListOf<String>()
+    composeTestRule.setContent {
+      FeedScreen(uiState = uiState, onRefresh = {}, onLoadArticleImage = { requested.add(it) })
+    }
+    composeTestRule.waitForIdle()
+    return requested
+  }
+
   private fun loaded(vararg items: FeedItem, failedFeeds: List<FeedFetchFailure> = emptyList()) =
       FeedUiState(content = FeedUiState.Content.Loaded(items.toList(), failedFeeds))
 
@@ -114,9 +126,7 @@ class FeedScreenTest {
           uiState = loaded(item.copy(imageUrl = "https://blog.example/hello.png")), onRefresh = {})
     }
 
-    composeTestRule
-        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
-        .assertIsDisplayed()
+    onItemImage().assertIsDisplayed()
     composeTestRule.onNodeWithText(NO_IMAGE, useUnmergedTree = true).assertDoesNotExist()
   }
 
@@ -129,9 +139,7 @@ class FeedScreenTest {
           articleImages = mapOf("https://blog.example/hello" to null))
     }
 
-    composeTestRule
-        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
-        .assertDoesNotExist()
+    onItemImage().assertDoesNotExist()
     composeTestRule.onNodeWithText(NO_IMAGE, useUnmergedTree = true).assertIsDisplayed()
   }
 
@@ -144,64 +152,39 @@ class FeedScreenTest {
           articleImages = mapOf("https://blog.example/hello" to "https://blog.example/og.png"))
     }
 
-    composeTestRule
-        .onNodeWithContentDescription("Hello feeds", useUnmergedTree = true)
-        .assertIsDisplayed()
+    onItemImage().assertIsDisplayed()
   }
 
   @Test
   fun `shown card without a feed image asks for the article image of its link`() {
-    val requested = mutableListOf<String>()
-    composeTestRule.setContent {
-      FeedScreen(uiState = loaded(item), onRefresh = {}, onLoadArticleImage = { requested.add(it) })
-    }
-    composeTestRule.waitForIdle()
+    val requested = requestedArticleImages(loaded(item))
 
     assertEquals(listOf("https://blog.example/hello"), requested)
   }
 
   @Test
   fun `card with a feed image does not ask for the article image`() {
-    val requested = mutableListOf<String>()
-    composeTestRule.setContent {
-      FeedScreen(
-          uiState = loaded(item.copy(imageUrl = "https://blog.example/hello.png")),
-          onRefresh = {},
-          onLoadArticleImage = { requested.add(it) })
-    }
-    composeTestRule.waitForIdle()
+    val requested =
+        requestedArticleImages(loaded(item.copy(imageUrl = "https://blog.example/hello.png")))
 
     assertTrue(requested.isEmpty(), "no article image should be asked for")
   }
 
   @Test
   fun `card without a link does not ask for an article image`() {
-    val requested = mutableListOf<String>()
-    composeTestRule.setContent {
-      FeedScreen(
-          uiState = loaded(item.copy(link = null)),
-          onRefresh = {},
-          onLoadArticleImage = { requested.add(it) })
-    }
-    composeTestRule.waitForIdle()
+    val requested = requestedArticleImages(loaded(item.copy(link = null)))
 
     assertTrue(requested.isEmpty(), "no article image should be asked for")
   }
 
   @Test
   fun `only cards that are shown ask for their article image`() {
-    val requested = mutableListOf<String>()
     val many =
         (1..50).map { index ->
           item.copy(id = "$index", title = "Item $index", link = "https://blog.example/$index")
         }
-    composeTestRule.setContent {
-      FeedScreen(
-          uiState = loaded(*many.toTypedArray()),
-          onRefresh = {},
-          onLoadArticleImage = { requested.add(it) })
-    }
-    composeTestRule.waitForIdle()
+
+    val requested = requestedArticleImages(loaded(*many.toTypedArray()))
 
     assertTrue(requested.isNotEmpty(), "the cards on screen should ask")
     assertTrue("https://blog.example/50" !in requested, "a card far below should not ask yet")

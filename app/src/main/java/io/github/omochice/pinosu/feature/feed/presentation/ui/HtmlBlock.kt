@@ -5,23 +5,26 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 
-/** One block of an HTML body, laid out apart from its neighbours */
-internal sealed interface HtmlBlock
-
 /**
- * Block of an HTML body that is laid out as text
+ * One block of an HTML body, laid out apart from its neighbours
  *
- * @property html HTML of the block
- * @property isHeading Whether the block is a heading
+ * @param T Type of the content of its text or table cells, such as HTML or styled text
  */
-internal data class TextBlock(val html: String, val isHeading: Boolean) : HtmlBlock
+internal sealed interface HtmlBlock<out T> {
 
-/**
- * Block of an HTML body that is laid out as a grid of cells
- *
- * @property table Table with the inner HTML of its caption and cells
- */
-internal data class TableBlock(val table: Table<String>) : HtmlBlock
+  /** Block at the same place whose text or table cells hold [transform] of their content */
+  fun <R> map(transform: (T) -> R): HtmlBlock<R>
+}
+
+/** Block of an HTML body that is laid out as text */
+internal data class TextBlock<out T>(val content: T, val isHeading: Boolean) : HtmlBlock<T> {
+  override fun <R> map(transform: (T) -> R): TextBlock<R> = TextBlock(transform(content), isHeading)
+}
+
+/** Block of an HTML body that is laid out as a grid of cells */
+internal data class TableBlock<T>(val table: Table<T>) : HtmlBlock<T> {
+  override fun <R> map(transform: (T) -> R): TableBlock<R> = TableBlock(table.map(transform))
+}
 
 /**
  * Block of an HTML body that is laid out as an image
@@ -29,7 +32,9 @@ internal data class TableBlock(val table: Table<String>) : HtmlBlock
  * @property url Absolute HTTP(S) URL of the image
  * @property alt Text describing the image, empty when it has none
  */
-internal data class ImageBlock(val url: String, val alt: String) : HtmlBlock
+internal data class ImageBlock(val url: String, val alt: String) : HtmlBlock<Nothing> {
+  override fun <R> map(transform: (Nothing) -> R): ImageBlock = this
+}
 
 private const val DIV = "div"
 private const val TABLE = "table"
@@ -44,16 +49,15 @@ private val BLOCK_TAGS =
  * An image outside a table cell becomes a block of its own, which splits the text around it out of
  * the element that held both, at the cost of that element, such as a heading or a link.
  *
- * @param html HTML to split
  * @return The blocks with text or an image, in document order
  */
-internal fun splitHtmlBlocks(html: String): List<HtmlBlock> {
+internal fun splitHtmlBlocks(html: String): List<HtmlBlock<String>> {
   val document = Jsoup.parseBodyFragment(html)
   document.outputSettings().prettyPrint(false)
   return buildList { collectBlocks(document.body(), this) }
 }
 
-private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
+private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock<String>>) {
   val inlineRun = mutableListOf<Node>()
   fun flushInlineRun() {
     if (inlineRun.any { it.hasVisibleText() }) {
@@ -62,9 +66,10 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
     inlineRun.clear()
   }
   parent.childNodes().forEach { node ->
-    if (node is Element && (node.normalName() in BLOCK_TAGS || node.selectFirst(IMAGE) != null)) {
+    val holdsImage = node is Element && node.selectFirst(IMAGE) != null
+    if (node is Element && (node.normalName() in BLOCK_TAGS || holdsImage)) {
       flushInlineRun()
-      addBlock(node, blocks)
+      addBlock(node, holdsImage, blocks)
     } else {
       inlineRun += node
     }
@@ -72,11 +77,15 @@ private fun collectBlocks(parent: Element, blocks: MutableList<HtmlBlock>) {
   flushInlineRun()
 }
 
-private fun addBlock(element: Element, blocks: MutableList<HtmlBlock>) {
+private fun addBlock(
+    element: Element,
+    holdsImage: Boolean,
+    blocks: MutableList<HtmlBlock<String>>
+) {
   when {
     element.normalName() == IMAGE -> blocks += ImageBlock(element.attr("src"), element.attr("alt"))
     element.normalName() == TABLE -> addTable(element, blocks)
-    element.selectFirst(IMAGE) != null -> collectBlocks(element, blocks)
+    holdsImage -> collectBlocks(element, blocks)
     element.normalName() == DIV && element.children().any { it.normalName() in BLOCK_TAGS } ->
         collectBlocks(element, blocks)
     element.hasText() ->
@@ -85,7 +94,7 @@ private fun addBlock(element: Element, blocks: MutableList<HtmlBlock>) {
 }
 
 /** A table with a single cell is opened like a `div`, because it lays out the page around it. */
-private fun addTable(table: Element, blocks: MutableList<HtmlBlock>) {
+private fun addTable(table: Element, blocks: MutableList<HtmlBlock<String>>) {
   val soleCell = soleCellOf(table)
   when {
     soleCell != null -> collectBlocks(soleCell, blocks)

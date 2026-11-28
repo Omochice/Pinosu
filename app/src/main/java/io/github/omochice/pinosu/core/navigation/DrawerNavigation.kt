@@ -8,8 +8,6 @@ import androidx.navigation.NavController
  * Bookmarks and Feeds are top-level screens: choosing one leaves Bookmarks as the only screen
  * beneath it, so switching between them never grows the back stack. Other destinations open on top
  * of the current screen.
- *
- * @param route Destination chosen in the drawer
  */
 fun NavController.navigateFromDrawer(route: Route) {
   if (route is Bookmark || route is Feed) {

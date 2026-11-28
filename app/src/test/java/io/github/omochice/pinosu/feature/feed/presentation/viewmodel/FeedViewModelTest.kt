@@ -1,10 +1,10 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedFetchFailure
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedSubscriptionLoadResult
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedTimeline
 import io.github.omochice.pinosu.feature.feed.domain.model.error.FeedSubscriptionListUnavailableException
+import io.github.omochice.pinosu.feature.feed.domain.model.feedItem
 import io.github.omochice.pinosu.feature.feed.domain.usecase.LoadFeedTimelineUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -424,15 +424,7 @@ class FeedViewModelTest {
   }
 
   private companion object {
-    val ITEM =
-        FeedItem(
-            id = "1",
-            feedUrl = "https://a.example/feed",
-            feedTitle = "A",
-            title = "First",
-            link = "https://a.example/1",
-            publishedAt = Instant.parse("2026-01-01T00:00:00Z"),
-            summary = "Summary")
+    val ITEM = feedItem(publishedAt = Instant.parse("2026-01-01T00:00:00Z"))
     val OTHER_ITEM = ITEM.copy(id = "2", title = "Second", link = "https://a.example/2")
     val TECH_ITEM =
         ITEM.copy(

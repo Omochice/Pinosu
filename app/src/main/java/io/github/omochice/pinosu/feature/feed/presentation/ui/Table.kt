@@ -9,12 +9,7 @@ package io.github.omochice.pinosu.feature.feed.presentation.ui
  */
 internal data class Table<T>(val caption: T?, val rows: List<List<TableCell<T>>>) {
 
-  /**
-   * Table with the same layout whose caption and cells hold [transform] of their content
-   *
-   * @param R Type of the converted content
-   * @param transform Conversion of the content of the caption and of each cell
-   */
+  /** Table with the same layout whose caption and cells hold [transform] of their content */
   fun <R> map(transform: (T) -> R): Table<R> =
       Table(
           caption = caption?.let(transform),
@@ -31,12 +26,7 @@ internal data class Table<T>(val caption: T?, val rows: List<List<TableCell<T>>>
  */
 internal data class TableCell<T>(val content: T, val isHeader: Boolean, val columnSpan: Int = 1) {
 
-  /**
-   * Cell at the same place holding [transform] of its content
-   *
-   * @param R Type of the converted content
-   * @param transform Conversion of the content
-   */
+  /** Cell at the same place holding [transform] of its content */
   fun <R> map(transform: (T) -> R): TableCell<R> =
       TableCell(transform(content), isHeader, columnSpan)
 }

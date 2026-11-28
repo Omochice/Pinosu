@@ -22,9 +22,7 @@ import kotlinx.coroutines.launch
  * Loads the subscription list when created, and turns each add, remove, or category change into a
  * signer request whose answer is then published.
  *
- * @param loadSubscriptions UseCase that loads the subscribed feed URLs
- * @param prepareChange UseCase that builds the changed list
- * @param publisher Signs and publishes the changed list
+ * A change requested while another is in progress is ignored.
  */
 @HiltViewModel
 class FeedSubscriptionsViewModel
@@ -71,8 +69,6 @@ constructor(
   /**
    * Add the feed the user entered or picked
    *
-   * Ignored while another change is in progress.
-   *
    * @param input A feed URL or a web site URL, with or without a scheme
    */
   fun add(input: String) {
@@ -82,8 +78,6 @@ constructor(
   /**
    * Remove a subscribed feed
    *
-   * Ignored while another change is in progress.
-   *
    * @param feedUrl URL of the feed, as subscribed
    */
   fun remove(feedUrl: String) {
@@ -92,8 +86,6 @@ constructor(
 
   /**
    * File a subscribed feed under a category, or take it out of its category
-   *
-   * Ignored while another change is in progress.
    *
    * @param feedUrl URL of the feed, as subscribed
    * @param category Name of the category, or null or blank for none
@@ -159,36 +151,22 @@ constructor(
   }
 
   private fun continueWith(change: FeedSubscriptionChange) {
-    when (change) {
-      is FeedSubscriptionChange.ReadyToSign -> {
-        if (change.isFirstList) {
-          _uiState.update {
-            it.copy(
-                isWorking = false, dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
-          }
-        } else {
-          publisher.requestSignature(change.event)
-        }
-      }
-      is FeedSubscriptionChange.ChooseCandidate -> {
-        _uiState.update {
-          it.copy(
-              isWorking = false,
-              dialog = FeedSubscriptionsDialog.ChooseCandidate(change.candidates))
-        }
-      }
-      is FeedSubscriptionChange.AlreadySubscribed -> {
-        _uiState.update {
-          it.copy(isWorking = false, message = FeedSubscriptionsMessage.AlreadySubscribed)
-        }
-      }
-      is FeedSubscriptionChange.NotSubscribed -> {
-        _uiState.update { it.copy(isWorking = false) }
-        reload()
-      }
-      is FeedSubscriptionChange.CategoryUnchanged -> {
-        _uiState.update { it.copy(isWorking = false) }
-      }
+    if (change is FeedSubscriptionChange.ReadyToSign && !change.isFirstList) {
+      publisher.requestSignature(change.event)
+      return
     }
+    _uiState.update { state ->
+      when (change) {
+        is FeedSubscriptionChange.ReadyToSign ->
+            state.copy(dialog = FeedSubscriptionsDialog.ConfirmPublicList(change.event))
+        is FeedSubscriptionChange.ChooseCandidate ->
+            state.copy(dialog = FeedSubscriptionsDialog.ChooseCandidate(change.candidates))
+        is FeedSubscriptionChange.AlreadySubscribed ->
+            state.copy(message = FeedSubscriptionsMessage.AlreadySubscribed)
+        is FeedSubscriptionChange.NotSubscribed,
+        is FeedSubscriptionChange.CategoryUnchanged -> state
+      }.copy(isWorking = false)
+    }
+    if (change is FeedSubscriptionChange.NotSubscribed) reload()
   }
 }

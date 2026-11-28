@@ -1,6 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.presentation.viewmodel
 
-import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
+import io.github.omochice.pinosu.feature.feed.domain.model.feedItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -45,16 +45,7 @@ class LoadedFeedItemsTest {
   }
 
   private companion object {
-    val ITEM =
-        FeedItem(
-            id = "1",
-            feedUrl = "https://a.example/feed",
-            feedTitle = "A",
-            title = "First",
-            link = "https://a.example/1",
-            publishedAt = null,
-            summary = "Summary",
-            contentHtml = "<p>Body</p>")
+    val ITEM = feedItem(contentHtml = "<p>Body</p>")
     val OTHER_FEED_ITEM = ITEM.copy(feedUrl = "https://b.example/feed", title = "B first")
   }
 }

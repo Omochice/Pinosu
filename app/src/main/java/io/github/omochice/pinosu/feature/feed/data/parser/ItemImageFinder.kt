@@ -31,8 +31,9 @@ internal object ItemImageFinder {
       bodyNames: List<String>,
       htmlOf: (Element) -> String?,
   ): String? =
-      declaredImages(item).firstNotNullOfOrNull { (element, url) -> resolve(element, url, feedUrl) }
-          ?: bodyImage(item, feedUrl, bodyNames, htmlOf)
+      declaredImages(item).firstNotNullOfOrNull { (element, url) ->
+        LinkResolver.resolve(element, url, feedUrl)
+      } ?: bodyImage(item, feedUrl, bodyNames, htmlOf)
 
   private fun declaredImages(item: Element): Sequence<Pair<Element, String>> {
     val groups = listOf(item) + item.childrenNamed(MEDIA_GROUP)
@@ -54,9 +55,6 @@ internal object ItemImageFinder {
   private fun hasImageType(element: Element): Boolean =
       element.attr(TYPE).trim().startsWith(IMAGE_TYPE_PREFIX, ignoreCase = true)
 
-  private fun resolve(element: Element, url: String, feedUrl: String): String? =
-      url.trim().takeIf { it.isNotEmpty() }?.let { LinkResolver.resolve(element, it, feedUrl) }
-
   /**
    * First image in the raw body, read from every body child because the body shown is only the
    * first of them that has anything left once sanitized
@@ -73,10 +71,6 @@ internal object ItemImageFinder {
 
   private fun firstImage(html: String, base: String): String? =
       Jsoup.parseBodyFragment(html).select("img[src]").firstNotNullOfOrNull { image ->
-        image
-            .attr("src")
-            .trim()
-            .takeIf { it.isNotEmpty() }
-            ?.let { LinkResolver.resolveAgainst(base, it) }
+        LinkResolver.resolveWritten(base, image.attr("src"))
       }
 }
