@@ -385,7 +385,6 @@ fun PinosuApp(
 
                 LaunchedEffect(postBookmarkUiState.postSuccess) {
                   if (postBookmarkUiState.postSuccess) {
-                    postBookmarkViewModel.initializeForNew()
                     navController.navigateUp()
                   }
                 }
