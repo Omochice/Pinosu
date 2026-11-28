@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.core.nip.nip89.ClientTagRepository
@@ -22,26 +22,22 @@ import io.github.omochice.pinosu.feature.settings.domain.usecase.SetClientTagEna
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object NostrModule {
+interface NostrModule {
 
-  @Provides
-  fun provideSetBootstrapRelays(impl: SetBootstrapRelaysUseCaseImpl): SetBootstrapRelaysUseCase =
-      impl
+  @Binds fun bindSetBootstrapRelays(impl: SetBootstrapRelaysUseCaseImpl): SetBootstrapRelaysUseCase
 
-  @Provides
-  fun provideObserveBootstrapRelays(
+  @Binds
+  fun bindObserveBootstrapRelays(
       impl: ObserveBootstrapRelaysUseCaseImpl
-  ): ObserveBootstrapRelaysUseCase = impl
+  ): ObserveBootstrapRelaysUseCase
 
-  @Provides
-  fun provideClientTagRepository(impl: LocalClientTagRepository): ClientTagRepository = impl
+  @Binds fun bindClientTagRepository(impl: LocalClientTagRepository): ClientTagRepository
 
-  @Provides
-  fun provideObserveClientTagEnabled(
+  @Binds
+  fun bindObserveClientTagEnabled(
       impl: ObserveClientTagEnabledUseCaseImpl
-  ): ObserveClientTagEnabledUseCase = impl
+  ): ObserveClientTagEnabledUseCase
 
-  @Provides
-  fun provideSetClientTagEnabled(impl: SetClientTagEnabledUseCaseImpl): SetClientTagEnabledUseCase =
-      impl
+  @Binds
+  fun bindSetClientTagEnabled(impl: SetClientTagEnabledUseCaseImpl): SetClientTagEnabledUseCase
 }

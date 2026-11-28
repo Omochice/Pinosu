@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.core.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.core.relay.RelayPool
@@ -14,6 +14,6 @@ import io.github.omochice.pinosu.core.relay.RelayPoolImpl
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object RelayPoolModule {
-  @Provides fun provideRelayPool(impl: RelayPoolImpl): RelayPool = impl
+interface RelayPoolModule {
+  @Binds fun bindRelayPool(impl: RelayPoolImpl): RelayPool
 }

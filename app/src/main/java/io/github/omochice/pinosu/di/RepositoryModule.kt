@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.core.metadata.OkHttpUrlMetadataFetcher
@@ -27,23 +27,20 @@ import io.github.omochice.pinosu.feature.settings.data.SettingsBootstrapRelayPro
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+interface RepositoryModule {
 
-  @Provides fun provideNip01ProfileParser(impl: Nip01ProfileParserImpl): Nip01ProfileParser = impl
+  @Binds fun bindNip01ProfileParser(impl: Nip01ProfileParserImpl): Nip01ProfileParser
 
-  @Provides
-  fun provideNip01ProfileFetcher(impl: Nip01ProfileFetcherImpl): Nip01ProfileFetcher = impl
+  @Binds fun bindNip01ProfileFetcher(impl: Nip01ProfileFetcherImpl): Nip01ProfileFetcher
 
-  @Provides fun provideNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser = impl
+  @Binds fun bindNip65EventParser(impl: Nip65EventParserImpl): Nip65EventParser
 
-  @Provides
-  fun provideNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher = impl
+  @Binds fun bindNip65RelayListFetcher(impl: Nip65RelayListFetcherImpl): Nip65RelayListFetcher
 
-  @Provides fun provideRelayListProvider(impl: CachedRelayListProvider): RelayListProvider = impl
+  @Binds fun bindRelayListProvider(impl: CachedRelayListProvider): RelayListProvider
 
-  @Provides
-  fun provideBootstrapRelayProvider(impl: SettingsBootstrapRelayProvider): BootstrapRelayProvider =
-      impl
+  @Binds
+  fun bindBootstrapRelayProvider(impl: SettingsBootstrapRelayProvider): BootstrapRelayProvider
 
-  @Provides fun provideUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher = impl
+  @Binds fun bindUrlMetadataFetcher(impl: OkHttpUrlMetadataFetcher): UrlMetadataFetcher
 }

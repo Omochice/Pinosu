@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.comment.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.comment.data.repository.RelayCommentRepository
@@ -18,14 +18,12 @@ import io.github.omochice.pinosu.feature.comment.domain.usecase.PostCommentUseCa
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object CommentModule {
+interface CommentModule {
 
-  @Provides fun provideCommentRepository(impl: RelayCommentRepository): CommentRepository = impl
+  @Binds fun bindCommentRepository(impl: RelayCommentRepository): CommentRepository
 
-  @Provides
-  fun provideGetCommentsUseCase(
-      impl: GetCommentsForBookmarkUseCaseImpl
-  ): GetCommentsForBookmarkUseCase = impl
+  @Binds
+  fun bindGetCommentsUseCase(impl: GetCommentsForBookmarkUseCaseImpl): GetCommentsForBookmarkUseCase
 
-  @Provides fun providePostCommentUseCase(impl: PostCommentUseCaseImpl): PostCommentUseCase = impl
+  @Binds fun bindPostCommentUseCase(impl: PostCommentUseCaseImpl): PostCommentUseCase
 }

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.postbookmark.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.postbookmark.domain.usecase.PostBookmarkUseCase
@@ -14,8 +14,7 @@ import io.github.omochice.pinosu.feature.postbookmark.domain.usecase.PostBookmar
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object PostBookmarkModule {
+interface PostBookmarkModule {
 
-  @Provides
-  fun providePostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase = impl
+  @Binds fun bindPostBookmarkUseCase(impl: PostBookmarkUseCaseImpl): PostBookmarkUseCase
 }

@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.shareintent.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractSharedContentUseCase
@@ -14,10 +14,8 @@ import io.github.omochice.pinosu.feature.shareintent.domain.usecase.ExtractShare
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object ShareIntentModule {
+interface ShareIntentModule {
 
-  @Provides
-  fun provideExtractSharedContent(
-      impl: ExtractSharedContentUseCaseImpl
-  ): ExtractSharedContentUseCase = impl
+  @Binds
+  fun bindExtractSharedContent(impl: ExtractSharedContentUseCaseImpl): ExtractSharedContentUseCase
 }

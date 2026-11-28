@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.settings.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.settings.data.repository.LocalSettingsRepository
@@ -26,28 +26,20 @@ import io.github.omochice.pinosu.feature.settings.domain.usecase.SetThemeModeUse
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object AppearanceModule {
+interface AppearanceModule {
 
-  @Provides fun provideSettingsRepository(impl: LocalSettingsRepository): SettingsRepository = impl
+  @Binds fun bindSettingsRepository(impl: LocalSettingsRepository): SettingsRepository
 
-  @Provides
-  fun provideSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase = impl
+  @Binds fun bindSetDisplayModeUseCase(impl: SetDisplayModeUseCaseImpl): SetDisplayModeUseCase
 
-  @Provides
-  fun provideObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase =
-      impl
+  @Binds fun bindObserveDisplayMode(impl: ObserveDisplayModeUseCaseImpl): ObserveDisplayModeUseCase
 
-  @Provides
-  fun provideSetThemeModeUseCase(impl: SetThemeModeUseCaseImpl): SetThemeModeUseCase = impl
+  @Binds fun bindSetThemeModeUseCase(impl: SetThemeModeUseCaseImpl): SetThemeModeUseCase
 
-  @Provides
-  fun provideObserveThemeModeUseCase(impl: ObserveThemeModeUseCaseImpl): ObserveThemeModeUseCase =
-      impl
+  @Binds fun bindObserveThemeModeUseCase(impl: ObserveThemeModeUseCaseImpl): ObserveThemeModeUseCase
 
-  @Provides
-  fun provideSetLanguageModeUseCase(impl: SetLanguageModeUseCaseImpl): SetLanguageModeUseCase = impl
+  @Binds fun bindSetLanguageModeUseCase(impl: SetLanguageModeUseCaseImpl): SetLanguageModeUseCase
 
-  @Provides
-  fun provideObserveLanguageMode(impl: ObserveLanguageModeUseCaseImpl): ObserveLanguageModeUseCase =
-      impl
+  @Binds
+  fun bindObserveLanguageMode(impl: ObserveLanguageModeUseCaseImpl): ObserveLanguageModeUseCase
 }

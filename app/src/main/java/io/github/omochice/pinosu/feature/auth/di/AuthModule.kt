@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.auth.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.auth.data.repository.Nip55AuthRepository
@@ -24,20 +24,17 @@ import io.github.omochice.pinosu.feature.auth.domain.usecase.ReadOnlyLoginUseCas
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object AuthModule {
+interface AuthModule {
 
-  @Provides fun provideAuthRepository(impl: Nip55AuthRepository): AuthRepository = impl
+  @Binds fun bindAuthRepository(impl: Nip55AuthRepository): AuthRepository
 
-  @Provides fun provideLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase = impl
+  @Binds fun bindLoginUseCase(impl: Nip55LoginUseCase): LoginUseCase
 
-  @Provides fun provideLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase = impl
+  @Binds fun bindLogoutUseCase(impl: Nip55LogoutUseCase): LogoutUseCase
 
-  @Provides
-  fun provideGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase = impl
+  @Binds fun bindGetLoginStateUseCase(impl: Nip55GetLoginStateUseCase): GetLoginStateUseCase
 
-  @Provides
-  fun provideFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase = impl
+  @Binds fun bindFetchRelayListUseCase(impl: FetchRelayListUseCaseImpl): FetchRelayListUseCase
 
-  @Provides
-  fun provideReadOnlyLoginUseCase(impl: ReadOnlyLoginUseCaseImpl): ReadOnlyLoginUseCase = impl
+  @Binds fun bindReadOnlyLoginUseCase(impl: ReadOnlyLoginUseCaseImpl): ReadOnlyLoginUseCase
 }

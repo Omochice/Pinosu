@@ -1,5 +1,6 @@
 package io.github.omochice.pinosu.feature.feed.di
 
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,43 +30,41 @@ import io.github.omochice.pinosu.feature.feed.domain.usecase.PublishFeedSubscrip
 /** Hilt module for the feed feature */
 @Module
 @InstallIn(SingletonComponent::class)
-object FeedModule {
+interface FeedModule {
 
-  @Provides
-  fun provideSubscriptionRepository(
-      impl: RelayFeedSubscriptionRepository
-  ): FeedSubscriptionRepository = impl
+  @Binds
+  fun bindSubscriptionRepository(impl: RelayFeedSubscriptionRepository): FeedSubscriptionRepository
 
-  @Provides fun provideFeedParser(impl: JsoupFeedParser): FeedParser = impl
+  @Binds fun bindFeedParser(impl: JsoupFeedParser): FeedParser
 
-  @Provides fun provideFeedRepository(impl: HttpFeedRepository): FeedRepository = impl
+  @Binds fun bindFeedRepository(impl: HttpFeedRepository): FeedRepository
 
-  @Provides
-  fun provideFeedDiscoveryRepository(impl: HttpFeedDiscoveryRepository): FeedDiscoveryRepository =
-      impl
+  @Binds fun bindFeedDiscoveryRepository(impl: HttpFeedDiscoveryRepository): FeedDiscoveryRepository
 
-  @Provides
-  fun provideArticleImageRepository(impl: OgpArticleImageRepository): ArticleImageRepository = impl
+  @Binds fun bindArticleImageRepository(impl: OgpArticleImageRepository): ArticleImageRepository
 
-  @Provides
-  @IntoSet
-  fun provideFeedLogoutCleanup(cleanup: FeedLogoutCleanup): LogoutCleanup = cleanup
+  @Binds fun bindLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase
 
-  @Provides
-  fun provideLoadFeedTimelineUseCase(impl: LoadFeedTimelineUseCaseImpl): LoadFeedTimelineUseCase =
-      impl
+  @Binds
+  fun bindLoadListUseCase(impl: LoadFeedSubscriptionsUseCaseImpl): LoadFeedSubscriptionsUseCase
 
-  @Provides
-  fun provideLoadListUseCase(impl: LoadFeedSubscriptionsUseCaseImpl): LoadFeedSubscriptionsUseCase =
-      impl
-
-  @Provides
-  fun providePrepareChangeUseCase(
+  @Binds
+  fun bindPrepareChangeUseCase(
       impl: PrepareFeedSubscriptionChangeUseCaseImpl
-  ): PrepareFeedSubscriptionChangeUseCase = impl
+  ): PrepareFeedSubscriptionChangeUseCase
 
-  @Provides
-  fun providePublishListUseCase(
+  @Binds
+  fun bindPublishListUseCase(
       impl: PublishFeedSubscriptionListUseCaseImpl
-  ): PublishFeedSubscriptionListUseCase = impl
+  ): PublishFeedSubscriptionListUseCase
+
+  companion object {
+    /**
+     * Declared with `@Provides` rather than `@Binds`, because ktfmt joins `@Binds @IntoSet` and the
+     * function onto one line, which detekt's AnnotationOnSeparateLine rule rejects.
+     */
+    @Provides
+    @IntoSet
+    fun provideFeedLogoutCleanup(cleanup: FeedLogoutCleanup): LogoutCleanup = cleanup
+  }
 }

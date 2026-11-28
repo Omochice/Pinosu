@@ -1,7 +1,7 @@
 package io.github.omochice.pinosu.feature.bookmark.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.omochice.pinosu.feature.bookmark.data.repository.RelayBookmarkRepository
@@ -16,10 +16,9 @@ import io.github.omochice.pinosu.feature.bookmark.domain.usecase.GetBookmarkList
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object BookmarkModule {
+interface BookmarkModule {
 
-  @Provides fun provideBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository = impl
+  @Binds fun bindBookmarkRepository(impl: RelayBookmarkRepository): BookmarkRepository
 
-  @Provides
-  fun provideGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase = impl
+  @Binds fun bindGetBookmarkListUseCase(impl: GetBookmarkListUseCaseImpl): GetBookmarkListUseCase
 }
