@@ -2,6 +2,7 @@ package io.github.omochice.pinosu
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +31,7 @@ import org.junit.runner.RunWith
 /**
  * Verifies share-intent navigation under different app states.
  *
- * Covers four scenarios:
+ * Covers five scenarios:
  * - Logged-out user receives a share intent, content is held until login completes, then navigates
  *   to PostBookmark.
  * - Already logged-in user receives a share intent at launch and navigates to PostBookmark
@@ -39,6 +40,7 @@ import org.junit.runner.RunWith
  *   PostBookmark.
  * - Consumed shared content sets the contentConsumed flag, which is persisted via
  *   savedInstanceState to prevent re-extraction on configuration change (e.g. rotation).
+ * - The post form opened from a share intent keeps what the user typed when the screen rotates.
  */
 @HiltAndroidTest
 @dagger.hilt.android.testing.UninstallModules(
@@ -226,5 +228,38 @@ class ShareIntentNavigationTest {
           "contentConsumed should be true after shared content is consumed",
       )
     }
+  }
+
+  @Test
+  fun `typed title is kept when the screen rotates`() {
+    coEvery { mockGetLoginStateUseCase() } returns testUser
+
+    composeTestRule.activityRule.scenario.recreate()
+
+    composeTestRule.waitUntil(timeoutMillis = 5000) {
+      composeTestRule
+          .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+          .fetchSemanticsNodes()
+          .isNotEmpty()
+    }
+    composeTestRule.onNodeWithText(getTestString(R.string.label_title)).performTextInput("Typed")
+    // A text field disposed before its text has come back from the ViewModel writes the previous
+    // text over it, so rotating right after typing would lose the title for an unrelated reason.
+    composeTestRule.waitForIdle()
+
+    val portraitActivity = composeTestRule.activity
+    composeTestRule.activityRule.scenario.onActivity { activity ->
+      activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    }
+    composeTestRule.waitUntil(timeoutMillis = 10000) {
+      composeTestRule.activity !== portraitActivity &&
+          composeTestRule
+              .onAllNodesWithText(getTestString(R.string.title_post_bookmark))
+              .fetchSemanticsNodes()
+              .isNotEmpty()
+    }
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Typed").assertExists()
   }
 }

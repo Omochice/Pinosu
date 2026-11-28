@@ -445,6 +445,80 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `initializeForNew with the same values again should keep what the user typed`() = runTest {
+    viewModel.initializeForNew(url = "https://example.com/article", title = null, comment = null)
+    viewModel.updateTitle("Typed title")
+
+    viewModel.initializeForNew(url = "https://example.com/article", title = null, comment = null)
+
+    val state = viewModel.uiState.first()
+    assertEquals("Typed title", state.title, "typed title should be kept")
+    assertEquals("example.com/article", state.url, "url should be kept")
+  }
+
+  @Test
+  fun `initializeForNew without arguments again should keep what the user typed`() = runTest {
+    viewModel.initializeForNew()
+    viewModel.updateUrl("example.com/typed")
+
+    viewModel.initializeForNew()
+
+    assertEquals("example.com/typed", viewModel.uiState.first().url, "typed url should be kept")
+  }
+
+  @Test
+  fun `initializeForNew with other values should discard what the user typed`() = runTest {
+    viewModel.initializeForNew(url = "https://first.example.com", title = null, comment = null)
+    viewModel.updateTitle("Typed title")
+
+    viewModel.initializeForNew(url = "https://second.example.com", title = null, comment = null)
+
+    val state = viewModel.uiState.first()
+    assertEquals("second.example.com", state.url, "url should be replaced")
+    assertEquals("", state.title, "typed title should be discarded")
+  }
+
+  @Test
+  fun `initializeForEdit with the same values again should keep what the user typed`() = runTest {
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = listOf("tech"),
+        comment = "Existing comment")
+    viewModel.updateTitle("Typed title")
+
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = listOf("tech"),
+        comment = "Existing comment")
+
+    val state = viewModel.uiState.first()
+    assertEquals("Typed title", state.title, "typed title should be kept")
+    assertTrue(state.isEditMode, "isEditMode should be true")
+  }
+
+  @Test
+  fun `initializeForEdit with other values should discard what the user typed`() = runTest {
+    viewModel.initializeForEdit(
+        url = "first.example.com",
+        title = "First Title",
+        categories = listOf("tech"),
+        comment = "First comment")
+    viewModel.updateTitle("Typed title")
+
+    viewModel.initializeForEdit(
+        url = "second.example.com",
+        title = "Second Title",
+        categories = listOf("tech"),
+        comment = "Second comment")
+
+    val state = viewModel.uiState.first()
+    assertEquals("second.example.com", state.url, "url should be replaced")
+    assertEquals("Second Title", state.title, "typed title should be discarded")
+  }
+
+  @Test
   fun `prepareSignEventIntent in edit mode should use original URL`() = runTest {
     val realEvent =
         UnsignedNostrEvent(
