@@ -139,6 +139,7 @@
     <string name="message_feed_item_not_found">This article is no longer loaded. Go back to the feeds and open it again.</string>
     <string name="button_back_to_feeds">Back to feeds</string>
     <string name="tab_all_feeds">All</string>
+    <string name="cd_show_all_categories">Show all categories</string>
     <string name="cd_set_feed_category">Set category</string>
     <string name="dialog_title_feed_category">Category</string>
     <string name="label_feed_category">Category name</string>

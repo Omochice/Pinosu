@@ -135,6 +135,7 @@
     <string name="message_feed_item_not_found">この記事はもう読み込まれていません。フィードに戻って開き直してください。</string>
     <string name="button_back_to_feeds">フィードに戻る</string>
     <string name="tab_all_feeds">すべて</string>
+    <string name="cd_show_all_categories">カテゴリの一覧を表示</string>
     <string name="cd_set_feed_category">カテゴリを設定</string>
     <string name="dialog_title_feed_category">カテゴリ</string>
     <string name="label_feed_category">カテゴリ名</string>

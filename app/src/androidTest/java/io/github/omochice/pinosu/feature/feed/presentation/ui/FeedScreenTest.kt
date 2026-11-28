@@ -13,12 +13,17 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isPopup
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
@@ -93,6 +98,15 @@ class FeedScreenTest {
         onRefresh = onRefresh,
         onSelectCategory = { selectedCategory = it },
         onLoadArticleImage = onLoadArticleImage)
+  }
+
+  private fun onTab(name: String) = composeTestRule.onNodeWithText(name).performScrollTo()
+
+  private fun assertTabIsHalfTheScreen(name: String) {
+    val screen = composeTestRule.onRoot().getUnclippedBoundsInRoot()
+    val tab = onTab(name).getUnclippedBoundsInRoot()
+    val half = (screen.right - screen.left) / 2
+    assertTrue(abs((tab.right - tab.left - half).value) < 1f, "$name tab was $tab")
   }
 
   private fun onItemImage() =
@@ -373,7 +387,7 @@ class FeedScreenTest {
 
     composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).assertIsSelected()
     composeTestRule.onNodeWithText("News").assertIsDisplayed().assertIsNotSelected()
-    composeTestRule.onNodeWithText("Tech").assertIsDisplayed().assertIsNotSelected()
+    onTab("Tech").assertIsDisplayed().assertIsNotSelected()
   }
 
   @Test
@@ -386,7 +400,7 @@ class FeedScreenTest {
           onSelectCategory = { selected.add(it) })
     }
 
-    composeTestRule.onNodeWithText("Tech").performClick()
+    onTab("Tech").performClick()
 
     assertEquals(listOf<String?>("Tech"), selected)
   }
@@ -403,7 +417,7 @@ class FeedScreenTest {
     }
 
     composeTestRule.onNodeWithText("Tech").assertIsSelected()
-    composeTestRule.onNodeWithText(getTestString(R.string.tab_all_feeds)).performClick()
+    onTab(getTestString(R.string.tab_all_feeds)).performClick()
 
     assertEquals(listOf<String?>(null), selected)
   }
@@ -449,7 +463,7 @@ class FeedScreenTest {
   fun `tapping a tab moves the pager to its category`() {
     composeTestRule.setContent { CategorizedFeedScreen() }
 
-    composeTestRule.onNodeWithText("Tech").performClick()
+    onTab("Tech").performClick()
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithText("Tech").assertIsSelected()
@@ -471,6 +485,49 @@ class FeedScreenTest {
     assertTrue(
         indicatorCenter > newsTab.left && indicatorCenter < newsTab.right,
         "indicator center  should be under the News tab ")
+  }
+
+  @Test
+  fun `two category tabs share the width evenly`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(newsItem, item).copy(categories = listOf("News")), onRefresh = {})
+    }
+
+    assertTabIsHalfTheScreen(getTestString(R.string.tab_all_feeds))
+    assertTabIsHalfTheScreen("News")
+  }
+
+  @Test
+  fun `each of three or more category tabs is half the width of the screen`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    assertTabIsHalfTheScreen(getTestString(R.string.tab_all_feeds))
+    assertTabIsHalfTheScreen("News")
+  }
+
+  @Test
+  fun `two category tabs have no list of every category`() {
+    composeTestRule.setContent {
+      FeedScreen(uiState = loaded(newsItem, item).copy(categories = listOf("News")), onRefresh = {})
+    }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_show_all_categories))
+        .assertDoesNotExist()
+  }
+
+  @Test
+  fun `choosing a category from the list of every category shows its page`() {
+    composeTestRule.setContent { CategorizedFeedScreen() }
+
+    composeTestRule
+        .onNodeWithContentDescription(getTestString(R.string.cd_show_all_categories))
+        .performClick()
+    composeTestRule.onNode(hasText("Art") and hasAnyAncestor(isPopup())).performClick()
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithText("Art").assertIsSelected()
+    composeTestRule.onNodeWithText("Gallery opening").assertIsDisplayed()
   }
 
   @Test
