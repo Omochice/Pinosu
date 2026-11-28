@@ -87,7 +87,7 @@ constructor(
   }
 
   /**
-   * Initialize the form for editing an existing bookmark
+   * Initialize the form for editing an existing bookmark, discarding any previous state
    *
    * @param url URL without scheme (read-only in edit mode)
    * @param title Existing bookmark title
@@ -95,14 +95,13 @@ constructor(
    * @param comment Existing bookmark comment
    */
   fun initializeForEdit(url: String, title: String, categories: List<String>, comment: String) {
-    _uiState.update {
-      it.copy(
-          url = url,
-          title = title,
-          categories = categories.joinToString(", "),
-          comment = comment,
-          isEditMode = true)
-    }
+    _uiState.value =
+        PostBookmarkUiState(
+            url = url,
+            title = title,
+            categories = categories.joinToString(", "),
+            comment = comment,
+            isEditMode = true)
   }
 
   /**

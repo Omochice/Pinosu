@@ -361,6 +361,24 @@ class PostBookmarkViewModelTest {
   }
 
   @Test
+  fun `initializeForEdit should discard the error of the previous form`() = runTest {
+    viewModel.prepareSignEventIntent {}
+    advanceUntilIdle()
+    assertNotNull(viewModel.uiState.first().errorMessage, "precondition: an error is shown")
+
+    viewModel.initializeForEdit(
+        url = "example.com/article",
+        title = "Existing Title",
+        categories = listOf("tech"),
+        comment = "Existing comment")
+    advanceUntilIdle()
+
+    val state = viewModel.uiState.first()
+    assertNull(state.errorMessage, "errorMessage should be cleared")
+    assertTrue(state.isEditMode, "isEditMode should be true")
+  }
+
+  @Test
   fun `initializeForNew without arguments should clear edit mode and all fields`() = runTest {
     viewModel.initializeForEdit(
         url = "example.com/article",
