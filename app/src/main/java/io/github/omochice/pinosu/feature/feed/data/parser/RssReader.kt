@@ -12,6 +12,7 @@ internal object RssReader {
   private const val ITEM = "item"
   private const val DESCRIPTION = "description"
   private const val CONTENT_ENCODED = "content:encoded"
+  private const val DC_LANGUAGE = "dc:language"
 
   /**
    * Read a feed from the document's root element
@@ -24,16 +25,22 @@ internal object RssReader {
   fun read(root: Element, feedUrl: String): Feed {
     val channel = root.firstChildNamed("channel")
     val title = channel?.childText(TITLE).orEmpty()
+    val language = channel?.let { it.childText("language") ?: it.childText(DC_LANGUAGE) }
     val itemElements = root.childrenNamed(ITEM) + channel?.childrenNamed(ITEM).orEmpty()
     return Feed(
         url = feedUrl,
         title = title,
         siteUrl = channel?.let { link(it, feedUrl) },
-        items = itemElements.map { readItem(it, feedUrl, title) },
+        items = itemElements.map { readItem(it, feedUrl, title, language) },
     )
   }
 
-  private fun readItem(item: Element, feedUrl: String, feedTitle: String): FeedItem {
+  private fun readItem(
+      item: Element,
+      feedUrl: String,
+      feedTitle: String,
+      channelLanguage: String?,
+  ): FeedItem {
     val title = item.childText(TITLE).orEmpty()
     val link = link(item, feedUrl)
     val rawDate = item.childText("pubDate") ?: item.childText("dc:date")
@@ -51,6 +58,7 @@ internal object RssReader {
             ItemImageFinder.find(item, feedUrl, listOf(CONTENT_ENCODED, DESCRIPTION)) {
               it.htmlSource()
             },
+        language = LanguageTag.normalize(item.childText(DC_LANGUAGE) ?: channelLanguage),
     )
   }
 

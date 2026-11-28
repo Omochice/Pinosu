@@ -158,13 +158,35 @@ private fun FeedItemReaderDestination(
     }
   }
 
+  val item = viewModel.item
+  val articleImageViewModel = timelineArticleImages(navController)
+  val articleImages by articleImageViewModel.images.collectAsStateWithLifecycle()
+  val articleLink = item?.link?.takeIf { item.imageUrl == null }
+  LaunchedEffect(articleLink) { articleLink?.let { articleImageViewModel.load(it) } }
+
   FeedItemReaderScreen(
-      item = viewModel.item,
+      item = item,
       onNavigateUp = { navController.navigateUp() },
       onBookmark = { link, title ->
         navController.navigate(PostBookmark(sharedUrl = link, sharedTitle = title))
       },
-      isReadOnly = isReadOnly)
+      isReadOnly = isReadOnly,
+      imageUrl = item?.imageUrl ?: articleLink?.let(articleImages::get))
+}
+
+/**
+ * Article images of the timeline the reader was opened from, so the reader shows the image its card
+ * showed without fetching the article page again
+ *
+ * The reader's own instance is used only when no timeline is below it on the back stack.
+ */
+@Composable
+private fun timelineArticleImages(navController: NavController): ArticleImageViewModel {
+  val timelineEntry =
+      remember(navController) {
+        runCatching { navController.getBackStackEntry<Feed>() }.getOrNull()
+      }
+  return if (timelineEntry != null) hiltViewModel(timelineEntry) else hiltViewModel()
 }
 
 @Composable

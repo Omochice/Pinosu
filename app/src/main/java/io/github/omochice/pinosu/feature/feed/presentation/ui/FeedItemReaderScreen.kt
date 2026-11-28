@@ -1,22 +1,31 @@
 package io.github.omochice.pinosu.feature.feed.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,13 +36,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import coil3.compose.AsyncImage
 import io.github.omochice.pinosu.R
 import io.github.omochice.pinosu.feature.feed.domain.model.FeedItem
 import java.time.Instant
@@ -43,7 +57,13 @@ import kotlinx.coroutines.launch
 // Compose skips the line break config below it, so older devices keep the default word breaking
 // instead of failing, which is why no version check is needed here.
 private val PhraseParagraphBreak = LineBreak.Paragraph.copy(wordBreak = LineBreak.WordBreak.Phrase)
-private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.WordBreak.Phrase)
+
+// Japanese text set at the Material default of 1.5 reads cramped, so the reader opens it up.
+private val ReaderLineHeight = 1.75.em
+
+// Lines and images stretched across a landscape phone or a tablet are hard to follow, so the
+// article keeps to a centered column instead of the full width.
+private val ReaderMaxWidth = 640.dp
 
 /**
  * Composable function for the screen reading one feed item in the app
@@ -52,6 +72,8 @@ private val PhraseHeadingBreak = LineBreak.Heading.copy(wordBreak = LineBreak.Wo
  * @param onNavigateUp Callback when the user leaves the reader
  * @param onBookmark Callback with the link and title of the item when its bookmark action is tapped
  * @param isReadOnly Whether to hide the bookmark action for read-only login
+ * @param imageUrl Image of the article shown above its title, and left out of the body, or null to
+ *   show none
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +82,7 @@ fun FeedItemReaderScreen(
     onNavigateUp: () -> Unit,
     onBookmark: (link: String, title: String) -> Unit = { _, _ -> },
     isReadOnly: Boolean = false,
+    imageUrl: String? = null,
 ) {
   val snackbarHostState = remember { SnackbarHostState() }
   val openLink = rememberLinkOpener(snackbarHostState)
@@ -68,18 +91,15 @@ fun FeedItemReaderScreen(
 
   Scaffold(
       topBar = {
-        FeedItemReaderTopBar(
-            link = item?.link,
-            onNavigateUp = onNavigateUp,
-            onOpenInBrowser = openLink,
-            onBookmark = bookmark)
+        FeedItemReaderTopBar(link = item?.link, onNavigateUp = onNavigateUp, onBookmark = bookmark)
       },
       snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
         val modifier = Modifier.padding(paddingValues).fillMaxSize()
         if (item == null) {
           FeedItemNotFound(onNavigateUp = onNavigateUp, modifier = modifier)
         } else {
-          FeedItemArticle(item = item, onOpenLink = openLink, modifier = modifier)
+          FeedItemArticle(
+              item = item, imageUrl = imageUrl, onOpenLink = openLink, modifier = modifier)
         }
       }
 }
@@ -103,7 +123,6 @@ private fun rememberLinkOpener(snackbarHostState: SnackbarHostState): (String) -
 private fun FeedItemReaderTopBar(
     link: String?,
     onNavigateUp: () -> Unit,
-    onOpenInBrowser: (String) -> Unit,
     onBookmark: ((String) -> Unit)?,
 ) {
   TopAppBar(
@@ -116,51 +135,99 @@ private fun FeedItemReaderTopBar(
         }
       },
       actions = {
-        if (link != null) {
-          if (onBookmark != null) {
-            IconButton(onClick = { onBookmark(link) }) {
-              Icon(
-                  imageVector = Icons.Outlined.BookmarkAdd,
-                  contentDescription = stringResource(R.string.cd_bookmark_feed_item))
-            }
-          }
-          IconButton(onClick = { onOpenInBrowser(link) }) {
+        if (link != null && onBookmark != null) {
+          IconButton(onClick = { onBookmark(link) }) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                contentDescription = stringResource(R.string.cd_open_in_browser))
+                imageVector = Icons.Outlined.BookmarkAdd,
+                contentDescription = stringResource(R.string.cd_bookmark_feed_item))
           }
         }
       })
 }
 
 @Composable
-private fun FeedItemArticle(item: FeedItem, onOpenLink: (String) -> Unit, modifier: Modifier) {
-  Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
-    Text(
-        text = item.title.ifEmpty { item.link.orEmpty() },
-        style = MaterialTheme.typography.headlineSmall.copy(lineBreak = PhraseHeadingBreak))
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(
-        text = feedItemByline(item),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant)
-    Spacer(modifier = Modifier.height(16.dp))
-    FeedItemBody(item = item, onOpenLink = onOpenLink)
+private fun OpenInBrowserButton(link: String, onOpenLink: (String) -> Unit) {
+  OutlinedButton(onClick = { onOpenLink(link) }) {
+    Icon(
+        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+        contentDescription = null,
+        modifier = Modifier.size(ButtonDefaults.IconSize))
+    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+    Text(stringResource(R.string.button_open_in_browser))
   }
 }
 
 @Composable
-private fun FeedItemBody(item: FeedItem, onOpenLink: (String) -> Unit) {
+private fun FeedItemArticle(
+    item: FeedItem,
+    imageUrl: String?,
+    onOpenLink: (String) -> Unit,
+    modifier: Modifier,
+) {
+  Box(
+      modifier = modifier.verticalScroll(rememberScrollState()),
+      contentAlignment = Alignment.TopCenter) {
+        FeedItemArticleColumn(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+      }
+}
+
+@Composable
+private fun FeedItemArticleColumn(
+    item: FeedItem,
+    imageUrl: String?,
+    onOpenLink: (String) -> Unit,
+) {
+  Column(
+      modifier =
+          Modifier.widthIn(max = ReaderMaxWidth)
+              .fillMaxWidth()
+              .testTag("readerArticle")
+              .padding(16.dp)) {
+        imageUrl?.let { url ->
+          AsyncImage(
+              model = url,
+              contentDescription = item.title.ifEmpty { stringResource(R.string.cd_ogp_image) },
+              modifier =
+                  Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(RoundedCornerShape(8.dp)),
+              contentScale = ContentScale.Crop)
+          Spacer(modifier = Modifier.height(12.dp))
+        }
+        Text(
+            text = item.title.ifEmpty { item.link.orEmpty() },
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                lineBreak = PhraseParagraphBreak, localeList = item.localeList()))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = feedItemByline(item),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        item.link?.let { link ->
+          Spacer(modifier = Modifier.height(8.dp))
+          OpenInBrowserButton(link = link, onOpenLink = onOpenLink)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        FeedItemBody(item = item, imageUrl = imageUrl, onOpenLink = onOpenLink)
+      }
+}
+
+@Composable
+private fun FeedItemBody(item: FeedItem, imageUrl: String?, onOpenLink: (String) -> Unit) {
   val html = item.contentHtml
-  val bodyStyle = MaterialTheme.typography.bodyLarge.copy(lineBreak = PhraseParagraphBreak)
+  val bodyStyle =
+      MaterialTheme.typography.bodyLarge.copy(
+          lineHeight = ReaderLineHeight,
+          lineBreak = PhraseParagraphBreak,
+          localeList = item.localeList())
   when {
     html != null ->
         HtmlText(
             html = html,
             onOpenLink = onOpenLink,
             style = bodyStyle,
-            headingStyle =
-                bodyStyle.copy(lineHeight = TextUnit.Unspecified, lineBreak = PhraseHeadingBreak))
+            headingStyle = bodyStyle.copy(lineHeight = TextUnit.Unspecified),
+            omittedImageUrl = imageUrl)
     item.summary.isNotBlank() -> Text(text = item.summary, style = bodyStyle)
     else ->
         Text(

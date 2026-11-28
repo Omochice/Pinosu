@@ -149,12 +149,12 @@ class JsoupFeedParserImageTest {
   }
 
   @Test
-  fun `image of a body that has no text left after sanitizing still gives the image`() {
+  fun `image of a body holding only an image is both the image and the body`() {
     val item =
         parseRssItem(
             """<content:encoded><![CDATA[<img src="https://example.com/only.png">]]></content:encoded>""")
 
-    assertNull(item.contentHtml)
+    assertEquals("""<img src="https://example.com/only.png">""", item.contentHtml)
     assertEquals("https://example.com/only.png", item.imageUrl)
   }
 

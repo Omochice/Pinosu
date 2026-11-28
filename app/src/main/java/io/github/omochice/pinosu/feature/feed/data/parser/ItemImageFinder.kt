@@ -58,8 +58,8 @@ internal object ItemImageFinder {
       url.trim().takeIf { it.isNotEmpty() }?.let { LinkResolver.resolve(element, it, feedUrl) }
 
   /**
-   * First image in the raw body, read before sanitizing because the sanitizer drops images, and
-   * from every body child because one holding only images is skipped as the body
+   * First image in the raw body, read from every body child because the body shown is only the
+   * first of them that has anything left once sanitized
    */
   private fun bodyImage(
       item: Element,

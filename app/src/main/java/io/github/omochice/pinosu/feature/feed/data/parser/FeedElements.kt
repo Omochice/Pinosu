@@ -37,21 +37,28 @@ internal fun Element.childPlainText(vararg names: String): String =
         .orEmpty()
 
 /**
- * Sanitized HTML body of the first direct child among [names] that has any text left once sanitized
+ * Sanitized HTML body of the first direct child among [names] that has any text left once
+ * sanitized, or else of the first that has an image left
+ *
+ * A body holding only images gives way to a later one with text, because the text carries the
+ * article while the image is often shown as the image of the item already.
  *
  * @param names Names of the children to try, in order of preference
  * @param feedUrl URL the feed was fetched from, used to resolve relative links
  * @param htmlOf HTML a child holds, or null when it holds nothing that can be shown
- * @return The body, or null when none of the children has any text
+ * @return The body, or null when none of the children has any text or image
  */
 internal fun Element.childBodyHtml(
     vararg names: String,
     feedUrl: String,
     htmlOf: (Element) -> String?,
-): String? =
-    names.asSequence().mapNotNull(::firstChildNamed).firstNotNullOfOrNull { child ->
-      htmlOf(child)?.let { ItemBodySanitizer.sanitize(it, LinkResolver.baseOf(child, feedUrl)) }
-    }
+): String? {
+  val bodies =
+      names.asSequence().mapNotNull(::firstChildNamed).mapNotNull { child ->
+        htmlOf(child)?.let { ItemBodySanitizer.sanitize(it, LinkResolver.baseOf(child, feedUrl)) }
+      }
+  return (bodies.firstOrNull { it.hasText } ?: bodies.firstOrNull())?.html
+}
 
 /**
  * HTML held by this element, whether written as markup or as escaped text

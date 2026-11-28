@@ -13,6 +13,7 @@ internal object AtomReader {
   private const val SUMMARY = "summary"
   private const val CONTENT = "content"
   private const val TEXT_TYPE = "text"
+  private const val XML_LANG = "xml:lang"
 
   /**
    * Read a feed from the document's root element
@@ -44,6 +45,7 @@ internal object AtomReader {
         summary = entry.childPlainText(SUMMARY, CONTENT),
         contentHtml = entry.childBodyHtml(CONTENT, SUMMARY, feedUrl = feedUrl, htmlOf = ::textHtml),
         imageUrl = ItemImageFinder.find(entry, feedUrl, listOf(CONTENT, SUMMARY), ::textHtml),
+        language = declaredLanguage(entry),
     )
   }
 
@@ -60,6 +62,16 @@ internal object AtomReader {
         "xhtml" -> element.html()
         else -> null
       }
+
+  /**
+   * Language declared by `xml:lang` on [entry] or the nearest ancestor that has one, where an empty
+   * value declares the language unknown rather than deferring to further ancestors
+   */
+  private fun declaredLanguage(entry: Element): String? =
+      (listOf(entry) + entry.parents())
+          .firstOrNull { it.hasAttr(XML_LANG) }
+          ?.attr(XML_LANG)
+          .let(LanguageTag::normalize)
 
   private fun alternateLink(parent: Element, feedUrl: String): String? {
     val links = parent.childrenNamed("link")
